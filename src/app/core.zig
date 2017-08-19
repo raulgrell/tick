@@ -1,4 +1,5 @@
 // Math
+use @import("audio.zig");
 use @import("../math/index.zig");
 
 // System
@@ -13,20 +14,28 @@ const MAX_FRAME_STEPS  = 6;
 const WINDOW_WIDTH  = 800;
 const WINDOW_HEIGHT = 600;
 
-const setupFunction  = fn(app: &App) -> void;
-const drawFunction   = fn(app: &App) -> void;
-const updateFunction = fn(app: &App, deltaTime: f32) -> void;
+const SetupFunction  = fn(app: &App) -> void;
+const DrawFunction   = fn(app: &App) -> void;
+const UpdateFunction = fn(app: &App, deltaTime: f32) -> void;
 
 // Main App Object
 pub const App = struct {
     window:          Window,
     input:           InputManager,
-    onInit:          setupFunction,
-    onDraw:          drawFunction,
-    onUpdate:        updateFunction,
+    audio:           AudioEngine,
+    onInit:          SetupFunction,
+    onDraw:          DrawFunction,
+    onUpdate:        UpdateFunction,
 
     pub fn init() -> App {
-        var app: App = undefined;
+        var app = App {
+            .window   = undefined,
+            .input    = undefined,
+            .audio    = undefined,
+            .onInit   = undefined,
+            .onDraw   = undefined,
+            .onUpdate = undefined
+        };
 
         // Window
         app.window.init(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -36,7 +45,6 @@ pub const App = struct {
         _ = c.glfwSetMonitorCallback(monitor_callback);
 
         c.glClearColor(0.0, 0.0, 0.0, 1.0);
-
         c.glEnable(c.GL_BLEND);
         c.glBlendFunc(c.GL_SRC_ALPHA, c.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -44,6 +52,11 @@ pub const App = struct {
 
         // Input Manager
         app.input.init();
+
+        // Audio
+        // %%app.audio.init();
+        // %%app.audio.open();
+        // %%app.audio.start();
 
         return app;
     }
@@ -68,6 +81,7 @@ pub const App = struct {
                 totalDeltaTime -= deltaTime;
                 frameSteps += 1;
             }
+            // app.audio.update();
             app.window.clear();
             app.onDraw(app);
             app.window.update();

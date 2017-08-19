@@ -9,8 +9,8 @@ pub const Camera = struct {
     scale: f32,
     screenWidth: c_int,
     screenHeight: c_int,
-    viewMatrix: Mat4x4,
-    projectionMatrix: Mat4x4,
+    viewMatrix: Mat4,
+    projectionMatrix: Mat4,
     needsMatrixUpdate: bool,
     active: bool,
 
@@ -22,8 +22,8 @@ pub const Camera = struct {
             .scale = 1,
             .screenWidth = screenWidth,
             .screenHeight = screenHeight,
-            .viewMatrix = mat4x4_identity,
-            .projectionMatrix = mat4x4_identity,
+            .viewMatrix = Mat4.diagonal(1),
+            .projectionMatrix = Mat4.diagonal(1),
             .needsMatrixUpdate = true,
             .active = true,
         }
@@ -89,7 +89,7 @@ pub const Camera = struct {
 
             const scale = vec3(c.Scale, c.Scale, 0.0);
 
-            c.ProjectionMatrix = Mat4x4.Scale(scale) *  c.ProjectionMatrix;
+            c.ProjectionMatrix = Mat4.Scale(scale) *  c.ProjectionMatrix;
             c.needsMatrixUpdate = false;
         }
     }

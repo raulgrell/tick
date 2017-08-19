@@ -89,7 +89,7 @@ pub const ShaderProgram = struct {
         c.glUniform4fv(uniform_id, 1, &value.data[0]);
     }
 
-    pub fn setUniform_mat4x4(sp: &const ShaderProgram, uniform_id: c.GLint, value: &const Mat4x4) {
+    pub fn setUniform_mat4(sp: &const ShaderProgram, uniform_id: c.GLint, value: &const Mat4) {
         c.glUniformMatrix4fv(uniform_id, 1, c.GL_FALSE, &value.data[0][0]);
     }
 

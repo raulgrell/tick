@@ -41,7 +41,7 @@ pub const BatchRenderer = struct {
     renderBatches: []RenderBatch,
     numBatches: usize,
     sortType: GlyphSortType,
-    projection: Mat4x4,
+    projection: Mat4,
     
     pub fn init(s: &shader.TextureShader, fb_width: c_int, fb_height: c_int) -> BatchRenderer {
         var r = BatchRenderer {
@@ -49,7 +49,7 @@ pub const BatchRenderer = struct {
             .vao = 0,
             .vbo = 0,
             .ibo = 0,
-            .projection = mat4x4_ortho( 0.0, f32(fb_width), f32(fb_height), 0.0 ),
+            .projection = Mat4.orthographic( 0.0, f32(fb_width), f32(fb_height), 0.0, 0.0, 1.0 ),
             .glyphs = s_glyphs[0..],
             .glyphPointers = s_glyph_pointers[0..],
             .numGlyphs = 0,
@@ -133,7 +133,7 @@ pub const BatchRenderer = struct {
 
     pub fn render(r: &BatchRenderer) {
         r.shader.program.bind();
-        r.shader.program.setUniform_mat4x4(r.shader.uniform_mvp,  &r.projection);
+        r.shader.program.setUniform_mat4(r.shader.uniform_mvp,  &r.projection);
 
         debug.assertNoErrorGL();        
 
@@ -243,7 +243,7 @@ const triangleUV = [][2]c.GLfloat{
 pub const IMRenderer = struct {
     shader: &shader.TextureShader,
     vao: c.GLuint,
-    projection: Mat4x4,
+    projection: Mat4,
     rectangleBuffer: c.GLuint,
     rectangleUV: c.GLuint,
     triangleBuffer: c.GLuint,
@@ -253,7 +253,7 @@ pub const IMRenderer = struct {
         var r = IMRenderer {
             .shader = s,
             .vao = 0,
-            .projection = mat4x4_ortho( 0.0, f32(fb_width), f32(fb_height), 0.0 ),
+            .projection = Mat4.orthographic( 0.0, f32(fb_width), f32(fb_height), 0.0, 0.0, 1.0 ),
             .rectangleBuffer = 0,
             .rectangleUV = 0,
             .triangleBuffer = 0,
@@ -313,9 +313,9 @@ pub const IMRenderer = struct {
     }
 
     pub fn draw_rect(r: &IMRenderer, texture: &Texture, x: f32, y: f32, w: f32, h: f32) {
-        const model = mat4x4_identity.translate(x, y, 0.0).scale(w, h, 0.0);
-        const mvp = r.projection.mult(model);
-        r.shader.program.setUniform_mat4x4(r.shader.uniform_mvp, mvp);
+        const model = Mat4.diagonal(1).translate(x, y, 0.0).scale(w, h, 0.0);
+        const mvp = r.projection.mul(model);
+        r.shader.program.setUniform_mat4(r.shader.uniform_mvp, mvp);
         r.shader.program.setUniform_int(r.shader.uniform_tex, c.GLint(texture.id));
 
         c.glBindBuffer(c.GL_ARRAY_BUFFER, r.rectangleBuffer);
@@ -334,8 +334,8 @@ pub const IMRenderer = struct {
         for (text) |col, i| {
             if (col <= '~') {
                 const char_left = f32(left) + f32(i * s.width) * size;
-                const model = mat4x4_identity.translate(char_left, f32(top), 0.0).scale(size, size, 0.0);
-                const mvp = r.projection.mult(model);
+                const model = Mat4.diagonal(1).translate(char_left, f32(top), 0.0).scale(size, size, 0.0);
+                const mvp = r.projection.mul(model);
                 s.draw(r.shader, col, mvp);
             } else {
                 unreachable;
@@ -344,8 +344,8 @@ pub const IMRenderer = struct {
     }
 
     fn draw_sprite(r: &IMRenderer, s: &Sprite, left: f32, top: f32, width: f32, height: f32) {
-        const model = mat4x4_identity.translate(left, top, 0.0).scale(width, height, 0.0);
-        const mvp = r.projection.mult(model);
+        const model = Mat4.diagonal(1).translate(left, top, 0.0).scale(width, height, 0.0);
+        const mvp = r.projection.mul(model);
         s.draw(r.shader, mvp);
     }
 
@@ -361,7 +361,7 @@ pub const IMRenderer = struct {
 pub const StripRenderer = struct {
     shader: &shader.PrimitiveShader,
     vao: c.GLuint,
-    projection: Mat4x4,
+    projection: Mat4,
     rectangleBuffer: c.GLuint,
     triangleBuffer: c.GLuint,
 
@@ -369,7 +369,7 @@ pub const StripRenderer = struct {
         var r = StripRenderer {
             .shader = s,
             .vao = 0,
-            .projection = mat4x4_ortho( 0.0, f32(fb_width), f32(fb_height), 0.0 ),
+            .projection = Mat4.orthographic( 0.0, f32(fb_width), f32(fb_height), 0.0, 0.0, 1.0 ),
             .rectangleBuffer = 0,
             .triangleBuffer = 0,
         };
@@ -408,9 +408,9 @@ pub const StripRenderer = struct {
         c.glBindVertexArray(0);        
     }
 
-    pub fn submitMvp(r: &StripRenderer, color: &const Vec4, mvp: &const Mat4x4) {
+    pub fn submitMvp(r: &StripRenderer, color: &const Vec4, mvp: &const Mat4) {
         r.shader.program.setUniform_vec4(r.shader.uniform_color, color);
-        r.shader.program.setUniform_mat4x4(r.shader.uniform_mvp, mvp);
+        r.shader.program.setUniform_mat4(r.shader.uniform_mvp, mvp);
 
         c.glBindBuffer(c.GL_ARRAY_BUFFER, r.rectangleBuffer);
         c.glEnableVertexAttribArray(c.GLuint(r.shader.attrib_position));
@@ -427,8 +427,8 @@ pub const StripRenderer = struct {
     }
 
     pub fn submit(r: &StripRenderer, color: &const Vec4, x: f32, y: f32, w: f32, h: f32) {
-        const model = mat4x4_identity.translate(x, y, 0.0).scale(w, h, 0.0);
-        const mvp = r.projection.mult(model);
+        const model = Mat4.diagonal(1).translate(x, y, 0.0).scale(w, h, 0.0);
+        const mvp = r.projection.mul(model);
         r.submitMvp(color, mvp);
     }
 
@@ -444,7 +444,7 @@ pub const LineRenderer = struct {
     vao: c.GLuint,
     vbo: c.GLuint,
     ibo: c.GLuint,
-    projection: Mat4x4,
+    projection: Mat4,
     vertices: []Vertex,
     numVertices: c_uint,
     indices: []c.GLuint,
@@ -457,7 +457,7 @@ pub const LineRenderer = struct {
             .vao = 0,
             .vbo = 0,
             .ibo = 0,
-            .projection = mat4x4_ortho( 0.0, f32(fb_width), f32(fb_height), 0.0 ),
+            .projection = Mat4.orthographic( 0.0, f32(fb_width), f32(fb_height), 0.0, 0.0, 1.0 ),
             .vertices = s_vertices[0..],
             .numVertices = 0,
             .indices = s_indices[0..],
@@ -569,7 +569,7 @@ pub const LineRenderer = struct {
 
     pub fn render(r: &LineRenderer) {
         r.shader.program.bind();
-        r.shader.program.setUniform_mat4x4(r.shader.uniform_mvp,  &r.projection);
+        r.shader.program.setUniform_mat4(r.shader.uniform_mvp,  &r.projection);
 
         c.glLineWidth(1.0);
         c.glBindVertexArray(r.vao);

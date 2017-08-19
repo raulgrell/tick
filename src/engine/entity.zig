@@ -1,10 +1,7 @@
 use @import("../math/index.zig");
+use @import("../system/index.zig");
 
-const tick = @import("../tick.zig");
-const lib = tick.lib;
-
-const c = @import("../system/c.zig");
-const mem = @import("../system/memory.zig");
+const lib = @import("../tick.zig").lib;
 const app = @import("../app/core.zig");
 const cam = @import("../graphics/camera.zig");
 const tex = @import("../graphics/renderable.zig");

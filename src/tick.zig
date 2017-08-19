@@ -22,17 +22,7 @@ pub const renderer = @import("graphics/renderer.zig");
 pub const shader = @import("graphics/shader.zig");
 
 // Math
-//pub const fast = @import("math/fast.zig");
-pub const functions = @import("math/functions.zig");
-pub const geometry = @import("math/geometry.zig");
-pub const mat = @import("math/mat.zig");
-pub const vec = @import("math/vec.zig");
-pub const quat = @import("math/quat.zig");
 pub const math = @import("math/index.zig");
 
 // System
-pub const c = @import("system/c.zig");
-pub const debug = @import("system/debug.zig");
-pub const io = @import("system/io.zig");
-pub const memory = @import("system/memory.zig");
-
+pub const system =  @import("system/index.zig");

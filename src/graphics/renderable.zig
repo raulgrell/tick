@@ -285,9 +285,9 @@ pub const Sprite = struct {
         return s;
     }
 
-    pub fn draw(s: &Sprite, shader: &sh.TextureShader, mvp: &const Mat4x4) {
+    pub fn draw(s: &Sprite, shader: &sh.TextureShader, mvp: &const Mat4) {
         shader.program.bind();
-        shader.program.setUniform_mat4x4(shader.uniform_mvp, mvp);
+        shader.program.setUniform_mat4(shader.uniform_mvp, mvp);
         shader.program.setUniform_int(shader.uniform_tex, c.GLint(s.texture.id));
 
         c.glBindBuffer(c.GL_ARRAY_BUFFER, s.vertex_buffer);
@@ -378,9 +378,9 @@ pub const Spritesheet = struct {
         return s;
     }
 
-    pub fn draw(s: &Spritesheet, shader: &sh.TextureShader, index: usize, mvp: &const Mat4x4) {
+    pub fn draw(s: &Spritesheet, shader: &sh.TextureShader, index: usize, mvp: &const Mat4) {
         shader.program.bind();
-        shader.program.setUniform_mat4x4(shader.uniform_mvp, mvp);
+        shader.program.setUniform_mat4(shader.uniform_mvp, mvp);
         shader.program.setUniform_int(shader.uniform_tex, c.GLint(s.texture_id));
 
         c.glBindBuffer(c.GL_ARRAY_BUFFER, s.vertex_buffer);
