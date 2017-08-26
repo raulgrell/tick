@@ -7,10 +7,11 @@ pub fn build(b: &Builder) {
     
     exe.linkSystemLibrary("c");
     exe.linkSystemLibrary("m");
+    exe.linkSystemLibrary("z");
     exe.linkSystemLibrary("glfw");
     exe.linkSystemLibrary("epoxy");
     exe.linkSystemLibrary("png");
-    exe.linkSystemLibrary("z");
+    exe.linkSystemLibrary("soundio");
 
     b.default_step.dependOn(&exe.step);
 

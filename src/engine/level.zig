@@ -1,99 +1,82 @@
-const TILE_SIZE = 64.0;
+const math = @import("std").math;
 
-const Level = struct {
-	renderer: &BatchRenderer,
-	tileSize: usize,
-	levelData: String,
-	playerStartPosition: vec2,
+use @import("../math/index.zig");
+use @import("../system/index.zig");
 
-	init(const string& filename, renderer: &IMRenderer) -> Level {
+const lib = @import("../tick.zig").lib;
+const app = @import("../app/core.zig");
+const tex = @import("../graphics/sprite.zig");
+const render = @import("../graphics/renderer.zig");
+const light = @import("../graphics/light.zig");
 
-		const l = Level {
-			.renderer = renderer,
-			.levelData = undefined,
-			.playerStartPosition = vec2(0, 0),
-		}
+const IMRenderer = render.IMRenderer;
+const Texture = tex.Texture;
 
-		ArrayList(string) levelMap = IOManager::readLines(filename);
+pub const Level = struct {
+    tile_dimensions: Vec2,
+    level_data: [9][16]u8,
+    player_start_position: Vec2,
+    player_end_position: Vec2,
 
-		const uvRect = vec4(0.0f, 0.0f, 1.0f, 1.0f);
-		_renderer.begin();
+    pub fn init(level_data: [][]const u8, tile_dimensions: &const Vec3) -> Level {
+        var self = Level {
+            .tile_dimensions = tile_dimensions.xy(),
+            .level_data = undefined,
+            .player_start_position = vec2(0, 0),
+            .player_end_position = vec2(0, 0)
+        };
 
-		// Cycle through lines in levelData
-		for (levelData) |line, row| {
-			for (line) |sym, col| {
+        for (level_data) |line, row| {
+            std.mem.copy(u8, self.level_data[row][0..], level_data[row][0..]);
+            for (line) |sym, col| {
+                switch (sym) {
+                    // Agents
+                    '@' => {
+                        self.player_start_position.x = f32(col) * tile_dimensions.x;
+                        self.player_start_position.y = f32(row) * tile_dimensions.y;
+                        self.level_data[row][col] = ' ';
+                    },
+                    '$' => {
+                        self.player_end_position.x = f32(col) * tile_dimensions.x;
+                        self.player_end_position.y = f32(row) * tile_dimensions.y;
+                        self.level_data[row][col] = ' ';
+                    },
+                    else => { },
+                }
+            }
+        }
+        return self;
+    }
 
-				const destRect = vec4(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    pub fn getSize(self: &const Level) -> Vec2 {
+        vec2(self.level_data[0].len, self.level_data.len)
+    }
 
-				switch (sym) {
-					// Agents
-					'@' => {
-						_playerStartPosition.x = col * TILE_SIZE;
-						_playerStartPosition.y = row * TILE_SIZE;
-						_levelData[row][col] = ' ';
-						_renderer.submit(destRect, uvRect, getTexture("data/tiles/tile_01.png").id,
-											1.0f, ColourRGBA8(255, 255, 255, 255));
-					},
-					'X' => {
-						_enemyStartPositions.emplace_back(col * TILE_SIZE, row * TILE_SIZE);
-						_levelData[row][col] = ' ';
-						_renderer.submit(destRect, uvRect, getTexture("data/tiles/tile_01.png").id,
-											1.0f, ColourRGBA8(255, 255, 255, 255));
-					},
-					// Top Tiles
-					'*' => {
-						_renderer.submit(destRect, uvRect, getTexture("data/tiles/tile_183.png").id,
-											1.0f, ColourRGBA8(255, 255, 255, 255));
-					// Base Tile
-					' ' => {
-						_renderer.submit(destRect, uvRect, getTexture("data/tiles/tile_01.png").id,
-											1.0f, ColourRGBA8(255, 255, 255, 255));
-					},
-					// Tiles
-					'#' => {
-						_renderer.submit(destRect, uvRect, getTexture("res/textures/bricks_top.png").id,
-											1.0f, ColourRGBA8(255, 255, 255, 255));
-					},
-					else => {
-						printf("Unexpected symbol %c at row %d, col %d", sym, row, col);
-					},
-				}
-			}
-		}
+    pub fn getWidth(self: &const Level) -> usize {
+        return self.level_data[0].len; 
+    }
+    
+    pub fn getHeight(self: &const Level) -> usize {
+        return self.level_data.len; 
+    }
 
-		_renderer.end();
-	}
+    pub fn draw(self: &const Level, renderer: &IMRenderer, tile_map: []?Texture) {
+        const uvRect = vec4(0.0, 0.0, 1.0, 1.0);
+        const dimensions = self.tile_dimensions;
+        for (self.level_data) |line, row| {
+            for (line) |sym, col| {
+                const pos_x = f32(col) * dimensions.x;
+                const pos_y = f32(row) * dimensions.y;
+                if (tile_map[sym]) | *tx | {
+                    renderer.draw_rect(tx, pos_x, pos_y, dimensions.x, dimensions.y);                    
+                }
+            }
+        }
+    }
 
-	void draw(l: &Level)
-	{
-		l.renderer.render();
-	}
+    pub fn save(file_path: []const u8, player: &TopDownPlayer, boxes: &ArrayList(Box), lights: &ArrayList(Light)) {
+    }
 
-	bool save(const string& filePath, const PlatformPlayer& player, const ArrayList(Box)& boxes, const vector<Light2D>& lights)
-	{
-	}
-
-	bool load(ifstream& file, b2World* world, PlatformPlayer& player, ArrayList(Box)& boxes, vector<Light2D>& lights) {
-		{ // Read player
-			player.init(world, pos, ddims, cdims, color);
-		}
-		
-		{ // Read boxes
-			texture = getTexture(texturePath);
-			boxes.emplace_back(world, pos, dims, texture, color, fixedRotation, isDynamic, angle, uvRect);
-		}
-		
-		{ // Read lights
-			lights.emplace_back(color, pos, size);
-		}
-	}
-
-	pub fn getWidth() -> usize {
-		return _levelData[0].size(); 
-	}
-	
-	pub fn getHeight() -> usize {
-		return _levelData.size(); 
-	}
-}
-
+    pub fn load(file_path: []const u8, player: &TopDownPlayer, boxes: &ArrayList(Box), lights: &ArrayList(Light)) {
+    }
+};

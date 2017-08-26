@@ -82,11 +82,11 @@ pub const ShaderProgram = struct {
     }
 
     pub fn setUniform_vec3(sp: &const ShaderProgram, uniform_id: c.GLint, value: &const Vec3) {
-        c.glUniform3fv(uniform_id, 1, &value.data[0]);
+        c.glUniform3fv(uniform_id, 1, @ptrCast(&f32, value));
     }
 
     pub fn setUniform_vec4(sp: &const ShaderProgram, uniform_id: c.GLint, value: &const Vec4) {
-        c.glUniform4fv(uniform_id, 1, &value.data[0]);
+        c.glUniform4fv(uniform_id, 1, @ptrCast(&f32, value));
     }
 
     pub fn setUniform_mat4(sp: &const ShaderProgram, uniform_id: c.GLint, value: &const Mat4) {

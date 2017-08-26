@@ -1,32 +1,24 @@
-const math = @import("std").math;
-
 pub fn Vec2T(comptime T: type) -> type {
     packed struct {
-        x: T,
-        y: T,
+        data: [2]T,
 
         const Self = this;
 
-        inline fn xyz(v: &const Self) -> Vec3T(T) {
-            Vec3T(T) { .x = v.x, .y = v.y, .z = 0 }
-        }
+        inline fn x(v: &const Self) -> T { v.data[0] }
+        inline fn y(v: &const Self) -> T { v.data[1] }
 
         pub fn new() -> Self {
-            Self { .x = 0, .y = 0 }
+            Self { .data = []T {0, 0} }
         }
 
-        pub fn init(X: T, Y: T) -> Self {
-            Self { .x = X, .y = Y }
+        pub fn init(x: T, y: T) -> Self {
+            Self { .data = []T { x, y} }
         }
 
         pub fn dup(vec: &const Self) {
-            Self { vec }
+            Self { .data = vec.data }
         }
 
-        pub fn cast(self: &const Self, comptime C: type) -> Vec2T(C) {
-            Vec2T(C) { .x = C(self.x), .y = C(self.y) }
-        }
-        
         pub fn Up()    -> Self { return init( 0,  1); }
         pub fn Down()  -> Self { return init( 0, -1); }
         pub fn Left()  -> Self { return init(-1,  0); }
@@ -35,59 +27,59 @@ pub fn Vec2T(comptime T: type) -> type {
         pub fn XAxis() -> Self { return init( 1,  0); }
         pub fn YAxis() -> Self { return init( 0,  1); }
 
-        pub fn set(self: &Vec2, X: T, Y: T) {
-            self.x = X;
-            self.y = Y;
+        pub fn set(self: &Vec2, X: f32, Y: f32) {
+            self.data[0] = X;
+            self.data[1] = Y;
         }
 
         pub fn offset(self: &Self, other: &const Self) -> &Self {
-            self.x += other.x;
-            self.y += other.y;
+            self.data[0] += other.data[0];
+            self.data[1] += other.data[1];
             return self;
         }
 
         pub fn scale_aniso(self: &Self, other: &const Self) -> &Self {
-            self.x *= other.x;
-            self.y *= other.y;
+            self.data[0] *= other.data[0];
+            self.data[1] *= other.data[1];
             return self;
         }
         
         pub fn scale(self: &Self, value: T) -> &Self {
-            self.x *= value;
-            self.y *= value;
+            self.data[0] *= value;
+            self.data[1] *= value;
             return self;
         }
 
         pub fn add(self: &const Self, other: &const Self) -> Self {
-            Self.init(self.x + other.x, self.y + other.y)
+            Self.init(self.data[0] + other.data[0], self.data[1] + other.data[1])
         }
 
         pub fn sub(self: &const Self, other: &const Self) -> Self {
-            Self.init(self.x - other.x, self.y - other.y)
+            Self.init(self.data[0] - other.data[0], self.data[1] - other.data[1])
         }
 
         pub fn mul(self: &const Self, other: &const Self) -> Self {
-            Self.init(self.x * other.x, self.y * other.y)
+            Self.init(self.data[0] * other.data[0], self.data[1] * other.data[1])
         }
 
         pub fn div(self: &const Self, other: &const Self) -> Self {
-            Self.init(self.x / other.x, self.y / other.y)
+            Self.init(self.data[0] / other.data[0], self.data[1] / other.data[1])
         }
 
         pub fn add_scalar(self: &const Self, value: T) -> Self {
-            Self.init(self.x + value, self.y + value)
+            Self.init(self.data[0] + value, self.data[1] + value)
         }
 
         pub fn sub_scalar(self: &const Self, value: T) -> Self {
-            Self.init(self.x - value, self.y - value)
+            Self.init(self.data[0] - value, self.data[1] - value)
         }
 
         pub fn mul_scalar(self: &const Self, value: T) -> Self {
-            Self.init(self.x * value, self.y * value)
+            Self.init(self.data[0] * value, self.data[1] * value)
         }
 
         pub fn div_scalar(self: &const Self, value: T) -> Self {
-            Self.init(self.x / value, self.y / value)
+            Self.init(self.data[0] / value, self.data[1] / value)
         }
 
         pub fn rotate(self: &const Self, angle: f32) -> vec2 {
@@ -104,7 +96,7 @@ pub fn Vec2T(comptime T: type) -> type {
         pub fn distance(self: &const Self, other: &const Self) -> f32 {
             const a = self.x - other.x;
             const b = self.y - other.y;
-            return math.sqrt(a * a + b * b);
+            return sqrt(a * a + b * b);
         }
 
         pub fn dot(self: &const Self, other: &const Self) -> f32 {
@@ -112,7 +104,7 @@ pub fn Vec2T(comptime T: type) -> type {
         }
 
         pub fn length(self: &const Self) -> f32 {
-            return math.sqrt(self.x * self.x + self.y * self.y);
+            return sqrt(self.x * self.x + self.y * self.y);
         }
 
         pub fn normalize(self: &const Self) -> vec2 {
@@ -123,31 +115,31 @@ pub fn Vec2T(comptime T: type) -> type {
 }
 
 pub fn Vec3T(comptime T: type) -> type {
-    packed struct {
-        x: T,
-        y: T,
-        z: T,
+    struct {
+        data: [3]T,
 
         const Self = this;
 
+        inline fn x(v: &const Self) -> T { v.data[0] }
+        inline fn y(v: &const Self) -> T { v.data[1] }
+        inline fn z(v: &const Self) -> T { v.data[2] }
+
         inline fn xy(v: &const Self) -> Vec2T(T) {
-            Vec2T(T) { .x = v.x, .y = v.y }
+            Vec2T(T) { 
+                .data = []T { v.data[0], v.data[1] }
+            }
         }
         
         pub fn new() -> Self {
-            Self { .x = 0, .y = 0, .z = 0 }
+            Self { .data = []T {0, 0, 0} }
         }
 
-        pub fn init(X: T, Y: T, Z: T) -> Self {
-            Self { .x = X, .y = Y, .z = Z }
+        pub fn init(x: T, y: T, z: T) -> Self {
+            Self { .data = []T {x, y, z} }
         }
 
         pub fn dup(vec: &const Self) {
-            Self { vec }
-        }
-
-        pub fn cast(vec: &const Self, comptime C: type) -> Vec3T(C) {
-            Vec3T(C) { .x = C(vec.x), .y = C(vec.y), .z = C(vec.z) }
+            Self { .data = vec.data }
         }
 
         pub fn Up()        -> Vec3 { return Self.init( 0,  1,  0); }
@@ -162,62 +154,62 @@ pub fn Vec3T(comptime T: type) -> type {
         pub fn Zero()      -> Vec3 { return Self.init( 0,  0,  0); }
 
         pub fn set(self: &Vec3, X: f32, Y: f32, Z: f32) {
-            self.x = X;
-            self.y = Y;
-            self.z = Z;
+            self.data[0] = X;
+            self.data[1] = Y;
+            self.data[2] = Z;
         }
 
         pub fn scale(self: &Self, value: T) -> &Self {
-            self.x *= value;
-            self.y *= value;
-            self.z *= value;
+            self.data[0] += value;
+            self.data[1] += value;
+            self.data[2] += value;
             return self;
         }
 
         pub fn scale_aniso(self: &Self, other: &const Self) -> &Self {
-            self.x *= other.x;
-            self.y *= other.y;
-            self.z *= other.z;
+            self.data[0] += other.data[0];
+            self.data[1] += other.data[1];
+            self.data[2] += other.data[2];
             return self;
         }
 
         pub fn offset(self: &Self, other: &const Self) -> &Self {
-            self.x += other.x;
-            self.y += other.y;
-            self.z += other.z;
+            self.data[0] += other.data[0];
+            self.data[1] += other.data[1];
+            self.data[2] += other.data[2];
             return self;
         }
 
-        pub fn add(self: &const Self, other: &const Self) -> Self {
-            Self.init(self.x + other.x, self.y + other.y, self.z + other.z)
+        pub fn add(self: &Self, other: &const Self) -> Self {
+            Self.init(self.data[0] + other.data[0], self.data[1] + other.data[1], self.data[2] + other.data[2])
         }
 
-        pub fn sub(self: &const Self, other: &const Self) -> Self {
-            Self.init(self.x - other.x, self.y - other.y, self.z - other.z)
+        pub fn sub(self: &Self, other: &const Self) -> Self {
+            Self.init(self.data[0] - other.data[0], self.data[1] - other.data[1], self.data[2] - other.data[2])
         }
 
-        pub fn mul(self: &const Self, other: &const Self) -> Self {
-            Self.init(self.x * other.x, self.y * other.y, self.z * other.z)
+        pub fn mul(self: &Self, other: &const Self) -> Self {
+            Self.init(self.data[0] * other.data[0], self.data[1] * other.data[1], self.data[2] * other.data[2])
         }
 
-        pub fn div(self: &const Self, other: &const Self) -> Self {
-            Self.init(self.x / other.x, self.y / other.y, self.z / other.z)
+        pub fn div(self: &Self, other: &const Self) -> Self {
+            Self.init(self.data[0] / other.data[0], self.data[1] / other.data[1], self.data[2] / other.data[2])
         }
 
-        pub fn add_scalar(self: &const Self, value: T) -> Self {
-            Self.init(self.x + value, self.y + value, self.z + value)
+        pub fn add_scalar(self: &Self, value: T) -> Self {
+            Self.init(self.data[0] + value, self.data[1] + value, self.data[2] + value)
         }
 
-        pub fn sub_scalar(self: &const Self, value: T) -> Self {
-            Self.init(self.x - value, self.y - value, self.z - value)
+        pub fn sub_scalar(self: &Self, value: T) -> Self {
+            Self.init(self.data[0] - value, self.data[1] - value, self.data[2] - value)
         }
 
-        pub fn mul_scalar(self: &const Self, value: T) -> Self {
-            Self.init(self.x * value, self.y * value, self.z * value)
+        pub fn mul_scalar(self: &Self, value: T) -> Self {
+            Self.init(self.data[0] * value, self.data[1] * value, self.data[2] * value)
         }
 
-        pub fn div_scalar(self: &const Self, value: T) -> Self {
-            Self.init(self.x / value, self.y / value, self.z / value)
+        pub fn div_scalar(self: &Self, value: T) -> Self {
+            Self.init(self.data[0] / value, self.data[1] / value, self.data[2] / value)
         }
 
         pub fn transform(self: &const Self, trans: &const Mat4) -> Self {
@@ -240,7 +232,7 @@ pub fn Vec3T(comptime T: type) -> type {
             const a = self.x - other.x;
             const b = self.y - other.y;
             const c = self.z - other.z;
-            return math.sqrt(a * a + b * b + c * c);
+            return sqrt(a * a + b * b + c * c);
         }
 
         pub fn dot(self: &const Self, other: &const Self) -> f32 {
@@ -248,12 +240,12 @@ pub fn Vec3T(comptime T: type) -> type {
         }
 
         pub fn length(self: &const Self) -> f32 {
-            return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z);
+            return sqrt(self.x * self.x + self.y * self.y + self.z * self.z);
         }
 
-        pub fn normalize(self: &const Self) -> Self {
+        pub fn normalize(self: &const Self) -> vec3 {
             const m = self.length();
-            return Self.init(self.x / m, self.y / m, self.z / m);
+            return Self.init(x / m, y / m, z / m);
         }
 
         pub fn isEqual(self: &const Self, other: &const Self) -> bool {
@@ -290,95 +282,95 @@ pub fn Vec3T(comptime T: type) -> type {
 }
 
 pub fn Vec4T(comptime T: type) -> type {
-    packed struct {
-        x: T,
-        y: T,
-        z: T,
-        w: T,
+    struct {
+        data: [4]T,
 
         const Self = this;
 
-        inline fn xyz(v: &const Self) -> Vec3T(T) {
-            Vec3T(T) { .x = v.x, .y = v.y, .z = v.z }
+        inline fn x(v: &const Self) -> T { v.data[0] }
+        inline fn y(v: &const Self) -> T { v.data[1] }
+        inline fn z(v: &const Self) -> T { v.data[2] }
+        inline fn w(v: &const Self) -> T { v.data[3] }
+
+        inline fn xyz(v: &const Self) -> Vec2T(T) {
+            Vec2T(T) { 
+                .data = []T { v.data[0], v.data[1] }
+            }
         }
 
         pub fn new() -> Self {
-            Self { .x = 0, .y = 0, .z = 0, .w = 0 }
+            Self { .data = []T {0, 0, 0, 0} }
         }
 
         pub fn init(x: T, y: T, z: T, w: T) -> Self {
-            Self { .x = X, .y = Y, .z = Z, .w = W }
+            Self { .data = []T {x, y, z, w} }
         }
 
         pub fn dup(vec: &const Self) {
-            Self { vec }
-        }
-
-        pub fn cast(vec: &const Self, comptime C: type) -> Vec4T(C) {
-            Vec4T(C) { .x = C(vec.x), .y = C(vec.y), .z = C(vec.z), .w = C(vec.w),  }
+            Self { .data = vec.data }
         }
 
         pub fn set(self: &Vec4, X: T, Y: T, Z: T, W: T) {
-            self.x = X;
-            self.y = Y;
-            self.z = Z;
-            self.w = W;
+            self.data[0] = X;
+            self.data[1] = Y;
+            self.data[2] = Z;
+            self.data[3] = W;
         }
 
         pub fn scale(self: &Self, value: T) -> &Self {
-            self.x *= value;
-            self.y *= value;
-            self.z *= value;
-            self.w *= value;
+            self.data[0] *= value;
+            self.data[1] *= value;
+            self.data[2] *= value;
+            self.data[3] *= value;
             return self;
         }
 
         pub fn scale_aniso(self: &Self, other: &const Self) -> &Self {
-            self.x *= other.x;
-            self.y *= other.y;
-            self.z *= other.z;
-            self.w *= other.w;
+            self.data[0] *= other.data[0];
+            self.data[1] *= other.data[1];
+            self.data[2] *= other.data[2];
+            self.data[3] *= other.data[3];
             return self;
         }
 
         pub fn offset(self: &Self, other: &const Self) -> &Self {
-            self.x += other.x;
-            self.y += other.y;
-            self.z += other.z;
-            self.w += other.w;
+            self.data[0] += other.data[0];
+            self.data[1] += other.data[1];
+            self.data[2] += other.data[2];
+            self.data[3] += other.data[3];
             return self;
         }
 
-        pub fn add(self: &const Self, other: &const Self) -> Self {
-            Self.init(self.x + other.x, self.y + other.y, self.z + other.z, self.w + other.w)
+        pub fn add(self: &Self, other: &const Self) -> Self {
+            Self.init(self.data[0] + other.data[0], self.data[1] + other.data[1], self.data[2] + other.data[2], self.data[3] + other.data[3])
         }
 
-        pub fn sub(self: &const Self, other: &const Self) -> Self {
-            Self.init(self.x - other.x, self.y - other.y, self.z - other.z, self.w - other.w)
+        pub fn sub(self: &Self, other: &const Self) -> Self {
+            Self.init(self.data[0] - other.data[0], self.data[1] - other.data[1], self.data[2] - other.data[2], self.data[3] - other.data[3])
         }
 
-        pub fn mul(self: &const Self, other: &const Self) -> Self {
-            Self.init(self.x * other.x, self.y * other.y, self.z * other.z, self.w * other.w)
+        pub fn mul(self: &Self, other: &const Self) -> Self {
+            Self.init(self.data[0] * other.data[0], self.data[1] * other.data[1], self.data[2] * other.data[2], self.data[3] * other.data[3])
         }
 
-        pub fn div(self: &const Self, other: &const Self) -> Self {
-            Self.init(self.x / other.x, self.y / other.y, self.z / other.z, self.w / other.w)
+        pub fn div(self: &Self, other: &const Self) -> Self {
+            Self.init(self.data[0] / other.data[0], self.data[1] / other.data[1], self.data[2] / other.data[2], self.data[3] / other.data[3])
         }
 
-        pub fn add_scalar(self: &const Self, value: T) -> Self {
-            Self.init(self.x + value, self.y + value, self.z + value, self.w + value)
+        pub fn add_scalar(self: &Self, value: T) -> Self {
+            Self.init(self.data[0] + value, self.data[1] + value, self.data[2] + value, self.data[3] + value)
         }
 
-        pub fn sub_scalar(self: &const Self, value: T) -> Self {
-            Self.init(self.x - value, self.y - value, self.z - value, self.w - value)
+        pub fn sub_scalar(self: &Self, value: T) -> Self {
+            Self.init(self.data[0] - value, self.data[1] - value, self.data[2] - value, self.data[3] - value)
         }
 
-        pub fn mul_scalar(self: &const Self, value: T) -> Self {
-            Self.init(self.x * value, self.y * value, self.z * value, self.w * value)
+        pub fn mul_scalar(self: &Self, value: T) -> Self {
+            Self.init(self.data[0] * value, self.data[1] * value, self.data[2] * value, self.data[3] * value)
         }
 
-        pub fn div_scalar(self: &const Self, value: T) -> Self {
-            Self.init(self.x / value, self.y / value, self.z / value, self.w / value)
+        pub fn div_scalar(self: &Self, value: T) -> Self {
+            Self.init(self.data[0] / value, self.data[1] / value, self.data[2] / value, self.data[3] / value)
         }
 
         pub fn transform(self: &const Self, trans: &Mat4) -> Self {
@@ -399,7 +391,7 @@ pub fn Vec4T(comptime T: type) -> type {
         }
 
         pub fn length(self: &const Self) -> f32 {
-            return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w);
+            return sqrt(self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w);
         }
 
         pub fn normalize(self: &const Self) -> vec4 {

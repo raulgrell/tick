@@ -112,7 +112,7 @@ error InvalidFormat;
 error NoPixels;
 
 const PNG_COLOR_TYPE_RGBA = c.PNG_COLOR_MASK_COLOR | c.PNG_COLOR_MASK_ALPHA;
-const PNG_COLOR_TYPE_RGB = c.PNG_COLOR_MASK_COLOR;
+const PNG_COLOR_TYPE_RGB  = c.PNG_COLOR_MASK_COLOR;
 
 pub const PngImage = struct {
     width: u32,
@@ -432,5 +432,96 @@ const TextureCache = struct {
 
     fn cmp_str(a: i32, b: i32) -> bool {
         a == b
+    }
+};
+
+
+const Group = struct {
+    renderables: ArrayList(Renderable),
+    transformationMatrix: Mat4x4,
+
+    pub fn init(transform: Mat4x4 ) -> Group {
+        return Group {
+            .renderables = ArrayList(Renderable).init(),
+            .transformationMatrix = transform,
+        }
+    }
+
+    pub fn deinit(g: &Group) {
+        g.renderables.deinit();
+    }
+
+    pub fn add(g: &Group, renderable: &Renderable) {
+        g.renderables.append(renderable);
+    }
+
+    pub fn draw(g: &Group, renderer: &IMRenderer) {
+        renderer.push(g.transformationMatrix);
+        for (g.renderables) | r, i | {
+            r.draw(renderer);
+        }
+        renderer.pop();
+    }
+
+    pub fn submit(g: &Group, renderer: &BatchRenderer) {
+        renderer.push(g.transformationMatrix);
+        for (g.renderables) | r, i | {
+            r.submit(renderer);
+        }
+        renderer.pop();
+    }
+};
+
+pub fn ByteGrid(comptime C: u32, comptime R: u32) -> type {
+    struct {
+        color: Vec4,
+        cells: [R][C]bool,
+
+        const Self = this;
+
+        fn renderByteGrid(self: Self ) {
+            for (self.cells) |row, y| {
+                for (row) |cell, x| {
+                    switch (cell) {
+                        Cell.Color => |color| {
+                            const cell_left = board_left + i32(x) * cell_size;
+                            const cell_top = board_top + i32(y) * cell_size;
+                            fillRect(t, color, f32(cell_left), f32(cell_top), cell_size, cell_size);
+                        },
+                        else => {},
+                    }
+                }
+            }
+        }
+
+        fn cell_empty(self: Self , x: i32, y: i32) -> bool {
+            switch (self.cells[usize(y)][usize(x)]) {
+                Cell.Empty => true,
+                else => false,
+            }
+        }
+    }
+}
+
+const _ = false;
+const X = true;
+
+const innerSquare = ByteGrid(4,4) {
+    .color = Vec4 { .data = []f32{ 0.0/255.0, 255.0/255.0, 255.0/255.0, 1.0 }, },
+    .cells = [][]bool {
+        []bool{ _, _, _, _ },
+        []bool{ _, X, X, _ },
+        []bool{ _, X, X, _ },
+        []bool{ _, _, _, _ },
+    }
+};
+
+const outerSquare = ByteGrid(4,4) {
+    .color = Vec4 { .data = []f32{ 0.0/255.0, 255.0/255.0, 255.0/255.0, 1.0 }, },
+    .cells = [][]bool {
+        []bool{ X, X, X, X },
+        []bool{ X, _, _, X },
+        []bool{ X, _, _, X },
+        []bool{ X, X, X, X },
     }
 };

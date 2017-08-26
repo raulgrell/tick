@@ -1,18 +1,19 @@
+const stdmem = @import("std").mem;
+
 // Math
 use @import("audio.zig");
 use @import("../math/index.zig");
+use @import("../system/index.zig");
 
 // System
-const c        = @import("../system/c.zig");
-const debug    = @import("../system/debug.zig");
 
 const TARGET_FPS       = 60.0;
 const TARGET_FRAMETIME = 1.0 / TARGET_FPS;
 const MAX_DELTA_TIME   = 1.0;
 const MAX_FRAME_STEPS  = 6;
 
-const WINDOW_WIDTH  = 800;
-const WINDOW_HEIGHT = 600;
+const WINDOW_WIDTH  = 640;
+const WINDOW_HEIGHT = 360;
 
 const SetupFunction  = fn(app: &App) -> void;
 const DrawFunction   = fn(app: &App) -> void;
@@ -27,26 +28,18 @@ pub const App = struct {
     onDraw:          DrawFunction,
     onUpdate:        UpdateFunction,
 
-    pub fn init() -> App {
-        var app = App {
-            .window   = undefined,
-            .input    = undefined,
-            .audio    = undefined,
-            .onInit   = undefined,
-            .onDraw   = undefined,
-            .onUpdate = undefined
-        };
+    pub fn init() -> &App {
+        var app = mem.mem.create(App) %% unreachable;
 
         // Window
         app.window.init(WINDOW_WIDTH, WINDOW_HEIGHT);
-        _ = c.glfwSetKeyCallback(app.window.window, key_callback);    
-        _ = c.glfwSetMouseButtonCallback(app.window.window, mouse_button_callback);    
-        _ = c.glfwSetCursorPosCallback(app.window.window, cursor_position_callback);
-        _ = c.glfwSetMonitorCallback(monitor_callback);
+        app.window.setWindowPointer(@ptrCast(&const u8, app));
 
-        c.glClearColor(0.0, 0.0, 0.0, 1.0);
-        c.glEnable(c.GL_BLEND);
-        c.glBlendFunc(c.GL_SRC_ALPHA, c.GL_ONE_MINUS_SRC_ALPHA);
+        app.window.setCustomCursor();
+        app.window.setCursorMode(CursorMode.Window);
+
+        Window.setClearColor(0, 0, 0, 1);
+        Window.enableBlending();
 
         debug.assertNoErrorGL();
 
@@ -54,9 +47,9 @@ pub const App = struct {
         app.input.init();
 
         // Audio
-        // %%app.audio.init();
-        // %%app.audio.open();
-        // %%app.audio.start();
+        %%app.audio.init();
+        %%app.audio.open();
+        %%app.audio.start();
 
         return app;
     }
@@ -81,7 +74,6 @@ pub const App = struct {
                 totalDeltaTime -= deltaTime;
                 frameSteps += 1;
             }
-            // app.audio.update();
             app.window.clear();
             app.onDraw(app);
             app.window.update();
@@ -97,23 +89,30 @@ extern fn key_callback(win: ?&c.GLFWwindow, key: c_int, scancode: c_int, action:
     const app = @ptrCast(&App, ??c.glfwGetWindowUserPointer(win));
     switch (key) {
         c.GLFW_KEY_ESCAPE => c.glfwSetWindowShouldClose(win, c.GL_TRUE),
-        else => {
-            app.input.keyDown[(usize)(key)] = (action != c.GLFW_RELEASE);
-        },
+        else => app.input.keyDown[usize(key)] = (action != c.GLFW_RELEASE)
     }
 }
 
 extern fn cursor_position_callback(win: ?&c.GLFWwindow, xpos: f64, ypos: f64) -> void {
     const app = @ptrCast(&App, ??c.glfwGetWindowUserPointer(win));
-    app.input.cursorX =  xpos;
-    app.input.cursorY =  ypos;
+    app.input.cursor_position = vec2(f32(xpos - 1), f32(ypos - 1));
 }
 
+extern fn cursor_enter_callback(win: ?&c.GLFWwindow, entered: c_int) {
+    if (entered != 0) {
+        // The cursor entered the client area of the window
+    } else {
+        // The cursor left the client area of the window
+    }
+}
 extern fn mouse_button_callback(win: ?&c.GLFWwindow, button: c_int, action: c_int, mods: c_int) -> void {
-    // Make sure valid index for input manager
     if (button < 0) return;
     const app = @ptrCast(&App, ??c.glfwGetWindowUserPointer(win));
-    app.input.mouseDown[(usize)(button)] = (action != c.GLFW_RELEASE);
+    app.input.mouseDown[usize(button)] = (action != c.GLFW_RELEASE);
+}
+
+extern fn scroll_callback(win: ?&c.GLFWwindow, xpos: f64, ypos: f64) {
+
 }
 
 extern fn monitor_callback(monitor: ?&c.GLFWmonitor, event: c_int) {
@@ -124,15 +123,39 @@ extern fn monitor_callback(monitor: ?&c.GLFWmonitor, event: c_int) {
     }
 }
 
+extern fn joystick_callback(joy: c_int, event: c_int) {
+    if (event == c.GLFW_CONNECTED) {
+        // The joystick was connected
+    } else if (event == c.GLFW_DISCONNECTED) {
+        // The joystick was disconnected
+    }
+}
+
+extern fn window_close_callback(window: ?&c.GLFWwindow) {
+    c.glfwSetWindowShouldClose(window, c.GLFW_TRUE);
+}
+
+extern fn window_size_callback(window: ?&c.GLFWwindow, width: c_int, height: c_int) {
+    // User or system resized window
+}
+
 extern fn error_callback(err: c_int, description: ?&const u8) {
     _ = c.printf(c"Error: %s\n", description);
     c.abort();
 }
 
+const CursorMode = enum {
+    Hidden,
+    Disabled,
+    Normal,
+    Window
+};
+
 pub const Window = struct {
     window: &c.GLFWwindow,
-    framebuffer_width: c_int,
-    framebuffer_height: c_int,
+    cursor: &c.GLFWcursor,
+    framebuffer_width: usize,
+    framebuffer_height: usize,
 
     pub fn init(win: &Window, window_width: c_int, window_height: c_int) {
         _ = c.glfwSetErrorCallback(error_callback);
@@ -146,6 +169,8 @@ pub const Window = struct {
         //     _ = c.printf(c"unable to get video mode\n");
         //     c.abort();
         // };
+        // const monitor_width = mode.width;
+        // const monitor_ height = mode.height;
         // c.glfwWindowHint(c.GLFW_RED_BITS, mode.redBits);
         // c.glfwWindowHint(c.GLFW_GREEN_BITS, mode.greenBits);
         // c.glfwWindowHint(c.GLFW_BLUE_BITS, mode.blueBits);
@@ -154,34 +179,74 @@ pub const Window = struct {
         c.glfwWindowHint(c.GLFW_CONTEXT_VERSION_MAJOR, 3);
         c.glfwWindowHint(c.GLFW_CONTEXT_VERSION_MINOR, 3);
 
+        c.glfwWindowHint(c.GLFW_OPENGL_PROFILE, c.GLFW_OPENGL_CORE_PROFILE);
         c.glfwWindowHint(c.GLFW_OPENGL_FORWARD_COMPAT, c.GL_TRUE);
         c.glfwWindowHint(c.GLFW_OPENGL_DEBUG_CONTEXT, debug.is_on);
-        c.glfwWindowHint(c.GLFW_OPENGL_PROFILE, c.GLFW_OPENGL_CORE_PROFILE);
 
         c.glfwWindowHint(c.GLFW_DEPTH_BITS, 8);
         c.glfwWindowHint(c.GLFW_STENCIL_BITS, 8);
+        c.glfwWindowHint(c.GLFW_DOUBLEBUFFER, c.GL_TRUE);
         c.glfwWindowHint(c.GLFW_RESIZABLE, c.GL_FALSE);
         
         win.window = c.glfwCreateWindow(window_width, window_height, c"App", null, null) ?? {
             _ = c.printf(c"unable to create window\n");
             c.abort();
         };
-
+        
         c.glfwMakeContextCurrent(win.window);
         c.glfwSwapInterval(1);
-
-        c.glfwGetFramebufferSize(win.window, &win.framebuffer_width, &win.framebuffer_height);
-
-        if (win.framebuffer_width < window_width or win.framebuffer_height < window_height) unreachable;
         
-        c.glViewport(0, 0, win.framebuffer_width, win.framebuffer_height);
+        var fb_width = c_int(0);
+        var fb_height = c_int(0);
+        c.glfwGetFramebufferSize(win.window, &fb_width, &fb_height);
+
+        c.glViewport(0, 0, fb_width, fb_height);
+        
+        win.framebuffer_width = usize(fb_width);
+        win.framebuffer_height = usize(fb_height);        
+        win.cursor = c.glfwCreateStandardCursor(c.GLFW_CROSSHAIR_CURSOR) ?? unreachable;
+        
+        _ = c.glfwSetKeyCallback(win.window, key_callback);    
+        _ = c.glfwSetMouseButtonCallback(win.window, mouse_button_callback);    
+        _ = c.glfwSetCursorPosCallback(win.window, cursor_position_callback);
+        _ = c.glfwSetMonitorCallback(monitor_callback);
+        _ = c.glfwSetCursorEnterCallback(win.window, cursor_enter_callback);
+        _ = c.glfwSetJoystickCallback(joystick_callback);
+        _ = c.glfwSetWindowCloseCallback(win.window, window_close_callback);
+        _ = c.glfwSetWindowSizeCallback(win.window, window_size_callback);
     }
 
-    pub fn destroy(win: &Window){
-        c.glfwDestroyWindow(win.window);
-        c.glfwTerminate();
+    pub fn setWindowPointer(win: &Window, app: &const u8) {
+        c.glfwSetWindowUserPointer(win.window, @ptrCast(&c_void, app));        
     }
 
+    pub fn setClearColor(r: f32, g: f32, b: f32, a: f32) {
+        c.glClearColor(r, g, b, a);
+    }
+    
+    pub fn enableBlending() {
+        c.glEnable(c.GL_BLEND);
+        c.glBlendFunc(c.GL_SRC_ALPHA, c.GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    pub fn setCustomCursor(win: &Window) {
+        var pixels = []u8 { 0xFF, 0xFF, 0xFF, 0xFF } ** 4;
+        const image = c.GLFWimage { .width = 2, .height = 2, .pixels = &pixels[0] };
+        if (c.glfwCreateCursor(&image, 0, 0)) | cursor | {
+            c.glfwDestroyCursor(win.cursor);
+            win.cursor = cursor;
+        }
+    }
+
+    pub fn setCursorMode(win: &Window, mode: CursorMode) {
+        switch(mode) {
+            CursorMode.Hidden => c.glfwSetInputMode(win.window, c.GLFW_CURSOR, c.GLFW_CURSOR_HIDDEN),
+            CursorMode.Disabled => c.glfwSetInputMode(win.window, c.GLFW_CURSOR, c.GLFW_CURSOR_DISABLED),
+            CursorMode.Normal => c.glfwSetInputMode(win.window, c.GLFW_CURSOR, c.GLFW_CURSOR_NORMAL),
+            CursorMode.Window => c.glfwSetCursor(win.window, win.cursor)
+        }
+    }
+    
     pub fn update(win: &Window) {
         c.glfwSwapBuffers(win.window);
         c.glfwPollEvents();
@@ -191,10 +256,27 @@ pub const Window = struct {
         c.glClearDepth(1.0);
         c.glClear(c.GL_COLOR_BUFFER_BIT|c.GL_DEPTH_BUFFER_BIT|c.GL_STENCIL_BUFFER_BIT);
     }
+
+    pub fn destroy(win: &Window){
+        c.glfwDestroyWindow(win.window);
+        c.glfwTerminate();
+    }
 };
 
-const MAX_KEYS = 1024;
-const MAX_BUTTONS = 32;
+const MAX_KEYS = c.GLFW_KEY_LAST;
+const MAX_BUTTONS = c.GLFW_MOUSE_BUTTON_LAST;
+
+// const MAX_JOYSTICKS = c.GLFW_JOYSTICK_LAST;
+
+// int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
+
+// int count;
+// const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &count);
+
+// int count;
+// const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
+
+// const char* name = glfwGetJoystickName(GLFW_JOYSTICK_1);
 
 pub const InputManager = struct {
     // Keyboard
@@ -205,8 +287,7 @@ pub const InputManager = struct {
     mouseDown: [MAX_BUTTONS]bool,
     prevMouseState: [MAX_BUTTONS]bool,
     mouseClicked: [MAX_BUTTONS]bool,
-    cursorX: f64,
-    cursorY: f64,
+    cursor_position: Vec2,
 
     pub fn create() -> InputManager {
         InputManager {
@@ -235,8 +316,12 @@ pub const InputManager = struct {
             im.mouseClicked[i] = im.mouseDown[i] and !im.prevMouseState[i];
         }}
 
-        @memcpy(@ptrCast(&u8, &im.prevKeyState), @ptrCast(&u8, &im.keyDown), MAX_KEYS);
-        @memcpy(@ptrCast(&u8, &im.prevMouseState),@ptrCast(&u8, &im.mouseDown), MAX_BUTTONS);
+        mem.copy(bool, im.prevKeyState[0..], im.keyDown[0..]);
+        mem.copy(bool, im.prevMouseState[0..], im.mouseDown[0..]);
+    }
+
+    pub fn getMouseCoords() -> Vec2 {
+
     }
     
     pub fn clearKeys(im: &InputManager) {

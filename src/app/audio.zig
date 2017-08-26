@@ -1,76 +1,167 @@
-const c = @cImport({
-    @cInclude("math.h");
-    @cInclude("stdlib.h");
-    @cInclude("stdio.h");
-    @cInclude("soundio/soundio.h");
-});
-
-// Central c import:
-// const c = @import("../system/c.zig");
-
 const io = @import("std").io;
+const panic = @import("std").debug.panic;
+const math = @import("std").math;
+
+const c = @import("../system/c.zig");
+
+const AudioCallback = fn(os: ?&c.SoundIoOutStream, frame_count_min: c_int, frame_count_max: c_int);
 
 error NoMem;
-error ConnectionFailure;
-error OutputDeviceNotFound;
-error CannotOpenDevice;
-error CannotSetChannel;
-error CannotStartDevice;
+error InitAudioBackend;
+error SystemResources;
+error OpeningDevice;
+error NoSuchDevice;
+error Invalid;
+error BackendUnavailable;
+error Streaming;
+error IncompatibleDevice;
+error NoSuchClient;
+error IncompatibleBackend;
+error BackendDisconnected;
+error Interrupted;
+error Underflow;
+error EncodingString;
 
-const PI = f32(3.1415926535);
+fn sio_err(err: c_int) -> %void {
+    switch (c.SoundIoError(err)) {
+        c.SoundIoError.None => {},
+        c.SoundIoError.NoMem => error.NoMem,
+        c.SoundIoError.InitAudioBackend => error.InitAudioBackend,
+        c.SoundIoError.SystemResources => error.SystemResources,
+        c.SoundIoError.OpeningDevice => error.OpeningDevice,
+        c.SoundIoError.NoSuchDevice => error.NoSuchDevice,
+        c.SoundIoError.Invalid => error.Invalid,
+        c.SoundIoError.BackendUnavailable => error.BackendUnavailable,
+        c.SoundIoError.Streaming => error.Streaming,
+        c.SoundIoError.IncompatibleDevice => error.IncompatibleDevice,
+        c.SoundIoError.NoSuchClient => error.NoSuchClient,
+        c.SoundIoError.IncompatibleBackend => error.IncompatibleBackend,
+        c.SoundIoError.BackendDisconnected => error.BackendDisconnected,
+        c.SoundIoError.Interrupted => error.Interrupted,
+        c.SoundIoError.Underflow => error.Underflow,
+        c.SoundIoError.EncodingString => error.EncodingString,
+        else => unreachable, // TODO zig bug: take out this line and get a segfault
+    }
+}
 
 var seconds_offset = f32(0.0);
 
 extern fn write_callback(os: ?&c.SoundIoOutStream, frame_count_min: c_int, frame_count_max: c_int) {
-    var outstream = os ?? return;
-
+    const outstream = ??os;
     const layout: &c.SoundIoChannelLayout = &outstream.layout;
     const float_sample_rate = f32(outstream.sample_rate);
     const seconds_per_frame = 1.0 / float_sample_rate;
-
-    var areas: ?&c.SoundIoChannelArea = undefined;
+    
     var frames_left = frame_count_max;
-
-    var err: c_int = 0;
 
     while (frames_left > 0) {
         var frame_count = frames_left;
+        var areas: &c.SoundIoChannelArea = undefined;
 
-        err = c.soundio_outstream_begin_write(outstream, &areas, &frame_count);
-        if (err != 0) {
-            %%io.stdout.printf("{}\n", err);
-            c.exit(1);
-        }
+        sio_err(c.soundio_outstream_begin_write(outstream, @ptrCast(&?&c.SoundIoChannelArea, &areas), &frame_count)) %% |err| {
+            panic("write failed: {}", @errorName(err));
+        };
 
         if (frame_count == 0) break;
 
         const pitch: f32 = 880.0;
-        const radians_per_second: f32 = pitch * 2.0 * PI;
+        const radians_per_second: f32 = pitch * 2.0 * math.pi;
 
-        var frame = c_int(0);
+        { var frame = c_int(0); while(frame < frame_count) : (frame += 1) {
+            const sample = 0; // math.sin((seconds_offset + f32(frame) * seconds_per_frame) * radians_per_second) / 100;
 
-        while(frame < frame_count) : (frame += 1) {
-            const sample = c.sinf((seconds_offset + f32(frame) * seconds_per_frame) * radians_per_second);
-            var channel = c_int(0);
-            while (channel < layout.channel_count) : (channel += 1) {
-                const area_ptr = (areas ?? return)[usize(channel)].ptr ?? return;
-                const area_step = (areas ?? return)[usize(channel)].step;
-                var ptr = @intToPtr(&f32, @ptrToInt(area_ptr) + usize(area_step * frame));
-                *ptr = sample;
-            }
-        }
+            { var channel = c_int(0); while (channel < layout.channel_count) : (channel += 1) {
+                const area = areas[usize(channel)];
+                const channel_ptr = ??area.ptr;
+                const sample_ptr = &channel_ptr[usize(area.step * frame)];
+                @ptrCast(&f32, sample_ptr)[0] = sample;
+            }}
+        }}
 
         seconds_offset = c.fmodf(seconds_offset + seconds_per_frame * f32(frame_count), 1.0);
 
-        err = c.soundio_outstream_end_write(outstream);
-        if (err != 0) {
-            %%io.stdout.printf("{}\n", err);
-            c.exit(1);
-        }
+        sio_err(c.soundio_outstream_end_write(outstream)) %% |err| {
+            panic("end write failed: {}", @errorName(err));
+        };
 
         frames_left -= frame_count;
     }
 }
+
+pub const AudioEngine = struct {
+    sound_io: &c.SoundIo,
+    device: &c.SoundIoDevice,
+    outstream: &c.SoundIoOutStream,
+    audio_callback: AudioCallback,
+
+    fn init(self: &AudioEngine) -> %void {
+        const soundio = c.soundio_create() ?? {
+            panic("could not create soundio object: out of memory");
+        };
+
+        sio_err(c.soundio_connect(soundio)) %% |err| {
+            panic("unable to connect: {}", @errorName(err));
+        };
+
+        c.soundio_flush_events(soundio);
+
+        const default_output_index = c.soundio_default_output_device_index(soundio);
+        if (default_output_index < 0) {
+            panic("no output device found");
+        }
+
+        const device = c.soundio_get_output_device(soundio, default_output_index) ?? {
+            panic("could not get output device {}: out of memory", default_output_index);
+        };
+
+        const outstream = c.soundio_outstream_create(device) ?? {
+            panic("could not create outstream: out of memory");
+        };
+        
+        self.sound_io = soundio;
+        self.device = device;
+        self.outstream = outstream;
+    }
+
+    fn setAudioCallback(self: &AudioEngine, cb: AudioCallback) {
+        self.audio_callback = cb;
+    }
+
+    fn open(self: &AudioEngine) -> %void {
+        self.outstream.format = c.SoundIoFormat(usize(c.SoundIoFormatFloat32NE));
+        self.outstream.write_callback = write_callback;
+
+        sio_err(c.soundio_outstream_open(self.outstream)) %% |err| {
+            panic("unable to open stream: {}", @errorName(err));
+        };
+
+        if (self.outstream.layout_error != 0)
+            %%io.stdout.printf("unable to set channel layout: {}\n", self.outstream.layout_error);
+    }
+
+    fn start(self: &AudioEngine) -> %void {
+        sio_err(c.soundio_outstream_start(self.outstream)) %% |err| {
+            panic("unable to start stream: {}", @errorName(err));
+        };
+    }
+
+    fn update(self: &AudioEngine) {
+        // Blocks
+        // c.soundio_wait_events(self.sound_io);
+    }
+
+    fn stop(self: &AudioEngine) {
+    }
+
+    fn close(self: &AudioEngine) {
+    }
+
+    pub fn destroy(self: &AudioEngine) {
+        c.soundio_outstream_destroy(self.outstream);
+        c.soundio_device_unref(self.device);
+        c.soundio_destroy(self.soundio);
+    }
+};
 
 // Wave type, defines audio wave data
 const Wave = struct {
@@ -81,7 +172,6 @@ const Wave = struct {
     data: &u8,          // Buffer data pointer
 };
 
-// Sound source type
 const Sound = struct {
     source: usize,        // OpenAL audio source id
     buffer: usize,        // OpenAL audio buffer id
@@ -96,88 +186,4 @@ const AudioStream = struct {
     format: int,          // OpenAL audio format specifier
     source: usize,        // OpenAL audio source id
     buffers: [2]usize,    // OpenAL audio buffers (double buffering)
-};
-
-pub const AudioEngine = struct {
-    sound_io: &c.SoundIo,
-    device: &c.SoundIoDevice,
-    outstream: &c.SoundIoOutStream,
-
-    fn init(self: &AudioEngine) -> %void {
-        var soundio = c.soundio_create() ?? {
-            %%io.stdout.printf("out of memory\n");
-            return error.NoMem;
-        };
-
-        const err = c.soundio_connect(soundio);
-        if ( err != 0 ) {
-            %%io.stdout.printf("error connecting: {}", err);
-            return error.ConnectionFailure;
-        }
-
-        c.soundio_flush_events(soundio);
-
-        const default_out_device_index = c.soundio_default_output_device_index(soundio);
-        if (default_out_device_index < 0) {
-            %%io.stdout.printf("no output device found");
-            return error.OutputDeviceNotFound;
-        }
-
-        var device = c.soundio_get_output_device(soundio, default_out_device_index) ?? {
-            %%io.stdout.printf("could not get output device {}", default_out_device_index);
-            return error.NoMem;
-        };
-
-        var outstream = c.soundio_outstream_create(self.device) ?? {
-            %%io.stdout.printf("could not create outstream");
-            return error.NoMem;
-        };
-
-        self.sound_io = soundio;
-        self.device = device;
-        self.outstream = outstream;
-    }
-
-    fn setRenderCallback(cb: renderCallback) {
-        currentRenderCallback = cb;
-    }
-
-    fn open(self: &AudioEngine) -> %void {
-
-        self.outstream.format = c.SoundIoFormat(usize(c.SoundIoFormatFloat32NE));
-        self.outstream.write_callback = write_callback;
-
-        const err = c.soundio_outstream_open(self.outstream);
-        if ( err != 0 ) {
-            %%io.stdout.printf("unable to open device: {}", err);
-            return error.CannotOpenDevice;
-        }
-
-        if (self.outstream.layout_error != 0)
-            %%io.stdout.printf("unable to set channel layout: {}\n", self.outstream.layout_error);
-    }
-
-    fn start(self: &AudioEngine) -> %void {
-        const err = c.soundio_outstream_start(self.outstream);
-        if ( err != 0 ) {
-            %%io.stdout.printf("unable to start device: {}", err);
-            return error.CannotStartDevice;
-        }
-    }
-
-    fn update(self: &AudioEngine) {
-        c.soundio_wait_events(self.sound_io);
-    }
-
-    fn stop(self: &AudioEngine) {
-    }
-
-    fn close(self: &AudioEngine) {
-    }
-
-    pub fn destroy(self: &AudioEngine) {
-        c.soundio_outstream_destroy(self.outstream);
-        c.soundio_device_unref(self.device);
-        c.soundio_destroy(self.soundio);
-    }
 };

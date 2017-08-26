@@ -27,7 +27,7 @@ pub fn ArrayList(comptime T: type) -> type {
             self.allocator.free(self.data);
         }
 
-        pub fn toSlice(l: &Self) -> []T {
+        pub fn toSlice(l: &const Self) -> []T {
             return l.data[0..l.length];
         }
 
@@ -35,15 +35,25 @@ pub fn ArrayList(comptime T: type) -> type {
             return l.data[0..l.length];
         }
 
-        pub fn append(self: &Self, data: T) -> %void {
+        pub fn back(l: &const Self) -> T {
+            return l.data[l.length];
+        }
+
+        pub fn pop_back(l: &Self) -> T {
+            const last = l.data[l.length];
+            l.length -= 1;
+            return last;
+        }
+
+        pub fn append(self: &Self, data: &const T) -> %void {
             return insert(self, self.length, data);
         }
 
-        pub fn prepend(self: &Self, data: T) -> %void {
+        pub fn prepend(self: &Self, data: &const T) -> %void {
             return insert(self, 0, data);
         }
 
-        pub fn insert(self: &Self, index: usize, data: T) -> %void {
+        pub fn insert(self: &Self, index: usize, data: &const T) -> %void {
             if (index > self.length) return error.NoMem;
 
             if (self.length + 1 > self.data.len) {
@@ -56,7 +66,7 @@ pub fn ArrayList(comptime T: type) -> type {
                     self.data[index .. self.length]);
 
             // Insert the new entry at the index
-            self.data[index] = data;
+            self.data[index] = *data;
             self.length += 1;
         }
 

@@ -1,3 +1,42 @@
+use @import("vec.zig");
+
+pub fn Mat2T(comptime T: type) -> type {
+    struct {
+        data: [2][2]T,
+
+        const Self = this;
+        const Row = Vec2T(T);
+
+        // Creates a matrix 2x2 from a given radians value
+        fn radians(radians: f32) -> Mat2 {
+            const c: f32 = cosf(radians);
+            const s: f32 = sinf(radians);
+
+            return Mat2{ c, -s, s, c };
+        }
+
+        fn set(matrix: &Self, radians: f32) -> void {
+            const c: f32 = cosf(radians);
+            const s: f32 = sinf(radians);
+
+            matrix.m00 = c;
+            matrix.m01 = -s;
+            matrix.m10 = s;
+            matrix.m11 = c;
+        }
+
+        // Returns the transpose of a given matrix 2x2
+        inline fn transpose(matrix: &const Self) -> Mat2 {
+            return (Mat2){ matrix.m00, matrix.m10, matrix.m01, matrix.m11 };
+        }
+
+        // Multiplies a vector by a matrix 2x2
+        inline fn mul_vec2(matrix: &const Self, vector: &const Vec2) -> Vec2 {
+            return (Vec2){ matrix.m00*vector.x + matrix.m01*vector.y, matrix.m10*vector.x + matrix.m11*vector.y };
+        }  
+    }
+}
+
 pub fn Mat3T(comptime T: type) -> type {
     struct {
         data: [3][3]T,
@@ -69,7 +108,7 @@ pub fn Mat3T(comptime T: type) -> type {
             return result;
         }
 
-        pub fn scale(scale: &const Vec3) -> Self {
+        pub fn scale(scale: &const Vec3T(T)) -> Self {
             var result = diagonal(1);
             result.data[0][0] = scale.x;
             result.data[1][1] = scale.y;
@@ -99,7 +138,7 @@ pub fn Mat3T(comptime T: type) -> type {
             }
         }
 
-        pub fn mul_vec(self: &const Self, other: &const Vec3) -> Vec3 {
+        pub fn mul_vec(self: &const Self, other: &const Vec3T(T)) -> Vec3 {
             return other.transform(self);
         }
 
@@ -127,7 +166,7 @@ pub fn Mat3T(comptime T: type) -> type {
             return vec3(self.data[index + 0 * 3], self.data[index + 1 * 3], self.data[index + 2 * 3]);
         }
 
-        pub fn LookAt(camera: &const Vec3, object: &const Vec3, up: &const Vec3) -> Self {
+        pub fn LookAt(camera: &const Vec3T(T), object: &const Vec3T(T), up: &const Vec3T(T)) -> Self {
             var result = Identity();
 
             const f = normalize(object - camera);
@@ -147,7 +186,7 @@ pub fn Mat3T(comptime T: type) -> type {
             return result * Translate(Vec3(-camera.x, -camera.y, -camera.z));
         }
 
-        pub fn Translate(translation: &const Vec3) -> Self {
+        pub fn Translate(translation: &const Vec3T(T)) -> Self {
             var result = diagonal(1);
 
             result.data[0][3] = translation.x;
@@ -157,7 +196,7 @@ pub fn Mat3T(comptime T: type) -> type {
             return result;
         }
 
-        pub fn rotate_angle(angle: f32, axis: &const Vec3) -> Self {
+        pub fn rotate_angle(angle: f32, axis: &const Vec3T(T)) -> Self {
             var result = diagonal(1);
 
             const r = toRadians(angle);
@@ -286,7 +325,7 @@ pub fn Mat4T(comptime T: type) -> type {
             return result;
         }
 
-        pub fn translation(translation: &const Vec3) -> Self {
+        pub fn translation(translation: &const Vec3T(T)) -> Self {
             var result = diagonal(1);
             result.data[0][3] = translation.x;
             result.data[1][3] = translation.y;
@@ -294,16 +333,16 @@ pub fn Mat4T(comptime T: type) -> type {
             return result;
         }
 
-        pub fn scaling(scale: &const Vec3) -> Self {
+        pub fn scaling(vec: &const Vec3T(T)) -> Self {
             var result = diagonal(1);
-            result.data[0][0] = scale.x;
-            result.data[1][1] = scale.y;
-            result.data[2][2] = scale.z;
+            result.data[0][0] = vec.x;
+            result.data[1][1] = vec.y;
+            result.data[2][2] = vec.z;
             return result;
         }
 
 
-        pub fn rotation(angle: f32, axis: &const Vec3) -> Self {
+        pub fn rotation(angle: f32, axis: &const Vec3T(T)) -> Self {
             var result = diagonal(1);
 
             const r = toRadians(angle);
@@ -353,7 +392,7 @@ pub fn Mat4T(comptime T: type) -> type {
             return result;
         }
 
-        pub fn lookAt(camera: &const Vec3, object: &const Vec3, up: &const Vec3) -> Self {
+        pub fn lookAt(camera: &const Vec3T(T), object: &const Vec3T(T), up: &const Vec3T(T)) -> Self {
             var result = Identity();
             const f = normalize(object - camera);
             const s = f.cross(normalize(up));
@@ -409,7 +448,7 @@ pub fn Mat4T(comptime T: type) -> type {
             }
         }
 
-        pub fn mul_vec3(self: &const Self, vec: &const Vec3T(T)) -> Vec3T(T) {
+        pub fn mul_vec3(self: &const Self, vec: &const Vec3TT(T)(T)) -> Vec3T(T) {
             return vec.Multiply(self);
         }
 
@@ -444,8 +483,8 @@ pub fn Mat4T(comptime T: type) -> type {
             }
         }
 
-        pub fn translate_vec(m: &const Self, v: Vec3) -> Self {
-            m.translate(v.data[0], v.data[1], v.data[2])
+        pub fn translate_vec(m: &const Self, v: &const Vec3T(T)) -> Self {
+            m.translate(v.x, v.y, v.z)
         }
 
         /// Builds a scale 4 * 4 matrix created from 3 scalars.
@@ -461,7 +500,7 @@ pub fn Mat4T(comptime T: type) -> type {
             }
         }
 
-        pub fn scale_vec(m: &const Self, v: &const Vec3T(T)) {
+        pub fn scale_vec(m: &const Self, v: &const Vec3TT(T)(T)) {
             m.scale(v.data[0], v.data[1], v.data[2])
         }
 

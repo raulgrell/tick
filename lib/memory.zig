@@ -203,14 +203,14 @@ pub fn move(comptime T: type, dest: []T, src: []const T) -> []T {
     if (dest.ptr == src.ptr) return dest;
     
     // No overlap
-    if (usize(src.ptr) + (src.len * @sizeOf(T)) <= usize(dest.ptr)
-            or usize(dest.ptr) + (dest.len * @sizeOf(T)) <= usize(src.ptr)) {
+    if (@ptrToInt(src.ptr) + (src.len * @sizeOf(T)) <= @ptrToInt(dest.ptr)
+            or @ptrToInt(dest.ptr) + (dest.len * @sizeOf(T)) <= @ptrToInt(src.ptr)) {
         // Safe to memcopy
         return copy(T, dest, src);
     }
 
     // Overlapping buffers
-    if (usize(dest.ptr) < usize(src.ptr)) {
+    if (@ptrToInt(dest.ptr) < @ptrToInt(src.ptr)) {
         for (src) |s, i| dest[i] = s;
     } else {
         for (src) |s, i| dest[src.len - i - 1] = src[src.len - i - 1]; 

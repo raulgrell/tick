@@ -1,146 +1,60 @@
+const math = @import("std").math;
+
 use @import("../math/index.zig");
 use @import("../system/index.zig");
 
 const lib = @import("../tick.zig").lib;
 const app = @import("../app/core.zig");
-const cam = @import("../graphics/camera.zig");
-const tex = @import("../graphics/renderable.zig");
+const tex = @import("../graphics/sprite.zig");
 const render = @import("../graphics/renderer.zig");
 const light = @import("../graphics/light.zig");
 
+const lev = @import("level.zig");
+const cam = @import("scene.zig");
+
 const ArrayList = lib.ArrayList;
+const Level = lev.Level;
 const InputManager = app.InputManager;
 const Camera = cam.Camera;
 const Texture = tex.Texture;
 const IMRenderer = render.IMRenderer;
 const BatchRenderer = render.BatchRenderer;
 
-const AGENT_WIDTH  = f32(16.0);
-const AGENT_HEIGHT = f32(16.0);
-const AGENT_RADIUS = f32(AGENT_WIDTH / 2.0);
-
 pub const Agent = struct {
     position: Vec3,
     dimensions: Vec3,
-    colour: Vec4,
+    color: Vec4,
     texture: &Texture,
     direction: Vec3,
     velocity: Vec3,
     speed: f32,
     mass: f32,
     radius: f32,
-    // ownerCell: ?&Cell,
+    ownerCell: ?&Cell,
     cellVectorIndex: usize,
 
     pub fn init(position: &const Vec3, dimensions: &const Vec3, texture: &Texture) -> Agent {
         Agent {
             .position = *position,
             .dimensions = *dimensions,
-            .colour = vec4(0.5,0,0,1),
+            .color = vec4(0.5,0,0,1),
             .texture = texture,
             .direction = vec3(1, 0, 0),
             .velocity = vec3(0, 0, 0),
-            .speed = 1,
+            .speed = 2,
             .mass = 1,
             .radius = 1,
-            // .ownerCell = null,
+            .ownerCell = null,
             .cellVectorIndex = 0
         }
     }
 
-    pub fn getAngle(self: &Agent) -> f32 {
-        const right = vec3(1.0, 0.0);
-        const angle = acos(right.dot(self.direction));
-        return if(self.direction.y > 0.0) angle else -angle;
-    }
-
-    pub fn collideWithLevel(self: &Agent, levelData: [][]u8) -> bool {
-        var collideTilePositions = ArrayList(Vec2).init();
-
-        // Check the four corners
-        checkTilePosition(levelData, collideTilePositions, self.position.x, self.position.y);
-        checkTilePosition(levelData, collideTilePositions, self.position.x, self.position.y + self.HEIGHT);
-        checkTilePosition(levelData, collideTilePositions, self.position.x + self.WIDTH, self.position.y);
-        checkTilePosition(levelData, collideTilePositions, self.position.x + self.WIDTH, self.position.y + self.HEIGHT);
-
-        // No collisions
-        if ( collideTilePositions.size() == 0 ) return false;
-
-        for ( collideTilePositions ) | position | {
-            collideWithTile(position);
-        }
-
-        return true;
-    }
-
-    // Circular Collision
-    pub fn collideWithAgent(self: &Agent, agent: &Agent) -> bool {
-        const MIN_DISTANCE = AGENT_RADIUS * 2.0;
-
-        const centerPositionA = self.position + vec2(AGENT_RADIUS);
-        const centerPositionB = agent.position + vec2(AGENT_RADIUS);
-
-        const distVec = centerPositionA - centerPositionB;
-        const distance = distVec.length();
-
-        const collisionDepth = MIN_DISTANCE - distance;
-
-        if ( collisionDepth > 0 ) {
-            const collisionDepthVec = distVec.normalize() * collisionDepth;
-            self.position += collisionDepthVec / 2.0;
-            agent.position -= collisionDepthVec / 2.0;
-            return true;
-        }
-
-        return false;
-    }
-
-    pub fn checkTilePosition(self: &Agent, levelData: [][]u8, collideTilePositions: ArrayList(Vec2), x: f32, y: f32) {
-        const cornerPos = vec2(floor(x / TILE_SIZE), floor(y / TILE_SIZE));
-
-        // Don't collide if outside world
-        if ( cornerPos.x < 0 or cornerPos.x >= levelData[0].length()
-            or cornerPos.y < 0 or cornerPos.y >= levelData.size() ) {
-            return;
-        }
-
-        if ( levelData[cornerPos.y][cornerPos.x] != ' ' ) {
-            collideTilePositions.append(cornerPos * TILE_SIZE + vec2(TILE_RADIUS));
-        }
-    }
-
-    // Axis Alligned Bounding Box Collision
-    pub fn collideWithTile(self: &Agent, tilePosition: &const Vec2) {
-        const MIN_DISTANCE = AGENT_RADIUS + TILE_RADIUS;
-
-        const centerPlayerPos = self.position + vec2(AGENT_RADIUS);
-        const distVec = centerPlayerPos - tilePosition;
-        const xDepth = MIN_DISTANCE - abs(distVec.x);
-        const yDepth = MIN_DISTANCE - abs(distVec.y);
-
-        if ( xDepth > 0 or yDepth > 0 ) {
-            if ( max(xDepth, 0.0) < max(yDepth, 0.0) ) {
-                if ( distVec.x < 0 ) {
-                    self.position.x -= xDepth;
-                } else {
-                    self.position.x += xDepth;
-                }
-            } else {
-                if ( distVec.y < 0 ) {
-                    self.position.y -= yDepth;
-                } else {
-                    self.position.y += yDepth;
-                }
-            }
-        }
-    }
-
     pub fn draw(self: &const Agent,  r: &IMRenderer) {
-        r.draw_rect(self.texture, self.position.x(), self.position.y(), AGENT_WIDTH, AGENT_HEIGHT);
+        r.draw_rect(self.texture, self.position.x, self.position.y, self.dimensions.x, self.dimensions.y);
     }
 
     pub fn submit(self: &const Agent,  r: &BatchRenderer) {
-        const destRect = Vec4(self.position.x, self.position.y, AGENT_WIDTH, AGENT_HEIGHT);
+        const destRect = Vec4(self.position.x, self.position.y, self.dimensions.x, self.dimensions.y);
         const uvRect = Vec4(0.0, 0.0, 1.0, 1.0);
         r.submit(destRect, uvRect, self.textureID, 1.0, self.colour, self.direction);
     }
@@ -149,6 +63,98 @@ pub const Agent = struct {
         const radius = self.dimensions.x / 2.0;
         const center = self.position + ( radius );
         r.drawCircle(center, ColourRGBA(255, 255, 255, 255), radius);
+    }
+
+    pub fn getAngle(self: &const Agent) -> f32 {
+        const right = vec3(1.0, 0.0);
+        const angle = math.acos(right.dot(self.direction));
+        return if(self.direction.y > 0.0) angle else -angle;
+    }
+
+    pub fn collideWithLevel(self: &Agent, level: &Level) -> bool {
+        var collision_positions = ArrayList(Vec2).init(&mem.mem);
+
+        checkTilePosition(level, &collision_positions, self.position.x, self.position.y);
+        checkTilePosition(level, &collision_positions, self.position.x, self.position.y + self.dimensions.y);
+        checkTilePosition(level, &collision_positions, self.position.x + self.dimensions.x , self.position.y);
+        checkTilePosition(level, &collision_positions, self.position.x + self.dimensions.x , self.position.y + self.dimensions.y);
+
+        if ( collision_positions.length == 0 )
+            return false;
+
+        for ( collision_positions.toSlice() ) | pos | 
+            self.collideWithTile(pos, level.tile_dimensions);
+
+        return true;
+    }
+
+    // Circular Collision
+    pub fn collideWithAgent(self: &Agent, other: &Agent) -> bool {
+        const MIN_DISTANCE = AGENT_RADIUS * 2.0;
+
+        const self_center = self.position.add(self.dimensions.mul_scalar(0.5).xy());
+        const other_center = other.position.add(other.dimensions.mul_scalar(0.5).xy());
+        const dist_vec = self_center.sub(other_center);
+
+        const distance = dist_vec.length();
+        const collisionDepth = MIN_DISTANCE - distance;
+
+        if ( collisionDepth > 0 ) {
+            const collision_vec = dist_vec.normalize().mul(collisionDepth);
+            self.position.offset(collision_vec.mul_scalar(2.0));
+            other.position.offset(collision_vec.mul_scalar(-2.0));
+            return true;
+        }
+
+        return false;
+    }
+
+    // Axis Alligned Bounding Box Collision
+    pub fn collideWithTile(self: &Agent, tilePosition: &const Vec2, tile_dimensions: &const Vec2) {
+        const min_distance_x = self.dimensions.x / 2 + tile_dimensions.x / 2;
+        const min_distance_y = self.dimensions.y / 2 + tile_dimensions.y / 2;
+
+        const centerPlayerPos = self.position.add(self.dimensions.div_scalar(2));
+        const dist_vec = centerPlayerPos.sub(vec3(tilePosition.x, tilePosition.y, 0));
+        const xDepth = min_distance_x - math.fabs(dist_vec.x);
+        const yDepth = min_distance_y - math.fabs(dist_vec.y);
+
+        if ( xDepth > 0 or yDepth > 0 ) {
+            if ( math.max(xDepth, f32(0)) < math.max(yDepth, f32(0)) ) {
+                if ( dist_vec.x < 0 ) {
+                    self.position.x -= xDepth;
+                } else {
+                    self.position.x += xDepth;
+                }
+            } else {
+                if ( dist_vec.y < 0 ) {
+                    self.position.y -= yDepth;
+                } else {
+                    self.position.y += yDepth;
+                }
+            }
+        }
+    }
+
+    fn checkTilePosition(level: &Level, collision_positions: &ArrayList(Vec2), x: f32, y: f32) {
+        const corner_position = UVec2.init(
+            usize(math.floor(x / level.tile_dimensions.x)),
+            usize(math.floor(y / level.tile_dimensions.y))
+        );
+
+        // Don't collide if outside world
+        if ( corner_position.x < 0 or corner_position.x >= level.getWidth()
+            or corner_position.y < 0 or corner_position.y >= level.getHeight()) {
+            return;
+        }
+
+        if ( level.level_data[corner_position.y][corner_position.x] != ' ' ) {
+            const collision_pos = corner_position
+                .mul_scalar(usize(level.tile_dimensions.x))
+                .cast(f32)
+                .add(level.tile_dimensions.div_scalar(2));
+            %%collision_positions.append( vec2(collision_pos.x, collision_pos.y) );
+        }
     }
 };
 
@@ -180,17 +186,16 @@ pub const TopDownPlayer = struct {
         return p;
     }
     
-    pub fn update(self: &TopDownPlayer, levelData: []const u8, deltaTime: f32) {
-        if(self.input.keyDown[c.GLFW_KEY_W]) self.agent.position.data[1] -= self.agent.speed * deltaTime;
-        if(self.input.keyDown[c.GLFW_KEY_S]) self.agent.position.data[1] += self.agent.speed * deltaTime;
-        if(self.input.keyDown[c.GLFW_KEY_A]) self.agent.position.data[0] -= self.agent.speed * deltaTime;
-        if(self.input.keyDown[c.GLFW_KEY_D]) self.agent.position.data[0] += self.agent.speed * deltaTime;
+    pub fn update(self: &TopDownPlayer, level: &Level, delta_time: f32) {
+        if(self.input.keyDown[c.GLFW_KEY_W]) self.agent.position.y -= self.agent.speed * delta_time;
+        if(self.input.keyDown[c.GLFW_KEY_S]) self.agent.position.y += self.agent.speed * delta_time;
+        if(self.input.keyDown[c.GLFW_KEY_A]) self.agent.position.x -= self.agent.speed * delta_time;
+        if(self.input.keyDown[c.GLFW_KEY_D]) self.agent.position.x += self.agent.speed * delta_time;
 
-        // const mouseCoords = self.inputManager.GetMouseCoords();
-        // const mouse = self.camera.convertScreenToWorld(mouseCoords.x, mouseCoords.y);
-        // self.direction = vec2(mouse.x - self.position.x, mouse.y - self.position.y);
+        // const mouse = self.camera.convertScreenToWorld(self.input.cursor_position);
+        // self.agent.direction = mouse.sub(self.agent.position);
 
-        // collideWithLevel(levelData);
+        _ = self.agent.collideWithLevel(level);
     }
 };
 
@@ -206,7 +211,7 @@ const ceil = usize;
 
 pub const Grid = struct {
     cells: ArrayList(Cell),
-    cellSize: usize,
+    cellSize: f32,
     width: f32,
     height: f32,
     columns: usize,
@@ -218,14 +223,14 @@ pub const Grid = struct {
             .cellSize = 1,
             .width = width,
             .height = height,
-            .columns = ceil(width / cellSize),
-            .rows = ceil(height / cellSize),
+            .columns = usize(math.ceil(width / cellSize)),
+            .rows = usize(math.ceil(height / cellSize)),
         };
         
         // Allocate all the cells
         %%g.cells.reserve(g.rows * g.columns);
 
-        for ( g.cells.toSlice() ) | *cell, i | {
+        for ( g.cells.data ) | *cell, i | {
             %%cell.agents.reserve(reserve);
         }
 
@@ -233,42 +238,43 @@ pub const Grid = struct {
     }
 
     pub fn add(self: &Grid, agent: &Agent) {
-        Cell* cell = getCell(agent.getPosition());
-        cell.agents.append(agent);
+        var cell = self.getCellAt(agent.position.xy());
+        %%cell.agents.append(agent);
         agent.ownerCell = cell;
-        agent.cellVectorIndex = cell.agents.size() - 1;
+        agent.cellVectorIndex = cell.agents.length - 1;
     }
 
     pub fn addToCell(self: &Grid, agent: &Agent, cell: &Cell) {
-        cell.agents.append(agent);
+        %%cell.agents.append(agent);
         agent.ownerCell = cell;
-        agent.cellVectorIndex = cell.agents.size() - 1;
+        agent.cellVectorIndex = cell.agents.length - 1;
     }
 
-    pub fn getCell(self: &Grid, pos: &const Vec2) -> & Cell {
-        const x = int(pos.x / self.cellSize);
-        const y = int(pos.y / self.cellSize);
-
-        if ( x < 0 ) x = 0;
-        if ( x >= self.columns ) x = self.columns - 1;
-        if ( y < 0 ) y = 0;
-        if ( y >= self.rows ) y = self.rows - 1;
-
-        return &self.cells[y * self.columns + x];
+    pub fn getCellAt(self: &Grid, pos: &const Vec2) -> &Cell {
+        var x = usize(pos.x / self.cellSize);
+        var y = usize(pos.y / self.cellSize);
+        return self.getCell(x, y);
     }
 
-    pub fn removeFromCell(self: &Grid, agent: &Agent) -> %void {
-        var agents = agent.ownerCell.agents;
+    pub fn getCell(self: &Grid, x: usize, y: usize) -> &Cell {
+        const col = if ( x < 0 ) 0 else if ( x >= self.columns ) self.columns - 1 else x;
+        const row = if ( y < 0 ) 0 else if ( y >= self.rows ) self.rows - 1 else y;
+
+        return &self.cells.data[row * self.columns + col];
+    }
+
+    pub fn removeFromCell(self: &Grid, agent: &Agent) -> void {
+        var agents = (agent.ownerCell ?? return).agents;
         // Normal vector swap
-        agents[agent.cellVectorIndex] = agents.back();
-        agents.pop_back();
+        agents.data[agent.cellVectorIndex] = agents.back();
+        _ = agents.pop_back();
         // Update vector index
-        if ( agent.cellVectorIndex < agents.size() ) {
-            agents[agent.cellVectorIndex].cellVectorIndex = agent.cellVectorIndex;
+        if ( agent.cellVectorIndex < agents.length ) {
+            agents.data[agent.cellVectorIndex].cellVectorIndex = agent.cellVectorIndex;
         }
         // Set the index of agent to -1
         agent.cellVectorIndex = -1;
-        agent.ownerCell = nullptr;
+        agent.ownerCell = null;
     }
 };
 
@@ -285,113 +291,101 @@ pub const Controller = struct {
         }
     }
 
-    pub fn update(self: &Controller, deltaTime: f32) {
-        const FRICTION = f32(0.01);
-        const gravity = f32(10);
+    pub fn add(self: &Controller, agent: &Agent) {
+        self.grid.add(agent);
+    }
 
-        // for ( self.agents.toSlice() ) | *agent | {
-        //     agent.position += agent.velocity * deltaTime;
-        //     // Apply friction
-        //     const momentumVec = agent.velocity * agent.mass;
-        //     if ( momentumVec.x != 0 or momentumVec.y != 0 ) {
-        //         if ( FRICTION < momentumVec.length() ) {
-        //             agent.velocity -= momentumVec.normalize() * deltaTime * FRICTION / agent.mass;
-        //         }
-        //         else {
-        //             agent.velocity = vec2(0.0);
-        //         }
-        //     }
+    pub fn update(self: &Controller, delta_time: f32) {
+        const friction = f32(0.01);
+        const gravity = vec2(0, 10);
 
-        //     // Apply gravity
-        //     agent.velocity += gravity * deltaTime;
+        for ( self.agents.data ) | *agent | {
+            _ = agent.position.offset(agent.velocity.mul_scalar(delta_time));
+            
+            // Apply friction
+            const momentumVec = agent.velocity.mul_scalar(agent.mass);
+            if ( momentumVec.x != 0 or momentumVec.y != 0 ) {
+                if ( friction < momentumVec.length() ) {
+                    _ = agent.velocity.offset(momentumVec.normalize().mul_scalar(-friction / agent.mass * delta_time));
+                } else {
+                    agent.velocity = vec3(0, 0, 0);
+                }
+            }
 
-        //     // Check wall collision
-        //     if ( agent.position.x < agent.radius ) {
-        //         agent.position.x = agent.radius;
-        //         if ( agent.velocity.x < 0 ) agent.velocity.x *= -1;
-        //     }
-        //     else if ( agent.position.x + agent.radius >= self.rect.data[2] ) {
-        //         agent.position.x = self.rect.data[2] - agent.radius - 1;
-        //         if ( agent.velocity.x > 0 ) agent.velocity.x *= -1;
-        //     }
-        //     if ( agent.position.y < agent.radius ) {
-        //         agent.position.y = agent.radius;
-        //         if ( agent.velocity.y < 0 ) agent.velocity.y *= -1;
-        //     }
-        //     else if ( agent.position.y + agent.radius >= self.rect.data[3] ) {
-        //         agent.position.y = self.rect.data[3] - agent.radius - 1;
-        //         if ( agent.velocity.y > 0 ) agent.velocity.y *= -1;
-        //     }
+            // Apply gravity
+            _ = agent.velocity.offset(gravity.mul_scalar(delta_time).xyz());
 
-        //     // Check to see if the agent moved
-        //     const newCell = self.grid.getCell(agent.position);
-        //     if ( newCell != agent.ownerCell ) {
-        //         self.grid.removeFromCell(agent);
-        //         self.grid.add(agent, newCell);
-        //     }
-        // }
-        // // Updates all collisions using the spatial partitioning
-        // updateCollisions(&self.grid);
+            // Check to see if the agent moved
+            if (agent.ownerCell) | cell | {
+                const newCell = self.grid.getCellAt(agent.position.xy());
+                if ( newCell != cell ) {
+                    self.grid.removeFromCell(agent);
+                    self.grid.addToCell(agent, newCell);
+                }
+            }
+        }
+        // Updates all collisions using the spatial partitioning
+        updateCollisions(&self.grid);
     }
 
     fn updateCollisions(grid: &Grid) {
-        for ( grid.cells.toSlice() ) | cell, i | {
-            const x: int = i % grid.columns;
-            const y: int = i / grid.columns;
+        for ( grid.cells.toSlice() ) | *cell, i | {
+            const x = i % grid.columns;
+            const y = i / grid.columns;
 
             // Loop through all agents in a cell
-            for ( cell.agents.toSlice() ) | agent | {
+            for ( cell.agents.toSlice() ) | *agent, j | {
                 /// Update with the residing cell
-                checkCollisions(agent, cell.agents, j + 1);
+                checkCollisions(agent, &cell.agents, j + 1);
 
                 /// Update collision with neighbor cells
                 if ( x > 0 ) {
                     // Left
-                    checkCollisions(agent, grid.getCell(x - 1, y).agents, 0);
+                    checkCollisions(agent, &grid.getCell(x - 1, y).agents, 0);
                     if ( y > 0 ) {
                         /// Top left
-                        checkCollisions(agent, grid.getCell(x - 1, y - 1).agents, 0);
+                        checkCollisions(agent, &grid.getCell(x - 1, y - 1).agents, 0);
                     }
                     if ( y < grid.rows - 1 ) {
                         // Bottom left
-                        checkCollisions(agent, grid.getCell(x - 1, y + 1).agents, 0);
+                        checkCollisions(agent, &grid.getCell(x - 1, y + 1).agents, 0);
                     }
                 }
                 // Up cell
                 if ( y > 0 ) {
-                    checkCollisions(agent, grid.getCell(x, y - 1).agents, 0);
+                    checkCollisions(agent, &grid.getCell(x, y - 1).agents, 0);
                 }
             }
         }
     }
 
-    fn checkCollisions(agent: &Agent, check: ArrayList(Agent), startingIndex: usize) {
-        for ( check.toSlice() ) | other | {
-            checkCollision(*agent, *other);
+    fn checkCollisions(agent: &Agent, check: &ArrayList(Agent), startingIndex: usize) {
+        for ( check.toSlice() ) | *other | {
+            checkCollision(agent, other);
         }
     }
 
     fn checkCollision(agent1: &Agent, agent2: &Agent) {
         // We add radius since position is the top left corner
-        const distVec = agent2.position - agent1.position;
-        const distDir = normalize(distVec);
-        const dist = length(distVec);
+        const dist_vec = agent2.position.sub(agent1.position);
+        const distDir = dist_vec.normalize();
+        const dist = dist_vec.length();
         const totalRadius = agent1.radius + agent2.radius;
         const collisionDepth = totalRadius - dist;
         if ( collisionDepth > 0 ) {
             // Push away the less massive one
             if ( agent1.mass < agent2.mass ) {
-                agent1.position -= distDir * collisionDepth;
-            }
-            else {
-                agent2.position += distDir * collisionDepth;
+                _ = agent1.position.offset(distDir.mul_scalar(-collisionDepth));
+            } else {
+                _ = agent2.position.offset(distDir.mul_scalar(collisionDepth));
             }
             const aci = agent1.velocity.dot(distDir);
             const bci = agent2.velocity.dot(distDir);
             const acf = ( aci * ( agent1.mass - agent2.mass ) + 2 * agent2.mass * bci ) / ( agent1.mass + agent2.mass );
             const bcf = ( bci * ( agent2.mass - agent1.mass ) + 2 * agent1.mass * aci ) / ( agent1.mass + agent2.mass );
-            agent1.velocity += distDir * ( acf - aci );
-            agent2.velocity += distDir * ( bcf - bci );
+
+            _ = agent1.velocity.offset(distDir.mul_scalar( acf - aci ));
+            _ = agent2.velocity.offset(distDir.mul_scalar( bcf - bci ));
         }
     }
 };

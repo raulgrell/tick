@@ -1,5 +1,5 @@
 use @import("../math/index.zig");
-use @import("../graphics/renderable.zig");
+use @import("../graphics/sprite.zig");
 
 const c      = @import("../system/c.zig");
 const debug  = @import("../system/debug.zig");
@@ -9,13 +9,6 @@ const MAX_GLYPHS   = 1024;
 const MAX_BATCHES  = 1024;
 const MAX_INDICES  = 1024;
 const MAX_VERTICES = 1024;
- 
-var s_indices: [MAX_INDICES]c.GLuint = undefined;
-var s_vertices: [MAX_VERTICES]Vertex = undefined;
-
-var s_glyphs: [MAX_GLYPHS]Glyph = undefined;
-var s_glyph_pointers: [MAX_GLYPHS]&const Glyph = undefined;
-var s_batches: [MAX_GLYPHS]RenderBatch = undefined;
 
 pub const GlyphSortType = enum {
     NONE,
@@ -30,6 +23,10 @@ pub const RenderBatch = struct {
     textureID: c.GLuint,
 };
 
+var s_glyphs: [MAX_GLYPHS]Glyph = undefined;
+var s_glyph_pointers: [MAX_GLYPHS]&const Glyph = undefined;
+var s_batches: [MAX_GLYPHS]RenderBatch = undefined;
+
 pub const BatchRenderer = struct {
     shader: &shader.TextureShader,
     vao: c.GLuint,
@@ -43,7 +40,7 @@ pub const BatchRenderer = struct {
     sortType: GlyphSortType,
     projection: Mat4,
     
-    pub fn init(s: &shader.TextureShader, fb_width: c_int, fb_height: c_int) -> BatchRenderer {
+    pub fn init(s: &shader.TextureShader, fb_width: usize, fb_height: usize) -> BatchRenderer {
         var r = BatchRenderer {
             .shader = s,
             .vao = 0,
@@ -249,7 +246,7 @@ pub const IMRenderer = struct {
     triangleBuffer: c.GLuint,
     triangleUV: c.GLuint,
 
-    fn init(s: &shader.TextureShader, fb_width: c_int, fb_height: c_int) -> IMRenderer {
+    fn init(s: &shader.TextureShader, fb_width: usize, fb_height: usize) -> IMRenderer {
         var r = IMRenderer {
             .shader = s,
             .vao = 0,
@@ -365,7 +362,7 @@ pub const StripRenderer = struct {
     rectangleBuffer: c.GLuint,
     triangleBuffer: c.GLuint,
 
-    fn init(s: &shader.PrimitiveShader, fb_width: c_int, fb_height: c_int) -> StripRenderer {
+    fn init(s: &shader.PrimitiveShader, fb_width: usize, fb_height: usize) -> StripRenderer {
         var r = StripRenderer {
             .shader = s,
             .vao = 0,
@@ -439,6 +436,9 @@ pub const StripRenderer = struct {
     }
 };
 
+var s_indices: [MAX_INDICES]c.GLuint = undefined;
+var s_vertices: [MAX_VERTICES]Vertex = undefined;
+
 pub const LineRenderer = struct {
     shader: &shader.PrimitiveShader,
     vao: c.GLuint,
@@ -451,7 +451,7 @@ pub const LineRenderer = struct {
     numIndices: c_uint,
     numElements: c_int,
 
-    pub fn init(s: &shader.PrimitiveShader, fb_width: c_int, fb_height: c_int) -> LineRenderer {
+    pub fn init(s: &shader.PrimitiveShader, fb_width: usize, fb_height: usize) -> LineRenderer {
         var r = LineRenderer {
             .shader = s,
             .vao = 0,
