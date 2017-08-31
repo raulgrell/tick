@@ -117,6 +117,38 @@ const Colour = struct {
     }
 };
 
+const ColourRGBA = struct {
+    rgba: [4]u8,
+
+    pub fn init(r: u8, g: u8, b: u8, a: u8) {
+        ColourRGBA {
+            .rgba = []u8 { r, g, b, a } 
+        }
+    }
+};
+
+const ColourRGB = struct {
+    rgb: [3]u8,
+
+    pub fn init(r: u8, g: u8, b: u8) {
+        ColourRGB {
+            .rgb = []u8 { r, g, b } 
+        }
+    }
+};
+
+pub fn RGBtoINT(color: &const ColourRGB) -> u32 {
+    return 65536 * color.r + 256 * color.g + color.b;
+}
+
+pub fn INTtoRGB(color: u32) -> ColourRGB {
+    ColourRGB {
+        .r = ( color / 65536 ) % 256,
+        .g = ( color / 256 ) % 256,
+        .b = color % 256,
+    }
+}
+
 const Material = struct {
     diffuse: Colour,
     ambient: Colour,
@@ -125,11 +157,37 @@ const Material = struct {
     shininess: f32,
 
     pub fn apply(self: &Material) {
-        c.glMaterialfv(GL_FRONT, GL_AMBIENT, self.ambient.rgba);
-        c.glMaterialfv(GL_FRONT, GL_DIFFUSE, self.diffuse.rgba);
-        c.glMaterialfv(GL_FRONT, GL_SPECULAR, self.specular.rgba);
-        c.glMaterialfv(GL_FRONT, GL_EMISSION, self.emission.rgba);
-        c.glMaterialf(GL_FRONT, GL_SHININESS, self.shininess);
+        c.glMaterialfv(c.GL_FRONT, c.GL_AMBIENT, self.ambient.rgba);
+        c.glMaterialfv(c.GL_FRONT, c.GL_DIFFUSE, self.diffuse.rgba);
+        c.glMaterialfv(c.GL_FRONT, c.GL_SPECULAR, self.specular.rgba);
+        c.glMaterialfv(c.GL_FRONT, c.GL_EMISSION, self.emission.rgba);
+        c.glMaterialf(c.GL_FRONT, c.GL_SHININESS, self.shininess);
     }
 };
 
+const LIGHTGRAY  = Vec4.init(200, 200, 200, 255 );   // Light Gray
+const GRAY       = Vec4.init(130, 130, 130, 255 );   // Gray
+const DARKGRAY   = Vec4.init(80, 80, 80, 255 );      // Dark Gray
+const YELLOW     = Vec4.init(253, 249, 0, 255 );     // Yellow
+const GOLD       = Vec4.init(255, 203, 0, 255 );     // Gold
+const ORANGE     = Vec4.init(255, 161, 0, 255 );     // Orange
+const PINK       = Vec4.init(255, 109, 194, 255 );   // Pink
+const RED        = Vec4.init(230, 41, 55, 255 );     // Red
+const MAROON     = Vec4.init(190, 33, 55, 255 );     // Maroon
+const GREEN      = Vec4.init(0, 228, 48, 255 );      // Green
+const LIME       = Vec4.init(0, 158, 47, 255 );      // Lime
+const DARKGREEN  = Vec4.init(0, 117, 44, 255 );      // Dark Green
+const SKYBLUE    = Vec4.init(102, 191, 255, 255 );   // Sky Blue
+const BLUE       = Vec4.init(0, 121, 241, 255 );     // Blue
+const DARKBLUE   = Vec4.init(0, 82, 172, 255 );      // Dark Blue
+const PURPLE     = Vec4.init(200, 122, 255, 255 );   // Purple
+const VIOLET     = Vec4.init(135, 60, 190, 255 );    // Violet
+const DARKPURPLE = Vec4.init(112, 31, 126, 255 );    // Dark Purple
+const BEIGE      = Vec4.init(211, 176, 131, 255 );   // Beige
+const BROWN      = Vec4.init(127, 106, 79, 255 );    // Brown
+const DARKBROWN  = Vec4.init(76, 63, 47, 255 );      // Dark Brown
+const WHITE      = Vec4.init(255, 255, 255, 255 );   // White
+const BLACK      = Vec4.init(0, 0, 0, 255 );         // Black
+const BLANK      = Vec4.init(0, 0, 0, 0 );           // Blank (Transparent)
+const MAGENTA    = Vec4.init(255, 0, 255, 255 );     // Magenta
+const RAYWHITE   = Vec4.init(245, 245, 245, 255 );   // My own White (raylib logo)

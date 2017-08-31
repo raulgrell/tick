@@ -46,7 +46,7 @@ pub const BatchRenderer = struct {
             .vao = 0,
             .vbo = 0,
             .ibo = 0,
-            .projection = Mat4.orthographic( 0.0, f32(fb_width), f32(fb_height), 0.0, 0.0, 1.0 ),
+            .projection = Mat4.orthographic( 0.0, f32(fb_width), f32(fb_height), 0.0, -1.0, 1.0 ),
             .glyphs = s_glyphs[0..],
             .glyphPointers = s_glyph_pointers[0..],
             .numGlyphs = 0,
@@ -78,7 +78,7 @@ pub const BatchRenderer = struct {
             c.GLuint(r.shader.attrib_color),
             4,
             c.GL_FLOAT,
-            c.GL_TRUE,
+            c.GL_FALSE,
             @sizeOf(Vertex),
             @intToPtr(&c_void, @offsetOf(Vertex, "colour"))
         );
@@ -88,7 +88,7 @@ pub const BatchRenderer = struct {
             c.GLuint(r.shader.attrib_uv),
             4,
             c.GL_FLOAT,
-            c.GL_TRUE,
+            c.GL_FALSE,
             @sizeOf(Vertex),
             @intToPtr(&c_void, @offsetOf(Vertex, "uv"))
         );
@@ -105,23 +105,22 @@ pub const BatchRenderer = struct {
         r.numGlyphs = 0;
     }
 
-    pub fn submit(r: &BatchRenderer,
-            destRect: &const Vec4, uvRect: &const Vec4, textureID: c.GLuint, depth: f32, colour: &const Vec4,
-            angle: f32) {
-        r.glyphs[r.numGlyphs] = Glyph.init(
-            destRect,
-            uvRect,
-            textureID,
-            depth,
-            colour
-        );
+    pub fn submit(
+            r: &BatchRenderer,
+            destRect: &const Vec4,
+            uvRect: &const Vec4,
+            texture: &const Texture,
+            depth: f32,
+            colour: &const Vec4,
+            angle: f32) -> void {
+        r.glyphs[r.numGlyphs] = Glyph.init(destRect, uvRect, texture, depth, colour);
         r.numGlyphs += 1;
     }
 
     pub fn end(r: &BatchRenderer) {
-        // Set up allpointers for fast sorting
-        for (r.glyphs[0..r.numGlyphs]) | g, i | {
-            r.glyphPointers[i] = &r.glyphs[i];
+        // Set up all pointers for fast sorting
+        for (r.glyphs[0..r.numGlyphs]) | *g, i | {
+            r.glyphPointers[i] = g;
         }
         r.sortGlyphs();
         r.createRenderBatches();
@@ -136,7 +135,7 @@ pub const BatchRenderer = struct {
 
         for (r.renderBatches[0..r.numBatches - 1]) | batch, i| {
             c.glBindTexture(c.GL_TEXTURE_2D, batch.textureID);
-            c.glDrawArrays(c.GL_TRIANGLES, c_int(batch.offset), c_int(batch.numVertices));
+            c.glDrawArrays(c.GL_TRIANGLE_STRIP, c_int(batch.offset), c_int(batch.numVertices));
         }
 
         c.glBindVertexArray(0);
@@ -160,12 +159,11 @@ pub const BatchRenderer = struct {
 
         var currentOffset: usize = 0;
         var currentVertex: usize = 0;
-        var currentGlyph: usize = 0;
         var currentBatch: usize = 0;
 
         // First Batch
-        r.renderBatches[0] = RenderBatch{
-            .offset = (c_uint)(currentOffset),
+        r.renderBatches[0] = RenderBatch {
+            .offset = c_uint(currentOffset),
             .numVertices = 6,
             .textureID = 0,
         };
@@ -180,12 +178,12 @@ pub const BatchRenderer = struct {
         currentOffset += 6;
 
         for(r.glyphPointers[1..r.numGlyphs]) | g, i | {
-            if (r.glyphPointers[i].textureID != r.glyphPointers[i - 1].textureID) {
+            if (r.glyphPointers[i].texture.id != r.glyphPointers[i - 1].texture.id) {
                 currentBatch += 1;
-                r.renderBatches[currentBatch] = RenderBatch{
-                    .offset = (c_uint)(currentOffset),
+                r.renderBatches[currentBatch] = RenderBatch {
+                    .offset = c_uint(currentOffset),
                     .numVertices = 6,
-                    .textureID = r.glyphPointers[i].textureID, 
+                    .textureID = r.glyphPointers[i].texture.id, 
                 }
             } else {
                 // If its part of the current batch, just increase numVertices

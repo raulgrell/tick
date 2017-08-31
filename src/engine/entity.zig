@@ -23,13 +23,15 @@ const BatchRenderer = render.BatchRenderer;
 pub const Agent = struct {
     position: Vec3,
     dimensions: Vec3,
+    velocity: Vec3,
+    direction: Vec3,
     color: Vec4,
     texture: &Texture,
-    direction: Vec3,
-    velocity: Vec3,
     speed: f32,
     mass: f32,
+    // Collision Detection
     radius: f32,
+    // Spatial Partitioning
     ownerCell: ?&Cell,
     cellVectorIndex: usize,
 
@@ -97,10 +99,10 @@ pub const Agent = struct {
         const dist_vec = self_center.sub(other_center);
 
         const distance = dist_vec.length();
-        const collisionDepth = MIN_DISTANCE - distance;
+        const collision_depth = MIN_DISTANCE - distance;
 
-        if ( collisionDepth > 0 ) {
-            const collision_vec = dist_vec.normalize().mul(collisionDepth);
+        if ( collision_depth > 0 ) {
+            const collision_vec = dist_vec.normalize().mul(collision_depth);
             self.position.offset(collision_vec.mul_scalar(2.0));
             other.position.offset(collision_vec.mul_scalar(-2.0));
             return true;
@@ -158,17 +160,25 @@ pub const Agent = struct {
     }
 };
 
-pub const Player = struct {
+pub const ImpulsePlayer = struct {
     agent: &Agent,
     input: &InputManager,
     camera: &Camera,
 
-    pub fn init(agent: &Agent, inputManager: &InputManager, camera: &Camera) -> Player {
-        Player {
+    pub fn init(agent: &Agent, inputManager: &InputManager, camera: &Camera) -> ImpulsePlayer {
+        ImpulsePlayer {
             .agent = agent,
             .input = inputManager,
             .camera = camera,
         }
+    }
+
+    pub fn update(self: &ImpulsePlayer, level: &Level, delta_time: f32) {
+        if(self.input.keyPressed[c.GLFW_KEY_W]) self.agent.velocity.y -= self.agent.speed * delta_time;
+        if(self.input.keyPressed[c.GLFW_KEY_S]) self.agent.velocity.y += self.agent.speed * delta_time;
+        if(self.input.keyPressed[c.GLFW_KEY_A]) self.agent.velocity.x -= self.agent.speed * delta_time;
+        if(self.input.keyPressed[c.GLFW_KEY_D]) self.agent.velocity.x += self.agent.speed * delta_time;
+        _ = self.agent.collideWithLevel(level);
     }
 };
 
@@ -178,39 +188,34 @@ pub const TopDownPlayer = struct {
     camera: &Camera,
 
     pub fn init(agent: &Agent, inputManager: &InputManager, camera: &Camera)  -> TopDownPlayer {
-        var p = TopDownPlayer {
+        TopDownPlayer {
             .agent = agent,
             .input = inputManager,
             .camera = camera,
-        };
-        return p;
+        }
     }
     
     pub fn update(self: &TopDownPlayer, level: &Level, delta_time: f32) {
-        if(self.input.keyDown[c.GLFW_KEY_W]) self.agent.position.y -= self.agent.speed * delta_time;
+        if(self.input.keyDown[c.GLFW_KEY_W]) self.agent.position.y -= self.agent.speed * delta_time * 2;
         if(self.input.keyDown[c.GLFW_KEY_S]) self.agent.position.y += self.agent.speed * delta_time;
         if(self.input.keyDown[c.GLFW_KEY_A]) self.agent.position.x -= self.agent.speed * delta_time;
         if(self.input.keyDown[c.GLFW_KEY_D]) self.agent.position.x += self.agent.speed * delta_time;
-
-        // const mouse = self.camera.convertScreenToWorld(self.input.cursor_position);
-        // self.agent.direction = mouse.sub(self.agent.position);
-
         _ = self.agent.collideWithLevel(level);
     }
 };
 
 pub const Cell = struct {
-    agents: ArrayList(Agent),
+    agents: ArrayList(&Agent),
 
     pub fn init() -> Cell {
-        Cell { .agents = ArrayList(Agent).init(&mem.mem) }
+        Cell { .agents = ArrayList(&Agent).init(&mem.mem) }
     }
 };
 
 const ceil = usize;
 
 pub const Grid = struct {
-    cells: ArrayList(Cell),
+    cells: ArrayList(&Cell),
     cellSize: f32,
     width: f32,
     height: f32,
@@ -219,7 +224,7 @@ pub const Grid = struct {
 
     pub fn init(width: f32, height: f32, cellSize: f32, reserve: usize) -> Grid {
         var g = Grid {
-            .cells = ArrayList(Cell).init(&mem.mem),
+            .cells = ArrayList(&Cell).init(&mem.mem),
             .cellSize = 1,
             .width = width,
             .height = height,
@@ -230,7 +235,7 @@ pub const Grid = struct {
         // Allocate all the cells
         %%g.cells.reserve(g.rows * g.columns);
 
-        for ( g.cells.data ) | *cell, i | {
+        for ( g.cells.toSlice() ) | cell, i | {
             %%cell.agents.reserve(reserve);
         }
 
@@ -239,9 +244,7 @@ pub const Grid = struct {
 
     pub fn add(self: &Grid, agent: &Agent) {
         var cell = self.getCellAt(agent.position.xy());
-        %%cell.agents.append(agent);
-        agent.ownerCell = cell;
-        agent.cellVectorIndex = cell.agents.length - 1;
+        self.addToCell(agent, cell);
     }
 
     pub fn addToCell(self: &Grid, agent: &Agent, cell: &Cell) {
@@ -260,14 +263,13 @@ pub const Grid = struct {
         const col = if ( x < 0 ) 0 else if ( x >= self.columns ) self.columns - 1 else x;
         const row = if ( y < 0 ) 0 else if ( y >= self.rows ) self.rows - 1 else y;
 
-        return &self.cells.data[row * self.columns + col];
+        return self.cells.data[row * self.columns + col];
     }
 
     pub fn removeFromCell(self: &Grid, agent: &Agent) -> void {
         var agents = (agent.ownerCell ?? return).agents;
-        // Normal vector swap
-        agents.data[agent.cellVectorIndex] = agents.back();
-        _ = agents.pop_back();
+        agents.data[agent.cellVectorIndex] = agents.last();
+        _ = agents.pop();
         // Update vector index
         if ( agent.cellVectorIndex < agents.length ) {
             agents.data[agent.cellVectorIndex].cellVectorIndex = agent.cellVectorIndex;
@@ -279,29 +281,40 @@ pub const Grid = struct {
 };
 
 pub const Controller = struct {
-    agents: ArrayList(Agent),
+    agents: ArrayList(&Agent),
     grid: Grid,
     rect: Vec4,
 
     pub fn init(width: f32, height: f32) -> Controller {
         Controller {
-            .agents = ArrayList(Agent).init(&mem.mem),
+            .agents = ArrayList(&Agent).init(&mem.mem),
             .grid = Grid.init(width, height, 100, 10),
             .rect = vec4(0, 0, width, height),
         }
     }
 
     pub fn add(self: &Controller, agent: &Agent) {
-        self.grid.add(agent);
+        %%self.agents.append(agent);
     }
 
-    pub fn update(self: &Controller, delta_time: f32) {
-        const friction = f32(0.01);
-        const gravity = vec2(0, 10);
+    pub fn addNew(self: &Controller, agent: &const Agent) {
+        var new_agent = %%mem.mem.init(Agent, agent);
+        %%self.agents.append(new_agent);
+    }
 
-        for ( self.agents.data ) | *agent | {
+    pub fn draw(self: &const Controller, renderer: &IMRenderer) {
+        for (self.agents.toSlice()) | agent, i | {
+            agent.draw(renderer);
+        }
+    }
+
+    pub fn update(self: &Controller, level: &Level, delta_time: f32) {
+        const friction = f32(0.02);
+        const gravity = vec2(0, 0.1);
+
+        for ( self.agents.toSlice() ) | agent | {
             _ = agent.position.offset(agent.velocity.mul_scalar(delta_time));
-            
+
             // Apply friction
             const momentumVec = agent.velocity.mul_scalar(agent.mass);
             if ( momentumVec.x != 0 or momentumVec.y != 0 ) {
@@ -311,10 +324,14 @@ pub const Controller = struct {
                     agent.velocity = vec3(0, 0, 0);
                 }
             }
-
+            
             // Apply gravity
             _ = agent.velocity.offset(gravity.mul_scalar(delta_time).xyz());
-
+            
+            if(agent.collideWithLevel(level)) {
+                agent.velocity.y = 0;
+            }
+            
             // Check to see if the agent moved
             if (agent.ownerCell) | cell | {
                 const newCell = self.grid.getCellAt(agent.position.xy());
@@ -329,38 +346,25 @@ pub const Controller = struct {
     }
 
     fn updateCollisions(grid: &Grid) {
-        for ( grid.cells.toSlice() ) | *cell, i | {
+        for ( grid.cells.toSlice() ) | cell, i | {
             const x = i % grid.columns;
             const y = i / grid.columns;
 
-            // Loop through all agents in a cell
-            for ( cell.agents.toSlice() ) | *agent, j | {
-                /// Update with the residing cell
+            for ( cell.agents.toSlice() ) | agent, j | {
                 checkCollisions(agent, &cell.agents, j + 1);
-
-                /// Update collision with neighbor cells
+                // Neighbor cells: left, top left, bottom left and up
                 if ( x > 0 ) {
-                    // Left
                     checkCollisions(agent, &grid.getCell(x - 1, y).agents, 0);
-                    if ( y > 0 ) {
-                        /// Top left
-                        checkCollisions(agent, &grid.getCell(x - 1, y - 1).agents, 0);
-                    }
-                    if ( y < grid.rows - 1 ) {
-                        // Bottom left
-                        checkCollisions(agent, &grid.getCell(x - 1, y + 1).agents, 0);
-                    }
+                    if ( y > 0 ) checkCollisions(agent, &grid.getCell(x - 1, y - 1).agents, 0);
+                    if ( y < grid.rows - 1 ) checkCollisions(agent, &grid.getCell(x - 1, y + 1).agents, 0);
                 }
-                // Up cell
-                if ( y > 0 ) {
-                    checkCollisions(agent, &grid.getCell(x, y - 1).agents, 0);
-                }
+                if ( y > 0 ) checkCollisions(agent, &grid.getCell(x, y - 1).agents, 0);
             }
         }
     }
 
-    fn checkCollisions(agent: &Agent, check: &ArrayList(Agent), startingIndex: usize) {
-        for ( check.toSlice() ) | *other | {
+    fn checkCollisions(agent: &Agent, check: &ArrayList(&Agent), startingIndex: usize) {
+        for ( check.toSlice() ) | other | {
             checkCollision(agent, other);
         }
     }
@@ -368,25 +372,235 @@ pub const Controller = struct {
     fn checkCollision(agent1: &Agent, agent2: &Agent) {
         // We add radius since position is the top left corner
         const dist_vec = agent2.position.sub(agent1.position);
-        const distDir = dist_vec.normalize();
+        const dist_vec_direction = dist_vec.normalize();
         const dist = dist_vec.length();
-        const totalRadius = agent1.radius + agent2.radius;
-        const collisionDepth = totalRadius - dist;
-        if ( collisionDepth > 0 ) {
+        const min_distance = agent1.radius + agent2.radius;
+        const collision_depth = min_distance - dist;
+        if ( collision_depth > 0 ) {
             // Push away the less massive one
             if ( agent1.mass < agent2.mass ) {
-                _ = agent1.position.offset(distDir.mul_scalar(-collisionDepth));
+                _ = agent1.position.offset(dist_vec_direction.mul_scalar(-collision_depth));
             } else {
-                _ = agent2.position.offset(distDir.mul_scalar(collisionDepth));
+                _ = agent2.position.offset(dist_vec_direction.mul_scalar(collision_depth));
             }
-            const aci = agent1.velocity.dot(distDir);
-            const bci = agent2.velocity.dot(distDir);
+            const aci = agent1.velocity.dot(dist_vec_direction);
+            const bci = agent2.velocity.dot(dist_vec_direction);
             const acf = ( aci * ( agent1.mass - agent2.mass ) + 2 * agent2.mass * bci ) / ( agent1.mass + agent2.mass );
             const bcf = ( bci * ( agent2.mass - agent1.mass ) + 2 * agent1.mass * aci ) / ( agent1.mass + agent2.mass );
 
-            _ = agent1.velocity.offset(distDir.mul_scalar( acf - aci ));
-            _ = agent2.velocity.offset(distDir.mul_scalar( bcf - bci ));
+            _ = agent1.velocity.offset(dist_vec_direction.mul_scalar( acf - aci ));
+            _ = agent2.velocity.offset(dist_vec_direction.mul_scalar( bcf - bci ));
         }
     }
 };
 
+const AgentRenderer = struct {
+    program: ?&ShaderProgram,
+
+    pub fn render(self: &AgentRenderer, renderer: &BatchRenderer, agents: &const ArrayList(&Agent), proj_matrix: &const Mat4 ) {
+        // Lazily initialize the program
+        if (self.program == null) {
+            self.program = mem.mem.create(ShaderProgram);
+            self.program.compileShaders("res/shaders/gameShader.vert", "res/shaders/gameShader.frag");
+            self.program.addAttribute("vertexPosition");
+            self.program.addAttribute("vertexColour");
+            self.program.addAttribute("vertexUV");
+            self.program.linkShaders();
+        }
+
+        self.program.bind();
+
+        renderer.begin();
+        {
+            glActiveTexture(GL_TEXTURE0);
+            const textureUniform = self.program.getUniformLocation("sprite");
+            glUniform1i(textureUniform, 0);
+
+            const pUniform = self.program.getUniformLocation("camera");
+            glUniformMatrix4fv(pUniform, 1, GL_FALSE, proj_matrix.elements);
+
+            // Render all the balls
+            for (agents.toSlice()) | agent, i | {
+                const uvRect = vec4(0.0, 0.0, 1.0, 1.0);
+                const destRect = vec4(
+                    agent.position.x - agent.radius,
+                    agent.position.y - agent.radius,
+                    agent.radius * 2.0,
+                    agent.radius * 2.0
+                );
+                renderer.submit(destRect, uvRect, agent.texture, 0.0, agent.colour);
+            }
+        }
+        renderer.end();
+        renderer.render();
+
+        self.program.unbind();
+    }
+};
+
+
+const PlayerMoveState = enum{
+    STANDING, RUNNING, PUNCHING, IN_AIR
+};
+
+const PlatformPlayer = struct {
+    agent: &Agent,
+    input: &InputManager,
+    texture: TileSheet,
+    body: Body,
+    moveState: PlayerMoveState,
+    animTime: float,
+    onGround: bool,
+    isPunching: bool,
+
+    pub fn init(world: &World, position: &const Vec2, draw_dimensions: &const Vec2, collision_dimensions: &const Vec2,
+            color: ColourRGBA8) -> PlatformPlayer {
+        const texture = getTexture("res/textures/blue_ninja.png");
+        PlatformPlayer {
+            self.color = color,
+            self.collision_dimensions = collision_dimensions,
+            self.body.init(world, position, collision_dimensions, 1.0, 0.1, true),
+            self.texture.init(texture, ivec2(10, 2)),
+        }
+    }
+
+    pub fn deinit(world: &World) {
+        capsule.destroy(world);
+    }
+
+    pub fn update(self: &PlatformPlayer) {
+        if (self.input.keyDown[c.GLFW_KEY_A]) {
+            self.body.ApplyForceToCenter(vec2(-50.0, 0.0), true);
+            self.direction = -1;
+        } else if (self.input.keyDown[c.GLFW_KEY_D]) {
+            self.body.ApplyForceToCenter(vec2(50.0, 0.0), true);
+            self.direction = 1;
+        } else {
+            self.body.velocity.set(vec2(body.velocity.x * 0.95, body.velocity.y));
+        }
+
+        // Check for punch
+        if (self.input.keyPressed[c.GLFW_KEY_SPACE]) self.isPunching = true;
+
+        const MAX_SPEED = 10.0;
+
+        self.body.velocity = if (body.velocity.x < -MAX_SPEED) {
+            vec2(-MAX_SPEED, body.velocity.y)
+        } else if (body.velocity.x > MAX_SPEED) {
+            vec2(MAX_SPEED, body.velocity.y)
+        };
+
+        // Loop through all the contact points
+        self.onGround = false;
+        for (self.body.collision_list) | collision | {
+            const manifold = Manifold.init();
+            c.GetWorldManifold(&manifold);
+            // Check if the points are below
+            var below = false;
+            for (manifold.points) | point, i | {
+                if (manifold.points[i].y < body.position.y - self.capsule.dimensions.y / 2.0 + self.capsule.dimensions.x / 2.0 + 0.01) {
+                    below = true;
+                    break;
+                }
+            }
+            if (below) {
+                self.onGround = true;
+                // We can jump
+                if (self.input.keyPressed[c.GLFW_KEY_W]) {
+                    body.ApplyLinearImpulse(vec2(0.0, 10.0), vec2(0.0, 0.0), true);
+                    break;
+                }
+            }
+        }
+    }
+    
+    pub fn draw(world: &World, renderer: &BatchRenderer) {
+        var destRect = Vec4.init(
+            self.body.position.x - self.draw_dimensions.x / 2.0,
+            self.body.position.y - self.draw_dimensions.y / 2.0,
+            self.draw_dimensions.x,
+            self.draw_dimensions.y
+        );
+
+        var tileIndex = usize(0);
+        var numTiles = usize(0);
+
+        const animSpeed = 0.2;
+        
+        const velocity = vec2( self.body.velocity.x, self.body.velocity.y );
+
+        if (self.onGround) {
+            if (self.isPunching) {
+                numTiles = 4;
+                tileIndex = 1;
+                if (self.moveState != PlayerMoveState.PUNCHING) {
+                    self.moveState = PlayerMoveState.PUNCHING;
+                    self.animTime = 0.0;
+                }
+            } else if (abs(velocity.x) > 1.0
+                    and((velocity.x > 0 and self.direction > 0)or (velocity.x < 0 and self.direction < 0) )) {
+                // Running
+                numTiles = 6;
+                tileIndex = 10;
+                animSpeed = abs(velocity.x) * 0.025;
+                if (self.moveState != PlayerMoveState.RUNNING) {
+                    self.moveState = PlayerMoveState.RUNNING;
+                    self.animTime = 0.0;
+                }
+            } else {
+                // Standing still
+                numTiles = 1;
+                tileIndex = 0;
+                self.moveState = PlayerMoveState.STANDING;
+            }
+        } else {
+            // In the air
+            if (self.isPunching) {
+                numTiles = 1;
+                tileIndex = 18;
+                animSpeed *= 0.25;
+                if (self.moveState != PlayerMoveState.PUNCHING) {
+                    self.moveState = PlayerMoveState.PUNCHING;
+                    self.animTime = 0.0;
+                }
+            } else if (abs(velocity.x) > 10.0) {
+                numTiles = 1;
+                tileIndex = 10;
+                self.moveState = PlayerMoveState.IN_AIR;
+            } else if (velocity.y <= 0.0) {
+                // Falling
+                numTiles = 1;
+                tileIndex = 17;
+                self.moveState = PlayerMoveState.IN_AIR;
+            } else {
+                // Rising
+                numTiles = 1;
+                tileIndex = 16;
+                self.moveState = PlayerMoveState.IN_AIR;
+            }
+        }
+
+        // Increment animation time
+        self.animTime += animSpeed;
+
+        // Check for punch end
+        if (self.animTime > numTiles) {
+            self.isPunching = false;
+        }
+
+        // Apply animation
+        tileIndex = tileIndex + int(self.animTime) % numTiles;
+
+        // Get the uv coordinates from the tile index
+        var uvRect = self.texture.getUVs(tileIndex);
+
+        // Check direction
+        if (self.direction == -1) {
+            desRect.x += 1.0 / self.texture.dims.x;
+            uvRect.z *= -1;
+        }
+
+        // Draw the sprite
+        renderer.submit(destRect, uvRect, self.texture.texture.id, 0.0, self.color, body.GetAngle());
+    }
+};

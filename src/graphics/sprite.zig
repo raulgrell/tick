@@ -16,32 +16,32 @@ pub const Glyph = struct {
     topLeft: Vertex,
     topRight: Vertex,
     bottomRight: Vertex,
-    textureID: c.GLuint,
+    texture: &const Texture,
     depth: f32,
 
-    fn init(destRect: &const Vec4, uvRect: &const Vec4, texture: c.GLuint, depth: f32, colour: &const Vec4) -> Glyph {
-        const blv = Vertex {
-            .position = vec3(destRect.x(), destRect.y(), 0),
-            .colour = *colour,
-            .uv = vec2(uvRect.x(), uvRect.y())
-        };
-
+    fn init(destRect: &const Vec4, uvRect: &const Vec4, texture: &const Texture, depth: f32, colour: &const Vec4) -> Glyph {
         const tlv = Vertex {
-            .position = vec3(destRect.x(), destRect.y() + destRect.w(), 0),
+            .position = vec3(destRect.x, destRect.y, 0),
             .colour = *colour,
-            .uv = vec2(uvRect.x(), uvRect.y() + uvRect.w())
+            .uv = vec2(uvRect.x, uvRect.y)
         };
 
-        const trv = Vertex {
-            .position = vec3(destRect.x() + destRect.z(), destRect.y() + destRect.w(), 0),
+        const blv = Vertex {
+            .position = vec3(destRect.x, destRect.y + destRect.w, 0),
             .colour = *colour,
-            .uv = vec2(uvRect.x() + uvRect.z(), uvRect.y() + uvRect.w()),
+            .uv = vec2(uvRect.x, uvRect.y + uvRect.w)
         };
 
         const brv = Vertex {
-            .position = vec3(destRect.x() + destRect.z(), destRect.y(), 0),
+            .position = vec3(destRect.x + destRect.z, destRect.y + destRect.w, 0),
             .colour = *colour,
-            .uv = vec2(uvRect.x() + uvRect.z(), uvRect.y()),
+            .uv = vec2(uvRect.x + uvRect.z, uvRect.y + uvRect.w),
+        };
+
+        const trv = Vertex {
+            .position = vec3(destRect.x + destRect.z, destRect.y, 0),
+            .colour = *colour,
+            .uv = vec2(uvRect.x + uvRect.z, uvRect.y),
         };
 
         return Glyph {
@@ -49,20 +49,20 @@ pub const Glyph = struct {
             .topLeft = tlv,
             .topRight = trv, 
             .bottomRight = brv, 
-            .textureID = texture,
+            .texture = texture,
             .depth = depth
         };
     }
 
     fn initR(destRect: Vec4, uvRect: Vec4, texture: c.GLuint, depth: f32, colour: Vec4, angle: f32) -> Glyph {
         // To get center position
-        const halfDims = vec2( destRect.z() / 2.0, destRect.w() / 2.0  );
+        const halfDims = vec2( destRect.z / 2.0, destRect.w / 2.0  );
 
         // Center at origin
-        const bl = vec2(-halfDims.x(), -halfDims.y() );
-        const tl = vec2(-halfDims.x(),  halfDims.y() );
-        const tr = vec2( halfDims.x(),  halfDims.y() );
-        const br = vec2( halfDims.x(), -halfDims.y() );
+        const bl = vec2(-halfDims.x, -halfDims.y );
+        const tl = vec2(-halfDims.x,  halfDims.y );
+        const tr = vec2( halfDims.x,  halfDims.y );
+        const br = vec2( halfDims.x, -halfDims.y );
 
         // rotate the points
 
@@ -72,27 +72,27 @@ pub const Glyph = struct {
         br = rotate(br, angle) + halfDims;
 
         const blv = Vertex {
-            .position = vec3(destRect.x() + bl.x(), destRect.y() + bl.y(), 0),
+            .position = vec3(destRect.x + bl.x, destRect.y + bl.y, 0),
             .colour = *colour,
-            .uv = vec2(uvRect.x(), uvRect.y())
+            .uv = vec2(uvRect.x, uvRect.y)
         };
 
         const tlv = Vertex {
-            .position = vec3(destRect.x() + tl.x(), destRect.y() + tl.y(), 0),
+            .position = vec3(destRect.x + tl.x, destRect.y + tl.y, 0),
             .colour = *colour,
-            .uv = vec2(uvRect.x(), uvRect.y() + uvRect.w())
+            .uv = vec2(uvRect.x, uvRect.y + uvRect.w)
         };
 
         const trv = Vertex {
-            .position = vec3(destRect.x() + tr.x(), destRect.y() + tr.y(), 0),
+            .position = vec3(destRect.x + tr.x, destRect.y + tr.y, 0),
             .colour = *colour,
-            .uv = vec2(uvRect.x() + uvRect.z(), uvRect.y() + uvRect.w())
+            .uv = vec2(uvRect.x + uvRect.z, uvRect.y + uvRect.w)
         };
 
         const brv = Vertex {
-            .position = vec3(destRect.x() + br.x(), destRect.y() + br.y(), 0),
+            .position = vec3(destRect.x + br.x, destRect.y + br.y, 0),
             .colour = *colour,
-            .uv = vec2(uvRect.x() + uvRect.z(), uvRect.y())
+            .uv = vec2(uvRect.x + uvRect.z, uvRect.y)
         };
 
         return Glyph {
@@ -105,101 +105,6 @@ pub const Glyph = struct {
         };
     }
 };
-
-error NotPngFile;
-error NoMem;
-error InvalidFormat;
-error NoPixels;
-
-const PNG_COLOR_TYPE_RGBA = c.PNG_COLOR_MASK_COLOR | c.PNG_COLOR_MASK_ALPHA;
-const PNG_COLOR_TYPE_RGB  = c.PNG_COLOR_MASK_COLOR;
-
-pub const PngImage = struct {
-    width: u32,
-    height: u32,
-    pitch: u32,
-    color_type: c_uint,
-    raw: []u8,
-
-    pub fn destroy(pi: &PngImage) {
-        mem.free(u8, pi.raw);
-    }
-
-    pub fn create(compressed_bytes: []const u8) -> %PngImage {
-        var pi : PngImage = undefined;
-
-        if (c.png_sig_cmp(&compressed_bytes[0], 0, 8) != 0) return error.NotPngFile;
-
-        var png_ptr = c.png_create_read_struct(c.PNG_LIBPNG_VER_STRING, null, null, null);
-        if (png_ptr == null) return error.NoMem;
-
-        var info_ptr = c.png_create_info_struct(png_ptr);
-        if (info_ptr == null) {
-            c.png_destroy_read_struct(&png_ptr, null, null);
-            return error.NoMem;
-        };
-        defer c.png_destroy_read_struct(&png_ptr, &info_ptr, null);
-
-        c.png_set_sig_bytes(png_ptr, 8);
-
-        var png_io = PngIo {
-            .index = 8,
-            .buffer = compressed_bytes,
-        };
-        c.png_set_read_fn(png_ptr, @ptrCast(&c_void, &png_io), read_png_data);
-
-        c.png_read_info(png_ptr, info_ptr);
-
-        pi.width  = c.png_get_image_width(png_ptr, info_ptr);
-        pi.height = c.png_get_image_height(png_ptr, info_ptr);
-
-        if (pi.width <= 0 or pi.height <= 0) return error.NoPixels;
-
-        // bits per channel (not per pixel)
-        const bits_per_channel = c.png_get_bit_depth(png_ptr, info_ptr);
-        if (bits_per_channel != 8) return error.InvalidFormat;
-
-        const channel_count = c.png_get_channels(png_ptr, info_ptr);
-        const color_type = c.png_get_color_type(png_ptr, info_ptr);
-
-        if(color_type == PNG_COLOR_TYPE_RGBA and channel_count == 4) {
-            pi.color_type = c.GL_RGBA;
-        } else if ( color_type == PNG_COLOR_TYPE_RGB and channel_count == 3) {
-            pi.color_type = c.GL_RGB;
-        } else {
-            return error.InvalidFormat;
-        }
-
-        pi.pitch = pi.width * bits_per_channel * channel_count / 8;
-        pi.raw = mem.alloc(u8, pi.height * pi.pitch) %% return error.NoMem;
-        %defer mem.free(u8, pi.raw);
-
-        const row_ptrs = mem.alloc(c.png_bytep, pi.height) %% return error.NoMem;
-        defer mem.free(c.png_bytep, row_ptrs);
-
-        { var i: usize = 0; while (i < pi.height) : (i += 1) {
-            const q = (pi.height - i - 1) * pi.pitch;
-            row_ptrs[i] = &pi.raw[q];
-        }}
-
-        c.png_read_image(png_ptr, &row_ptrs[0]);
-
-        return pi;
-    }
-};
-
-const PngIo = struct {
-    index: usize,
-    buffer: []const u8,
-};
-
-extern fn read_png_data(png_ptr: c.png_structp, data: c.png_bytep, length: c.png_size_t) {
-    const png_io = @ptrCast(&PngIo, ??c.png_get_io_ptr(png_ptr));
-    const new_index = png_io.index + length;
-    if (new_index > png_io.buffer.len) unreachable;
-    @memcpy(@ptrCast(&u8, ??data), &png_io.buffer[png_io.index], length);
-    png_io.index = new_index;
-}
 
 pub const Texture = struct {
     img: PngImage,    
@@ -301,7 +206,6 @@ pub const Sprite = struct {
         s.texture.bind();
         c.glDrawArrays(c.GL_TRIANGLE_STRIP, 0, 4);
     }
-
 };
 
 pub const Spritesheet = struct {
@@ -437,91 +341,132 @@ const TextureCache = struct {
 
 
 const Group = struct {
-    renderables: ArrayList(Renderable),
-    transformationMatrix: Mat4x4,
+    textures: ArrayList(&Texture),
+    transform: Mat4x4,
 
     pub fn init(transform: Mat4x4 ) -> Group {
         return Group {
-            .renderables = ArrayList(Renderable).init(),
-            .transformationMatrix = transform,
+            .textures = ArrayList(&Texture).init(),
+            .transform = transform,
         }
     }
 
-    pub fn deinit(g: &Group) {
-        g.renderables.deinit();
+    pub fn deinit(self: &Group) {
+        self.textures.deinit();
     }
 
-    pub fn add(g: &Group, renderable: &Renderable) {
-        g.renderables.append(renderable);
+    pub fn add(self: &Group, texture: &Texture) {
+        self.textures.append(renderable);
     }
 
-    pub fn draw(g: &Group, renderer: &IMRenderer) {
-        renderer.push(g.transformationMatrix);
-        for (g.renderables) | r, i | {
-            r.draw(renderer);
+    pub fn draw(self: &Group, renderer: &IMRenderer) {
+        renderer.pushTransform(self.transform);
+        for (self.textures) | t, i | {
+            t.draw(renderer);
         }
         renderer.pop();
     }
 
-    pub fn submit(g: &Group, renderer: &BatchRenderer) {
-        renderer.push(g.transformationMatrix);
-        for (g.renderables) | r, i | {
-            r.submit(renderer);
+    pub fn submit(self: &Group, renderer: &BatchRenderer) {
+        renderer.pushTransform(self.transform);
+        for (self.textures) | t, i | {
+            t.submit(renderer);
         }
         renderer.pop();
     }
 };
 
-pub fn ByteGrid(comptime C: u32, comptime R: u32) -> type {
-    struct {
-        color: Vec4,
-        cells: [R][C]bool,
+error NotPngFile;
+error NoMem;
+error InvalidFormat;
+error NoPixels;
 
-        const Self = this;
+const PNG_COLOR_TYPE_RGBA = c.PNG_COLOR_MASK_COLOR | c.PNG_COLOR_MASK_ALPHA;
+const PNG_COLOR_TYPE_RGB  = c.PNG_COLOR_MASK_COLOR;
 
-        fn renderByteGrid(self: Self ) {
-            for (self.cells) |row, y| {
-                for (row) |cell, x| {
-                    switch (cell) {
-                        Cell.Color => |color| {
-                            const cell_left = board_left + i32(x) * cell_size;
-                            const cell_top = board_top + i32(y) * cell_size;
-                            fillRect(t, color, f32(cell_left), f32(cell_top), cell_size, cell_size);
-                        },
-                        else => {},
-                    }
-                }
-            }
-        }
+pub const PngImage = struct {
+    width: u32,
+    height: u32,
+    pitch: u32,
+    color_type: c_uint,
+    raw: []u8,
 
-        fn cell_empty(self: Self , x: i32, y: i32) -> bool {
-            switch (self.cells[usize(y)][usize(x)]) {
-                Cell.Empty => true,
-                else => false,
-            }
-        }
+    pub fn destroy(pi: &PngImage) {
+        mem.free(u8, pi.raw);
     }
+
+    pub fn create(compressed_bytes: []const u8) -> %PngImage {
+        var pi : PngImage = undefined;
+
+        if (c.png_sig_cmp(&compressed_bytes[0], 0, 8) != 0) return error.NotPngFile;
+
+        var png_ptr = c.png_create_read_struct(c.PNG_LIBPNG_VER_STRING, null, null, null);
+        if (png_ptr == null) return error.NoMem;
+
+        var info_ptr = c.png_create_info_struct(png_ptr);
+        if (info_ptr == null) {
+            c.png_destroy_read_struct(&png_ptr, null, null);
+            return error.NoMem;
+        };
+        defer c.png_destroy_read_struct(&png_ptr, &info_ptr, null);
+
+        c.png_set_sig_bytes(png_ptr, 8);
+
+        var png_io = PngIo {
+            .index = 8,
+            .buffer = compressed_bytes,
+        };
+        c.png_set_read_fn(png_ptr, @ptrCast(&c_void, &png_io), read_png_data);
+
+        c.png_read_info(png_ptr, info_ptr);
+
+        pi.width  = c.png_get_image_width(png_ptr, info_ptr);
+        pi.height = c.png_get_image_height(png_ptr, info_ptr);
+
+        if (pi.width <= 0 or pi.height <= 0) return error.NoPixels;
+
+        // bits per channel (not per pixel)
+        const bits_per_channel = c.png_get_bit_depth(png_ptr, info_ptr);
+        if (bits_per_channel != 8) return error.InvalidFormat;
+
+        const channel_count = c.png_get_channels(png_ptr, info_ptr);
+        const color_type = c.png_get_color_type(png_ptr, info_ptr);
+
+        if(color_type == PNG_COLOR_TYPE_RGBA and channel_count == 4) {
+            pi.color_type = c.GL_RGBA;
+        } else if ( color_type == PNG_COLOR_TYPE_RGB and channel_count == 3) {
+            pi.color_type = c.GL_RGB;
+        } else {
+            return error.InvalidFormat;
+        }
+
+        pi.pitch = pi.width * bits_per_channel * channel_count / 8;
+        pi.raw = mem.alloc(u8, pi.height * pi.pitch) %% return error.NoMem;
+        %defer mem.free(u8, pi.raw);
+
+        const row_ptrs = mem.alloc(c.png_bytep, pi.height) %% return error.NoMem;
+        defer mem.free(c.png_bytep, row_ptrs);
+
+        { var i: usize = 0; while (i < pi.height) : (i += 1) {
+            const q = (pi.height - i - 1) * pi.pitch;
+            row_ptrs[i] = &pi.raw[q];
+        }}
+
+        c.png_read_image(png_ptr, &row_ptrs[0]);
+
+        return pi;
+    }
+};
+
+const PngIo = struct {
+    index: usize,
+    buffer: []const u8,
+};
+
+extern fn read_png_data(png_ptr: c.png_structp, data: c.png_bytep, length: c.png_size_t) {
+    const png_io = @ptrCast(&PngIo, ??c.png_get_io_ptr(png_ptr));
+    const new_index = png_io.index + length;
+    if (new_index > png_io.buffer.len) unreachable;
+    @memcpy(@ptrCast(&u8, ??data), &png_io.buffer[png_io.index], length);
+    png_io.index = new_index;
 }
-
-const _ = false;
-const X = true;
-
-const innerSquare = ByteGrid(4,4) {
-    .color = Vec4 { .data = []f32{ 0.0/255.0, 255.0/255.0, 255.0/255.0, 1.0 }, },
-    .cells = [][]bool {
-        []bool{ _, _, _, _ },
-        []bool{ _, X, X, _ },
-        []bool{ _, X, X, _ },
-        []bool{ _, _, _, _ },
-    }
-};
-
-const outerSquare = ByteGrid(4,4) {
-    .color = Vec4 { .data = []f32{ 0.0/255.0, 255.0/255.0, 255.0/255.0, 1.0 }, },
-    .cells = [][]bool {
-        []bool{ X, X, X, X },
-        []bool{ X, _, _, X },
-        []bool{ X, _, _, X },
-        []bool{ X, X, X, X },
-    }
-};

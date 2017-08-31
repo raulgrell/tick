@@ -25,17 +25,17 @@ const COLOR_LINE = vec4(1, 0.5, 1, 1);
 const GameData = struct {
     font: Spritesheet,
     texture: Texture,
+    noise: Texture,
     sprite: Sprite,
     is_paused:  bool,
-    position: Vec2,
 };
 
 var GAME_DATA = GameData {
     .font = undefined,
     .texture = undefined,
+    .noise = undefined,
     .sprite = undefined,
     .is_paused = false,
-    .position = vec2(0, 0)
 };
 
 // Camera
@@ -47,9 +47,9 @@ var LEVEL: level.Level = undefined;
 var level_data = [][]const u8 {
     "################",
     "#              #",
-    "#  @    #      #",
-    "#        #     #",
-    "#         #    #",
+    "#              #",
+    "#        # #   #",
+    "#  @      #    #",
     "#          #   #",
     "#     $        #",
     "#              #",
@@ -82,23 +82,18 @@ var TD_PLAYER: entity.TopDownPlayer = undefined;
 var PF_AGENT:  entity.Agent         = undefined;
 var PF_PLAYER: entity.TopDownPlayer = undefined;
 
-// Controllers
+// Group
+
+// Controller, Grid, Cell
 var AGENT_CONTROLLER: entity.Controller = undefined;
-// Grid
-// Cell
-// PlatformPlayer
 // Physics
 // Scene
-
-// Grouping
-
 // Layer
 // LayerStack
-// Group
-// Grid
 
 const FONT_PNG = @embedFile("../data/font.png");
 const TEX_PNG = @embedFile("../data/tiles/tile_01.png");
+const NOISE_PNG = @embedFile("../data/tex.png");
 const SPRITE_PNG = @embedFile("../data/tiles/tile_101.png");
 
 fn togglePause() {
@@ -107,7 +102,6 @@ fn togglePause() {
 }
 
 fn restartGame() {
-    GAME_DATA.position = vec2(0,0);
     GAME_DATA.is_paused = false;
     _= c.printf(c"Restart Game\n");
 }
@@ -117,6 +111,7 @@ pub fn setup(app: &core.App) {
         panic("Unable to load spritesheet");
     };
     GAME_DATA.texture = Texture.init(TEX_PNG) %% panic("Unable to load texture");
+    GAME_DATA.noise = Texture.init(NOISE_PNG) %% panic("Unable to load noise");
     GAME_DATA.sprite = Sprite.init(SPRITE_PNG) %% panic("Unable to load sprite");
 
     tile_map[' '] = GAME_DATA.texture;
@@ -138,19 +133,22 @@ pub fn setup(app: &core.App) {
     LIGHT_SHADER = light.LightShader.init();
 
     LEVEL = Level.init(level_data[0..], DIMENSIONS_TILE);
-    const level_start = LEVEL.player_start_position;
-    const level_end = LEVEL.player_end_position;
-
-    AGENT_CONTROLLER = entity.Controller.init(f32(fb_width), f32(fb_height));
-    AGENT = entity.Agent.init(POINT_ORIGIN, DIMENSIONS_AGENT, &GAME_DATA.texture);
+    const level_start = LEVEL.start;
+    const level_center = LEVEL.getCenter();
+    const level_end = LEVEL.end;
+    
+    AGENT = entity.Agent.init(level_start.xyz(), DIMENSIONS_AGENT, &GAME_DATA.noise);
     PLAYER = entity.Player.init(&AGENT, &app.input, &CAMERA);
-    AGENT_CONTROLLER.add(&AGENT);
     
     TD_AGENT = entity.Agent.init(level_start.xyz(), DIMENSIONS_AGENT, &GAME_DATA.sprite.texture);
     TD_PLAYER = entity.TopDownPlayer.init(&TD_AGENT, &app.input, &CAMERA);
-
+    
     PF_AGENT = entity.Agent.init(level_end.xyz(), DIMENSIONS_AGENT, &GAME_DATA.sprite.texture);
     PF_PLAYER = entity.TopDownPlayer.init(&TD_AGENT, &app.input, &CAMERA);
+    
+    AGENT_CONTROLLER = entity.Controller.init(f32(fb_width), f32(fb_height));
+    AGENT_CONTROLLER.add(&AGENT);
+    AGENT_CONTROLLER.addNew(entity.Agent.init(level_center.xyz().cast(f32), DIMENSIONS_AGENT, &GAME_DATA.noise));
 }   
 
 pub fn update(app: &core.App, deltaTime: f32) {
@@ -159,21 +157,23 @@ pub fn update(app: &core.App, deltaTime: f32) {
 
     if (GAME_DATA.is_paused) return;
 
-    CAMERA.update();
-    AGENT_CONTROLLER.update(deltaTime);
+    if(app.input.keyPressed[c.GLFW_KEY_SPACE]) _ = AGENT.velocity.offset(vec3(0, -5, 0));
+    if(app.input.keyDown[c.GLFW_KEY_DOWN]) _ = AGENT.velocity.offset(vec3(0, 1, 0));
+    if(app.input.keyDown[c.GLFW_KEY_LEFT]) _ = AGENT.velocity.offset(vec3(-0.1, 0, 0));
+    if(app.input.keyDown[c.GLFW_KEY_RIGHT]) _ = AGENT.velocity.offset(vec3(0.1, 0, 0));
 
+    if(app.input.buttonDown[c.GLFW_MOUSE_BUTTON_LEFT]) TD_PLAYER.agent.position = app.input.cursor_position.xyz();
+    
+    AGENT_CONTROLLER.update(&LEVEL, deltaTime);
     TD_PLAYER.update(&LEVEL, deltaTime);
-
-    if(app.input.keyPressed[c.GLFW_KEY_L]) _ = GAME_DATA.position.offset(GAME_DATA.position);
-    if(app.input.keyPressed[c.GLFW_KEY_C]) TD_PLAYER.agent.position = app.input.cursor_position.xyz();
-    if(app.input.keyPressed[c.GLFW_KEY_SPACE]) GAME_DATA.position = TD_PLAYER.agent.position.xy();
 }
 
 pub fn draw(app: &core.App) {
     const cursor = app.input.cursor_position;
-    const pos = GAME_DATA.position;
+    
+    CAMERA.update();
 
-    // 2D Primitives, Batched
+    // 2D Primitives, Batched 
     STRIP_RENDERER.begin();
     {
         STRIP_RENDERER.submit(COLOR_OBJ, cursor.x, cursor.y, 8.0, 8.0);
@@ -186,23 +186,26 @@ pub fn draw(app: &core.App) {
         LEVEL.draw(&IM_RENDERER, tile_map[0..]);
 
         IM_RENDERER.draw_text(&GAME_DATA.font, "Hello", 32, 32, 1);
-        IM_RENDERER.draw_sprite(&GAME_DATA.sprite, 64, 64, 32, 32);
-        IM_RENDERER.draw_rect(&GAME_DATA.texture, 128, 128, 64, 64);
+        IM_RENDERER.draw_rect(&GAME_DATA.texture, 128, 32, 64, 64);
+        IM_RENDERER.draw_rect(&GAME_DATA.noise, 192, 32, 64, 64);
+        IM_RENDERER.draw_sprite(&GAME_DATA.sprite, 256, 32, 32, 32);
+
+        AGENT_CONTROLLER.draw(&IM_RENDERER);
 
         TD_AGENT.draw(&IM_RENDERER);
     }
     IM_RENDERER.end();
 
     // 2D Textures, Batched
-    // BATCH_RENDERER.begin();
-    // {
-    //     const destRect = vec4(10, 10, 100, 10);
-    //     const uvRect = vec4(0, 0, 1, 1);
+    BATCH_RENDERER.begin();
+    {
+        const destRect = vec4(64, 64, 128, 128);
+        const uvRect = vec4(0, 0, 1, 1);
 
-    //     BATCH_RENDERER.submit(destRect, uvRect, GAME_DATA.texture.id, 0, COLOR_OBJ, 0);
-    // }
-    // BATCH_RENDERER.end();
-    // BATCH_RENDERER.render();
+        BATCH_RENDERER.submit(destRect, uvRect, GAME_DATA.noise, 0, COLOR_OBJ, 0);
+    }
+    BATCH_RENDERER.end();
+    BATCH_RENDERER.render();
 
     // 3D
     // LINE_RENDERER.begin();

@@ -3,6 +3,7 @@ pub const lib = @import("../lib/index.zig");
 
 // Core
 pub const core = @import("app/core.zig");
+pub const dev = @import("app/dev.zig");
 pub const audio = @import("app/audio.zig");
 pub const gui = @import("app/gui.zig");
 
@@ -21,8 +22,5 @@ pub const sprite = @import("graphics/sprite.zig");
 pub const renderer = @import("graphics/renderer.zig");
 pub const shader = @import("graphics/shader.zig");
 
-// Math
 pub const math = @import("math/index.zig");
-
-// System
 pub const system =  @import("system/index.zig");

@@ -4,6 +4,7 @@ const core  = @import("../src/app/core.zig");
 const game  = @import("../games/test.zig");
 
 pub fn main() -> %void {
+
     var app = core.App.init();
 
     app.onInit = game.setup;

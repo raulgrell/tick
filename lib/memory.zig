@@ -93,7 +93,7 @@ pub const Allocator = struct {
     }
 
     fn init(self: &Allocator, comptime T: type, data: &const T) -> %&T {
-        var object = &(%return self.alloc(T, 1))[0];
+        var object = %return self.create(T);
         *object = *data;
         return object;
     }
@@ -112,12 +112,12 @@ pub const Allocator = struct {
 
     fn alloc(self: &Allocator, comptime T: type, n: usize) -> %[]T {
         const byte_count = %return math.mul(usize, @sizeOf(T), n);
-        ([]T)(%return self.allocFn(self, byte_count, @alignOf(T)))
+        ([]T)(%return self.allocFn(self, byte_count, @preferredAlignOf(T)))
     }
 
     fn realloc(self: &Allocator, comptime T: type, old_mem: []T, n: usize) -> %[]T {
         const byte_count = %return math.mul(usize, @sizeOf(T), n);
-        ([]T)(%return self.reallocFn(self, ([]u8)(old_mem), byte_count, @alignOf(T)))
+        ([]T)(%return self.reallocFn(self, ([]u8)(old_mem), byte_count, @preferredAlignOf(T)))
     }
 
     fn free(self: &Allocator, mem: var) -> void {
@@ -237,4 +237,136 @@ pub fn Cache(comptime T: type, comptime size: usize) -> type {
             
         }
     }
+}
+
+pub fn isPowerOfTwo(address: usize) ->  bool  {
+    assert(address > 0);
+    return !((address & (address - 1) != 0));
+}
+
+pub fn forward(address: usize, align: u8) ->  usize {
+    const align_minus_one = align - 1;
+    const aligner = ~(align_minus_one);
+    return ((address + align_minus_one) & aligner);
+}
+
+pub fn forwardAdjustment(address: usize, align: u8) ->  usize  {
+    const align_minus_one = align - 1;    
+    const adjustment = align - (address & align_minus_one);
+    return if (adjustment == align) adjustment else 0;
+}
+
+pub fn forwardAdjustmentHeader(address: usize, align: u8, header_size: usize) -> usize {
+    var space_needed = header_size;
+    var adjustment =  forwardAdjustment(address, align);
+    if(adjustment < space_needed) {
+        space_needed -= adjustment;
+        //Increase adjustment to fit header
+        adjustment += align * (space_needed / align);
+        if(space_needed % align > 0)
+            adjustment += align;
+    }
+    return adjustment;
+}
+
+pub fn backward(address: usize, align: u8) ->  usize {
+    const align_minus_one = align - 1;
+    const aligner = ~(align_minus_one);
+    return (address & aligner);
+}
+
+pub fn backwardAdjustment(address: usize, align: u8) ->  usize  {
+    const align_minus_one = align - 1;
+    const adjustment = (address & align_minus_one);
+    return if (adjustment == align) adjustment else 0;
+}
+
+pub inline fn read_16le(data: []const u8) ->  u16 {
+    return u16(data[0]) | (u16(data[1]) << 8);
+}
+
+pub inline fn read_16net(data: []const u8) ->  u16 {
+    return u16(data[1]) | (u16(data[0]) << 8);
+}
+
+pub inline fn write_16le(data: []u8, v: u16) ->  void {
+    data[0] = v;
+    data[1] = v >> 8;
+}
+
+pub inline fn write_16net(data: []u8, v: u16) ->  void {
+    data[1] = v;
+    data[0] = v >> 8;
+}
+
+pub inline fn read_32le(data: []const u8) ->  u32 {
+    return u32(data[0]) |
+           (u32(data[1]) << 8) |
+           (u32(data[2]) << 16) |
+           (u32(data[3]) << 24);
+}
+
+pub inline fn read_32net(data: []const u8) ->  u32 {
+    return u32(data[3]) |
+           (u32(data[2]) << 8) |
+           (u32(data[1]) << 16) |
+           (u32(data[0]) << 24);
+}
+
+pub inline fn write_32le(data: []u8, v: u32) ->  void {
+    data[0] = v;
+    data[1] = v >> 8;
+    data[2] = v >> 16;
+    data[3] = v >> 24;
+}
+
+pub inline fn write_32net(data: []u8, v: u32) ->  void {
+    data[3] = v;
+    data[2] = v >> 8;
+    data[1] = v >> 16;
+    data[0] = v >> 24;
+}
+
+pub inline fn read_64le(data: []const u8) ->  u64 {
+    return u64(data[0]) |
+           (u64(data[1]) << 8) |
+           (u64(data[2]) << 16) |
+           (u64(data[3]) << 24) |
+           (u64(data[4]) << 32) |
+           (u64(data[5]) << 40) |
+           (u64(data[6]) << 48) |
+           (u64(data[7]) << 56);
+}
+
+pub inline fn read_64net(data: []const u8) ->  u64 {
+    return u64(data[7]) |
+           (u64(data[6]) << 8) |
+           (u64(data[5]) << 16) |
+           (u64(data[4]) << 24) |
+           (u64(data[3]) << 32) |
+           (u64(data[2]) << 40) |
+           (u64(data[1]) << 48) |
+           (u64(data[0]) << 56);
+}
+
+pub inline fn write_64le(data: []u8, v: u64) ->  void {
+    data[0] = v;
+    data[1] = v >> 8;
+    data[2] = v >> 16;
+    data[3] = v >> 24;
+    data[4] = v >> 32;
+    data[5] = v >> 40;
+    data[6] = v >> 48;
+    data[7] = v >> 56;
+}
+
+pub inline fn write_64net(data: []u8, v: u64) ->  void {
+    data[7] = v;
+    data[6] = v >> 8;
+    data[5] = v >> 16;
+    data[4] = v >> 24;
+    data[3] = v >> 32;
+    data[2] = v >> 40;
+    data[1] = v >> 48;
+    data[0] = v >> 56;
 }

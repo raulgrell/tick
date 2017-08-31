@@ -15,9 +15,12 @@ pub fn ArrayList(comptime T: type) -> type {
         const EqualityFunc = fn(a: T, b: T) -> bool;
         const ComparisonFunc = fn(a: T, b: T) -> isize;
 
+        const initial_size = 16;
+        const growth_factor = 2;
+
         pub fn init(allocator: &Allocator) -> Self {
             Self {
-                .data = []T{},
+                .data = []T {},
                 .length = 0,
                 .allocator = allocator,
             }
@@ -27,22 +30,22 @@ pub fn ArrayList(comptime T: type) -> type {
             self.allocator.free(self.data);
         }
 
-        pub fn toSlice(l: &const Self) -> []T {
-            return l.data[0..l.length];
+        pub fn toSlice(self: &const Self) -> []T {
+            return self.data[0..self.length];
         }
 
-        pub fn toSliceConst(l: &const Self) -> []const T {
-            return l.data[0..l.length];
+        pub fn toSliceConst(self: &const Self) -> []const T {
+            return self.data[0..self.length];
         }
 
-        pub fn back(l: &const Self) -> T {
-            return l.data[l.length];
+        pub fn last(self: &const Self) -> T {
+            return self.data[self.length];
         }
 
-        pub fn pop_back(l: &Self) -> T {
-            const last = l.data[l.length];
-            l.length -= 1;
-            return last;
+        pub fn pop(self: &Self) -> T {
+            const last_item = self.last();
+            self.length -= 1;
+            return last_item;
         }
 
         pub fn append(self: &Self, data: &const T) -> %void {
@@ -55,11 +58,7 @@ pub fn ArrayList(comptime T: type) -> type {
 
         pub fn insert(self: &Self, index: usize, data: &const T) -> %void {
             if (index > self.length) return error.NoMem;
-
-            if (self.length + 1 > self.data.len) {
-                grow(self) %% return error.NoMem;
-            }
-
+            %return self.reserve(self.length + 1);
             // Move the contents of the array forward from the index onwards
             _ = memory.move(T,
                     self.data[self.length - index .. self.length + 1],
@@ -72,10 +71,10 @@ pub fn ArrayList(comptime T: type) -> type {
 
         pub fn reserve(self: &Self, new_size: usize) -> %void {
             if (self.data.len > new_size) return;
-            self.data = if (self.data.len > 0 ) {
-                %return self.allocator.realloc(T, self.data, new_size)
+            self.data = if (self.data.len > 0) {
+                 %%self.allocator.realloc(T, self.data, new_size)
             } else {
-                %return self.allocator.alloc(T, new_size)
+                %%self.allocator.alloc(T, new_size)
             }
         }
 
@@ -84,9 +83,7 @@ pub fn ArrayList(comptime T: type) -> type {
         }
 
         pub fn remove_range(self: &Self, index: usize, length: usize) -> %void {
-            if (index > self.length or index + length > self.length) {
-                return;
-            }
+            if (index > self.length or index + length > self.length) return;
 
             // Move back entries following range
             _ = memory.move(T,
@@ -97,9 +94,7 @@ pub fn ArrayList(comptime T: type) -> type {
         }
 
         pub fn splice(self: &Self, index: usize, length: usize, array: []const T) -> %void {
-            if (index > self.length or index + length > self.length) {
-                return;
-            }
+            if (index > self.length or index + length > self.length) return;
 
             %return self.reserve(self.length + array.len - length);
 
@@ -126,11 +121,6 @@ pub fn ArrayList(comptime T: type) -> type {
 
         pub fn clear(self: &Self) {
             self.length = 0;
-        }
-
-        fn grow(self: &Self) -> %void {
-            const new_size = (self.data.len + 2) * 2;
-            self.data = %return self.allocator.realloc(T, self.data, new_size)
         }
     }
 }
