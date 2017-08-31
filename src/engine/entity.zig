@@ -35,7 +35,7 @@ pub const Agent = struct {
     ownerCell: ?&Cell,
     cellVectorIndex: usize,
 
-    pub fn init(position: &const Vec3, dimensions: &const Vec3, texture: &Texture) -> Agent {
+    pub fn init(position: &const Vec3, dimensions: &const Vec3, speed: f32, texture: &Texture) -> Agent {
         Agent {
             .position = *position,
             .dimensions = *dimensions,
@@ -43,7 +43,7 @@ pub const Agent = struct {
             .texture = texture,
             .direction = vec3(1, 0, 0),
             .velocity = vec3(0, 0, 0),
-            .speed = 2,
+            .speed = speed,
             .mass = 1,
             .radius = 1,
             .ownerCell = null,
@@ -196,7 +196,7 @@ pub const TopDownPlayer = struct {
     }
     
     pub fn update(self: &TopDownPlayer, level: &Level, delta_time: f32) {
-        if(self.input.keyDown[c.GLFW_KEY_W]) self.agent.position.y -= self.agent.speed * delta_time * 2;
+        if(self.input.keyDown[c.GLFW_KEY_W]) self.agent.position.y -= self.agent.speed * delta_time;
         if(self.input.keyDown[c.GLFW_KEY_S]) self.agent.position.y += self.agent.speed * delta_time;
         if(self.input.keyDown[c.GLFW_KEY_A]) self.agent.position.x -= self.agent.speed * delta_time;
         if(self.input.keyDown[c.GLFW_KEY_D]) self.agent.position.x += self.agent.speed * delta_time;
@@ -316,10 +316,10 @@ pub const Controller = struct {
             _ = agent.position.offset(agent.velocity.mul_scalar(delta_time));
 
             // Apply friction
-            const momentumVec = agent.velocity.mul_scalar(agent.mass);
-            if ( momentumVec.x != 0 or momentumVec.y != 0 ) {
-                if ( friction < momentumVec.length() ) {
-                    _ = agent.velocity.offset(momentumVec.normalize().mul_scalar(-friction / agent.mass * delta_time));
+            const momentum_vec = agent.velocity.mul_scalar(agent.mass);
+            if ( momentum_vec.x != 0 or momentum_vec.y != 0 ) {
+                if ( friction < momentum_vec.length() ) {
+                    _ = agent.velocity.offset(momentum_vec.normalize().mul_scalar(-friction / agent.mass * delta_time));
                 } else {
                     agent.velocity = vec3(0, 0, 0);
                 }
@@ -328,6 +328,7 @@ pub const Controller = struct {
             // Apply gravity
             _ = agent.velocity.offset(gravity.mul_scalar(delta_time).xyz());
             
+            // Level Collisions
             if(agent.collideWithLevel(level)) {
                 agent.velocity.y = 0;
             }
@@ -438,25 +439,25 @@ const AgentRenderer = struct {
     }
 };
 
-
-const PlayerMoveState = enum{
-    STANDING, RUNNING, PUNCHING, IN_AIR
-};
-
-const PlatformPlayer = struct {
+const PhysicsPlayer = struct {
     agent: &Agent,
     input: &InputManager,
     texture: TileSheet,
     body: Body,
-    moveState: PlayerMoveState,
-    animTime: float,
-    onGround: bool,
-    isPunching: bool,
+    movement_state: MovementState,
+    animation_time: f32,
+    is_on_ground: bool,
+    is_punching: bool,
+
+    const MovementState = enum{
+        STANDING, RUNNING, PUNCHING, IN_AIR
+    };
+    
 
     pub fn init(world: &World, position: &const Vec2, draw_dimensions: &const Vec2, collision_dimensions: &const Vec2,
-            color: ColourRGBA8) -> PlatformPlayer {
+            color: ColourRGBA8) -> PhysicsPlayer {
         const texture = getTexture("res/textures/blue_ninja.png");
-        PlatformPlayer {
+        PhysicsPlayer {
             self.color = color,
             self.collision_dimensions = collision_dimensions,
             self.body.init(world, position, collision_dimensions, 1.0, 0.1, true),
@@ -468,7 +469,7 @@ const PlatformPlayer = struct {
         capsule.destroy(world);
     }
 
-    pub fn update(self: &PlatformPlayer) {
+    pub fn update(self: &PhysicsPlayer) {
         if (self.input.keyDown[c.GLFW_KEY_A]) {
             self.body.ApplyForceToCenter(vec2(-50.0, 0.0), true);
             self.direction = -1;
@@ -480,7 +481,7 @@ const PlatformPlayer = struct {
         }
 
         // Check for punch
-        if (self.input.keyPressed[c.GLFW_KEY_SPACE]) self.isPunching = true;
+        if (self.input.keyPressed[c.GLFW_KEY_SPACE]) self.is_punching = true;
 
         const MAX_SPEED = 10.0;
 
@@ -491,7 +492,7 @@ const PlatformPlayer = struct {
         };
 
         // Loop through all the contact points
-        self.onGround = false;
+        self.is_on_ground = false;
         for (self.body.collision_list) | collision | {
             const manifold = Manifold.init();
             c.GetWorldManifold(&manifold);
@@ -504,7 +505,7 @@ const PlatformPlayer = struct {
                 }
             }
             if (below) {
-                self.onGround = true;
+                self.is_on_ground = true;
                 // We can jump
                 if (self.input.keyPressed[c.GLFW_KEY_W]) {
                     body.ApplyLinearImpulse(vec2(0.0, 10.0), vec2(0.0, 0.0), true);
@@ -529,13 +530,13 @@ const PlatformPlayer = struct {
         
         const velocity = vec2( self.body.velocity.x, self.body.velocity.y );
 
-        if (self.onGround) {
-            if (self.isPunching) {
+        if (self.is_on_ground) {
+            if (self.is_punching) {
                 numTiles = 4;
                 tileIndex = 1;
-                if (self.moveState != PlayerMoveState.PUNCHING) {
-                    self.moveState = PlayerMoveState.PUNCHING;
-                    self.animTime = 0.0;
+                if (self.movement_state != MovementState.PUNCHING) {
+                    self.movement_state = MovementState.PUNCHING;
+                    self.animation_time = 0.0;
                 }
             } else if (abs(velocity.x) > 1.0
                     and((velocity.x > 0 and self.direction > 0)or (velocity.x < 0 and self.direction < 0) )) {
@@ -543,53 +544,53 @@ const PlatformPlayer = struct {
                 numTiles = 6;
                 tileIndex = 10;
                 animSpeed = abs(velocity.x) * 0.025;
-                if (self.moveState != PlayerMoveState.RUNNING) {
-                    self.moveState = PlayerMoveState.RUNNING;
-                    self.animTime = 0.0;
+                if (self.movement_state != MovementState.RUNNING) {
+                    self.movement_state = MovementState.RUNNING;
+                    self.animation_time = 0.0;
                 }
             } else {
                 // Standing still
                 numTiles = 1;
                 tileIndex = 0;
-                self.moveState = PlayerMoveState.STANDING;
+                self.movement_state = MovementState.STANDING;
             }
         } else {
             // In the air
-            if (self.isPunching) {
+            if (self.is_punching) {
                 numTiles = 1;
                 tileIndex = 18;
                 animSpeed *= 0.25;
-                if (self.moveState != PlayerMoveState.PUNCHING) {
-                    self.moveState = PlayerMoveState.PUNCHING;
-                    self.animTime = 0.0;
+                if (self.movement_state != MovementState.PUNCHING) {
+                    self.movement_state = MovementState.PUNCHING;
+                    self.animation_time = 0.0;
                 }
             } else if (abs(velocity.x) > 10.0) {
                 numTiles = 1;
                 tileIndex = 10;
-                self.moveState = PlayerMoveState.IN_AIR;
+                self.movement_state = MovementState.IN_AIR;
             } else if (velocity.y <= 0.0) {
                 // Falling
                 numTiles = 1;
                 tileIndex = 17;
-                self.moveState = PlayerMoveState.IN_AIR;
+                self.movement_state = MovementState.IN_AIR;
             } else {
                 // Rising
                 numTiles = 1;
                 tileIndex = 16;
-                self.moveState = PlayerMoveState.IN_AIR;
+                self.movement_state = MovementState.IN_AIR;
             }
         }
 
         // Increment animation time
-        self.animTime += animSpeed;
+        self.animation_time += animSpeed;
 
         // Check for punch end
-        if (self.animTime > numTiles) {
-            self.isPunching = false;
+        if (self.animation_time > numTiles) {
+            self.is_punching = false;
         }
 
         // Apply animation
-        tileIndex = tileIndex + int(self.animTime) % numTiles;
+        tileIndex = tileIndex + int(self.animation_time) % numTiles;
 
         // Get the uv coordinates from the tile index
         var uvRect = self.texture.getUVs(tileIndex);

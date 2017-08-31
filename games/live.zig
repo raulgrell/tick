@@ -16,18 +16,11 @@ const SPRITE_PNG = @embedFile("../data/tiles/tile_101.png");
 const FONT_CHAR_WIDTH  = 18;
 const FONT_CHAR_HEIGHT = 32;
 
-const POINT_ORIGIN = vec3(0, 0, 0);
-const POINT_UNITS  = vec3(1, 1, 1);
-const POINT_XUNIT  = vec3(1, 0, 0);
-const POINT_YUNIT  = vec3(0, 1, 0);
-const POINT_ZUNIT  = vec3(0, 0, 1);
-
-const DIMENSIONS_TILE = vec3(32, 32, 0);
-const DIMENSIONS_AGENT = vec3(32, 32, 0);
-
-const COLOR_OBJ  = vec4(1, 0.5, 1, 0.5);
-const COLOR_MID  = vec4(0.5, 0.5, 0.5, 0.5);
-const COLOR_LINE = vec4(1, 0.5, 1, 1);
+const HOT = struct {
+    const DIMENSIONS_TILE = vec3(32, 32, 0);
+    const DIMENSIONS_AGENT = vec3(16, 16, 0);
+    const SPEED_AGENT = 2;
+};
 
 const LEVEL_DATA = [][]const u8 {
     "################",
@@ -35,7 +28,7 @@ const LEVEL_DATA = [][]const u8 {
     "#              #",
     "#        # #   #",
     "#  @      #    #",
-    "#        # #   #",
+    "#          #   #",
     "#     $        #",
     "#              #",
     "################",
@@ -53,7 +46,7 @@ pub const State = struct {
     texture_shader: shader.TextureShader,
     im_renderer:    renderer.IMRenderer,
     agent:  entity.Agent ,
-    player: entity.ImpulsePlayer,
+    player: entity.TopDownPlayer,
     agent_controller: entity.Controller,
     tile_map: [256]?Texture,
 };
@@ -80,16 +73,18 @@ fn init(app: &App) -> &State {
     state.texture_shader = shader.TextureShader.init();
     state.im_renderer    = renderer.IMRenderer.init(&state.texture_shader, fb_width, fb_height );
 
-    state.level = Level.init(LEVEL_DATA[0..], DIMENSIONS_TILE);
+    state.level = Level.init(LEVEL_DATA[0..], HOT.DIMENSIONS_TILE);
     const level_start = state.level.start;
     const level_center = state.level.getCenter();
     const level_end = state.level.end;
     
-    state.agent = entity.Agent.init(level_start.xyz(), DIMENSIONS_AGENT, &state.noise);
-    state.player = entity.ImpulsePlayer.init(&state.agent, &app.input, &state.camera);    
+    state.agent = entity.Agent.init(level_start.xyz(), HOT.DIMENSIONS_AGENT, HOT.SPEED_AGENT, &state.noise);
+    state.player = entity.TopDownPlayer.init(&state.agent, &app.input, &state.camera);    
     
     state.agent_controller = entity.Controller.init(f32(fb_width), f32(fb_height));
     state.agent_controller.add(&state.agent);
+
+    %%io.stdout.printf("init\n");
 
     return state;
 }
@@ -110,7 +105,6 @@ fn update(app: &App, state: &State, deltaTime: f32) -> %void {
         state.player.agent.position = app.input.cursor_position.xyz();
     
     // Update agents
-    state.agent_controller.update(&state.level, deltaTime);
     state.player.update(&state.level, deltaTime);
 }
 
@@ -122,14 +116,15 @@ fn draw(app: &App, state: &State) {
     state.im_renderer.begin();
     {
         state.level.draw(&state.im_renderer, state.tile_map[0..]);
-        state.agent_controller.draw(&state.im_renderer);
+        state.player.agent.draw(&state.im_renderer);
+        state.im_renderer.draw_text(&state.font, "Hello", 32, 32, 1);
     }
     state.im_renderer.end();
 }
 
 fn reload(state: &State) -> void {
-    state.level = Level.init(LEVEL_DATA[0..], DIMENSIONS_TILE);
-    state.cursor_position = vec2(0, 0);
+    state.level = Level.init(LEVEL_DATA[0..], HOT.DIMENSIONS_TILE);
+    state.agent = entity.Agent.init(state.level.start.xyz(), HOT.DIMENSIONS_AGENT, HOT.SPEED_AGENT, &state.noise);
     %%io.stdout.printf("reload\n");
 }
 
