@@ -69,10 +69,9 @@ var IM_RENDERER:    renderer.IMRenderer    = undefined;
 var LINE_RENDERER:  renderer.LineRenderer  = undefined;
 var BATCH_RENDERER: renderer.BatchRenderer = undefined;
 
-
 // Generic Player
 var AGENT:  entity.Agent  = undefined;
-var PLAYER: entity.Player = undefined;
+var AGENT_CONTROLLER: entity.Controller = undefined;
 
 // Top Down Player
 var TD_AGENT:  entity.Agent         = undefined;
@@ -80,16 +79,12 @@ var TD_PLAYER: entity.TopDownPlayer = undefined;
 
 // Platform Player
 var PF_AGENT:  entity.Agent         = undefined;
-var PF_PLAYER: entity.TopDownPlayer = undefined;
+var PF_PLAYER: entity.ImpulsePlayer = undefined;
 
 // Group
-
-// Controller, Grid, Cell
-var AGENT_CONTROLLER: entity.Controller = undefined;
 // Physics
 // Scene
 // Layer
-// LayerStack
 
 const FONT_PNG = @embedFile("../data/font.png");
 const TEX_PNG = @embedFile("../data/tiles/tile_01.png");
@@ -106,7 +101,7 @@ fn restartGame() {
     _= c.printf(c"Restart Game\n");
 }
 
-pub fn setup(app: &core.App) {
+pub fn init(app: &core.App) {
     GAME_DATA.font = Spritesheet.init(FONT_PNG, FONT_CHAR_WIDTH, FONT_CHAR_HEIGHT) %% {
         panic("Unable to load spritesheet");
     };
@@ -137,35 +132,30 @@ pub fn setup(app: &core.App) {
     const level_center = LEVEL.getCenter();
     const level_end = LEVEL.end;
     
-    AGENT = entity.Agent.init(level_start.xyz(), DIMENSIONS_AGENT, &GAME_DATA.noise);
-    PLAYER = entity.Player.init(&AGENT, &app.input, &CAMERA);
-    
-    TD_AGENT = entity.Agent.init(level_start.xyz(), DIMENSIONS_AGENT, &GAME_DATA.sprite.texture);
+    TD_AGENT = entity.Agent.init(level_start.xyz(), DIMENSIONS_AGENT, 2, &GAME_DATA.sprite.texture);
     TD_PLAYER = entity.TopDownPlayer.init(&TD_AGENT, &app.input, &CAMERA);
     
-    PF_AGENT = entity.Agent.init(level_end.xyz(), DIMENSIONS_AGENT, &GAME_DATA.sprite.texture);
-    PF_PLAYER = entity.TopDownPlayer.init(&TD_AGENT, &app.input, &CAMERA);
+    PF_AGENT = entity.Agent.init(level_end.xyz(), DIMENSIONS_AGENT, 2, &GAME_DATA.sprite.texture);
+    PF_PLAYER = entity.ImpulsePlayer.init(&PF_AGENT, &app.input, &CAMERA);
     
+    AGENT = entity.Agent.init(level_start.xyz(), DIMENSIONS_AGENT, 2, &GAME_DATA.noise);
     AGENT_CONTROLLER = entity.Controller.init(f32(fb_width), f32(fb_height));
     AGENT_CONTROLLER.add(&AGENT);
-    AGENT_CONTROLLER.addNew(entity.Agent.init(level_center.xyz().cast(f32), DIMENSIONS_AGENT, &GAME_DATA.noise));
+    AGENT_CONTROLLER.addNew(entity.Agent.init(level_center.xyz().cast(f32), DIMENSIONS_AGENT, 2, &GAME_DATA.noise));
 }   
 
-pub fn update(app: &core.App, deltaTime: f32) {
+pub fn update(app: &core.App, deltaTime: f32) -> %void {
     if(app.input.keyPressed[c.GLFW_KEY_P]) togglePause();
     if(app.input.keyPressed[c.GLFW_KEY_R]) restartGame();
 
     if (GAME_DATA.is_paused) return;
 
-    if(app.input.keyPressed[c.GLFW_KEY_SPACE]) _ = AGENT.velocity.offset(vec3(0, -5, 0));
-    if(app.input.keyDown[c.GLFW_KEY_DOWN]) _ = AGENT.velocity.offset(vec3(0, 1, 0));
-    if(app.input.keyDown[c.GLFW_KEY_LEFT]) _ = AGENT.velocity.offset(vec3(-0.1, 0, 0));
-    if(app.input.keyDown[c.GLFW_KEY_RIGHT]) _ = AGENT.velocity.offset(vec3(0.1, 0, 0));
-
-    if(app.input.buttonDown[c.GLFW_MOUSE_BUTTON_LEFT]) TD_PLAYER.agent.position = app.input.cursor_position.xyz();
+    if(app.input.buttonDown[c.GLFW_MOUSE_BUTTON_LEFT])
+        TD_PLAYER.agent.position = app.input.cursor_position.xyz();
     
     AGENT_CONTROLLER.update(&LEVEL, deltaTime);
     TD_PLAYER.update(&LEVEL, deltaTime);
+    PF_PLAYER.update(&LEVEL, deltaTime);
 }
 
 pub fn draw(app: &core.App) {
@@ -193,6 +183,7 @@ pub fn draw(app: &core.App) {
         AGENT_CONTROLLER.draw(&IM_RENDERER);
 
         TD_AGENT.draw(&IM_RENDERER);
+        PF_AGENT.draw(&IM_RENDERER);
     }
     IM_RENDERER.end();
 
@@ -217,4 +208,8 @@ pub fn draw(app: &core.App) {
     //     // LINE_RENDERER.drawPolygon(COLOR_LINE, cursor, 20, 0, 5);
     // }
     // LINE_RENDERER.end();
+}
+
+pub fn deinit(app: &core.App) {
+
 }

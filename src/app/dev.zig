@@ -21,11 +21,11 @@ const WINDOW_HEIGHT = 360;
 
 pub const API = struct {
     init:     fn(app: &App) -> &State,
-    update:   fn(app: &App, state: &State, deltaTime: f32) -> %void,
+    update:   fn(app: &App, state: &State, delta_time: f32) -> %void,
     draw:     fn(app: &App, state: &State) -> void,
     reload:   fn(state: &State) -> void,
     unload:   fn(state: &State) -> void,
-    deinit: fn(state: &State) -> void,
+    deinit:   fn(state: &State) -> void,
 };
 
 const Game = struct {
@@ -121,9 +121,9 @@ pub const App = struct {
             .state = null
         };
         
-        var currentTicks: f32 = 0.0;
-        var previousTicks: f32 = 0.0;
-        var deltaTime: f32 = 0.0;
+        var current_ticks: f32 = 0.0;
+        var previous_ticks: f32 = 0.0;
+        var delta_time: f32 = 0.0;
 
         while (app.window.running()) {
             Game.load(c"./zig-cache/libgame.so", c"GAME", &lib, app);
@@ -133,20 +133,20 @@ pub const App = struct {
                 const state = lib.state ?? panic("loop: No state");
 
                 // Tick
-                const newTicks: f32 = (f32)(c.glfwGetTime());
-                currentTicks = newTicks - previousTicks;
-                previousTicks = newTicks;
+                const new_ticks: f32 = (f32)(c.glfwGetTime());
+                current_ticks = new_ticks - previous_ticks;
+                previous_ticks = new_ticks;
                 
                 // Update
                 var frameSteps: u8 = 0;
-                var totalDeltaTime = currentTicks / TARGET_FRAMETIME;
-                while (totalDeltaTime > 0.0 and frameSteps < MAX_FRAME_STEPS) {
-                    deltaTime = if (totalDeltaTime < MAX_DELTA_TIME) totalDeltaTime else MAX_DELTA_TIME;
+                var total_delta_time = current_ticks / TARGET_FRAMETIME;
+                while (total_delta_time > 0.0 and frameSteps < MAX_FRAME_STEPS) {
+                    delta_time = if (total_delta_time < MAX_DELTA_TIME) total_delta_time else MAX_DELTA_TIME;
                     app.input.update();
     
-                    api.update(app, state, deltaTime) %% break;
+                    api.update(app, state, delta_time) %% break;
                     
-                    totalDeltaTime -= deltaTime;
+                    total_delta_time -= delta_time;
                     frameSteps += 1;
                 }
 

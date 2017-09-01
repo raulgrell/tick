@@ -45,7 +45,7 @@ pub const State = struct {
     level: level.Level,
     texture_shader: shader.TextureShader,
     im_renderer:    renderer.IMRenderer,
-    agent:  entity.Agent ,
+    agent:  entity.Agent,
     player: entity.TopDownPlayer,
     agent_controller: entity.Controller,
     tile_map: [256]?Texture,

@@ -32,8 +32,8 @@ pub const Agent = struct {
     // Collision Detection
     radius: f32,
     // Spatial Partitioning
-    ownerCell: ?&Cell,
-    cellVectorIndex: usize,
+    owner_cell: ?&Cell,
+    cell_array_index: usize,
 
     pub fn init(position: &const Vec3, dimensions: &const Vec3, speed: f32, texture: &Texture) -> Agent {
         Agent {
@@ -46,8 +46,8 @@ pub const Agent = struct {
             .speed = speed,
             .mass = 1,
             .radius = 1,
-            .ownerCell = null,
-            .cellVectorIndex = 0
+            .owner_cell = null,
+            .cell_array_index = 0
         }
     }
 
@@ -112,27 +112,27 @@ pub const Agent = struct {
     }
 
     // Axis Alligned Bounding Box Collision
-    pub fn collideWithTile(self: &Agent, tilePosition: &const Vec2, tile_dimensions: &const Vec2) {
+    pub fn collideWithTile(self: &Agent, tile_position: &const Vec2, tile_dimensions: &const Vec2) {
         const min_distance_x = self.dimensions.x / 2 + tile_dimensions.x / 2;
         const min_distance_y = self.dimensions.y / 2 + tile_dimensions.y / 2;
 
-        const centerPlayerPos = self.position.add(self.dimensions.div_scalar(2));
-        const dist_vec = centerPlayerPos.sub(vec3(tilePosition.x, tilePosition.y, 0));
-        const xDepth = min_distance_x - math.fabs(dist_vec.x);
-        const yDepth = min_distance_y - math.fabs(dist_vec.y);
+        const player_center = self.position.add(self.dimensions.div_scalar(2));
+        const dist_vec = player_center.sub(vec3(tile_position.x, tile_position.y, 0));
+        const x_depth = min_distance_x - math.fabs(dist_vec.x);
+        const y_depth = min_distance_y - math.fabs(dist_vec.y);
 
-        if ( xDepth > 0 or yDepth > 0 ) {
-            if ( math.max(xDepth, f32(0)) < math.max(yDepth, f32(0)) ) {
+        if ( x_depth > 0 or y_depth > 0 ) {
+            if ( math.max(x_depth, f32(0)) < math.max(y_depth, f32(0)) ) {
                 if ( dist_vec.x < 0 ) {
-                    self.position.x -= xDepth;
+                    self.position.x -= x_depth;
                 } else {
-                    self.position.x += xDepth;
+                    self.position.x += x_depth;
                 }
             } else {
                 if ( dist_vec.y < 0 ) {
-                    self.position.y -= yDepth;
+                    self.position.y -= y_depth;
                 } else {
-                    self.position.y += yDepth;
+                    self.position.y += y_depth;
                 }
             }
         }
@@ -165,19 +165,37 @@ pub const ImpulsePlayer = struct {
     input: &InputManager,
     camera: &Camera,
 
-    pub fn init(agent: &Agent, inputManager: &InputManager, camera: &Camera) -> ImpulsePlayer {
+    pub fn init(agent: &Agent, input_manager: &InputManager, camera: &Camera) -> ImpulsePlayer {
         ImpulsePlayer {
             .agent = agent,
-            .input = inputManager,
+            .input = input_manager,
             .camera = camera,
         }
     }
 
     pub fn update(self: &ImpulsePlayer, level: &Level, delta_time: f32) {
-        if(self.input.keyPressed[c.GLFW_KEY_W]) self.agent.velocity.y -= self.agent.speed * delta_time;
-        if(self.input.keyPressed[c.GLFW_KEY_S]) self.agent.velocity.y += self.agent.speed * delta_time;
-        if(self.input.keyPressed[c.GLFW_KEY_A]) self.agent.velocity.x -= self.agent.speed * delta_time;
-        if(self.input.keyPressed[c.GLFW_KEY_D]) self.agent.velocity.x += self.agent.speed * delta_time;
+        if(self.input.keyPressed[c.GLFW_KEY_UP]) self.agent.velocity.y = -self.agent.speed * delta_time;
+        if(self.input.keyPressed[c.GLFW_KEY_DOWN]) self.agent.velocity.y = self.agent.speed * delta_time;
+        if(self.input.keyPressed[c.GLFW_KEY_LEFT]) self.agent.velocity.x = -self.agent.speed * delta_time;
+        if(self.input.keyPressed[c.GLFW_KEY_RIGHT]) self.agent.velocity.x = self.agent.speed * delta_time;
+
+        // Apply friction
+        const friction = f32(0.1);        
+        const momentum_vec = self.agent.velocity.mul_scalar(self.agent.mass);
+        if ( momentum_vec.x != 0 or momentum_vec.y != 0 ) {
+            if ( friction < momentum_vec.length() ) {
+                _ = self.agent.velocity.offset(
+                    momentum_vec.normalize().mul_scalar(-friction / self.agent.mass * delta_time)
+                );
+            } else {
+                self.agent.velocity = vec3(0, 0, 0);
+            }
+        }
+
+        // Apply displacement
+        _ = self.agent.position.offset(self.agent.velocity);
+
+        // Check collisions
         _ = self.agent.collideWithLevel(level);
     }
 };
@@ -187,10 +205,10 @@ pub const TopDownPlayer = struct {
     input: &InputManager,
     camera: &Camera,
 
-    pub fn init(agent: &Agent, inputManager: &InputManager, camera: &Camera)  -> TopDownPlayer {
+    pub fn init(agent: &Agent, input_manager: &InputManager, camera: &Camera)  -> TopDownPlayer {
         TopDownPlayer {
             .agent = agent,
-            .input = inputManager,
+            .input = input_manager,
             .camera = camera,
         }
     }
@@ -249,8 +267,8 @@ pub const Grid = struct {
 
     pub fn addToCell(self: &Grid, agent: &Agent, cell: &Cell) {
         %%cell.agents.append(agent);
-        agent.ownerCell = cell;
-        agent.cellVectorIndex = cell.agents.length - 1;
+        agent.owner_cell = cell;
+        agent.cell_array_index = cell.agents.length - 1;
     }
 
     pub fn getCellAt(self: &Grid, pos: &const Vec2) -> &Cell {
@@ -267,16 +285,15 @@ pub const Grid = struct {
     }
 
     pub fn removeFromCell(self: &Grid, agent: &Agent) -> void {
-        var agents = (agent.ownerCell ?? return).agents;
-        agents.data[agent.cellVectorIndex] = agents.last();
+        var agents = (agent.owner_cell ?? return).agents;
+        agents.data[agent.cell_array_index] = agents.last();
         _ = agents.pop();
-        // Update vector index
-        if ( agent.cellVectorIndex < agents.length ) {
-            agents.data[agent.cellVectorIndex].cellVectorIndex = agent.cellVectorIndex;
+        if ( agent.cell_array_index < agents.length ) {
+            agents.data[agent.cell_array_index].cell_array_index = agent.cell_array_index;
         }
         // Set the index of agent to -1
-        agent.cellVectorIndex = -1;
-        agent.ownerCell = null;
+        agent.cell_array_index = -1;
+        agent.owner_cell = null;
     }
 };
 
@@ -334,7 +351,7 @@ pub const Controller = struct {
             }
             
             // Check to see if the agent moved
-            if (agent.ownerCell) | cell | {
+            if (agent.owner_cell) | cell | {
                 const newCell = self.grid.getCellAt(agent.position.xy());
                 if ( newCell != cell ) {
                     self.grid.removeFromCell(agent);

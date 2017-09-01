@@ -1,6 +1,15 @@
 # Tick
 
-Tick is a small game engine built using the Zig programming language.
+Tick is a small game engine built using the Zig programming language. It is meant as
+an educational tool and showcase of some of the capabilities of Zig.
+
+### Current Direction
+
+This is a port of an old C++ amalgam of several tutorials and miscellaneous projects. I am currently
+separating out the platform and graphics layers into reusable interfaces.
+
+Then the scene and layer management layers need to be cleaned up so that it can handle spatial partitioning,
+physics and lighting in a sensible way.
 
 ## Features
 - 2D Immediate Mode Renderer
@@ -14,6 +23,14 @@ Zig is a systems programming language built on the LLVM compiler toolchain. It a
 with C libraries by directly including their header files. It has a clear syntax with simple yet
 powerful concepts, allows compile time evaluation and generation of code, and provides convenient error
 handling and nullable-type semantics. For more information, check out http://ziglang.org/
+
+### Dependencies
+
+As well as the requirements for a Zig development environment, you will need:
+- libc
+- GLFW
+- zlib
+- libsoundio
 
 ## Usage
 
@@ -33,6 +50,11 @@ engine code. Both of these files will be inside the zig-cache directory. In orde
 ```
 $ zig build update
 ```
+
+The hot-reload code is based on Chris Wellon's post http://nullprogram.com/blog/2014/12/23/, and there is a
+port to zig in `./platform/live`. Just adjust the makefile.
+
+The rest of the project was inspired by 
 
 ### Limitations
 

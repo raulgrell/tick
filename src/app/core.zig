@@ -16,18 +16,18 @@ const MAX_FRAME_STEPS  = 6;
 const WINDOW_WIDTH  = 640;
 const WINDOW_HEIGHT = 360;
 
-const SetupFunction  = fn(app: &App) -> void;
-const DrawFunction   = fn(app: &App) -> void;
-const UpdateFunction = fn(app: &App, deltaTime: f32) -> void;
+pub const API = struct {
+    init:     fn(app: &App) -> void,
+    update:   fn(app: &App, delta_time: f32) -> %void,
+    draw:     fn(app: &App) -> void,
+    deinit:   fn(app: &App) -> void,
+};
 
 // Main App Object
 pub const App = struct {
-    window:          Window,
-    input:           InputManager,
-    audio:           AudioEngine,
-    onInit:          SetupFunction,
-    onDraw:          DrawFunction,
-    onUpdate:        UpdateFunction,
+    window:   Window,
+    input:    InputManager,
+    audio:    AudioEngine,
 
     pub fn init() -> &App {
         var app = mem.mem.create(App) %% unreachable;
@@ -55,28 +55,28 @@ pub const App = struct {
         return app;
     }
 
-    pub fn run (app: &App) {
-        app.onInit(app);
+    pub fn run (app: &App, api: &const API) {
+        api.init(app);
 
-        var currentTicks: f32 = 0.0;
-        var previousTicks: f32 = 0.0;
-        var deltaTime: f32 = 0.0;
+        var current_ticks: f32 = 0.0;
+        var previous_ticks: f32 = 0.0;
+        var delta_time: f32 = 0.0;
 
         while (c.glfwWindowShouldClose(app.window.window) == c.GL_FALSE) {
             const newTicks: f32 = (f32)(c.glfwGetTime());
-            currentTicks = newTicks - previousTicks;
-            previousTicks = newTicks;
+            current_ticks = newTicks - previous_ticks;
+            previous_ticks = newTicks;
             var frameSteps: u8 = 0;
-            var totalDeltaTime = currentTicks / TARGET_FRAMETIME;
-            while (totalDeltaTime > 0.0 and frameSteps < MAX_FRAME_STEPS) {
-                deltaTime = if (totalDeltaTime < MAX_DELTA_TIME) totalDeltaTime else MAX_DELTA_TIME;
+            var total_delta_time = current_ticks / TARGET_FRAMETIME;
+            while (total_delta_time > 0.0 and frameSteps < MAX_FRAME_STEPS) {
+                delta_time = if (total_delta_time < MAX_DELTA_TIME) total_delta_time else MAX_DELTA_TIME;
                 app.input.update();
-                app.onUpdate(app, deltaTime);
-                totalDeltaTime -= deltaTime;
+                api.update(app, delta_time) %% break;
+                total_delta_time -= delta_time;
                 frameSteps += 1;
             }
             app.window.clear();
-            app.onDraw(app);
+            api.draw(app);
             app.window.update();
         }
 
