@@ -1,8 +1,5 @@
+use @import("../system/index.zig");
 use @import("../math/index.zig");
-
-const c      = @import("../system/c.zig");
-const mem      = @import("../system/memory.zig");
-const debug  = @import("../system/debug.zig");
 
 pub const ShaderProgram = struct {
     programID: c.GLuint,
@@ -67,7 +64,7 @@ pub const ShaderProgram = struct {
         var error_size: c.GLint = undefined;
         c.glGetShaderiv(shader_id, c.GL_INFO_LOG_LENGTH, &error_size);
 
-        const message = %%mem.alloc(u8, usize(error_size));
+        const message = %%c.mem.alloc(u8, usize(error_size));
         c.glGetShaderInfoLog(shader_id, error_size, &error_size, &message[0]);
         _ = c.printf(c"Error compiling %s shader:\n%s\n", name, &message[0]);
         c.abort();  
@@ -110,7 +107,7 @@ pub const ShaderProgram = struct {
 
         var error_size: c.GLint = undefined;
         c.glGetProgramiv(sp.programID, c.GL_INFO_LOG_LENGTH, &error_size);
-        const message = %%mem.alloc(u8, usize(error_size));
+        const message = %%c.mem.alloc(u8, usize(error_size));
         c.glGetProgramInfoLog(sp.programID, error_size, &error_size, &message[0]);
         _ = c.printf(c"Error linking shader program: %s\n", &message[0]);
         c.abort();

@@ -11,10 +11,13 @@ separating out the platform and graphics layers into reusable interfaces.
 Then the scene and layer management layers need to be cleaned up so that it can handle spatial partitioning,
 physics and lighting in a sensible way.
 
-## Features
+Eventually, I want to have a way of creating 'virtual consoles' where memory resources are fully defined at
+compile-time.
+
+## Current Features
 - 2D Immediate Mode Renderer
-- Generic linear math library, quaternion library.
-- Hot reload game code
+- Generic linear math and quaternion library.
+- Hot reloading of game code
 - Platform: Linux/GLFW
 
 ### Zig
@@ -71,14 +74,12 @@ is but a minor inconvenience.
 - Scene Manager
 - 2D Batched Renderer
 - Sprite Animations
-- Resource Manager / Virtual filesystem
+- Resource Manager / Virtual Filesystem
 - Robust memory management
 - 2D Physics 
 
 ## Planned Features
-- 3D Physics
-- 3D Deferred Renderer
-- 3D Forward Renderer
+- 3D Rendering
 - Skeleton Animations
 - Integrated debugger
 - Networking

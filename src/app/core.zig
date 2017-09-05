@@ -1,10 +1,7 @@
-const stdmem = @import("std").mem;
-
-// Math
+use @import("../system/index.zig");
 use @import("window.zig");
 use @import("audio.zig");
 use @import("../math/index.zig");
-use @import("../system/index.zig");
 
 // System
 
@@ -30,7 +27,7 @@ pub const App = struct {
     audio:    AudioEngine,
 
     pub fn init() -> &App {
-        var app = mem.mem.create(App) %% unreachable;
+        var app = c.mem.create(App) %% unreachable;
 
         // Window
         app.window.init(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -70,11 +67,12 @@ pub const App = struct {
             var total_delta_time = current_ticks / TARGET_FRAMETIME;
             while (total_delta_time > 0.0 and frameSteps < MAX_FRAME_STEPS) {
                 delta_time = if (total_delta_time < MAX_DELTA_TIME) total_delta_time else MAX_DELTA_TIME;
-                app.input.update();
                 api.update(app, delta_time) %% break;
                 total_delta_time -= delta_time;
                 frameSteps += 1;
             }
+            app.input.update();
+            
             app.window.clear();
             api.draw(app);
             app.window.update();
@@ -90,19 +88,21 @@ pub const InputManager = struct {
     keyDown: [MAX_KEYS]bool,
     prevKeyState: [MAX_KEYS]bool,
     // Mouse
-    buttonClicked: [MAX_BUTTONS]bool,
+    buttonPressed: [MAX_BUTTONS]bool,
     buttonDown: [MAX_BUTTONS]bool,
     prevButtonState: [MAX_BUTTONS]bool,
     cursor_position: Vec2,
 
     pub fn create() -> InputManager {
         InputManager {
-            .keyPressed = []bool{false} ** MAX_KEYS,
-            .keyDown = []bool{false} ** MAX_KEYS,
-            .prevKeyState = []bool{false} ** MAX_KEYS ,
-            .buttonClicked = []bool{false} ** MAX_BUTTONS,
-            .buttonDown = []bool{false} ** MAX_BUTTONS,
-            .prevButtonState = []bool{false} ** MAX_BUTTONS,
+            .keyPressed      = []bool{false} ** MAX_KEYS,    
+            .keyReleased     = []bool{false} ** MAX_KEYS,    
+            .keyDown         = []bool{false} ** MAX_KEYS,    
+            .prevKeyState    = []bool{false} ** MAX_KEYS,    
+            .buttonPressed   = []bool{false} ** MAX_BUTTONS, 
+            .buttonReleased  = []bool{false} ** MAX_BUTTONS, 
+            .buttonDown      = []bool{false} ** MAX_BUTTONS, 
+            .prevButtonState = []bool{false} ** MAX_BUTTONS, 
             .cursor_position = vec2(0, 0)
         }
     }
@@ -118,11 +118,11 @@ pub const InputManager = struct {
         }}
 
         { var i: usize = 0; while(i < MAX_BUTTONS) : (i += 1) {
-            im.buttonClicked[i] = im.buttonDown[i] and !im.prevButtonState[i];
+            im.buttonPressed[i] = im.buttonDown[i] and !im.prevButtonState[i];
         }}
 
-        mem.copy(bool, im.prevKeyState[0..], im.keyDown[0..]);
-        mem.copy(bool, im.prevButtonState[0..], im.buttonDown[0..]);
+        std.mem.copy(bool, im.prevKeyState[0..], im.keyDown[0..]);
+        std.mem.copy(bool, im.prevButtonState[0..], im.buttonDown[0..]);
     }
     
     pub fn clearKeys(im: &InputManager) {
@@ -138,7 +138,7 @@ pub const InputManager = struct {
         { var i: usize = 0; while(i < MAX_BUTTONS) : (i += 1) {
             im.buttonDown[i] = false;
             im.prevButtonState[i] = false;
-            im.buttonClicked[i] = false;
+            im.buttonPressed[i] = false;
         }}
     }
 };

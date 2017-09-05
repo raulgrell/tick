@@ -1,9 +1,8 @@
-const math = @import("std").math;
-
-use @import("../math/index.zig");
 use @import("../system/index.zig");
+use @import("../math/index.zig");
 
-const lib = @import("../tick.zig").lib;
+const math = std.math;
+
 const app = @import("../app/core.zig");
 const tex = @import("../graphics/sprite.zig");
 const render = @import("../graphics/renderer.zig");
@@ -74,7 +73,7 @@ pub const Agent = struct {
     }
 
     pub fn collideWithLevel(self: &Agent, level: &Level) -> bool {
-        var collision_positions = ArrayList(Vec2).init(&mem.mem);
+        var collision_positions = ArrayList(Vec2).init(&c.mem);
 
         checkTilePosition(level, &collision_positions, self.position.x, self.position.y);
         checkTilePosition(level, &collision_positions, self.position.x, self.position.y + self.dimensions.y);
@@ -140,8 +139,8 @@ pub const Agent = struct {
 
     fn checkTilePosition(level: &Level, collision_positions: &ArrayList(Vec2), x: f32, y: f32) {
         const corner_position = UVec2.init(
-            usize(math.floor(x / level.tile_dimensions.x)),
-            usize(math.floor(y / level.tile_dimensions.y))
+            u32(math.floor(x / level.tile_dimensions.x)),
+            u32(math.floor(y / level.tile_dimensions.y))
         );
 
         // Don't collide if outside world
@@ -152,7 +151,7 @@ pub const Agent = struct {
 
         if ( level.level_data[corner_position.y][corner_position.x] != ' ' ) {
             const collision_pos = corner_position
-                .mul_scalar(usize(level.tile_dimensions.x))
+                .mul_scalar(u32(level.tile_dimensions.x))
                 .cast(f32)
                 .add(level.tile_dimensions.div_scalar(2));
             %%collision_positions.append( vec2(collision_pos.x, collision_pos.y) );
@@ -226,7 +225,7 @@ pub const Cell = struct {
     agents: ArrayList(&Agent),
 
     pub fn init() -> Cell {
-        Cell { .agents = ArrayList(&Agent).init(&mem.mem) }
+        Cell { .agents = ArrayList(&Agent).init(&c.mem) }
     }
 };
 
@@ -242,7 +241,7 @@ pub const Grid = struct {
 
     pub fn init(width: f32, height: f32, cellSize: f32, reserve: usize) -> Grid {
         var g = Grid {
-            .cells = ArrayList(&Cell).init(&mem.mem),
+            .cells = ArrayList(&Cell).init(&c.mem),
             .cellSize = 1,
             .width = width,
             .height = height,
@@ -304,7 +303,7 @@ pub const Controller = struct {
 
     pub fn init(width: f32, height: f32) -> Controller {
         Controller {
-            .agents = ArrayList(&Agent).init(&mem.mem),
+            .agents = ArrayList(&Agent).init(&c.mem),
             .grid = Grid.init(width, height, 100, 10),
             .rect = vec4(0, 0, width, height),
         }
@@ -315,7 +314,7 @@ pub const Controller = struct {
     }
 
     pub fn addNew(self: &Controller, agent: &const Agent) {
-        var new_agent = %%mem.mem.init(Agent, agent);
+        var new_agent = %%c.mem.init(Agent, agent);
         %%self.agents.append(new_agent);
     }
 
@@ -418,7 +417,7 @@ const AgentRenderer = struct {
     pub fn render(self: &AgentRenderer, renderer: &BatchRenderer, agents: &const ArrayList(&Agent), proj_matrix: &const Mat4 ) {
         // Lazily initialize the program
         if (self.program == null) {
-            self.program = mem.mem.create(ShaderProgram);
+            self.program = c.mem.create(ShaderProgram);
             self.program.compileShaders("res/shaders/gameShader.vert", "res/shaders/gameShader.frag");
             self.program.addAttribute("vertexPosition");
             self.program.addAttribute("vertexColour");

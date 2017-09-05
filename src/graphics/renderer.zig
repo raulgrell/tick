@@ -1,8 +1,7 @@
+use @import("../system/index.zig");
 use @import("../math/index.zig");
 use @import("../graphics/sprite.zig");
 
-const c      = @import("../system/c.zig");
-const debug  = @import("../system/debug.zig");
 const shader = @import("shader.zig");
 
 const MAX_GLYPHS   = 1024;
@@ -57,11 +56,9 @@ pub const BatchRenderer = struct {
 
         c.glGenVertexArrays(1, &r.vao);
         c.glGenBuffers(1, &r.vbo);
-        c.glGenBuffers(1, &r.ibo);
 
         c.glBindVertexArray(r.vao);
         c.glBindBuffer(c.GL_ARRAY_BUFFER, r.vbo);
-        c.glBindBuffer(c.GL_ELEMENT_ARRAY_BUFFER, r.ibo);
 
         c.glEnableVertexAttribArray(c.GLuint(r.shader.attrib_position));
         c.glVertexAttribPointer(
@@ -78,7 +75,7 @@ pub const BatchRenderer = struct {
             c.GLuint(r.shader.attrib_color),
             4,
             c.GL_FLOAT,
-            c.GL_FALSE,
+            c.GL_TRUE,
             @sizeOf(Vertex),
             @intToPtr(&c_void, @offsetOf(Vertex, "colour"))
         );
@@ -93,7 +90,6 @@ pub const BatchRenderer = struct {
             @intToPtr(&c_void, @offsetOf(Vertex, "uv"))
         );
 
-        c.glBindBuffer(c.GL_ELEMENT_ARRAY_BUFFER, 0);
         c.glBindBuffer(c.GL_ARRAY_BUFFER, 0);
         c.glBindVertexArray(0);
 
@@ -131,11 +127,13 @@ pub const BatchRenderer = struct {
         r.shader.program.bind();
         r.shader.program.setUniform_mat4(r.shader.uniform_mvp,  &r.projection);
 
+        c.glBindVertexArray(r.vao);
+        
         debug.assertNoErrorGL();        
-
-        for (r.renderBatches[0..r.numBatches - 1]) | batch, i| {
+        
+        for (r.renderBatches[0..r.numBatches]) | batch, i| {
             c.glBindTexture(c.GL_TEXTURE_2D, batch.textureID);
-            c.glDrawArrays(c.GL_TRIANGLE_STRIP, c_int(batch.offset), c_int(batch.numVertices));
+            c.glDrawArrays(c.GL_TRIANGLES, c_int(batch.offset), c_int(batch.numVertices));
         }
 
         c.glBindVertexArray(0);
@@ -165,7 +163,7 @@ pub const BatchRenderer = struct {
         r.renderBatches[0] = RenderBatch {
             .offset = c_uint(currentOffset),
             .numVertices = 6,
-            .textureID = 0,
+            .textureID = r.glyphPointers[0].texture.id,
         };
 
         vertices[currentVertex + 0] = r.glyphPointers[0].topLeft;
@@ -178,12 +176,14 @@ pub const BatchRenderer = struct {
         currentOffset += 6;
 
         for(r.glyphPointers[1..r.numGlyphs]) | g, i | {
-            if (r.glyphPointers[i].texture.id != r.glyphPointers[i - 1].texture.id) {
+            const current_glyph = i + 1;
+            if (r.glyphPointers[current_glyph].texture.id 
+                    != r.glyphPointers[current_glyph - 1].texture.id) {
                 currentBatch += 1;
                 r.renderBatches[currentBatch] = RenderBatch {
                     .offset = c_uint(currentOffset),
                     .numVertices = 6,
-                    .textureID = r.glyphPointers[i].texture.id, 
+                    .textureID = r.glyphPointers[current_glyph].texture.id, 
                 }
             } else {
                 // If its part of the current batch, just increase numVertices
@@ -202,10 +202,17 @@ pub const BatchRenderer = struct {
 
         r.numBatches = currentBatch + 1;
 
+        // Buffer vertices
         c.glBindBuffer(c.GL_ARRAY_BUFFER, r.vbo);
         c.glBufferData(c.GL_ARRAY_BUFFER, c_long(currentVertex * @sizeOf(Vertex)), @intToPtr(&c_void, 0), c.GL_DYNAMIC_DRAW);
         c.glBufferSubData(c.GL_ARRAY_BUFFER, 0, c_long(currentVertex * @sizeOf(Vertex)), @ptrCast(&c_void, &vertices));
         c.glBindBuffer(c.GL_ARRAY_BUFFER, 0);
+
+        // Buffer indices
+        // c.glBindBuffer(c.GL_ELEMENT_ARRAY_BUFFER, r.ibo);
+        // c.glBufferData(c.GL_ELEMENT_ARRAY_BUFFER, c_long(currentIndex * @sizeof(c.GLuint)), @intToPtr(&c_void, 0), GL_DYNAMIC_DRAW);
+        // c.glBufferSubData(c.GL_ELEMENT_ARRAY_BUFFER, 0, c_long(currentIndex * @sizeof(c.GLuint)), @ptrCast(&c_void, &vertices));
+        // c.glBindBuffer(c.GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 };
 
@@ -322,14 +329,15 @@ pub const IMRenderer = struct {
         c.glVertexAttribPointer(c.GLuint(r.shader.attrib_uv), 2, c.GL_FLOAT, c.GL_FALSE, 0, null);
 
         texture.bind();
+        
         c.glDrawArrays(c.GL_TRIANGLE_STRIP, 0, 4);
     }
 
-    fn draw_text(r: &IMRenderer, s: &Spritesheet, text: []const u8, left: i32, top: i32, size: f32) {
+    fn draw_text(r: &IMRenderer, s: &Spritesheet, text: []const u8, left: f32, top: f32, size: f32) {
         for (text) |col, i| {
             if (col <= '~') {
-                const char_left = f32(left) + f32(i * s.width) * size;
-                const model = Mat4.diagonal(1).translate(char_left, f32(top), 0.0).scale(size, size, 0.0);
+                const char_left = left + f32(i * s.width) * size;
+                const model = Mat4.diagonal(1).translate(char_left, top, 0.0).scale(size, size, 0.0);
                 const mvp = r.projection.mul(model);
                 s.draw(r.shader, col, mvp);
             } else {

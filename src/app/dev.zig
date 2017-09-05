@@ -1,5 +1,3 @@
-const stdmem = @import("std").mem;
-
 // Math
 use @import("window.zig");
 use @import("audio.zig");
@@ -88,7 +86,7 @@ pub const App = struct {
     audio:  AudioEngine,
 
     pub fn init() -> &App {
-        var app = mem.mem.create(App) %% unreachable;
+        var app = c.mem.create(App) %% unreachable;
 
         // Window
         app.window.init(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -114,7 +112,7 @@ pub const App = struct {
     }
 
     pub fn run (app: &App) {
-        var lib = Game {
+        var game_lib = Game {
             .handle = null,
             .id = 0,
             .api = null,
@@ -126,11 +124,11 @@ pub const App = struct {
         var delta_time: f32 = 0.0;
 
         while (app.window.running()) {
-            Game.load(c"./zig-cache/libgame.so", c"GAME", &lib, app);
+            Game.load(c"./zig-cache/libgame.so", c"GAME", &game_lib, app);
 
-            if (lib.handle) | handle | {
-                const api = lib.api ?? panic("loop: No API");
-                const state = lib.state ?? panic("loop: No state");
+            if (game_lib.handle) | handle | {
+                const api = game_lib.api ?? panic("loop: No API");
+                const state = game_lib.state ?? panic("loop: No state");
 
                 // Tick
                 const new_ticks: f32 = (f32)(c.glfwGetTime());
@@ -157,7 +155,7 @@ pub const App = struct {
             }
         }
 
-        Game.unload(&lib);
+        Game.unload(&game_lib);
         debug.assertNoErrorGL();
     }
 };

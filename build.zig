@@ -6,12 +6,12 @@ pub fn build(b: &Builder) {
 
     // Statically linked
     var exe = b.addExecutable("run", "platform/run.zig");
+    exe.addPackagePath("lib", "lib/index.zig");
     exe.setBuildMode(mode);
     
     exe.linkSystemLibrary("c");
     exe.linkSystemLibrary("m");
     exe.linkSystemLibrary("z");
-    exe.linkSystemLibrary("dl");
     exe.linkSystemLibrary("glfw");
     exe.linkSystemLibrary("epoxy");
     exe.linkSystemLibrary("png");
@@ -20,6 +20,8 @@ pub fn build(b: &Builder) {
     
     // Dynamically linked, hot reloading
     var dev = b.addExecutable("dev", "platform/dev.zig");
+    dev.addPackagePath("lib", "lib/index.zig");
+    
     dev.setBuildMode(mode);
     
     dev.linkSystemLibrary("c");
@@ -32,22 +34,33 @@ pub fn build(b: &Builder) {
     dev.linkSystemLibrary("soundio");
     b.installArtifact(dev);
 
+    // Game lib
+    
     const version = b.version(0, 0, 1);
 
     var lib = b.addSharedLibrary("game", "games/live.zig", version);
+    lib.addPackagePath("lib", "lib/index.zig");
+
+    // Dependencies
+
+    b.addLibPath("deps/");
+    var deps = b.addCStaticLibrary("deps");
 
     // Default
     b.default_step.dependOn(&exe.step);
     b.default_step.dependOn(&dev.step);
     b.default_step.dependOn(&lib.step);
+    b.default_step.dependOn(&deps.step);
 
     // Commands
     const run_exe = b.addCommand(".", b.env_map, exe.getOutputPath(), [][]const u8{});
     run_exe.step.dependOn(&exe.step);
+    run_exe.step.dependOn(&deps.step);
 
     const run_dev = b.addCommand(".", b.env_map, dev.getOutputPath(), [][]const u8{});
     run_dev.step.dependOn(&dev.step);
     run_dev.step.dependOn(&lib.step);
+    run_exe.step.dependOn(&deps.step);    
     
     // Steps
     const play = b.step("play", "Play the game");

@@ -1,8 +1,7 @@
-const io = @import("std").io;
-const panic = @import("std").debug.panic;
-const math = @import("std").math;
+use @import("../system/index.zig");
 
-const c = @import("../system/c.zig");
+const io = std.io;
+const math = std.math;
 
 const AudioCallback = fn(os: ?&c.SoundIoOutStream, frame_count_min: c_int, frame_count_max: c_int);
 

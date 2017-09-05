@@ -1,7 +1,6 @@
+use @import("../system/index.zig");
 use @import("../math/index.zig");
 
-const c = @import("../system/c.zig");
-const lib = @import("../system/lib.zig");
 const app = @import("../app/core.zig");
 const tex = @import("../graphics/sprite.zig");
 const render = @import("../graphics/renderer.zig");
@@ -19,8 +18,8 @@ const CameraMode = enum {
     Custom,
     Free,
     Orbital,
-    First_person,
-    Third_person
+    FirstPerson,
+    ThirdPerson
 };
 
 pub const Camera = struct {
@@ -67,15 +66,15 @@ pub const Camera = struct {
         self.needs_update = true;
     }
 
-    pub fn convertScreenToWorld(self: &Camera, screenCoords: &const Vec2) -> Vec3 {
+    pub fn convertScreenToWorld(self: &Camera, screen_coords: &const Vec2) -> Vec3 {
         var worldCoords = vec3(
-            screenCoords.x,
-            self.screenHeight - screenCoords.y, // Invert Y direction
+            screen_coords.x,
+            self.screenHeight - screen_coords.y, // Invert Y direction
             0.0
         );
 
         // Center at 0, 0
-        screenCoords.offset(vec2(-self.screenWidth / 2, -self.screenHeight / 2));
+        screen_coords.offset(vec2(-self.screenWidth / 2, -self.screenHeight / 2));
         
         worldCoords.scale(1/self.scale);
         worldCoords.offset(self.position);
@@ -126,7 +125,7 @@ pub const Camera = struct {
 
 pub const Scene2D = struct {
     renderer: &BatchRenderer,
-    camera: &OrthographicCamera,
+    camera: &Camera,
     agents: ArrayList(Agent),
 
     pub fn create(self: &Scene2D, width: usize, height: usize) -> Scene2D {
@@ -140,43 +139,30 @@ pub const Scene2D = struct {
         self.renderer.setCamera(self.camera);
     }
 
-    pub fn create(self: &Scene2D, width: usize, height: usize, projection_matrix: Mat4) -> Scene2D {
-        self.camera = Camera.orthographic(projection_matrix);
-        self.renderer = BatchRenderer.init(width, height);
-        self.renderer.setCamera(self.camera);
-    }
-
     pub fn destroy(self: &Scene2D) -> void {
+        self.agents.deinit();
     }
 
-    pub fn Add(self: &Scene2D, entity: &Agent) -> void {
-        self.agents.push_back(entity);
+    pub fn addAgent(self: &Scene2D, agent: &Agent) -> void {
+        self.agents.append(agent);
     }
 
-    pub fn Update(self: &Scene2D) -> void {
-        for (self.agents) | agent, i | self.agents[i].update()
+    pub fn update(self: &Scene2D) -> void {
+        for (self.agents.toSlice) | *agent, i | agent.update()
     }
 
-    pub fn OnRender(self: &Scene2D) -> void {
+    pub fn render(self: &Scene2D) -> void {
         self.camera.update();
 
         self.renderer.begin();
-        for (self.agents) | entity, i | {
-            const sprite = entity.getComponent(SpriteComponent);
-            if (sprite) {
-                const tc = entity.getComponent(TransformComponent) ?? panic();
-                sprite.sprite.submit(self.renderer);
-            }
+        for (self.agents) | agent, i | {
+            self.renderer.submit(agent);
         }
 
-        Render(self.renderer);
+        self.render(self.renderer);
 
         self.renderer.end();
         self.renderer.present();
-    }
-
-    pub fn Render(self: &Scene2D, renderer: &BatchRenderer) -> void {
-    
     }
 };
 
@@ -197,29 +183,29 @@ const Scene3D = struct {
         self.camera.destroy();
     }
 
-    pub fn Add(self: &Scene3D, entity: &Agent) -> void {
-        self.agents.push_back(entity);
-        entity.getComponent(TransformComponent) ?? {
-            entity.addComponent(TransformComponent.create(Mat4.Identity()));
-        }
+    pub fn addAgent(self: &Scene3D, agent: &Agent) -> void {
+        agent.getComponent(TransformComponent) ?? {
+            agent.addComponent(TransformComponent.create(Mat4.Identity()));
+        };
+        self.agents.append(agent);
     }
 
-    pub fn PushLight(self: &Scene3D, light: &Light) -> void {
-        self.lightStack.push_back(light);
+    pub fn pushLight(self: &Scene3D, light: &Light) -> void {
+        self.lights.append(light);
     }
 
-    pub fn PopLight(self: &Scene3D) -> &Light {
+    pub fn popLight(self: &Scene3D) -> &Light {
         const result = self.lights.back();
         self.lights.pop_back();
         return result;
     }
 
-    pub fn SetCamera(self: &Scene3D, camera: &Camera) -> void {
+    pub fn setCamera(self: &Scene3D, camera: &Camera) -> void {
         self.camera = camera;
         self.camera.focus();
     }
 
-    pub fn Render(self: &Scene3D, renderer: &Renderer) -> void {
+    pub fn render(self: &Scene3D, renderer: &Renderer) -> void {
         self.camera.update();
 
         renderer.begin();
@@ -229,7 +215,7 @@ const Scene3D = struct {
 
         for (self.agents) {
             const mc = entity.GetComponent(MeshComponent);
-            if (mesh) {
+            if (mc) {
                 const tc = entity.GetComponent(TransformComponent);
                 renderer.submitMesh(mc.mesh, tc.transform);
             }
@@ -290,7 +276,7 @@ const Stack = struct {
     layers: [MAX_LAYERS]Layer,
 
     pub fn pushLayer(self: &Stack, layer: &Layer) {
-        layers.push_back(layer);
+        layers.append(layer);
         layer.Init();
     }
 
@@ -326,5 +312,41 @@ const Stack = struct {
         for ( layers ) | l | {
             if ( l.visible ) l.onRender();
         }
+    }
+};
+
+const Group = struct {
+    textures: ArrayList(&Texture),
+    transform: Mat4,
+
+    pub fn init(transform: Mat4 ) -> Group {
+        return Group {
+            .textures = ArrayList(&Texture).init(),
+            .transform = transform,
+        }
+    }
+
+    pub fn deinit(self: &Group) {
+        self.textures.deinit();
+    }
+
+    pub fn add(self: &Group, texture: &Texture) {
+        self.textures.append(renderable);
+    }
+
+    pub fn draw(self: &Group, renderer: &IMRenderer) {
+        renderer.pushTransform(self.transform);
+        for (self.textures) | t, i | {
+            t.draw(renderer);
+        }
+        renderer.popTransform();
+    }
+
+    pub fn submit(self: &Group, renderer: &BatchRenderer) {
+        renderer.pushTransform(self.transform);
+        for (self.textures) | t, i | {
+            t.submit(renderer);
+        }
+        renderer.popTransform();
     }
 };

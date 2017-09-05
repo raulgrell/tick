@@ -52,7 +52,7 @@ pub const State = struct {
 };
 
 fn init(app: &App) -> &State {
-    var state = mem.mem.create(State) %% panic("cannot create state");
+    var state = c.mem.create(State) %% panic("cannot create state");
 
     state.font = Spritesheet.init(FONT_PNG, FONT_CHAR_WIDTH, FONT_CHAR_HEIGHT) %% {
         panic("Unable to load spritesheet");
@@ -133,7 +133,7 @@ fn unload(state: &State)  -> void {
 }
 
 fn deinit(state: &State)  -> void {
-    mem.mem.destroy(state);
+    c.mem.destroy(state);
     %%io.stdout.printf("deinit\n");
 }
 

@@ -1,7 +1,6 @@
+use @import("../system/index.zig");
 use @import("../math/index.zig");
 
-const c   = @import("../system/c.zig");
-const mem = @import("../system/memory.zig");
 const sh = @import("../graphics/shader.zig");
 const renderer = @import("renderer.zig");
 
@@ -252,8 +251,8 @@ pub const Spritesheet = struct {
         c.glBindBuffer(c.GL_ARRAY_BUFFER, s.vertex_buffer);
         c.glBufferData(c.GL_ARRAY_BUFFER, 4 * 3 * @sizeOf(c.GLfloat), @ptrCast(&c_void, &vertices[0][0]), c.GL_STATIC_DRAW);
 
-        s.tex_coord_buffers = mem.alloc(c.GLuint, s.count) %% return error.NoMem;
-        %defer mem.free(c.GLuint, s.tex_coord_buffers);
+        s.tex_coord_buffers = c.mem.alloc(c.GLuint, s.count) %% return error.NoMem;
+        %defer c.mem.free(s.tex_coord_buffers);
 
         c.glGenBuffers(c.GLint(s.tex_coord_buffers.len), &s.tex_coord_buffers[0]);
         %defer c.glDeleteBuffers(c.GLint(s.tex_coord_buffers.len), &s.tex_coord_buffers[0]);
@@ -339,43 +338,6 @@ const TextureCache = struct {
     }
 };
 
-
-const Group = struct {
-    textures: ArrayList(&Texture),
-    transform: Mat4x4,
-
-    pub fn init(transform: Mat4x4 ) -> Group {
-        return Group {
-            .textures = ArrayList(&Texture).init(),
-            .transform = transform,
-        }
-    }
-
-    pub fn deinit(self: &Group) {
-        self.textures.deinit();
-    }
-
-    pub fn add(self: &Group, texture: &Texture) {
-        self.textures.append(renderable);
-    }
-
-    pub fn draw(self: &Group, renderer: &IMRenderer) {
-        renderer.pushTransform(self.transform);
-        for (self.textures) | t, i | {
-            t.draw(renderer);
-        }
-        renderer.pop();
-    }
-
-    pub fn submit(self: &Group, renderer: &BatchRenderer) {
-        renderer.pushTransform(self.transform);
-        for (self.textures) | t, i | {
-            t.submit(renderer);
-        }
-        renderer.pop();
-    }
-};
-
 error NotPngFile;
 error NoMem;
 error InvalidFormat;
@@ -441,11 +403,11 @@ pub const PngImage = struct {
         }
 
         pi.pitch = pi.width * bits_per_channel * channel_count / 8;
-        pi.raw = mem.alloc(u8, pi.height * pi.pitch) %% return error.NoMem;
-        %defer mem.free(u8, pi.raw);
+        pi.raw = c.mem.alloc(u8, pi.height * pi.pitch) %% return error.NoMem;
+        %defer c.mem.free(pi.raw);
 
-        const row_ptrs = mem.alloc(c.png_bytep, pi.height) %% return error.NoMem;
-        defer mem.free(c.png_bytep, row_ptrs);
+        const row_ptrs = c.mem.alloc(c.png_bytep, pi.height) %% return error.NoMem;
+        defer c.mem.free(row_ptrs);
 
         { var i: usize = 0; while (i < pi.height) : (i += 1) {
             const q = (pi.height - i - 1) * pi.pitch;

@@ -306,7 +306,7 @@ pub fn Vec4T(comptime T: type) -> type {
             Self { .x = 0, .y = 0, .z = 0, .w = 0 }
         }
 
-        pub fn init(x: T, y: T, z: T, w: T) -> Self {
+        pub fn init(X: T, Y: T, Z: T, W: T) -> Self {
             Self { .x = X, .y = Y, .z = Z, .w = W }
         }
 

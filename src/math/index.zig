@@ -2,7 +2,6 @@ const c = @import("system/c.zig");
 const assert = @import("std").debug.assert;
 
 const easing = @import("easing.zig");
-const functions = @import("functions.zig");
 const geometry = @import("geometry.zig");
 const vec = @import("vec.zig");
 const mat = @import("mat.zig");
@@ -14,9 +13,9 @@ pub const Vec2 = vec.Vec2T(f32);
 pub const Vec3 = vec.Vec3T(f32); 
 pub const Vec4 = vec.Vec4T(f32);
 
-pub const UVec2 = vec.Vec2T(usize); 
-pub const UVec3 = vec.Vec3T(usize); 
-pub const UVec4 = vec.Vec4T(usize);
+pub const UVec2 = vec.Vec2T(u32); 
+pub const UVec3 = vec.Vec3T(u32); 
+pub const UVec4 = vec.Vec4T(u32);
 
 pub fn vec2(x: f32, y: f32) -> Vec2 {
     Vec2 { .x = x, .y = y }
@@ -46,3 +45,29 @@ pub fn mat4(diagonal: f32) -> Mat4 {
 // Quaternions
 
 pub const Quat = quat.QuatT(f32);
+
+// Functions
+
+pub inline fn toRadians(degrees: f32) ->  f32 {
+    return degrees * ( f32(M_PI) / 180.0 );
+}
+
+pub inline fn toDegrees(radians: f32) ->  f32 {
+    return 360.0 * radians / ( f32(M_PI) * 2.0 );
+}
+
+pub inline fn sign(value: f32) -> f32 {
+    return ( value > 0 ) - ( value < 0 );
+}
+
+pub inline fn clamp_min(value: f32, minimum: f32) ->  f32 {
+    return if ( value < minimum ) minimum else value;
+}
+
+pub inline fn clamp_max(value: f32, maximum: f32) ->  f32 {
+    return if ( value > maximum ) maximum else value;
+}
+
+pub inline fn clamp(value: f32, minimum: f32, maximum: f32) ->  f32 {
+    return if ( value > minimum ) { if ( value < maximum ) value else maximum } else  { minimum };
+}

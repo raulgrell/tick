@@ -1,5 +1,3 @@
-const os = @import("std").os;
-
 use @import("../src/tick.zig");
 use system;
 use sprite;
@@ -20,22 +18,42 @@ const DIMENSIONS_AGENT = vec3(32, 32, 0);
 
 const COLOR_OBJ  = vec4(1, 0.5, 1, 0.5);
 const COLOR_MID  = vec4(0.5, 0.5, 0.5, 0.5);
-const COLOR_LINE = vec4(1, 0.5, 1, 1);
+const COLOR_LINE = vec4(1, 1, 0, 1);
 
 const GameData = struct {
     font: Spritesheet,
     texture: Texture,
+    circle: Texture,
     noise: Texture,
     sprite: Sprite,
     is_paused:  bool,
+    gui_toggle_active: bool,
+    gui_options: [3][]const u8,
+    gui_togglegroup_active: usize,
+    gui_checkbox_active: bool,
+    gui_combobox_active: usize,
+    gui_float: f32,
+    gui_int: i32,
 };
 
 var GAME_DATA = GameData {
     .font = undefined,
     .texture = undefined,
     .noise = undefined,
+    .circle = undefined,
     .sprite = undefined,
     .is_paused = false,
+    .gui_toggle_active = false,
+    .gui_options = [][]const u8 {
+        "A",
+        "B",
+        "C",
+    },
+    .gui_togglegroup_active = 0,
+    .gui_checkbox_active = false,
+    .gui_combobox_active = 0,
+    .gui_float = 0.0,
+    .gui_int = 0,
 };
 
 // Camera
@@ -69,6 +87,9 @@ var IM_RENDERER:    renderer.IMRenderer    = undefined;
 var LINE_RENDERER:  renderer.LineRenderer  = undefined;
 var BATCH_RENDERER: renderer.BatchRenderer = undefined;
 
+var PARTICLE_BATCH  : particle.ParticleBatch2D = undefined;
+var PARTICLE_ENGINE : particle.ParticleEngine2D = undefined;
+
 // Generic Player
 var AGENT:  entity.Agent  = undefined;
 var AGENT_CONTROLLER: entity.Controller = undefined;
@@ -81,6 +102,8 @@ var TD_PLAYER: entity.TopDownPlayer = undefined;
 var PF_AGENT:  entity.Agent         = undefined;
 var PF_PLAYER: entity.ImpulsePlayer = undefined;
 
+var GUI: gui.GUI = undefined;
+
 // Group
 // Physics
 // Scene
@@ -88,6 +111,7 @@ var PF_PLAYER: entity.ImpulsePlayer = undefined;
 
 const FONT_PNG = @embedFile("../data/font.png");
 const TEX_PNG = @embedFile("../data/tiles/tile_01.png");
+const CIRCLE_PNG = @embedFile("../data/tiles/tile_506.png");
 const NOISE_PNG = @embedFile("../data/tex.png");
 const SPRITE_PNG = @embedFile("../data/tiles/tile_101.png");
 
@@ -106,6 +130,7 @@ pub fn init(app: &core.App) {
         panic("Unable to load spritesheet");
     };
     GAME_DATA.texture = Texture.init(TEX_PNG) %% panic("Unable to load texture");
+    GAME_DATA.circle = Texture.init(CIRCLE_PNG) %% panic("Unable to load circle");
     GAME_DATA.noise = Texture.init(NOISE_PNG) %% panic("Unable to load noise");
     GAME_DATA.sprite = Sprite.init(SPRITE_PNG) %% panic("Unable to load sprite");
 
@@ -124,6 +149,12 @@ pub fn init(app: &core.App) {
     TEXTURE_SHADER = shader.TextureShader.init();
     IM_RENDERER    = renderer.IMRenderer.init(&TEXTURE_SHADER, fb_width, fb_height );
     BATCH_RENDERER = renderer.BatchRenderer.init(&TEXTURE_SHADER, fb_width, fb_height );
+
+    PARTICLE_ENGINE = particle.ParticleEngine2D.init();
+    PARTICLE_BATCH = particle.ParticleBatch2D.init(&GAME_DATA.texture, 32, 1, particle.defaultParticleUpdate);
+    PARTICLE_ENGINE.addParticleBatch(&PARTICLE_BATCH);
+
+    GUI = gui.GUI.init(&app.input, &IM_RENDERER, &GAME_DATA.font, &GAME_DATA.texture);
 
     LIGHT_SHADER = light.LightShader.init();
 
@@ -150,6 +181,9 @@ pub fn update(app: &core.App, deltaTime: f32) -> %void {
 
     if (GAME_DATA.is_paused) return;
 
+    PARTICLE_ENGINE.update(deltaTime);
+    PARTICLE_BATCH.addParticle(vec2(64,64), vec2(10,0), vec4(0,0,0,1), 60, 10);
+
     if(app.input.buttonDown[c.GLFW_MOUSE_BUTTON_LEFT])
         TD_PLAYER.agent.position = app.input.cursor_position.xyz();
     
@@ -173,41 +207,76 @@ pub fn draw(app: &core.App) {
     // 2D Textures, Immediate
     IM_RENDERER.begin();
     {
-        LEVEL.draw(&IM_RENDERER, tile_map[0..]);
+        // LEVEL.draw(&IM_RENDERER, tile_map[0..]);
 
-        IM_RENDERER.draw_text(&GAME_DATA.font, "Hello", 32, 32, 1);
-        IM_RENDERER.draw_rect(&GAME_DATA.texture, 128, 32, 64, 64);
-        IM_RENDERER.draw_rect(&GAME_DATA.noise, 192, 32, 64, 64);
-        IM_RENDERER.draw_sprite(&GAME_DATA.sprite, 256, 32, 32, 32);
+        // IM_RENDERER.draw_text(&GAME_DATA.font, "Hello", 32, 32, 1);
+        // IM_RENDERER.draw_rect(&GAME_DATA.texture, 128, 32, 64, 64);
+        // IM_RENDERER.draw_rect(&GAME_DATA.noise, 192, 32, 64, 64);
+        // IM_RENDERER.draw_sprite(&GAME_DATA.sprite, 256, 32, 32, 32);
 
-        AGENT_CONTROLLER.draw(&IM_RENDERER);
+        // AGENT_CONTROLLER.draw(&IM_RENDERER);
 
-        TD_AGENT.draw(&IM_RENDERER);
-        PF_AGENT.draw(&IM_RENDERER);
+        // TD_AGENT.draw(&IM_RENDERER);
+        // PF_AGENT.draw(&IM_RENDERER);
+        const bounds_label        = gui.Rectangle {.x = 64, .y =   0, .width = 128, .height = 32};
+        const bounds_button       = gui.Rectangle {.x = 64, .y =  32, .width = 128, .height = 32};
+        const bounds_togglebutton = gui.Rectangle {.x = 64, .y =  64, .width = 128, .height = 32};
+        const bounds_togglegroup  = gui.Rectangle {.x = 64, .y =  96, .width = 128, .height = 32};
+        const bounds_checkbox     = gui.Rectangle {.x = 64, .y = 128, .width = 128, .height = 32};
+        const bounds_combobox     = gui.Rectangle {.x = 64, .y = 160, .width = 128, .height = 32};
+        const bounds_slider       = gui.Rectangle {.x = 64, .y = 192, .width = 128, .height = 32};
+        const bounds_sliderbar    = gui.Rectangle {.x = 64, .y = 224, .width = 128, .height = 32};
+        const bounds_progressbar  = gui.Rectangle {.x = 64, .y = 256, .width = 128, .height = 32};
+        const bounds_spinner      = gui.Rectangle {.x = 64, .y = 288, .width = 128, .height = 32};
+        const bounds_textbox      = gui.Rectangle {.x = 64, .y = 320, .width = 128, .height = 32};
+        const bounds_icon         = gui.Rectangle {.x = 320, .y = 320, .width = 128, .height = 32};
+        
+
+        GUI.Label( bounds_label, "Hello");
+        if (GUI.Button(bounds_button, "Hello")) %%std.io.stdout.printf("Button\n");
+
+        GAME_DATA.gui_toggle_active = GUI.ToggleButton(bounds_togglebutton, "Text", GAME_DATA.gui_toggle_active);
+        GUI.ToggleGroup(bounds_togglegroup, GAME_DATA.gui_options[0..], &GAME_DATA.gui_togglegroup_active);
+        GUI.CheckBox(bounds_checkbox, &GAME_DATA.gui_checkbox_active);
+        GUI.ComboBox(bounds_combobox, GAME_DATA.gui_options[0..], &GAME_DATA.gui_combobox_active);
+        GUI.Slider(bounds_slider, 0, 100, &GAME_DATA.gui_float);
+        GUI.SliderBar(bounds_sliderbar, 0, 100, &GAME_DATA.gui_float);
+        GUI.ProgressBar(bounds_progressbar, 0, 100, &GAME_DATA.gui_float);
+        GUI.Spinner(bounds_spinner, 0, 100, &GAME_DATA.gui_int);
+        GUI.TextBox(bounds_textbox, "Text");
+        GUI.Icon(bounds_icon, &GAME_DATA.noise);
     }
     IM_RENDERER.end();
 
     // 2D Textures, Batched
     BATCH_RENDERER.begin();
     {
-        const destRect = vec4(64, 64, 128, 128);
+        const destRect = vec4(16, 16, 32, 32);
         const uvRect = vec4(0, 0, 1, 1);
 
         BATCH_RENDERER.submit(destRect, uvRect, GAME_DATA.noise, 0, COLOR_OBJ, 0);
+        BATCH_RENDERER.submit(destRect.mul_scalar(1.5), uvRect, GAME_DATA.noise, 0, COLOR_OBJ, 0);
+        BATCH_RENDERER.submit(destRect.mul_scalar(2), uvRect, GAME_DATA.noise, 0, COLOR_MID, 0);
+        BATCH_RENDERER.submit(destRect.mul_scalar(2.5), uvRect, GAME_DATA.circle, 0, COLOR_MID, 0);
+        BATCH_RENDERER.submit(destRect.mul_scalar(3), uvRect, GAME_DATA.noise, 0, COLOR_MID, 0);
     }
     BATCH_RENDERER.end();
     BATCH_RENDERER.render();
 
+    PARTICLE_ENGINE.draw(&BATCH_RENDERER);    
+
     // 3D
-    // LINE_RENDERER.begin();
-    // {
-    //     const data = vec3(pos_x, pos_y, 0);
-    //     const cursor = vec3(cursor_x, cursor_y, 0);
-    //     LINE_RENDERER.drawLine(COLOR_LINE, POINT_ORIGIN, cursor);
-    //     LINE_RENDERER.drawLine(COLOR_LINE, data, cursor);
-    //     // LINE_RENDERER.drawPolygon(COLOR_LINE, cursor, 20, 0, 5);
-    // }
-    // LINE_RENDERER.end();
+    LINE_RENDERER.begin();
+    {
+        LINE_RENDERER.drawLine(COLOR_LINE, POINT_ORIGIN, cursor.xyz());
+        // LINE_RENDERER.drawPolygon(COLOR_LINE, cursor, 20, 0, 5);
+    }
+    LINE_RENDERER.end();
+
+    if (GAME_DATA.gui_toggle_active) %%std.io.stdout.printf("Toggle");
+    if (GAME_DATA.gui_togglegroup_active > 0) %%std.io.stdout.printf("{}", GAME_DATA.gui_togglegroup_active);
+    if (GAME_DATA.gui_checkbox_active) %%std.io.stdout.printf("Checkbox");
+    if (GAME_DATA.gui_combobox_active > 0) %%std.io.stdout.printf("{}", GAME_DATA.gui_combobox_active);
 }
 
 pub fn deinit(app: &core.App) {

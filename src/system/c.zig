@@ -15,79 +15,45 @@ use @cImport({
     @cInclude("soundio/soundio.h");
 });
 
-// pub fn getFileSize(path: []const u8) -> int64 {
-//     ifstream in(path, ifstream::ate | ifstream::binary);
-//     return in.tellg();
-// }
+const lib_mem = @import("lib").mem;
 
-// pub fn fileExists(path: []const u8) -> bool {
-//     if ( FILE *file = fopen(path.c_str(), "r") ) {
-//         fclose(file);
-//         return true;
-//     }
-//     else {
-//         return false;
-//     }
-// }
+error NoMem;
 
-// pub fn readFile(path: []const u8) -> byte* {
-//     ifstream ifs(path, ios::binary | ios::ate);
-//     ifstream::pos_type pos = ifs.tellg();
+pub var mem = lib_mem.Allocator {
+    .allocFn = libcAlloc,
+    .reallocFn = libcRealloc,
+    .freeFn = libcFree,
+};
 
-//     byte* result = new byte[pos];
+fn libcAlloc(self: &lib_mem.Allocator, size: usize, alignment: u8) -> %[]u8 {
+    return @ptrCast(&u8, malloc(size_t(size)) ?? return error.NoMem)[0..size];
+}
 
-//     ifs.seekg(0, ios::beg);
-//     ifs.read(reinterpret_cast<char *>(result), pos);
+fn libcRealloc(self: &lib_mem.Allocator, old_mem: []u8, new_size: usize, alignment: u8) -> %[]u8 {
+    return @ptrCast(&u8, realloc(@ptrCast(&c_void, old_mem.ptr), size_t(new_size)) ?? return error.NoMem)[0..new_size];
+}
 
-//     return result;
-// }
+fn libcFree(self: &lib_mem.Allocator, old_mem: []u8) -> void {
+    free(@ptrCast(&c_void, &old_mem[0]));
+}
 
-// pub fn readFile(path: []const u8, void* buffer, int64 size) -> bool {
-//     ifstream ifs(path, ios::binary | ios::ate);
-//     ifstream::pos_type pos = ifs.tellg();
+pub fn getFileSize(path: []const u8) -> usize {
+}
 
-//     byte* result = new byte[pos];
+pub fn fileExists(path: []const u8) -> bool {
+}
 
-//     ifs.seekg(0, ios::beg);
-//     ifs.read(reinterpret_cast<char *>( result ), size == -1 ? int64(pos) : size);
+pub fn readFile(path: []const u8) -> []const u8 {
+}
 
-//     return result;
-// }
+pub fn readFileIntoBuffer(path: []const u8, buffer: []u8) -> bool {
+}
 
-// pub fn readTextFile(path: []const u8) -> String {
-//     vector<unsigned char> fileContents = {};
+pub fn readTextFile(path: []const u8) -> [][]const u8 {
+}
 
-//     ifstream file(path);
-//     if ( file.fail() ) {
-//         perror(path.c_str());
-//         return string("");
-//     }
+pub fn writeFile(path: []const u8, buffer: []u8) -> bool {
+}
 
-//     size_t fileSize = 0;
-//     if ( file.seekg(0, ios::end).good() ) fileSize = (size_t)file.tellg();
-//     if ( file.seekg(0, ios::beg).good() ) fileSize -= (size_t)file.tellg();
-
-//     if ( fileSize > 0 ) {
-//         fileContents.resize(fileSize);
-//         file.read((char*)( &fileContents[0] ), fileSize);
-//     }
-//     else {
-//         fileContents.clear();
-//     }
-
-//     file.close();
-
-//     return string(fileContents.begin(), fileContents.end());
-// }
-
-// pub fn writeFile(path: []const u8, byte* buffer) -> bool {
-//     ofstream file(path, ios::out | ios::binary);
-//     file.write(reinterpret_cast<char*>(buffer), sizeof(buffer));
-//     return true;
-// }
-
-// pub fn writeTextFile(path: []const u8, const String& text) -> bool {
-//     ofstream file(path, ios::out | ios::binary);
-//     file.write(text.c_str(), text.length());
-//     return true;
-// }
+pub fn writeTextFile(path: []const u8, text: []const u8) -> bool {
+}

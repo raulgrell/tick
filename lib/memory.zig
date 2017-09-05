@@ -1,8 +1,8 @@
 const math = @import("std").math;
-const os = @import("std").os;
 const assert = @import("std").debug.assert;
 
 const builtin = @import("builtin");
+const os = @import("std").os;
 const Os = builtin.Os;
 
 error NoMem;
@@ -198,7 +198,9 @@ pub fn copy(comptime T: type, dest: []T, source: []const T) -> []T {
 }
 
 pub fn move(comptime T: type, dest: []T, src: []const T) -> []T {
+    @setDebugSafety(this, false);
     assert(dest.len >= src.len);
+
     // Same address
     if (dest.ptr == src.ptr) return dest;
     
@@ -217,26 +219,6 @@ pub fn move(comptime T: type, dest: []T, src: []const T) -> []T {
     }
     
     return dest;
-}
-
-pub fn Cache(comptime T: type, comptime size: usize) -> type {
-    struct {
-        cache: [size]T,
-
-        const Self = this;
-
-        pub fn add() {
-
-        }
-
-        pub fn query() {
-
-        }
-
-        pub fn replace() {
-            
-        }
-    }
 }
 
 pub fn isPowerOfTwo(address: usize) ->  bool  {

@@ -1,7 +1,7 @@
+use @import("../system/index.zig");
 use @import("../math/index.zig");
-const shader = @import("../graphics/shader.zig");
 
-const c = @import("../system/c.zig");
+const shader = @import("../graphics/shader.zig");
 
 const Light = struct {
     color: Vec4,

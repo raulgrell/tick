@@ -1,9 +1,9 @@
-const math = @import("std").math;
 
 use @import("../math/index.zig");
 use @import("../system/index.zig");
 
-const lib = @import("../tick.zig").lib;
+const math = std.math;
+
 const app = @import("../app/core.zig");
 const tex = @import("../graphics/sprite.zig");
 const render = @import("../graphics/renderer.zig");
