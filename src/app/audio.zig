@@ -39,7 +39,7 @@ fn sio_err(err: c_int) -> %void {
         c.SoundIoError.Interrupted => error.Interrupted,
         c.SoundIoError.Underflow => error.Underflow,
         c.SoundIoError.EncodingString => error.EncodingString,
-        else => unreachable, // TODO zig bug: take out this line and get a segfault
+        else => unreachable,
     }
 }
 

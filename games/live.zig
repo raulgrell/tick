@@ -103,10 +103,6 @@ fn update(app: &App, state: &State, deltaTime: f32) -> %void {
     // Pause
     if(app.input.keyPressed[c.GLFW_KEY_P]) state.is_paused = !state.is_paused;
     if (state.is_paused) return;
-
-    // Place agent at cursor
-    if(app.input.buttonDown[c.GLFW_MOUSE_BUTTON_LEFT])
-        state.agent.position = app.input.cursor_position.xyz();
     
     // Update agents
     state.td_player.update(&state.level, deltaTime);

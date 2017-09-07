@@ -1,6 +1,6 @@
 use @import("../system/index.zig");
 use @import("window.zig");
-use @import("audio.zig");
+// use @import("audio.zig");
 use @import("../math/index.zig");
 
 // System
@@ -24,7 +24,7 @@ pub const API = struct {
 pub const App = struct {
     window:   Window,
     input:    InputManager,
-    audio:    AudioEngine,
+    // audio:    AudioEngine,
 
     pub fn init() -> &App {
         var app = c.mem.create(App) %% unreachable;
@@ -45,9 +45,9 @@ pub const App = struct {
         app.input.init();
 
         // Audio
-        %%app.audio.init();
-        %%app.audio.open();
-        %%app.audio.start();
+        // %%app.audio.init();
+        // %%app.audio.open();
+        // %%app.audio.start();
 
         return app;
     }

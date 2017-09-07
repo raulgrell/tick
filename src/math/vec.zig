@@ -101,6 +101,10 @@ pub fn Vec2T(comptime T: type) -> type {
             return x == other.x and y == other.y;
         }
 
+        pub fn isZero(self: &const Self, other: &const Self) -> bool {
+            return x == 0 and y == 0;
+        }
+
         pub fn distance(self: &const Self, other: &const Self) -> f32 {
             const a = self.x - other.x;
             const b = self.y - other.y;
@@ -115,8 +119,8 @@ pub fn Vec2T(comptime T: type) -> type {
             return math.sqrt(self.x * self.x + self.y * self.y);
         }
 
-        pub fn normalize(self: &const Self) -> vec2 {
-            const len = length();
+        pub fn normalize(self: &const Self) -> Self {
+            const len = self.length();
             return Self.init(self.x / len, self.y / len);
         }
     }

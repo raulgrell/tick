@@ -5,7 +5,7 @@ use @import("../math/index.zig");
 extern fn key_callback(win: ?&c.GLFWwindow, key: c_int, scancode: c_int, action: c_int, mods: c_int) -> void {
     // Filter actions and make sure key is a valid array index for the input manager
     if (action == c.GLFW_REPEAT or key < 0) return;
-    const app = @ptrCast(&App, ??c.glfwGetWindowUserPointer(win));
+    const app = @ptrCast(&App, @alignCast(@alignOf(App), ??c.glfwGetWindowUserPointer(win)));
     switch (key) {
         c.GLFW_KEY_ESCAPE => c.glfwSetWindowShouldClose(win, c.GL_TRUE),
         else => app.input.keyDown[usize(key)] = (action != c.GLFW_RELEASE)
@@ -13,7 +13,7 @@ extern fn key_callback(win: ?&c.GLFWwindow, key: c_int, scancode: c_int, action:
 }
 
 extern fn cursor_position_callback(win: ?&c.GLFWwindow, xpos: f64, ypos: f64) -> void {
-    const app = @ptrCast(&App, ??c.glfwGetWindowUserPointer(win));
+    const app = @ptrCast(&App, @alignCast(@alignOf(App), ??c.glfwGetWindowUserPointer(win)));
     app.input.cursor_position = vec2(f32(xpos - 1), f32(ypos - 1));
 }
 
@@ -26,7 +26,7 @@ extern fn cursor_enter_callback(win: ?&c.GLFWwindow, entered: c_int) {
 }
 extern fn mouse_button_callback(win: ?&c.GLFWwindow, button: c_int, action: c_int, mods: c_int) -> void {
     if (button < 0) return;
-    const app = @ptrCast(&App, ??c.glfwGetWindowUserPointer(win));
+    const app = @ptrCast(&App, @alignCast(@alignOf(App), ??c.glfwGetWindowUserPointer(win)));
     app.input.buttonDown[usize(button)] = (action != c.GLFW_RELEASE);
 }
 

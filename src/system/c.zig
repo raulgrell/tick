@@ -25,16 +25,20 @@ pub var mem = lib_mem.Allocator {
     .freeFn = libcFree,
 };
 
-fn libcAlloc(self: &lib_mem.Allocator, size: usize, alignment: u8) -> %[]u8 {
-    return @ptrCast(&u8, malloc(size_t(size)) ?? return error.NoMem)[0..size];
+fn libcAlloc(self: &lib_mem.Allocator, size: usize, alignment: usize) -> %[]u8 {
+    const allocated_memory = malloc(size) ?? return error.NoMem;
+    const aligned_memory = @alignCast(8, allocated_memory);
+    return @ptrCast(&u8, aligned_memory)[0..size];
 }
 
-fn libcRealloc(self: &lib_mem.Allocator, old_mem: []u8, new_size: usize, alignment: u8) -> %[]u8 {
-    return @ptrCast(&u8, realloc(@ptrCast(&c_void, old_mem.ptr), size_t(new_size)) ?? return error.NoMem)[0..new_size];
+fn libcRealloc(self: &lib_mem.Allocator, old_mem: []u8, new_size: usize, alignment: usize) -> %[]u8 {
+    const reallocated_memory = realloc(@ptrCast(&c_void, old_mem.ptr), new_size) ?? return error.NoMem;
+    const aligned_memory = @alignCast(8, reallocated_memory);
+    return @ptrCast(&u8, aligned_memory)[0..new_size];
 }
 
-fn libcFree(self: &lib_mem.Allocator, old_mem: []u8) -> void {
-    free(@ptrCast(&c_void, &old_mem[0]));
+fn libcFree(self: &lib_mem.Allocator, ptr: &u8) -> void {
+    free(@ptrCast(&c_void, ptr));
 }
 
 pub fn getFileSize(path: []const u8) -> usize {

@@ -76,9 +76,14 @@ test "Static Memory" {
 }
 
 pub const Allocator = struct {
-    allocFn:   fn(self: &Allocator, size: usize, alignment: u8) -> %[]u8,
-    reallocFn: fn(self: &Allocator, mem: []u8, size: usize, alignment: u8) -> %[]u8,
-    freeFn:    fn(self: &Allocator, mem: []u8) -> void,
+    /// Allocate byte_count bytes and return them in a slice, with the
+    /// slicer's pointer aligned at least to alignment bytes.
+    allocFn: fn (self: &Allocator, byte_count: usize, alignment: usize) -> %[]u8,
+    
+    /// Guaranteed: old_mem.len > 0 and alignment >= alignment of old_mem.ptr
+    reallocFn: fn (self: &Allocator, old_mem: []u8, new_byte_count: usize, alignment: usize) -> %[]u8,
+
+    freeFn: fn (self: &Allocator, ptr: &u8),
 
     /// Aborts the program if an allocation fails.
     fn checkedAlloc(self: &Allocator, comptime T: type, n: usize) -> []T {
@@ -89,7 +94,12 @@ pub const Allocator = struct {
     }
 
     fn create(self: &Allocator, comptime T: type) -> %&T {
-        &(%return self.alloc(T, 1))[0]
+        const slice = %return self.alloc(T, 1);
+        return &(slice)[0];
+    }
+
+    fn destroy(self: &Allocator, ptr: var) {
+        self.free(ptr[0..1]);
     }
 
     fn init(self: &Allocator, comptime T: type, data: &const T) -> %&T {
@@ -106,22 +116,31 @@ pub const Allocator = struct {
         return array;
     }
 
-    fn destroy(self: &Allocator, ptr: var) {
-        self.free(ptr[0..1]);
-    }
-
     fn alloc(self: &Allocator, comptime T: type, n: usize) -> %[]T {
         const byte_count = %return math.mul(usize, @sizeOf(T), n);
-        ([]T)(%return self.allocFn(self, byte_count, @preferredAlignOf(T)))
+        const byte_slice = %return self.allocFn(self, byte_count, @alignOf(T));
+        return ([]T)(@alignCast(@alignOf(T), byte_slice));
     }
 
     fn realloc(self: &Allocator, comptime T: type, old_mem: []T, n: usize) -> %[]T {
+        if (old_mem.len == 0) {
+            return self.alloc(T, n);
+        }
+
+        // Assert that old_mem.ptr is properly aligned.
+        _ = @alignCast(@alignOf(T), old_mem.ptr);
+
         const byte_count = %return math.mul(usize, @sizeOf(T), n);
-        ([]T)(%return self.reallocFn(self, ([]u8)(old_mem), byte_count, @preferredAlignOf(T)))
+        const byte_slice = %return self.reallocFn(self, ([]u8)(old_mem), byte_count, @alignOf(T));
+        return ([]T)(@alignCast(@alignOf(T), byte_slice));
     }
 
-    fn free(self: &Allocator, mem: var) -> void {
-        self.freeFn(self, ([]u8)(mem));
+    fn free(self: &Allocator, memory: var) {
+        const const_slice = ([]const u8)(memory);
+        if (memory.len == 0)
+            return;
+        const ptr = @intToPtr(&u8, @ptrToInt(const_slice.ptr));
+        self.freeFn(self, ptr);
     }
 };
 
@@ -226,41 +245,41 @@ pub fn isPowerOfTwo(address: usize) ->  bool  {
     return !((address & (address - 1) != 0));
 }
 
-pub fn forward(address: usize, align: u8) ->  usize {
-    const align_minus_one = align - 1;
+pub fn forward(address: usize, alignment: u8) ->  usize {
+    const align_minus_one = alignment - 1;
     const aligner = ~(align_minus_one);
     return ((address + align_minus_one) & aligner);
 }
 
-pub fn forwardAdjustment(address: usize, align: u8) ->  usize  {
-    const align_minus_one = align - 1;    
-    const adjustment = align - (address & align_minus_one);
-    return if (adjustment == align) adjustment else 0;
+pub fn forwardAdjustment(address: usize, alignment: u8) ->  usize  {
+    const align_minus_one = alignment - 1;    
+    const adjustment = alignment - (address & align_minus_one);
+    return if (adjustment == alignment) adjustment else 0;
 }
 
-pub fn forwardAdjustmentHeader(address: usize, align: u8, header_size: usize) -> usize {
+pub fn forwardAdjustmentHeader(address: usize, alignment: u8, header_size: usize) -> usize {
     var space_needed = header_size;
-    var adjustment =  forwardAdjustment(address, align);
+    var adjustment =  forwardAdjustment(address, alignment);
     if(adjustment < space_needed) {
         space_needed -= adjustment;
         //Increase adjustment to fit header
-        adjustment += align * (space_needed / align);
-        if(space_needed % align > 0)
-            adjustment += align;
+        adjustment += alignment * (space_needed / alignment);
+        if(space_needed % alignment > 0)
+            adjustment += alignment;
     }
     return adjustment;
 }
 
-pub fn backward(address: usize, align: u8) ->  usize {
-    const align_minus_one = align - 1;
+pub fn backward(address: usize, alignment: u8) ->  usize {
+    const align_minus_one = alignment - 1;
     const aligner = ~(align_minus_one);
     return (address & aligner);
 }
 
-pub fn backwardAdjustment(address: usize, align: u8) ->  usize  {
-    const align_minus_one = align - 1;
+pub fn backwardAdjustment(address: usize, alignment: u8) ->  usize  {
+    const align_minus_one = alignment - 1;
     const adjustment = (address & align_minus_one);
-    return if (adjustment == align) adjustment else 0;
+    return if (adjustment == alignment) adjustment else 0;
 }
 
 pub inline fn read_16le(data: []const u8) ->  u16 {

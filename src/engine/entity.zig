@@ -227,7 +227,7 @@ pub const MousePlayer = struct {
     camera: &Camera,
 
     pub fn init(agent: &Agent, input_manager: &InputManager, camera: &Camera)  -> MousePlayer {
-        TopDownPlayer {
+        MousePlayer {
             .agent = agent,
             .input = input_manager,
             .camera = camera,
@@ -236,8 +236,8 @@ pub const MousePlayer = struct {
     
     pub fn update(self: &MousePlayer, level: &Level, delta_time: f32) {
         if(self.input.buttonDown[c.GLFW_MOUSE_BUTTON_LEFT]) {
-            const mouse_direction = self.agent.position.sub(self.input.cursor_position.xyz()).normalize();
-            _ = self.agent.position.offset(mouse_direction.mul_scalar(self.speed))
+            const mouse_direction = self.input.cursor_position.sub(self.agent.position.xy()).normalize();
+            _ = self.agent.position.offset(mouse_direction.mul_scalar(self.agent.speed).xyz());
         }
         _ = self.agent.collideWithLevel(level);
     }

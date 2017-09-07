@@ -1,6 +1,6 @@
 // Math
 use @import("window.zig");
-use @import("audio.zig");
+// use @import("audio.zig");
 use @import("../math/index.zig");
 use @import("../system/index.zig");
 
@@ -45,7 +45,7 @@ const Game = struct {
         if (game_handle) | handle | {
             game.handle = handle;
             game.id = attr.st_ino;
-            var game_api = @ptrCast(?&API, c.dlsym(handle, name));
+            var game_api = @ptrCast(?&API, @alignCast(@alignOf(API), c.dlsym(handle, name)));
             if ( game_api ) | api | {
                 const game_state = game.state ?? api.init(app);
                 game.api = api;
@@ -83,7 +83,7 @@ extern const GAME: API;
 pub const App = struct {
     window: Window,
     input:  InputManager,
-    audio:  AudioEngine,
+    // audio:  AudioEngine,
 
     pub fn init() -> &App {
         var app = c.mem.create(App) %% unreachable;
@@ -104,9 +104,9 @@ pub const App = struct {
         app.input.init();
 
         // Audio
-        %%app.audio.init();
-        %%app.audio.open();
-        %%app.audio.start();
+        // %%app.audio.init();
+        // %%app.audio.open();
+        // %%app.audio.start();
 
         return app;
     }
