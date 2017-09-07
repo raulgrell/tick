@@ -43,24 +43,24 @@ pub fn build(b: &Builder) {
 
     // Dependencies
 
-    b.addLibPath("deps/");
-    var deps = b.addCStaticLibrary("deps");
+    // b.addLibPath("deps/");
+    // var deps = b.addCStaticLibrary("deps");
 
     // Default
     b.default_step.dependOn(&exe.step);
     b.default_step.dependOn(&dev.step);
     b.default_step.dependOn(&lib.step);
-    b.default_step.dependOn(&deps.step);
+    // b.default_step.dependOn(&deps.step);
 
     // Commands
     const run_exe = b.addCommand(".", b.env_map, exe.getOutputPath(), [][]const u8{});
     run_exe.step.dependOn(&exe.step);
-    run_exe.step.dependOn(&deps.step);
+    // run_exe.step.dependOn(&deps.step);
 
     const run_dev = b.addCommand(".", b.env_map, dev.getOutputPath(), [][]const u8{});
     run_dev.step.dependOn(&dev.step);
     run_dev.step.dependOn(&lib.step);
-    run_exe.step.dependOn(&deps.step);    
+    // run_exe.step.dependOn(&deps.step);    
     
     // Steps
     const play = b.step("play", "Play the game");

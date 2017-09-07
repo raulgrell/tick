@@ -16,6 +16,8 @@ compile-time.
 
 ## Current Features
 - 2D Immediate Mode Renderer
+- 2D Batched Renderer
+- Basic Immediate Mode GUI
 - Generic linear math and quaternion library.
 - Hot reloading of game code
 - Platform: Linux/GLFW
@@ -70,9 +72,7 @@ is but a minor inconvenience.
 - Audio
 - Platform API
 - Graphics API
-- Immediate Mode GUI
 - Scene Manager
-- 2D Batched Renderer
 - Sprite Animations
 - Resource Manager / Virtual Filesystem
 - Robust memory management

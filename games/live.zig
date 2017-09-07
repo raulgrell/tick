@@ -46,7 +46,9 @@ pub const State = struct {
     texture_shader: shader.TextureShader,
     im_renderer:    renderer.IMRenderer,
     agent:  entity.Agent,
-    player: entity.TopDownPlayer,
+    td_player: entity.TopDownPlayer,
+    impulse_player: entity.ImpulsePlayer,
+    mouse_player: entity.MousePlayer,
     agent_controller: entity.Controller,
     tile_map: [256]?Texture,
 };
@@ -79,7 +81,9 @@ fn init(app: &App) -> &State {
     const level_end = state.level.end;
     
     state.agent = entity.Agent.init(level_start.xyz(), HOT.DIMENSIONS_AGENT, HOT.SPEED_AGENT, &state.noise);
-    state.player = entity.TopDownPlayer.init(&state.agent, &app.input, &state.camera);    
+    state.td_player = entity.TopDownPlayer.init(&state.agent, &app.input, &state.camera);
+    state.impulse_player = entity.ImpulsePlayer.init(&state.agent, &app.input, &state.camera);
+    state.mouse_player = entity.MousePlayer.init(&state.agent, &app.input, &state.camera);
     
     state.agent_controller = entity.Controller.init(f32(fb_width), f32(fb_height));
     state.agent_controller.add(&state.agent);
@@ -102,10 +106,12 @@ fn update(app: &App, state: &State, deltaTime: f32) -> %void {
 
     // Place agent at cursor
     if(app.input.buttonDown[c.GLFW_MOUSE_BUTTON_LEFT])
-        state.player.agent.position = app.input.cursor_position.xyz();
+        state.agent.position = app.input.cursor_position.xyz();
     
     // Update agents
-    state.player.update(&state.level, deltaTime);
+    state.td_player.update(&state.level, deltaTime);
+    state.impulse_player.update(&state.level, deltaTime);
+    state.mouse_player.update(&state.level, deltaTime);
 }
 
 fn draw(app: &App, state: &State) {
@@ -116,7 +122,7 @@ fn draw(app: &App, state: &State) {
     state.im_renderer.begin();
     {
         state.level.draw(&state.im_renderer, state.tile_map[0..]);
-        state.player.agent.draw(&state.im_renderer);
+        state.agent.draw(&state.im_renderer);
         state.im_renderer.draw_text(&state.font, "Hello", 32, 32, 1);
     }
     state.im_renderer.end();

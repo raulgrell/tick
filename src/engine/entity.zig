@@ -221,6 +221,28 @@ pub const TopDownPlayer = struct {
     }
 };
 
+pub const MousePlayer = struct {
+    agent: &Agent,
+    input: &InputManager,
+    camera: &Camera,
+
+    pub fn init(agent: &Agent, input_manager: &InputManager, camera: &Camera)  -> MousePlayer {
+        TopDownPlayer {
+            .agent = agent,
+            .input = input_manager,
+            .camera = camera,
+        }
+    }
+    
+    pub fn update(self: &MousePlayer, level: &Level, delta_time: f32) {
+        if(self.input.buttonDown[c.GLFW_MOUSE_BUTTON_LEFT]) {
+            const mouse_direction = self.agent.position.sub(self.input.cursor_position.xyz()).normalize();
+            _ = self.agent.position.offset(mouse_direction.mul_scalar(self.speed))
+        }
+        _ = self.agent.collideWithLevel(level);
+    }
+};
+
 pub const Cell = struct {
     agents: ArrayList(&Agent),
 
@@ -468,7 +490,6 @@ const PhysicsPlayer = struct {
     const MovementState = enum{
         STANDING, RUNNING, PUNCHING, IN_AIR
     };
-    
 
     pub fn init(world: &World, position: &const Vec2, draw_dimensions: &const Vec2, collision_dimensions: &const Vec2,
             color: ColourRGBA8) -> PhysicsPlayer {
