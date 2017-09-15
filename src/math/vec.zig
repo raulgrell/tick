@@ -40,22 +40,19 @@ pub fn Vec2T(comptime T: type) -> type {
             self.y = Y;
         }
 
-        pub fn offset(self: &Self, other: &const Self) -> &Self {
+        pub fn offset(self: &Self, other: &const Self) {
             self.x += other.x;
             self.y += other.y;
-            return self;
         }
 
-        pub fn scale_aniso(self: &Self, other: &const Self) -> &Self {
+        pub fn scale_aniso(self: &Self, other: &const Self) {
             self.x *= other.x;
             self.y *= other.y;
-            return self;
         }
         
-        pub fn scale(self: &Self, value: T) -> &Self {
+        pub fn scale(self: &Self, value: T) {
             self.x *= value;
             self.y *= value;
-            return self;
         }
 
         pub fn add(self: &const Self, other: &const Self) -> Self {
@@ -171,25 +168,22 @@ pub fn Vec3T(comptime T: type) -> type {
             self.z = Z;
         }
 
-        pub fn scale(self: &Self, value: T) -> &Self {
+        pub fn scale(self: &Self, value: T) {
             self.x *= value;
             self.y *= value;
             self.z *= value;
-            return self;
         }
 
-        pub fn scale_aniso(self: &Self, other: &const Self) -> &Self {
+        pub fn scale_aniso(self: &Self, other: &const Self) {
             self.x *= other.x;
             self.y *= other.y;
             self.z *= other.z;
-            return self;
         }
 
-        pub fn offset(self: &Self, other: &const Self) -> &Self {
+        pub fn offset(self: &Self, other: &const Self) {
             self.x += other.x;
             self.y += other.y;
             self.z += other.z;
-            return self;
         }
 
         pub fn add(self: &const Self, other: &const Self) -> Self {
@@ -329,28 +323,25 @@ pub fn Vec4T(comptime T: type) -> type {
             self.w = W;
         }
 
-        pub fn scale(self: &Self, value: T) -> &Self {
+        pub fn scale(self: &Self, value: T) {
             self.x *= value;
             self.y *= value;
             self.z *= value;
             self.w *= value;
-            return self;
         }
 
-        pub fn scale_aniso(self: &Self, other: &const Self) -> &Self {
+        pub fn scale_aniso(self: &Self, other: &const Self) {
             self.x *= other.x;
             self.y *= other.y;
             self.z *= other.z;
             self.w *= other.w;
-            return self;
         }
 
-        pub fn offset(self: &Self, other: &const Self) -> &Self {
+        pub fn offset(self: &Self, other: &const Self) {
             self.x += other.x;
             self.y += other.y;
             self.z += other.z;
             self.w += other.w;
-            return self;
         }
 
         pub fn add(self: &const Self, other: &const Self) -> Self {

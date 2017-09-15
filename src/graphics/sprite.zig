@@ -1,11 +1,11 @@
-// System
-use @import("../system/index.zig");
-use @import("../math/index.zig");
+const tick = @import("../tick.zig");
 
-use asset;
+use tick.math;
 
-// Graphics
-use @import("texture.zig");
+use tick.system;
+use tick.system.asset;
+
+use tick.graphics.texture;
 
 pub const Sprite = struct {
     texture: Texture,

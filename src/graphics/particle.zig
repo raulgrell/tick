@@ -13,7 +13,7 @@ pub const Particle2D = struct {
 };
 
 pub fn defaultParticleUpdate(particle: &Particle2D, deltaTime: f32) {
-    _ = particle.position.offset(particle.velocity.mul_scalar(deltaTime));
+    particle.position.offset(particle.velocity.mul_scalar(deltaTime));
 }
 
 const MAX_BATCHES = 32;

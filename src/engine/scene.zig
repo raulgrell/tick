@@ -1,10 +1,9 @@
-use @import("../core/index.zig");
+const tick = @import("../tick.zig");
 
-use @import("../graphics/index.zig");
-use texture;
-
-use @import("../math/index.zig");
-use @import("../system/index.zig");
+use tick.core;
+use tick.math;
+use tick.system;
+use tick.graphics.texture;
 
 const math = std.math;
 const ArrayList = lib.ArrayList;
