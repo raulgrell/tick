@@ -5,6 +5,9 @@ pub const lib = @import("lib");
 
 pub const c = @import("c.zig");
 pub const debug = @import("debug.zig");
+pub const asset = @import("asset.zig");
+
+const ArrayList = lib.ArrayList;
 
 const MountPoints = std.HashMap(String, ArrayList(String));
 
@@ -40,10 +43,10 @@ pub const VFS = struct {
 
         var dirs = mem.split(path, '/');
         const virtualDir: []const u8 = dirs.front();
-        if (mount_points.find(virtualDir) == mount_points.end() or mount_points[virtualDir].empty())
-            return false;
 
-        const rem = path.substr(virtualDir.size() + 1, path.size() - virtualDir.size());
+        if (mount_points.find(virtualDir)) | v | if (v.empty()) return false;
+
+        const rem = path.substr(virtualDir.len + 1, path.len - virtualDir.len);
 
         for (mount_points.get(virtualDir)) | physical_path | {
             const path = physical_path + rem;

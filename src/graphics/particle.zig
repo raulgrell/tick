@@ -1,7 +1,8 @@
 use @import("../system/index.zig");
 use @import("../math/index.zig");
+
 use @import("../graphics/sprite.zig");
-use @import("../graphics/renderer.zig");
+use @import("../graphics/texture.zig");
 
 pub const Particle2D = struct {
     position: Vec2,

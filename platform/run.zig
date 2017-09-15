@@ -1,6 +1,4 @@
-const c     = @import("../src/system/c.zig");
-const core  = @import("../src/app/core.zig");
-
+const core  = @import("../src/core/index.zig");
 const game  = @import("../games/test.zig");
 
 pub fn main() -> %void {

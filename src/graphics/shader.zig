@@ -10,7 +10,7 @@ pub const ShaderProgram = struct {
     numUniforms: u32,
 
     pub fn init(vertex_source: []const u8, frag_source: []const u8, geometry_source: ?[]u8 ) -> ShaderProgram {
-        var sp = ShaderProgram {
+        var self = ShaderProgram {
             .programID = undefined,
             .vertexShaderID = undefined,
             .fragmentShaderID = undefined,
@@ -19,33 +19,33 @@ pub const ShaderProgram = struct {
             .numUniforms = 0,
         };
 
-        sp.vertexShaderID = compile(vertex_source, c"vertex", c.GL_VERTEX_SHADER);
-        sp.fragmentShaderID = compile(frag_source, c"fragment", c.GL_FRAGMENT_SHADER);
-        sp.geometryShaderID = if ( geometry_source) | geo_source | {
+        self.vertexShaderID = compile(vertex_source, c"vertex", c.GL_VERTEX_SHADER);
+        self.fragmentShaderID = compile(frag_source, c"fragment", c.GL_FRAGMENT_SHADER);
+        self.geometryShaderID = if ( geometry_source) | geo_source | {
             compile(geo_source, c"geometry", c.GL_GEOMETRY_SHADER)
         } else {
             null
         };
         
-        sp.programID = c.glCreateProgram();
+        self.programID = c.glCreateProgram();
 
-        sp.link();
+        self.link();
 
         debug.assertNoErrorGL();
 
-        if ( sp.geometryShaderID) | geo_id | {
-            c.glDetachShader(sp.programID, geo_id);
+        if ( self.geometryShaderID) | geo_id | {
+            c.glDetachShader(self.programID, geo_id);
         }
-        c.glDetachShader(sp.programID, sp.fragmentShaderID);
-        c.glDetachShader(sp.programID, sp.vertexShaderID);
+        c.glDetachShader(self.programID, self.fragmentShaderID);
+        c.glDetachShader(self.programID, self.vertexShaderID);
 
-        if ( sp.geometryShaderID) | geo_id | {
+        if ( self.geometryShaderID) | geo_id | {
             c.glDeleteShader(geo_id);
         }
-        c.glDeleteShader(sp.fragmentShaderID);
-        c.glDeleteShader(sp.vertexShaderID);
+        c.glDeleteShader(self.fragmentShaderID);
+        c.glDeleteShader(self.vertexShaderID);
 
-        return sp;
+        return self;
     }
 
     fn compile(source: []const u8, name: &const u8, kind: c.GLenum) -> c.GLuint {
@@ -160,99 +160,8 @@ pub const ShaderProgram = struct {
     }
 };
 
-pub const TextureShader = struct {
-    program: ShaderProgram,
-    attrib_position: c.GLint,
-    attrib_color: c.GLint,
-    attrib_uv: c.GLint,
-    uniform_mvp: c.GLint,
-    uniform_tex: c.GLint,
-
-    pub fn init() -> TextureShader {
-        var shader: TextureShader = undefined;
-        shader.program = ShaderProgram.init(
-            \\#version 330 core
-            \\in vec3 VertexPosition;
-            \\in vec4 VertexColor;
-            \\in vec2 VertexUV;
-            \\out vec4 FragmentColor;
-            \\out vec2 FragmentUV;
-            \\uniform mat4 MVP;
-            \\void main(void) {
-            \\    gl_Position = vec4(VertexPosition, 1.0) * MVP;
-            \\    FragmentUV = VertexUV;
-            \\    FragmentColor = VertexColor;
-            \\}
-        ,
-            \\#version 330 core
-            \\in vec4 FragmentColor;
-            \\in vec2 FragmentUV;
-            \\out vec4 OutputColor;
-            \\uniform sampler2D Tex;
-            \\void main(void) {
-            \\    OutputColor = texture(Tex, FragmentUV) + vec4(FragmentColor.rgb, 0);
-            \\}
-        , null);
-
-        shader.attrib_position = shader.program.getAttributeLocation(c"VertexPosition");
-        shader.attrib_color = shader.program.getAttributeLocation(c"VertexColor");
-        shader.attrib_uv = shader.program.getAttributeLocation(c"VertexUV");
-        shader.uniform_mvp = shader.program.getUniformLocation(c"MVP");
-        shader.uniform_tex = shader.program.getUniformLocation(c"Tex");
-
-        debug.assertNoErrorGL();
-
-        return shader;
-    }
-
-    pub fn destroy(shader: &TextureShader) {
-        shader.program.destroy();
-    }
-};
-
-pub const PrimitiveShader = struct {
-    program: ShaderProgram,
-    attrib_position: c.GLint,
-    attrib_color: c.GLint,
-    uniform_mvp: c.GLint,
-    uniform_color: c.GLint,
-
-    pub fn init() -> PrimitiveShader {
-        var shader: PrimitiveShader = undefined;
-        shader.program = ShaderProgram.init(
-            \\#version 330 core
-            \\in vec3 VertexPosition;
-            \\in vec4 VertexColor;
-            \\out vec4 FragmentColor;
-            \\uniform mat4 MVP;
-            \\void main(void) {
-            \\    gl_Position = vec4(VertexPosition, 1.0) * MVP;
-            \\    FragmentColor = VertexColor;
-            \\}
-        ,
-            \\#version 330 core
-            \\in vec4 FragmentColor;
-            \\out vec4 OutputColor;
-            \\uniform vec4 Color;
-            \\void main(void) {
-            \\    OutputColor = Color + vec4(FragmentColor.rgb, 0);
-            \\}
-        , null);
-
-        shader.attrib_position = shader.program.getAttributeLocation(c"VertexPosition");
-        shader.attrib_color = shader.program.getAttributeLocation(c"VertexColor");
-        shader.uniform_mvp = shader.program.getUniformLocation(c"MVP");
-        shader.uniform_color = shader.program.getUniformLocation(c"Color");
-
-        return shader;
-    }
-
-    pub fn destroy(shader: &PrimitiveShader) {
-        shader.program.destroy();
-    }
-};
-
 const ShaderManager = struct {
+    // replace with linear map, comptime
     shaders: ArrayList(Shader),
 
     pub fn init() -> ShaderManager {
@@ -290,4 +199,3 @@ const ShaderManager = struct {
         }
     }
 };
-

@@ -1,151 +1,11 @@
+// System
 use @import("../system/index.zig");
 use @import("../math/index.zig");
 
-const sh = @import("../graphics/shader.zig");
-const renderer = @import("renderer.zig");
+use asset;
 
-pub const Vertex = struct {
-    position: Vec3,
-    uv: Vec2,
-    colour: Vec4,
-};
-
-pub const Glyph = struct {
-    bottomLeft: Vertex,
-    topLeft: Vertex,
-    topRight: Vertex,
-    bottomRight: Vertex,
-    texture: &const Texture,
-    depth: f32,
-
-    fn init(destRect: &const Vec4, uvRect: &const Vec4, texture: &const Texture, depth: f32, colour: &const Vec4) -> Glyph {
-        const tlv = Vertex {
-            .position = vec3(destRect.x, destRect.y, 0),
-            .colour = *colour,
-            .uv = vec2(uvRect.x, uvRect.y)
-        };
-
-        const blv = Vertex {
-            .position = vec3(destRect.x, destRect.y + destRect.w, 0),
-            .colour = *colour,
-            .uv = vec2(uvRect.x, uvRect.y + uvRect.w)
-        };
-
-        const brv = Vertex {
-            .position = vec3(destRect.x + destRect.z, destRect.y + destRect.w, 0),
-            .colour = *colour,
-            .uv = vec2(uvRect.x + uvRect.z, uvRect.y + uvRect.w),
-        };
-
-        const trv = Vertex {
-            .position = vec3(destRect.x + destRect.z, destRect.y, 0),
-            .colour = *colour,
-            .uv = vec2(uvRect.x + uvRect.z, uvRect.y),
-        };
-
-        return Glyph {
-            .bottomLeft = blv,
-            .topLeft = tlv,
-            .topRight = trv, 
-            .bottomRight = brv, 
-            .texture = texture,
-            .depth = depth
-        };
-    }
-
-    fn initR(destRect: Vec4, uvRect: Vec4, texture: c.GLuint, depth: f32, colour: Vec4, angle: f32) -> Glyph {
-        // To get center position
-        const halfDims = vec2( destRect.z / 2.0, destRect.w / 2.0  );
-
-        // Center at origin
-        const bl = vec2(-halfDims.x, -halfDims.y );
-        const tl = vec2(-halfDims.x,  halfDims.y );
-        const tr = vec2( halfDims.x,  halfDims.y );
-        const br = vec2( halfDims.x, -halfDims.y );
-
-        // rotate the points
-
-        bl = rotate(bl, angle) + halfDims;
-        tl = rotate(tl, angle) + halfDims;
-        tr = rotate(tr, angle) + halfDims;
-        br = rotate(br, angle) + halfDims;
-
-        const blv = Vertex {
-            .position = vec3(destRect.x + bl.x, destRect.y + bl.y, 0),
-            .colour = *colour,
-            .uv = vec2(uvRect.x, uvRect.y)
-        };
-
-        const tlv = Vertex {
-            .position = vec3(destRect.x + tl.x, destRect.y + tl.y, 0),
-            .colour = *colour,
-            .uv = vec2(uvRect.x, uvRect.y + uvRect.w)
-        };
-
-        const trv = Vertex {
-            .position = vec3(destRect.x + tr.x, destRect.y + tr.y, 0),
-            .colour = *colour,
-            .uv = vec2(uvRect.x + uvRect.z, uvRect.y + uvRect.w)
-        };
-
-        const brv = Vertex {
-            .position = vec3(destRect.x + br.x, destRect.y + br.y, 0),
-            .colour = *colour,
-            .uv = vec2(uvRect.x + uvRect.z, uvRect.y)
-        };
-
-        return Glyph {
-            .bottomLeft = blv,
-            .topLeft = tlv,
-            .topRight = trv, 
-            .bottomRight = brv, 
-            .textureID = texture,
-            .depth = depth
-        };
-    }
-};
-
-pub const Texture = struct {
-    img: PngImage,    
-    id: c.GLuint,
-    path: []const u8,
-
-    pub fn init(compressed_bytes: []const u8) -> %Texture {
-        var t: Texture = undefined;
-        t.img = %return PngImage.create(compressed_bytes);
-
-        c.glGenTextures(1, &t.id);
-        %defer c.glDeleteTextures(1, &t.id);
-
-        c.glBindTexture(c.GL_TEXTURE_2D, t.id);
-        c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_WRAP_S, c.GL_REPEAT);
-        c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_WRAP_T, c.GL_REPEAT);
-        c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MAG_FILTER, c.GL_LINEAR);
-        c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MIN_FILTER, c.GL_LINEAR_MIPMAP_LINEAR);
-        c.glPixelStorei(c.GL_PACK_ALIGNMENT, 4);
-        c.glTexImage2D(c.GL_TEXTURE_2D, 0, c_int(t.img.color_type), c_int(t.img.width), c_int(t.img.height),
-                0, c_uint(t.img.color_type), c.GL_UNSIGNED_BYTE, @ptrCast(&c_void, &t.img.raw[0]));
-
-        c.glGenerateMipmap(c.GL_TEXTURE_2D);
-        c.glBindTexture(c.GL_TEXTURE_2D, 0);
-
-        return t;
-    }
-
-    pub fn bind(t: &Texture) {
-        c.glActiveTexture(c.GL_TEXTURE0 + t.id);
-        c.glBindTexture(c.GL_TEXTURE_2D, t.id);
-    }
-
-    pub fn unbind(t: &Texture) {
-        c.glBindTexture(c.GL_TEXTURE_2D, 0);
-    }
-    
-    pub fn deinit(t: &Texture) {
-        c.glDeleteTextures(1, &t.id);
-        t.img.destroy();
-    }
-};
+// Graphics
+use @import("texture.zig");
 
 pub const Sprite = struct {
     texture: Texture,
@@ -189,7 +49,7 @@ pub const Sprite = struct {
         return s;
     }
 
-    pub fn draw(s: &Sprite, shader: &sh.TextureShader, mvp: &const Mat4) {
+    pub fn draw(s: &Sprite, shader: &TextureShader, mvp: &const Mat4) {
         shader.program.bind();
         shader.program.setUniform_mat4(shader.uniform_mvp, mvp);
         shader.program.setUniform_int(shader.uniform_tex, c.GLint(s.texture.id));
@@ -281,7 +141,7 @@ pub const Spritesheet = struct {
         return s;
     }
 
-    pub fn draw(s: &Spritesheet, shader: &sh.TextureShader, index: usize, mvp: &const Mat4) {
+    pub fn draw(s: &Spritesheet, shader: &TextureShader, index: usize, mvp: &const Mat4) {
         shader.program.bind();
         shader.program.setUniform_mat4(shader.uniform_mvp, mvp);
         shader.program.setUniform_int(shader.uniform_tex, c.GLint(s.texture_id));
@@ -310,125 +170,284 @@ pub const Spritesheet = struct {
     }
 };
 
-const TextureCache = struct {
-    texture_map: HashMap([]const u8, Texture, hash_str, cmp_str),
-    
-    pub fn init() -> TextureCache {
-        return TextureCache {
-            .texture_map = HashMap([]const u8, Texture, hash_str, cmp_str).init(mem.c_allocator)
-        };
-    }
+const Frame = struct {
+    src_rect: Rectangle,
+    pos_offset: Vec2,
+    frame_time: float,
 
-    pub fn getTexture(self: &TextureCache, texturePath: []const u8) -> Texture {
-        if (map.get(texturePath)) | texture | {
-            return texture;
-        } else {
-            const newTexture = texture(texturePath);
-            self.texture_map.put(texturePath, newTexture);
-            return newTexture;
+    fn init(rect: &const Rectangle, pos: &const Vec2, time: f32) -> Frame {
+        Frame {
+            .src_rect = rect,
+            .pos_offset = pos,
+            .frame_time = time,
+        }
+    }
+};
+
+const SpriteUnit = struct {
+    pos: Vec2,
+    scale: Vec2,
+    origin: Vec2,
+    angle: f32,
+    verts: []Vertex2D,
+    frames: []Frame,
+    texture: &Texture,
+    current_frame: usize,
+    animation_speed: f32,
+    time: f32,
+    playing: bool,
+    reverse: bool,
+    loop: bool,
+
+    const Self = this;
+
+    fn init() -> Self {
+        Self {
+            .current_frame = 0,
+            .animation_speed = 1.0,
+            .time = 0.0,
+            .playing = false,
+            .reverse = false,
+            .loop = false,
         }
     }
 
-    fn hash_str(x: i32) -> u32 {
-        *@ptrCast(&u32, &x)
-    }
+    fn create(pos: &const Vec2, scale: &const Vec2, angle: f32, origin: &const Vec2, size: &const Vec2, file_path: []const u8, src_rect: &const Rectangle) {
+        self.pos = pos;
+        self.scale = scale;
+        self.angle = angle;
+        self.origin = origin;
+        self.current_frame = 0;
+        self.animation_speed = 1.0;
+        self.time = 0.0;
+        self.playing = false;
+        self.reverse = false;
+        self.loop = false;
 
-    fn cmp_str(a: i32, b: i32) -> bool {
-        a == b
-    }
-};
-
-error NotPngFile;
-error NoMem;
-error InvalidFormat;
-error NoPixels;
-
-const PNG_COLOR_TYPE_RGBA = c.PNG_COLOR_MASK_COLOR | c.PNG_COLOR_MASK_ALPHA;
-const PNG_COLOR_TYPE_RGB  = c.PNG_COLOR_MASK_COLOR;
-
-pub const PngImage = struct {
-    width: u32,
-    height: u32,
-    pitch: u32,
-    color_type: c_uint,
-    raw: []u8,
-
-    pub fn destroy(pi: &PngImage) {
-        mem.free(u8, pi.raw);
-    }
-
-    pub fn create(compressed_bytes: []const u8) -> %PngImage {
-        var pi : PngImage = undefined;
-
-        if (c.png_sig_cmp(&compressed_bytes[0], 0, 8) != 0) return error.NotPngFile;
-
-        var png_ptr = c.png_create_read_struct(c.PNG_LIBPNG_VER_STRING, null, null, null);
-        if (png_ptr == null) return error.NoMem;
-
-        var info_ptr = c.png_create_info_struct(png_ptr);
-        if (info_ptr == null) {
-            c.png_destroy_read_struct(&png_ptr, null, null);
-            return error.NoMem;
-        };
-        defer c.png_destroy_read_struct(&png_ptr, &info_ptr, null);
-
-        c.png_set_sig_bytes(png_ptr, 8);
-
-        var png_io = PngIo {
-            .index = 8,
-            .buffer = compressed_bytes,
-        };
-        c.png_set_read_fn(png_ptr, @ptrCast(&c_void, &png_io), read_png_data);
-
-        c.png_read_info(png_ptr, info_ptr);
-
-        pi.width  = c.png_get_image_width(png_ptr, info_ptr);
-        pi.height = c.png_get_image_height(png_ptr, info_ptr);
-
-        if (pi.width <= 0 or pi.height <= 0) return error.NoPixels;
-
-        // bits per channel (not per pixel)
-        const bits_per_channel = c.png_get_bit_depth(png_ptr, info_ptr);
-        if (bits_per_channel != 8) return error.InvalidFormat;
-
-        const channel_count = c.png_get_channels(png_ptr, info_ptr);
-        const color_type = c.png_get_color_type(png_ptr, info_ptr);
-
-        if(color_type == PNG_COLOR_TYPE_RGBA and channel_count == 4) {
-            pi.color_type = c.GL_RGBA;
-        } else if ( color_type == PNG_COLOR_TYPE_RGB and channel_count == 3) {
-            pi.color_type = c.GL_RGB;
-        } else {
-            return error.InvalidFormat;
+        if(!resManager.aquireTexture(self.texture, file_path)) {
+            panic("Failed to aqure texture for use in Sprite: ", file_path);
+            return;
         }
 
-        pi.pitch = pi.width * bits_per_channel * channel_count / 8;
-        pi.raw = c.mem.alloc(u8, pi.height * pi.pitch) %% return error.NoMem;
-        %defer c.mem.free(pi.raw);
+        //set up vertex data in object(local) space
+        self.verts.resize(4);
 
-        const row_ptrs = c.mem.alloc(c.png_bytep, pi.height) %% return error.NoMem;
-        defer c.mem.free(row_ptrs);
+        self.verts[0].setPos(0.0, 0.0, 0.0);
+        self.verts[0].setColor(VOLT_COLOR_WHITE);
 
-        { var i: usize = 0; while (i < pi.height) : (i += 1) {
-            const q = (pi.height - i - 1) * pi.pitch;
-            row_ptrs[i] = &pi.raw[q];
-        }}
+        self.verts[1].setPos(0.0, size.h, 0.0);
+        self.verts[1].setColor(VOLT_COLOR_WHITE);
 
-        c.png_read_image(png_ptr, &row_ptrs[0]);
+        self.verts[2].setPos(size.w, size.h, 0.0);
+        self.verts[2].setColor(VOLT_COLOR_WHITE);
 
-        return pi;
+        self.verts[3].setPos(size.w, 0.0, 0.0);
+        self.verts[3].setColor(VOLT_COLOR_WHITE);
+
+        if(src_rect.width <= 0 or src_rect.height <= 0) {
+            src_rect.width = self.texture.width - src_rect.x;
+            src_rect.height = self.texture.height - src_rect.y;
+        }
+
+        this.addFrame(src_rect, vec2(0.0, 0.0), 0.0);
+        this.setFrame(0);
+
+    }
+
+    fn create(pos: &const Vec2, size: &const Vec2, file_path: []const u8, src_rect: &const Rectangle) {
+        this.setPos(pos);
+        this.create(null, null, null, null, size, file_path, src_rect);
+    }
+
+    fn loadTexture(file_path: []const u8) {
+        if(!resManager.aquireTexture(self.texture, file_path)) {
+            panic("Failed to aqure texture for use in Sprite: ", file_path);
+            return;
+        }
+    }
+
+    fn addFrame(src_rect: &const Rectangle, pos_offset: &const Vec2, frame_time: f32) {
+        const uv = Rectangle {
+            .x = src_rect.x / self.texture.width,
+            .y = (self.texture.height - (src_rect.y + src_rect.height)) / self.texture.height,
+            .width = src_rect.width / self.texture.width,
+            .height = src_rect.height / self.texture.height,
+        };
+
+        self.frames.emplace_back(uv, pos_offset, frame_time);
+    }
+
+    fn createFrames(src_rect: &const Rectangle, rows: usize, cols: usize, animationTime: f32, padding: f32) {
+        self.frames.clear();
+        self.frames.reserve(rows * cols);
+
+        const frame_time: f32 = animationTime / (rows * cols);
+        const frame_width: f32 = (src_rect.width - (padding * (cols - 1))) / cols;
+        const frame_height: f32 = (src_rect.height - (padding * (rows - 1))) / rows;
+
+        for(rows) | j | {
+            for(cols) | i | {
+                const rect = Rectangle {
+                    .x = src_rect.x + (i * (frame_width + padding)),
+                    .y = src_rect.y + (j * (frame_height + padding)),
+                    .width = frame_width,
+                    .height = frame_height,
+                };
+                this.addFrame(rect, vec2(0.0, 0.0), frame_time);
+            }
+        }
+        this.setFrame(0);
+    }
+
+    fn update(deltaTime: f32) {
+        if(!self.playing) return;
+
+        self.time += deltaTime;
+
+        //check if we've waited long enough to advance the frame
+        if(self.time >= self.frames[self.current_frame].frame_time * self.animation_speed) {
+            //check if we are on the 'last' frame
+            const lastFrame = if (self.reverse) 0 else self.frames.size() - 1;
+            if(self.current_frame == lastFrame) {
+                //loop the animation if needed
+                if(self.loop) {
+                    //set current frame to 'first' frame, to start the animation again
+                    this.setFrame(if(self.reverse) self.frames.size() - 1 else 0);
+                }
+                else { 
+                    // we are not looping
+                    self.playing = false;
+                }
+            }
+            else { 
+                // we are not on the 'last' frame, advance the frame
+                this.setFrame(self.current_frame + (if(self.reverse) -1 else 1));
+            }
+
+        }
+    }
+
+    fn render(renderer: &BatchRenderer) {
+        renderer.submit(this);
+    }
+
+    fn scaleAnimationSpeed(scale: f32) {
+        self.animation_speed *= scale;
+    }
+
+    fn pauseAnimation() {
+        self.playing = false;
+    }
+
+    fn playAnimation() {
+        self.playing = true;
+    }
+
+    fn stopAnimation() {
+        self.playing = false;
+        self.current_frame = 0;
+        self.time = 0.0;
+    }
+
+    fn reverse() {
+        self.reverse = !self.reverse;
+        self.time = self.frames[self.current_frame].frame_time - self.time;
+    }
+
+    fn hasAnimationEnded() -> bool {
+        if(self.loop) return false;
+
+        const lastFrame = if (self.reverse) 0 else self.frames.size() - 1;
+
+        return (self.current_frame == lastFrame 
+            and self.time >= self.frames[self.current_frame].frame_time * self.animation_speed);
+    }
+
+    fn resetVerticies(size: &const Vec2) {
+        //set up vertex data in object(local) space
+        self.verts.clear();
+        self.verts.resize(4);
+
+        self.verts[0].setPos(0.0, 0.0, 0.0);
+        self.verts[0].setColor(VOLT_COLOR_WHITE);
+
+        self.verts[1].setPos(0.0, size.h, 0.0);
+        self.verts[1].setColor(VOLT_COLOR_WHITE);
+
+        self.verts[2].setPos(size.w, size.h, 0.0);
+        self.verts[2].setColor(VOLT_COLOR_WHITE);
+
+        self.verts[3].setPos(size.w, 0.0, 0.0);
+        self.verts[3].setColor(VOLT_COLOR_WHITE);
+    }
+
+    fn setTint(color: Colour) {
+        self.verts[0].setColor(color);
+        self.verts[1].setColor(color);
+        self.verts[2].setColor(color);
+        self.verts[3].setColor(color);
+    }
+
+    fn setDepth(depth: f32) {
+        self.verts[0].setDepth(depth);
+        self.verts[1].setDepth(depth);
+        self.verts[2].setDepth(depth);
+        self.verts[3].setDepth(depth);
+    }
+
+    fn setAnimationTime(milliseconds: f32) {
+        self.animation_speed = milliseconds / self.getAnimationTime();
+    }
+
+    fn setFrame(frame_index: usize) {
+        if(frame_index >= self.frames.size()) return;
+
+        self.current_frame = frame_index;
+        self.time = 0.0;
+
+        //set the verts texture coords to mach the frame
+        const uv = self.frames[self.current_frame].src_rect;
+
+        self.verts[0].setUV(uv.x, uv.y + uv.height);
+        self.verts[1].setUV(uv.x, uv.y);
+        self.verts[2].setUV(uv.x + uv.width, uv.y);
+        self.verts[3].setUV(uv.x + uv.width, uv.y + uv.height);
+    }
+
+    fn setAnimationTimeScale(animationTimeScale: f32) {
+        self.animation_speed = animationTimeScale;
+    }
+
+    fn getVerts() -> []Vertex2D {
+        return self.verts;
+    }
+
+    fn getIndices() -> []usize {
+        return []usize {0, 1, 2, 0, 2, 3};
+    }
+
+    fn getIndexCount() -> usize {
+        return 6;
+    }
+
+    fn getModelMatrix() -> Mat3 {
+        self.reconstructTransform();
+        return (self.getTransform().getMatrix());
+    }
+
+    fn getDepth() -> f32 {
+        return self.verts[0].pos.z;
+    }
+
+    fn getAnimationTime() -> f32 {
+        var time: f32 = 0.0;
+
+        for(self.frames) | frame, i | {
+            time += self.frames[i].frame_time;
+        }
+
+        //return 1 if animation time is 0 to avoid div by 0 in setAnimationTime()
+        return if (time != 0) time else 1.0;
     }
 };
 
-const PngIo = struct {
-    index: usize,
-    buffer: []const u8,
-};
-
-extern fn read_png_data(png_ptr: c.png_structp, data: c.png_bytep, length: c.png_size_t) {
-    const png_io = @ptrCast(&PngIo, @alignCast(@alignOf(PngIo), ??c.png_get_io_ptr(png_ptr)));
-    const new_index = png_io.index + length;
-    if (new_index > png_io.buffer.len) unreachable;
-    @memcpy(@ptrCast(&u8, ??data), &png_io.buffer[png_io.index], length);
-    png_io.index = new_index;
-}

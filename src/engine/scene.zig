@@ -1,17 +1,13 @@
-use @import("../system/index.zig");
+use @import("../core/index.zig");
+
+use @import("../graphics/index.zig");
+use texture;
+
 use @import("../math/index.zig");
+use @import("../system/index.zig");
 
-const app = @import("../app/core.zig");
-const tex = @import("../graphics/sprite.zig");
-const render = @import("../graphics/renderer.zig");
-
+const math = std.math;
 const ArrayList = lib.ArrayList;
-const Window = app.Window;
-
-const InputManager = app.InputManager;
-const Texture = tex.Texture;
-const IMRenderer = render.IMRenderer;
-const BatchRenderer = render.BatchRenderer;
 
 // Camera system modes
 const CameraMode = enum {
@@ -25,34 +21,34 @@ const CameraMode = enum {
 pub const Camera = struct {
     position: Vec3,
     rotation: Vec3,
-    focalPoint: Vec3,
+    focal_point: Vec3,
     scale: f32,
-    screenWidth: usize,
-    screenHeight: usize,
+    fb_width: usize,
+    fb_height: usize,
     view_matrix: Mat4,
     projection_matrix: Mat4,
     orthographic_matrix: Mat4,
     needs_update: bool,
-    active: bool,
+    is_active: bool,
 
-    pub fn init(screenWidth: usize, screenHeight: usize) -> Camera {
+    pub fn init(fb_width: usize, fb_height: usize) -> Camera {
         Camera {
             .position = vec3(0,0,0),
             .rotation = vec3(0,0,0),
-            .focalPoint = vec3(0,0,0),
+            .focal_point = vec3(0,0,0),
             .scale = 1,
-            .screenWidth = screenWidth,
-            .screenHeight = screenHeight,
+            .fb_width = fb_width,
+            .fb_height = fb_height,
             .view_matrix = Mat4.diagonal(1),
             .projection_matrix = Mat4.diagonal(1),
-            .orthographic_matrix = Mat4.orthographic( 0.0, f32(screenWidth), f32(screenHeight), 0.0, 0.0, 1.0 ),
+            .orthographic_matrix = Mat4.orthographic( 0.0, f32(fb_width), f32(fb_height), 0.0, 0.0, 1.0 ),
             .needs_update = true,
-            .active = true,
+            .is_active = true,
         }
     }
 
     pub fn getAspectRatio(self: &Camera) -> f32 { 
-        return f32(self.screenWidth) / f32(self.screenHeight);
+        return f32(self.fb_width) / f32(self.fb_height);
     }
 
     pub fn offsetPosition(self: &Camera, offset: Vec2) {
@@ -69,12 +65,12 @@ pub const Camera = struct {
     pub fn convertScreenToWorld(self: &Camera, screen_coords: &const Vec2) -> Vec3 {
         var worldCoords = vec3(
             screen_coords.x,
-            self.screenHeight - screen_coords.y, // Invert Y direction
+            self.fb_height - screen_coords.y, // Invert Y direction
             0.0
         );
 
         // Center at 0, 0
-        screen_coords.offset(vec2(-self.screenWidth / 2, -self.screenHeight / 2));
+        screen_coords.offset(vec2(-self.fb_width / 2, -self.fb_height / 2));
         
         worldCoords.scale(1/self.scale);
         worldCoords.offset(self.position);
@@ -83,7 +79,7 @@ pub const Camera = struct {
     }
 
     pub fn isBoxInView(self: &Camera, position: &const Vec2, dimenstions: &const Vec2) -> bool {
-        const scaled_screen = vec2(self.screenWidth / self.scale, self.screenHeight / self.scale);
+        const scaled_screen = vec2(self.fb_width / self.scale, self.fb_height / self.scale);
 
         const min_distance_x = (dimensions.x + scaled_screen.x) / 2.0;
         const min_distance_y = (dimensions.y + scaled_screen.y) / 2.0;
@@ -101,8 +97,8 @@ pub const Camera = struct {
         if (self.needs_update) return;
 
         const translation = vec3(
-            -self.position.x + f32(self.screenWidth / 2),
-            -self.position.y + f32(self.screenHeight / 2),
+            -self.position.x + f32(self.fb_width / 2),
+            -self.position.y + f32(self.fb_height / 2),
             0.0
         );
 
@@ -350,3 +346,103 @@ const Group = struct {
         renderer.popTransform();
     }
 };
+
+pub const Level = struct {
+    tile_dimensions: Vec2,
+    level_data: [9][16]u8,
+    start: Vec2,
+    end: Vec2,
+
+    pub fn init(level_data: []const []const u8, tile_dimensions: &const Vec3) -> Level {
+        var self = Level {
+            .tile_dimensions = tile_dimensions.xy(),
+            .level_data = undefined,
+            .start = vec2(0, 0),
+            .end = vec2(0, 0)
+        };
+
+        for (level_data) |line, row| {
+            std.mem.copy(u8, self.level_data[row][0..], level_data[row][0..]);
+            for (line) |sym, col| {
+                switch (sym) {
+                    // Agents
+                    '@' => {
+                        self.start.x = f32(col) * tile_dimensions.x;
+                        self.start.y = f32(row) * tile_dimensions.y;
+                        self.level_data[row][col] = ' ';
+                    },
+                    '$' => {
+                        self.end.x = f32(col) * tile_dimensions.x;
+                        self.end.y = f32(row) * tile_dimensions.y;
+                        self.level_data[row][col] = ' ';
+                    },
+                    else => { },
+                }
+            }
+        }
+
+        return self;
+    }
+
+    pub fn getSize(self: &const Level) -> UVec2 {
+        UVec2.init(self.level_data[0].len, self.level_data.len)
+    }
+
+    pub fn getCenter(self: &const Level) -> Vec2 {
+        const x = f32(self.level_data[0].len / 2) * self.tile_dimensions.x;
+        const y = f32(self.level_data.len / 2) * self.tile_dimensions.y;
+        return Vec2.init(x, y)
+    }
+
+    pub fn getWidth(self: &const Level) -> usize {
+        return self.level_data[0].len; 
+    }
+    
+    pub fn getHeight(self: &const Level) -> usize {
+        return self.level_data.len; 
+    }
+
+    pub fn draw(self: &const Level, renderer: &IMRenderer, tile_map: []?Texture) {
+        const uvRect = vec4(0.0, 0.0, 1.0, 1.0);
+        const dimensions = self.tile_dimensions;
+        for (self.level_data) |line, row| {
+            for (line) |sym, col| {
+                const pos_x = f32(col) * dimensions.x;
+                const pos_y = f32(row) * dimensions.y;
+                if (tile_map[sym]) | *tx | {
+                    renderer.draw_rect(tx, pos_x, pos_y, dimensions.x, dimensions.y);                    
+                }
+            }
+        }
+    }
+
+    pub fn save(file_path: []const u8, player: &TopDownPlayer, boxes: &ArrayList(Box), lights: &ArrayList(Light)) {
+    }
+
+    pub fn load(file_path: []const u8, player: &TopDownPlayer, boxes: &ArrayList(Box), lights: &ArrayList(Light)) {
+    }
+};
+
+pub fn Tiles(comptime C: u32, comptime R: u32) -> type {
+    struct {
+        color: Vec4,
+        tiles: [R][C]u8,
+
+        const Self = this;
+
+        fn renderTiles(self: &Self, position: &const Vec2, tile_size: f32, renderer: &StripRenderer) {
+            for (self.tiles) |row, y| {
+                for (row) |tile, x| {
+                    switch (tile) {
+                        Tile.Color => | color | {
+                            const tile_left = position.x + f32(x) * tile_size;
+                            const tile_top = position.y + f32(y) * tile_size;
+                            renderer.draw(t, color, f32(tile_left), f32(tile_top), tile_Size, tile_Size);
+                        },
+                        else => {},
+                    }
+                }
+            }
+        }
+    }
+}

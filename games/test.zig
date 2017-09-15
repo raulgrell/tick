@@ -1,8 +1,18 @@
 use @import("../src/tick.zig");
+
+use core;
 use system;
-use sprite;
 use math;
-use level;
+
+use graphics;
+use graphics.sprite;
+use graphics.texture;
+use graphics.shader;
+use graphics.primitive;
+use graphics.texture;
+
+use engine;
+use engine.scene;
 
 const FONT_CHAR_WIDTH  = 18;
 const FONT_CHAR_HEIGHT = 32;
@@ -56,11 +66,9 @@ var GAME_DATA = GameData {
     .gui_int = 0,
 };
 
-// Camera
+// Scene
 var CAMERA: scene.Camera = undefined;
-
-// Level: 
-var LEVEL: level.Level = undefined;
+var LEVEL: scene.Level = undefined;
 
 var level_data = [][]const u8 {
     "################",
@@ -76,44 +84,41 @@ var level_data = [][]const u8 {
 
 var tile_map = []?Texture { null } ** 256;
 
-// Shaders
-var PRIMITIVE_SHADER: shader.PrimitiveShader = undefined;
-var TEXTURE_SHADER: shader.TextureShader = undefined;
-var LIGHT_SHADER: light.LightShader = undefined;
+// Primitives
+var PRIMITIVE_SHADER: primitive.PrimitiveShader = undefined;
+var STRIP_RENDERER: primitive.StripRenderer = undefined;
+var LINE_RENDERER:  primitive.LineRenderer  = undefined;
 
-// Renderers
-var STRIP_RENDERER: renderer.StripRenderer = undefined;
-var IM_RENDERER:    renderer.IMRenderer    = undefined;
-var LINE_RENDERER:  renderer.LineRenderer  = undefined;
-var BATCH_RENDERER: renderer.BatchRenderer = undefined;
+// Texture
+var TEXTURE_SHADER: texture.TextureShader = undefined;
+var IM_RENDERER:    texture.IMRenderer    = undefined;
+var BATCH_RENDERER: texture.BatchRenderer = undefined;
 
+// Particles
 var PARTICLE_BATCH  : particle.ParticleBatch2D = undefined;
 var PARTICLE_ENGINE : particle.ParticleEngine2D = undefined;
 
+// Light
+var LIGHT_SHADER: light.LightShader = undefined;
+
 // Generic Player
-var AGENT:  entity.Agent  = undefined;
-var AGENT_CONTROLLER: entity.Controller = undefined;
+var AGENT:  agent.Agent  = undefined;
+var AGENT_CONTROLLER: agent.Controller = undefined;
 
 // Top Down Player
-var TD_AGENT:  entity.Agent         = undefined;
-var TD_PLAYER: entity.TopDownPlayer = undefined;
+var TD_AGENT:  agent.Agent         = undefined;
+var TD_PLAYER: agent.TopDownPlayer = undefined;
 
 // Platform Player
-var PF_AGENT:  entity.Agent         = undefined;
-var PF_PLAYER: entity.ImpulsePlayer = undefined;
+var PF_AGENT:  agent.Agent         = undefined;
+var PF_PLAYER: agent.ImpulsePlayer = undefined;
 
+// GUI
 var GUI: gui.GUI = undefined;
 
-// Group
-// Physics
-// Scene
-// Layer
-
 const FONT_PNG = @embedFile("../data/font.png");
-const TEX_PNG = @embedFile("../data/tiles/tile_01.png");
-const CIRCLE_PNG = @embedFile("../data/tiles/tile_506.png");
 const NOISE_PNG = @embedFile("../data/tex.png");
-const SPRITE_PNG = @embedFile("../data/tiles/tile_101.png");
+
 
 fn togglePause() {
     GAME_DATA.is_paused = !(GAME_DATA.is_paused);
@@ -129,32 +134,30 @@ pub fn init(app: &core.App) {
     GAME_DATA.font = Spritesheet.init(FONT_PNG, FONT_CHAR_WIDTH, FONT_CHAR_HEIGHT) %% {
         panic("Unable to load spritesheet");
     };
-    GAME_DATA.texture = Texture.init(TEX_PNG) %% panic("Unable to load texture");
-    GAME_DATA.circle = Texture.init(CIRCLE_PNG) %% panic("Unable to load circle");
     GAME_DATA.noise = Texture.init(NOISE_PNG) %% panic("Unable to load noise");
-    GAME_DATA.sprite = Sprite.init(SPRITE_PNG) %% panic("Unable to load sprite");
 
-    tile_map[' '] = GAME_DATA.texture;
-    tile_map['#'] = GAME_DATA.sprite.texture;
+
+    tile_map[' '] = GAME_DATA.noise;
+    tile_map['#'] = GAME_DATA.noise;
     
     const fb_width = app.window.framebuffer_width;
     const fb_height = app.window.framebuffer_height;
 
     CAMERA = scene.Camera.init(fb_width, fb_height);
 
-    PRIMITIVE_SHADER = shader.PrimitiveShader.init();
-    STRIP_RENDERER   = renderer.StripRenderer.init(&PRIMITIVE_SHADER, fb_width, fb_height);
-    LINE_RENDERER    = renderer.LineRenderer.init(&PRIMITIVE_SHADER, fb_width, fb_height );
+    PRIMITIVE_SHADER = primitive.PrimitiveShader.init();
+    STRIP_RENDERER   = primitive.StripRenderer.init(&PRIMITIVE_SHADER, fb_width, fb_height);
+    LINE_RENDERER    = primitive.LineRenderer.init(&PRIMITIVE_SHADER, fb_width, fb_height);
 
-    TEXTURE_SHADER = shader.TextureShader.init();
-    IM_RENDERER    = renderer.IMRenderer.init(&TEXTURE_SHADER, fb_width, fb_height );
-    BATCH_RENDERER = renderer.BatchRenderer.init(&TEXTURE_SHADER, fb_width, fb_height );
+    TEXTURE_SHADER = texture.TextureShader.init();
+    IM_RENDERER    = texture.IMRenderer.init(&TEXTURE_SHADER, fb_width, fb_height );
+    BATCH_RENDERER = texture.BatchRenderer.init(&TEXTURE_SHADER, fb_width, fb_height );
 
     PARTICLE_ENGINE = particle.ParticleEngine2D.init();
-    PARTICLE_BATCH = particle.ParticleBatch2D.init(&GAME_DATA.texture, 32, 1, particle.defaultParticleUpdate);
+    PARTICLE_BATCH = particle.ParticleBatch2D.init(&GAME_DATA.noise, 32, 1, particle.defaultParticleUpdate);
     PARTICLE_ENGINE.addParticleBatch(&PARTICLE_BATCH);
 
-    GUI = gui.GUI.init(&app.input, &IM_RENDERER, &GAME_DATA.font, &GAME_DATA.texture);
+    GUI = gui.GUI.init(&app.input, &IM_RENDERER, &GAME_DATA.font, &GAME_DATA.noise);
 
     LIGHT_SHADER = light.LightShader.init();
 
@@ -163,16 +166,16 @@ pub fn init(app: &core.App) {
     const level_center = LEVEL.getCenter();
     const level_end = LEVEL.end;
     
-    TD_AGENT = entity.Agent.init(level_start.xyz(), DIMENSIONS_AGENT, 2, &GAME_DATA.sprite.texture);
-    TD_PLAYER = entity.TopDownPlayer.init(&TD_AGENT, &app.input, &CAMERA);
+    TD_AGENT = agent.Agent.init(level_start.xyz(), DIMENSIONS_AGENT, 2, &GAME_DATA.noise);
+    TD_PLAYER = agent.TopDownPlayer.init(&TD_AGENT, &app.input, &CAMERA);
     
-    PF_AGENT = entity.Agent.init(level_end.xyz(), DIMENSIONS_AGENT, 2, &GAME_DATA.sprite.texture);
-    PF_PLAYER = entity.ImpulsePlayer.init(&PF_AGENT, &app.input, &CAMERA);
+    PF_AGENT = agent.Agent.init(level_end.xyz(), DIMENSIONS_AGENT, 2, &GAME_DATA.noise);
+    PF_PLAYER = agent.ImpulsePlayer.init(&PF_AGENT, &app.input, &CAMERA);
     
-    AGENT = entity.Agent.init(level_start.xyz(), DIMENSIONS_AGENT, 2, &GAME_DATA.noise);
-    AGENT_CONTROLLER = entity.Controller.init(f32(fb_width), f32(fb_height));
+    AGENT = agent.Agent.init(level_start.xyz(), DIMENSIONS_AGENT, 2, &GAME_DATA.noise);
+    AGENT_CONTROLLER = agent.Controller.init(f32(fb_width), f32(fb_height));
     AGENT_CONTROLLER.add(&AGENT);
-    AGENT_CONTROLLER.addNew(entity.Agent.init(level_center.xyz().cast(f32), DIMENSIONS_AGENT, 2, &GAME_DATA.noise));
+    AGENT_CONTROLLER.addNew(agent.Agent.init(level_center.xyz().cast(f32), DIMENSIONS_AGENT, 2, &GAME_DATA.noise));
 }   
 
 pub fn update(app: &core.App, deltaTime: f32) -> %void {
@@ -210,7 +213,7 @@ pub fn draw(app: &core.App) {
         // LEVEL.draw(&IM_RENDERER, tile_map[0..]);
 
         // IM_RENDERER.draw_text(&GAME_DATA.font, "Hello", 32, 32, 1);
-        // IM_RENDERER.draw_rect(&GAME_DATA.texture, 128, 32, 64, 64);
+        // IM_RENDERER.draw_rect(&GAME_DATA.noise, 128, 32, 64, 64);
         // IM_RENDERER.draw_rect(&GAME_DATA.noise, 192, 32, 64, 64);
         // IM_RENDERER.draw_sprite(&GAME_DATA.sprite, 256, 32, 32, 32);
 
@@ -257,7 +260,7 @@ pub fn draw(app: &core.App) {
         BATCH_RENDERER.submit(destRect, uvRect, GAME_DATA.noise, 0, COLOR_OBJ, 0);
         BATCH_RENDERER.submit(destRect.mul_scalar(1.5), uvRect, GAME_DATA.noise, 0, COLOR_OBJ, 0);
         BATCH_RENDERER.submit(destRect.mul_scalar(2), uvRect, GAME_DATA.noise, 0, COLOR_MID, 0);
-        BATCH_RENDERER.submit(destRect.mul_scalar(2.5), uvRect, GAME_DATA.circle, 0, COLOR_MID, 0);
+        BATCH_RENDERER.submit(destRect.mul_scalar(2.5), uvRect, GAME_DATA.noise, 0, COLOR_MID, 0);
         BATCH_RENDERER.submit(destRect.mul_scalar(3), uvRect, GAME_DATA.noise, 0, COLOR_MID, 0);
     }
     BATCH_RENDERER.end();

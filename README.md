@@ -6,9 +6,8 @@ an educational tool and showcase of some of the capabilities of Zig.
 ### Current Direction
 
 This is a port of an old C++ amalgam of several tutorials and miscellaneous projects. I am currently
-separating out the platform and graphics layers into reusable interfaces.
-
-Then the scene and layer management layers need to be cleaned up so that it can handle spatial partitioning,
+separating out the platform and graphics layers into reusable interfaces. Then the scene and layer 
+management layers need to be cleaned up so that it can handle spatial partitioning,
 physics and lighting in a sensible way.
 
 Eventually, I want to have a way of creating 'virtual consoles' where memory resources are fully defined at
@@ -20,6 +19,7 @@ compile-time.
 - Basic Immediate Mode GUI
 - Generic linear math and quaternion library.
 - Hot reloading of game code
+- Easy integration with C Libraries
 - Platform: Linux/GLFW
 
 ### Zig
@@ -65,11 +65,12 @@ The rest of the project was inspired by
 
 Changing the definition of the State struct may require a rebuild of the live environment. I'm working on this.
 
-You cannot change the function signatures of the API without a recompile. I probably won't work on this, as it
-is but a minor inconvenience.
+You cannot change the function signatures of the API without a recompile of the live executable. 
+I probably won't work on this, as it is but a minor inconvenience, and a major technical hurdle.
 
 ## In Development
 - Audio
+- Background recompiler - recompile on save
 - Platform API
 - Graphics API
 - Scene Manager
