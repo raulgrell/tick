@@ -175,7 +175,7 @@ pub const ImpulsePlayer = struct {
         const momentum_vec = self.agent.velocity.mul_scalar(self.agent.mass);
         if ( momentum_vec.x != 0 or momentum_vec.y != 0 ) {
             if ( friction < momentum_vec.length() ) {
-                _ = self.agent.velocity.offset(
+                self.agent.velocity.offset(
                     momentum_vec.normalize().mul_scalar(-friction / self.agent.mass * delta_time)
                 );
             } else {
@@ -184,7 +184,7 @@ pub const ImpulsePlayer = struct {
         }
 
         // Apply displacement
-        _ = self.agent.position.offset(self.agent.velocity);
+        self.agent.position.offset(self.agent.velocity);
 
         // Check collisions
         _ = self.agent.collideWithLevel(level);
@@ -229,7 +229,7 @@ pub const MousePlayer = struct {
     pub fn update(self: &MousePlayer, level: &Level, delta_time: f32) {
         if(self.input.buttonDown[c.GLFW_MOUSE_BUTTON_LEFT]) {
             const mouse_direction = self.input.cursor_position.sub(self.agent.position.xy()).normalize();
-            _ = self.agent.position.offset(mouse_direction.mul_scalar(self.agent.speed).xyz());
+            self.agent.position.offset(mouse_direction.mul_scalar(self.agent.speed).xyz());
         }
         _ = self.agent.collideWithLevel(level);
     }
@@ -343,20 +343,20 @@ pub const Controller = struct {
         const gravity = vec2(0, 0.1);
 
         for ( self.agents.toSlice() ) | agent | {
-            _ = agent.position.offset(agent.velocity.mul_scalar(delta_time));
+            agent.position.offset(agent.velocity.mul_scalar(delta_time));
 
             // Apply friction
             const momentum_vec = agent.velocity.mul_scalar(agent.mass);
             if ( momentum_vec.x != 0 or momentum_vec.y != 0 ) {
                 if ( friction < momentum_vec.length() ) {
-                    _ = agent.velocity.offset(momentum_vec.normalize().mul_scalar(-friction / agent.mass * delta_time));
+                    agent.velocity.offset(momentum_vec.normalize().mul_scalar(-friction / agent.mass * delta_time));
                 } else {
                     agent.velocity = vec3(0, 0, 0);
                 }
             }
             
             // Apply gravity
-            _ = agent.velocity.offset(gravity.mul_scalar(delta_time).xyz());
+            agent.velocity.offset(gravity.mul_scalar(delta_time).xyz());
             
             // Level Collisions
             if(agent.collideWithLevel(level)) {
@@ -410,17 +410,17 @@ pub const Controller = struct {
         if ( collision_depth > 0 ) {
             // Push away the less massive one
             if ( agent1.mass < agent2.mass ) {
-                _ = agent1.position.offset(dist_vec_direction.mul_scalar(-collision_depth));
+                agent1.position.offset(dist_vec_direction.mul_scalar(-collision_depth));
             } else {
-                _ = agent2.position.offset(dist_vec_direction.mul_scalar(collision_depth));
+                agent2.position.offset(dist_vec_direction.mul_scalar(collision_depth));
             }
             const aci = agent1.velocity.dot(dist_vec_direction);
             const bci = agent2.velocity.dot(dist_vec_direction);
             const acf = ( aci * ( agent1.mass - agent2.mass ) + 2 * agent2.mass * bci ) / ( agent1.mass + agent2.mass );
             const bcf = ( bci * ( agent2.mass - agent1.mass ) + 2 * agent1.mass * aci ) / ( agent1.mass + agent2.mass );
 
-            _ = agent1.velocity.offset(dist_vec_direction.mul_scalar( acf - aci ));
-            _ = agent2.velocity.offset(dist_vec_direction.mul_scalar( bcf - bci ));
+            agent1.velocity.offset(dist_vec_direction.mul_scalar( acf - aci ));
+            agent2.velocity.offset(dist_vec_direction.mul_scalar( bcf - bci ));
         }
     }
 };
