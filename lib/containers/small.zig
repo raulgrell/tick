@@ -1,11 +1,11 @@
-pub fn RelativePtr(comptime T: type) -> type {
+pub fn RelativePtr(comptime T: type)type {
     struct {
         base: usize,
         offset: T,
     }
 }
 
-pub fn SmallVector(comptime T: type, comptime S: size) -> type {
+pub fn SmallVector(comptime T: type, comptime S: size)type {
     struct {
         data: [S]T,
     }

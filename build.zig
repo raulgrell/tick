@@ -1,13 +1,21 @@
 const Builder = @import("std").build.Builder;
+const builtin = @import("builtin");
 
-pub fn build(b: &Builder) {
+pub fn build(b: &Builder) %void {
     // Get options
     const mode = b.standardReleaseOptions();
+    const windows = b.option(bool, "windows", "create windows build") ?? false;
+
+    b.addCIncludePath("include");
 
     // Statically linked
     var exe = b.addExecutable("run", "platform/run.zig");
     exe.addPackagePath("lib", "lib/index.zig");
     exe.setBuildMode(mode);
+    
+    if (windows) {
+        exe.setTarget(builtin.Arch.x86_64, builtin.Os.windows, builtin.Environ.gnu);
+    }
     
     exe.linkSystemLibrary("c");
     exe.linkSystemLibrary("m");
@@ -53,11 +61,11 @@ pub fn build(b: &Builder) {
     // b.default_step.dependOn(&deps.step);
 
     // Commands
-    const run_exe = b.addCommand(".", b.env_map, exe.getOutputPath(), [][]const u8{});
+    const run_exe = b.addCommand(".", b.env_map, [][]const u8{exe.getOutputPath()});
     run_exe.step.dependOn(&exe.step);
     // run_exe.step.dependOn(&deps.step);
 
-    const run_dev = b.addCommand(".", b.env_map, dev.getOutputPath(), [][]const u8{});
+    const run_dev = b.addCommand(".", b.env_map, [][]const u8{exe.getOutputPath()});
     run_dev.step.dependOn(&dev.step);
     run_dev.step.dependOn(&lib.step);
     // run_exe.step.dependOn(&deps.step);    

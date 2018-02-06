@@ -12,7 +12,7 @@ pub const Memory = struct {
     used: usize,
     allocations: usize,
 
-    pub fn map(size: usize) -> %[]u8 {
+    pub fn map(size: usize) %[]u8 {
         switch (builtin.os) {
             Os.linux, Os.darwin, Os.macosx, Os.ios => {
                 const p = os.posix;
@@ -21,14 +21,14 @@ pub const Memory = struct {
                 if (addr == p.MAP_FAILED) {
                     return error.NoMem;
                 } else {
-                    return @intToPtr(&u8, addr)[0..size]
+                    return @intToPtr(&u8, addr)[0..size];
                 }
             },
             else => @compileError("Unsupported OS"),
         }
     }
 
-    pub fn unmap(bytes: []u8) {
+    pub fn unmap(bytes: []u8) void {
         switch (builtin.os) {
             Os.linux, Os.darwin, Os.macosx, Os.ios => {
                 _ = os.posix.munmap(bytes.ptr, bytes.len);
@@ -37,18 +37,18 @@ pub const Memory = struct {
         }
     }
 
-    pub fn init(size: usize) -> %Memory {
-        Memory { .bytes = %return Memory.map(size), .used = 0, .allocations = 0, }
+    pub fn init(size: usize) %Memory {
+        return Memory { .bytes = try Memory.map(size), .used = 0, .allocations = 0, };
     }
 
-    pub fn deinit(self: Memory) {
+    pub fn deinit(self: Memory) void {
         Memory.unmap(self.bytes);
         self.used = 0;
         self.allocations = 0;
     }
 
-    pub fn proxy(bytes: []u8) -> Memory {
-        Memory { .bytes = bytes, .used = 0, .allocations = 0, }
+    pub fn proxy(bytes: []u8)Memory {
+        return Memory { .bytes = bytes, .used = 0, .allocations = 0, };
     }
 };
 
@@ -57,18 +57,18 @@ test "Memory" {
     Memory.unmap(dynamic_bytes);
 }
 
-pub fn StaticMemory(comptime size: usize) -> type {
-    struct {
+pub fn StaticMemory(comptime size: usize)type {
+    return struct {
         bytes: [size]u8,
 
         const Self = this;
         
-        pub fn init() -> Self {
-            Self {
+        pub fn init()Self {
+            return Self {
                 .bytes = []u8{0} ** size,
-            }
+            };
         }
-    }
+    };
 }
 
 test "Static Memory" {
@@ -78,51 +78,51 @@ test "Static Memory" {
 pub const Allocator = struct {
     /// Allocate byte_count bytes and return them in a slice, with the
     /// slicer's pointer aligned at least to alignment bytes.
-    allocFn: fn (self: &Allocator, byte_count: usize, alignment: usize) -> %[]u8,
+    allocFn: fn (self: &Allocator, byte_count: usize, alignment: usize) %[]u8,
     
     /// Guaranteed: old_mem.len > 0 and alignment >= alignment of old_mem.ptr
-    reallocFn: fn (self: &Allocator, old_mem: []u8, new_byte_count: usize, alignment: usize) -> %[]u8,
+    reallocFn: fn (self: &Allocator, old_mem: []u8, new_byte_count: usize, alignment: usize) %[]u8,
 
-    freeFn: fn (self: &Allocator, ptr: &u8),
+    freeFn: fn (self: &Allocator, ptr: &u8) void,
 
     /// Aborts the program if an allocation fails.
-    fn checkedAlloc(self: &Allocator, comptime T: type, n: usize) -> []T {
-        alloc(self, T, n) %% |err| {
+    fn checkedAlloc(self: &Allocator, comptime T: type, n: usize)[]T {
+        return alloc(self, T, n) catch |err| {
             %%io.stderr.printf("allocation failure: {}\n", @errorName(err));
-            os.abort()
-        }
+            os.abort();
+        };
     }
 
-    fn create(self: &Allocator, comptime T: type) -> %&T {
-        const slice = %return self.alloc(T, 1);
+    fn create(self: &Allocator, comptime T: type) %&T {
+        const slice = try self.alloc(T, 1);
         return &(slice)[0];
     }
 
-    fn destroy(self: &Allocator, ptr: var) {
+    fn destroy(self: &Allocator, ptr: var) void {
         self.free(ptr[0..1]);
     }
 
-    fn init(self: &Allocator, comptime T: type, data: &const T) -> %&T {
-        var object = %return self.create(T);
+    fn init(self: &Allocator, comptime T: type, data: &const T) %&T {
+        var object = try self.create(T);
         *object = *data;
         return object;
     }
 
-    fn init_array(self: &Allocator, comptime T: type, n: usize, data: &const T) -> %[]T {
-        var array = %return self.alloc(T, n);
+    fn init_array(self: &Allocator, comptime T: type, n: usize, data: &const T) %[]T {
+        var array = try self.alloc(T, n);
         for (array) | *object | {
             *object = *data;
         }
         return array;
     }
 
-    fn alloc(self: &Allocator, comptime T: type, n: usize) -> %[]T {
-        const byte_count = %return math.mul(usize, @sizeOf(T), n);
-        const byte_slice = %return self.allocFn(self, byte_count, @alignOf(T));
+    fn alloc(self: &Allocator, comptime T: type, n: usize) %[]T {
+        const byte_count = try math.mul(usize, @sizeOf(T), n);
+        const byte_slice = try self.allocFn(self, byte_count, @alignOf(T));
         return ([]T)(@alignCast(@alignOf(T), byte_slice));
     }
 
-    fn realloc(self: &Allocator, comptime T: type, old_mem: []T, n: usize) -> %[]T {
+    fn realloc(self: &Allocator, comptime T: type, old_mem: []T, n: usize) %[]T {
         if (old_mem.len == 0) {
             return self.alloc(T, n);
         }
@@ -130,12 +130,12 @@ pub const Allocator = struct {
         // Assert that old_mem.ptr is properly aligned.
         _ = @alignCast(@alignOf(T), old_mem.ptr);
 
-        const byte_count = %return math.mul(usize, @sizeOf(T), n);
-        const byte_slice = %return self.reallocFn(self, ([]u8)(old_mem), byte_count, @alignOf(T));
+        const byte_count = try math.mul(usize, @sizeOf(T), n);
+        const byte_slice = try self.reallocFn(self, ([]u8)(old_mem), byte_count, @alignOf(T));
         return ([]T)(@alignCast(@alignOf(T), byte_slice));
     }
 
-    fn free(self: &Allocator, memory: var) {
+    fn free(self: &Allocator, memory: var) void {
         const const_slice = ([]const u8)(memory);
         if (memory.len == 0)
             return;
@@ -144,27 +144,27 @@ pub const Allocator = struct {
     }
 };
 
-pub fn Cursor(comptime T: type) -> type {
-    struct {
+pub fn Cursor(comptime T: type)type {
+    return struct {
         data: []const T,
 
         const Self = this;
 
-        pub fn init(data: []const T) -> Self {
-            Self {
+        pub fn init(data: []const T)Self {
+            return Self {
                 .data = data
-            }
+            };
         }
 
-        pub fn peek(self: &Self) -> T {
+        pub fn peek(self: &Self) T {
             return if (self.data.len > 0) self.data[0] else unreachable; // null instead?
         }
 
-        pub fn advance(self: &Self) {
+        pub fn advance(self: &Self) void {
             if (self.data.len > 0) self.data = self.data[1..];
         }
 
-        pub fn next(self: &Self) -> T {
+        pub fn next(self: &Self) T {
             if (self.data.len > 0) {
                 const t = self.data[0];
                 self.data = self.data[1..];
@@ -175,13 +175,13 @@ pub fn Cursor(comptime T: type) -> type {
             }
         }
 
-        pub fn seek(self: &Self, item: T) {
+        pub fn seek(self: &Self, item: T) void {
             while(self.data.len > 0 and self.data[0] != item) {
                 self.data = self.data[1..];
             }
         }
 
-        pub fn match(self: &Self, item: T) -> bool {
+        pub fn match(self: &Self, item: T)bool {
             if (self.data.len > 0 and self.data[0] == item) {
                 self.data = self.data[1..];
                 return true;
@@ -189,7 +189,7 @@ pub fn Cursor(comptime T: type) -> type {
                 return false;
             }
         }
-    }
+    };
 }
 
 const stdmem = @import("std").mem;
@@ -209,15 +209,15 @@ test "Cursor" {
 
 //TODO: byte/word/page optmization or b/w/p aware cursor?
 
-pub fn copy(comptime T: type, dest: []T, source: []const T) -> []T {
-    @setDebugSafety(this, false);
+pub fn copy(comptime T: type, dest: []T, source: []const T)[]T {
+    @setRuntimeSafety(false);
     assert(dest.len >= source.len);
     for (source) |s, i| dest[i] = s;
     return dest;
 }
 
-pub fn move(comptime T: type, dest: []T, src: []const T) -> []T {
-    @setDebugSafety(this, false);
+pub fn move(comptime T: type, dest: []T, src: []const T)[]T {
+    @setRuntimeSafety(false);
     assert(dest.len >= src.len);
 
     // Same address
@@ -240,24 +240,24 @@ pub fn move(comptime T: type, dest: []T, src: []const T) -> []T {
     return dest;
 }
 
-pub fn isPowerOfTwo(address: usize) ->  bool  {
+pub fn isPowerOfTwo(address: usize) bool  {
     assert(address > 0);
     return !((address & (address - 1) != 0));
 }
 
-pub fn forward(address: usize, alignment: u8) ->  usize {
+pub fn forward(address: usize, alignment: u8) usize {
     const align_minus_one = alignment - 1;
     const aligner = ~(align_minus_one);
     return ((address + align_minus_one) & aligner);
 }
 
-pub fn forwardAdjustment(address: usize, alignment: u8) ->  usize  {
+pub fn forwardAdjustment(address: usize, alignment: u8) usize  {
     const align_minus_one = alignment - 1;    
     const adjustment = alignment - (address & align_minus_one);
     return if (adjustment == alignment) adjustment else 0;
 }
 
-pub fn forwardAdjustmentHeader(address: usize, alignment: u8, header_size: usize) -> usize {
+pub fn forwardAdjustmentHeader(address: usize, alignment: u8, header_size: usize)usize {
     var space_needed = header_size;
     var adjustment =  forwardAdjustment(address, alignment);
     if(adjustment < space_needed) {
@@ -270,65 +270,65 @@ pub fn forwardAdjustmentHeader(address: usize, alignment: u8, header_size: usize
     return adjustment;
 }
 
-pub fn backward(address: usize, alignment: u8) ->  usize {
+pub fn backward(address: usize, alignment: u8) usize {
     const align_minus_one = alignment - 1;
     const aligner = ~(align_minus_one);
     return (address & aligner);
 }
 
-pub fn backwardAdjustment(address: usize, alignment: u8) ->  usize  {
+pub fn backwardAdjustment(address: usize, alignment: u8) usize  {
     const align_minus_one = alignment - 1;
     const adjustment = (address & align_minus_one);
     return if (adjustment == alignment) adjustment else 0;
 }
 
-pub inline fn read_16le(data: []const u8) ->  u16 {
+pub inline fn read_16le(data: []const u8) u16 {
     return u16(data[0]) | (u16(data[1]) << 8);
 }
 
-pub inline fn read_16net(data: []const u8) ->  u16 {
+pub inline fn read_16net(data: []const u8) u16 {
     return u16(data[1]) | (u16(data[0]) << 8);
 }
 
-pub inline fn write_16le(data: []u8, v: u16) ->  void {
+pub inline fn write_16le(data: []u8, v: u16) void {
     data[0] = v;
     data[1] = v >> 8;
 }
 
-pub inline fn write_16net(data: []u8, v: u16) ->  void {
+pub inline fn write_16net(data: []u8, v: u16) void {
     data[1] = v;
     data[0] = v >> 8;
 }
 
-pub inline fn read_32le(data: []const u8) ->  u32 {
+pub inline fn read_32le(data: []const u8) u32 {
     return u32(data[0]) |
            (u32(data[1]) << 8) |
            (u32(data[2]) << 16) |
            (u32(data[3]) << 24);
 }
 
-pub inline fn read_32net(data: []const u8) ->  u32 {
+pub inline fn read_32net(data: []const u8) u32 {
     return u32(data[3]) |
            (u32(data[2]) << 8) |
            (u32(data[1]) << 16) |
            (u32(data[0]) << 24);
 }
 
-pub inline fn write_32le(data: []u8, v: u32) ->  void {
+pub inline fn write_32le(data: []u8, v: u32) void {
     data[0] = v;
     data[1] = v >> 8;
     data[2] = v >> 16;
     data[3] = v >> 24;
 }
 
-pub inline fn write_32net(data: []u8, v: u32) ->  void {
+pub inline fn write_32net(data: []u8, v: u32) void {
     data[3] = v;
     data[2] = v >> 8;
     data[1] = v >> 16;
     data[0] = v >> 24;
 }
 
-pub inline fn read_64le(data: []const u8) ->  u64 {
+pub inline fn read_64le(data: []const u8) u64 {
     return u64(data[0]) |
            (u64(data[1]) << 8) |
            (u64(data[2]) << 16) |
@@ -339,7 +339,7 @@ pub inline fn read_64le(data: []const u8) ->  u64 {
            (u64(data[7]) << 56);
 }
 
-pub inline fn read_64net(data: []const u8) ->  u64 {
+pub inline fn read_64net(data: []const u8) u64 {
     return u64(data[7]) |
            (u64(data[6]) << 8) |
            (u64(data[5]) << 16) |
@@ -350,7 +350,7 @@ pub inline fn read_64net(data: []const u8) ->  u64 {
            (u64(data[0]) << 56);
 }
 
-pub inline fn write_64le(data: []u8, v: u64) ->  void {
+pub inline fn write_64le(data: []u8, v: u64) void {
     data[0] = v;
     data[1] = v >> 8;
     data[2] = v >> 16;
@@ -361,7 +361,7 @@ pub inline fn write_64le(data: []u8, v: u64) ->  void {
     data[7] = v >> 56;
 }
 
-pub inline fn write_64net(data: []u8, v: u64) ->  void {
+pub inline fn write_64net(data: []u8, v: u64) void {
     data[7] = v;
     data[6] = v >> 8;
     data[5] = v >> 16;

@@ -15,23 +15,27 @@ pub const PngImage = struct {
     color_type: c_uint,
     raw: []u8,
 
-    pub fn destroy(pi: &PngImage) {
+    pub fn destroy(pi: &PngImage) void {
         mem.free(u8, pi.raw);
     }
 
-    pub fn create(compressed_bytes: []const u8) -> %PngImage {
+    pub fn create(compressed_bytes: []const u8) %PngImage {
         var pi : PngImage = undefined;
 
-        if (c.png_sig_cmp(&compressed_bytes[0], 0, 8) != 0) return error.NotPngFile;
+        // if (c.png_sig_cmp(&compressed_bytes[0], 0, 8) != 0) {
+        //     return error.NotPngFile;
+        // }
 
         var png_ptr = c.png_create_read_struct(c.PNG_LIBPNG_VER_STRING, null, null, null);
         if (png_ptr == null) return error.NoMem;
 
         var info_ptr = c.png_create_info_struct(png_ptr);
+        
         if (info_ptr == null) {
             c.png_destroy_read_struct(&png_ptr, null, null);
             return error.NoMem;
-        };
+        }
+
         defer c.png_destroy_read_struct(&png_ptr, &info_ptr, null);
 
         c.png_set_sig_bytes(png_ptr, 8);
@@ -65,10 +69,10 @@ pub const PngImage = struct {
         }
 
         pi.pitch = pi.width * bits_per_channel * channel_count / 8;
-        pi.raw = c.mem.alloc(u8, pi.height * pi.pitch) %% return error.NoMem;
-        %defer c.mem.free(pi.raw);
+        pi.raw = c.mem.alloc(u8, pi.height * pi.pitch) catch return error.NoMem;
+        errdefer c.mem.free(pi.raw);
 
-        const row_ptrs = c.mem.alloc(c.png_bytep, pi.height) %% return error.NoMem;
+        const row_ptrs = c.mem.alloc(c.png_bytep, pi.height) catch return error.NoMem;
         defer c.mem.free(row_ptrs);
 
         { var i: usize = 0; while (i < pi.height) : (i += 1) {
@@ -87,7 +91,7 @@ const PngIo = struct {
     buffer: []const u8,
 };
 
-extern fn read_png_data(png_ptr: c.png_structp, data: c.png_bytep, length: c.png_size_t) {
+extern fn read_png_data(png_ptr: c.png_structp, data: c.png_bytep, length: c.png_size_t) void {
     const png_io = @ptrCast(&PngIo, @alignCast(@alignOf(PngIo), ??c.png_get_io_ptr(png_ptr)));
     const new_index = png_io.index + length;
     if (new_index > png_io.buffer.len) unreachable;
@@ -99,13 +103,13 @@ extern fn read_png_data(png_ptr: c.png_structp, data: c.png_bytep, length: c.png
 const TextureCache = struct {
     texture_map: HashMap([]const u8, Texture, hash_str, cmp_str),
     
-    pub fn init() -> TextureCache {
+    pub fn init()TextureCache {
         return TextureCache {
             .texture_map = HashMap([]const u8, Texture, hash_str, cmp_str).init(mem.c_allocator)
         };
     }
 
-    pub fn getTexture(self: &TextureCache, texturePath: []const u8) -> Texture {
+    pub fn getTexture(self: &TextureCache, texturePath: []const u8)Texture {
         if (map.get(texturePath)) | texture | {
             return texture;
         } else {
@@ -115,12 +119,12 @@ const TextureCache = struct {
         }
     }
 
-    fn hash_str(x: i32) -> u32 {
-        *@ptrCast(&u32, &x)
+    fn hash_str(x: i32)u32 {
+        return *@ptrCast(&u32, &x);
     }
 
-    fn cmp_str(a: i32, b: i32) -> bool {
-        a == b
+    fn cmp_str(a: i32, b: i32)bool {
+        return a == b;
     }
 };
 

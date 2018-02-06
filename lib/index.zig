@@ -6,9 +6,9 @@ pub const mem = @import("memory.zig");
 pub const hash =  @import("hash.zig");
 pub const allocators = @import("allocators.zig");
 
-pub fn assert(predicate: bool, msg: []const u8) {
+pub fn assert(predicate: bool, msg: []const u8) void {
     if (!ok) {
-        %%io.stdout.printf("{}\n", msg);
-        unreachable // assertion failure
+        %%io.warn("{}\n", msg);
+        unreachable; // assertion failure
     }
 }

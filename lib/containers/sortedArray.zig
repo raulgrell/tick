@@ -3,7 +3,7 @@ const mem = @import("std").mem;
 const memory = @import("../memory.zig");
 const Allocator = memory.Allocator;
 
-pub fn SortedArray(comptime T: type) -> type {
+pub fn SortedArray(comptime T: type)type {
     struct {
         data: []T,
         length: usize,
@@ -12,10 +12,10 @@ pub fn SortedArray(comptime T: type) -> type {
         allocator: &Allocator,
 
         const Self = this;
-        const EqualityFunc = fn(a: T, b: T) -> bool;
-        const ComparisonFunc = fn(a: T, b: T) -> isize;
+        const EqualityFunc = fn(a: T, b: T)bool;
+        const ComparisonFunc = fn(a: T, b: T)isize;
 
-        pub fn init(eqlFn: EqualityFunc, cmpFn: ComparisonFunc, allocator: &Allocator) -> Self {
+        pub fn init(eqlFn: EqualityFunc, cmpFn: ComparisonFunc, allocator: &Allocator)Self {
             Self {
                 .data = []T{},
                 .length = 0,
@@ -25,11 +25,11 @@ pub fn SortedArray(comptime T: type) -> type {
             }
         }
 
-        pub fn deinit(self: &Self) -> void {
+        pub fn deinit(self: &Self) void {
             self.allocator.free(self.data);
         }
 
-        pub fn push(self: &Self, data: T) -> %void {
+        pub fn push(self: &Self, data: T) %void {
             var left  = usize(0);
             var right = usize(self.length);
             var index = usize(0);
@@ -61,7 +61,7 @@ pub fn SortedArray(comptime T: type) -> type {
             // insert element at index
             if (self.length + 1 > self.data.len) {
                 const newsize = (self.data.len + 2) * 2;
-                self.data = %return self.allocator.realloc(T, self.data, newsize)
+                self.data = try self.allocator.realloc(T, self.data, newsize)
             }
 
             // move all other elements
@@ -74,7 +74,7 @@ pub fn SortedArray(comptime T: type) -> type {
             self.length += 1;
         }
 
-        pub fn index_of(self: &Self, data: T) -> %usize {
+        pub fn index_of(self: &Self, data: T) %usize {
             // Binary search
             var left = usize(0);
             var right = self.length;
@@ -104,11 +104,11 @@ pub fn SortedArray(comptime T: type) -> type {
             return error.NotFound;
         }
 
-        pub fn clear(self: &Self) -> void {
+        pub fn clear(self: &Self) void {
             self.length = 0;
         }
 
-        pub fn get(self: &Self, index: usize) -> ?&T {
+        pub fn get(self: &Self, index: usize)?&T {
             return if ( index < self.length ) {
                 self.data[index]
             } else {
@@ -116,11 +116,11 @@ pub fn SortedArray(comptime T: type) -> type {
             }
         }
 
-        pub fn remove(self: &Self, index: usize) -> void {
+        pub fn remove(self: &Self, index: usize) void {
             remove_range(self, index, 1);
         }
 
-        pub fn remove_range(self: &Self, index: usize, length: usize) -> void {
+        pub fn remove_range(self: &Self, index: usize, length: usize) void {
             if (index > self.length or index + length > self.length) {
                 return;
             }
@@ -133,7 +133,7 @@ pub fn SortedArray(comptime T: type) -> type {
             self.length -= length;
         }
 
-        fn first_index( self: &Self, data: T, left: usize, right: usize) -> usize {
+        fn first_index( self: &Self, data: T, left: usize, right: usize)usize {
             var index = left;
             while (left < right) {
                 index = (left + right) / 2;
@@ -147,7 +147,7 @@ pub fn SortedArray(comptime T: type) -> type {
             return index;
         }
 
-        fn last_index( self: &Self, data: T, left: usize, right: usize) -> usize {
+        fn last_index( self: &Self, data: T, left: usize, right: usize)usize {
             var index = right;
             while (left < right) {
                 index = (left + right) / 2;
@@ -165,12 +165,12 @@ pub fn SortedArray(comptime T: type) -> type {
 
 const c = @import("../c.zig");
 
-fn comp(a: i32, b: i32) -> isize {
+fn comp(a: i32, b: i32)isize {
     if (a == b) return isize(0);
     return if(a  > b) isize(1) else isize(-1);
 }
 
-fn eql(a: i32, b: i32) -> bool {
+fn eql(a: i32, b: i32)bool {
     return a == b
 }
 

@@ -3,7 +3,7 @@ const mem = @import("std").mem;
 const memory = @import("../memory.zig");
 const Allocator = memory.Allocator;
 
-pub fn Queue(comptime T: type) -> type{
+pub fn Queue(comptime T: type)type{
     struct {
         head: ?&Entry,
         tail: ?&Entry,
@@ -17,7 +17,7 @@ pub fn Queue(comptime T: type) -> type{
             next: ?&Entry,
         };
 
-        pub fn init(allocator: &Allocator) -> Self {
+        pub fn init(allocator: &Allocator)Self {
             Self{
                 .head = null,
                 .tail = null,
@@ -25,11 +25,11 @@ pub fn Queue(comptime T: type) -> type{
             }
         }
 
-        pub fn deinit(self: &Self) -> void {
+        pub fn deinit(self: &Self) void {
             while (!is_empty(self)) pop_head(self);
         }
 
-        pub fn push_head(self: &Self, data: T) -> %void {
+        pub fn push_head(self: &Self, data: T) %void {
             var new_entry = %%self.allocator.create(Entry);
             new_entry.data = data;
             new_entry.prev = null;
@@ -46,7 +46,7 @@ pub fn Queue(comptime T: type) -> type{
             }
         }
 
-        pub fn pop_head(self: &Self) -> ?T {
+        pub fn pop_head(self: &Self)?T {
             if (is_empty(self)) return null;
 
             // Unlink the first entry from the head of the queue
@@ -66,7 +66,7 @@ pub fn Queue(comptime T: type) -> type{
             return result;
         }
 
-        pub fn peek_head(self: &Self) -> ?T {
+        pub fn peek_head(self: &Self)?T {
             if (self.head) | h | {
                 return h.data;
             } else {
@@ -74,8 +74,8 @@ pub fn Queue(comptime T: type) -> type{
             }
         }
 
-        pub fn push_tail(self: &Self, data: T) -> %void {
-            var new_entry = %return self.allocator.create(Entry);
+        pub fn push_tail(self: &Self, data: T) %void {
+            var new_entry = try self.allocator.create(Entry);
             new_entry.data = data;
             new_entry.prev = self.tail;
             new_entry.next = null;
@@ -90,7 +90,7 @@ pub fn Queue(comptime T: type) -> type{
             }
         }
 
-        pub fn pop_tail(self: &Self) -> ?T {
+        pub fn pop_tail(self: &Self)?T {
             if (self.tail) | t | {
                 const result = t.data;
                 defer self.allocator.destroy(t);
@@ -110,7 +110,7 @@ pub fn Queue(comptime T: type) -> type{
 
         }
 
-        pub fn peek_tail(self: &Self) -> ?T {
+        pub fn peek_tail(self: &Self)?T {
             if (self.tail) | t | {
                 return t.data;
             } else {
@@ -118,7 +118,7 @@ pub fn Queue(comptime T: type) -> type{
             }
         }
 
-        pub fn is_empty(self: &Self) -> bool {
+        pub fn is_empty(self: &Self)bool {
             return self.head == null;
         }
     }

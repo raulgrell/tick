@@ -1,5 +1,6 @@
 pub const std = @import("std");
 pub const panic = std.debug.panic;
+pub const warn = std.debug.warn;
 
 pub const lib = @import("lib");
 
@@ -16,27 +17,27 @@ var vfs_instance: ?VFS = undefined;
 pub const VFS = struct {
     mount_points: MountPoints,
 
-    pub fn init() {
+    pub fn init() void {
         vft_instance = vfs_instance ?? VFS {
             .mount_points = MountPoints.init()
         };
         return &vfs_instance;
     }
 
-    pub fn deinit() {
+    pub fn deinit() void {
         vfs_instance.mount_points.deinit();
         vfs_instance = null;
     }
 
-    pub fn mount(virtual_path: []const u8, physical_path: []const u8) {
+    pub fn mount(virtual_path: []const u8, physical_path: []const u8) void {
         mount_points.put(virtual_path, physical_path);
     }
 
-    pub fn unmount(path: []const u8) {
+    pub fn unmount(path: []const u8) void {
         if (mount_points.get(path)) | list | list.clear();
     }
 
-    pub fn resolve(path: []const u8) -> %[]const u8 {
+    pub fn resolve(path: []const u8) %[]const u8 {
         if (path[0] != '/') {
             return if (c.fileExists(path)) path else error.NotFound;
         }
@@ -58,19 +59,19 @@ pub const VFS = struct {
         return false;
     }
 
-    pub fn readFile(path: []const u8) -> %[]u8 {
-        if (resolve(path)) | physical_path | c.readFile(physical_path) else error.NotFound
+    pub fn readFile(path: []const u8) %[]u8 {
+       return if (resolve(path)) | physical_path | c.readFile(physical_path) else error.NotFound;
     }
 
-    pub fn readTextFile(path: []const u8) -> %[]const u8 {
-        if (resolve(path)) | physical_path | c.readTextFile(physical_path) else error.NotFound
+    pub fn readTextFile(path: []const u8) %[]const u8 {
+        return if (resolve(path)) | physical_path | c.readTextFile(physical_path) else error.NotFound;
     }
 
-    pub fn writeFile(path: []const u8, buffer: []u8) -> %void {
-        if (resolve(path)) | physical_path | c.writeFile(physical_path, buffer) else error.NotFound
+    pub fn writeFile(path: []const u8, buffer: []u8) %void {
+        return if (resolve(path)) | physical_path | c.writeFile(physical_path, buffer) else error.NotFound;
     }
 
-    pub fn writeTextFile(path: []const u8, text: []const u8) -> %void {
-        if (resolve(path)) | physical_path | c.writeTextFile(physical_path, text) else error.NotFound
+    pub fn writeTextFile(path: []const u8, text: []const u8) %void {
+        return if (resolve(path)) | physical_path | c.writeTextFile(physical_path, text) else error.NotFound;
     }
 };

@@ -18,12 +18,12 @@ const WINDOW_WIDTH  = 640;
 const WINDOW_HEIGHT = 360;
 
 pub const API = struct {
-    init:     fn(app: &App) -> &State,
-    update:   fn(app: &App, state: &State, delta_time: f32) -> %void,
-    draw:     fn(app: &App, state: &State) -> void,
-    reload:   fn(state: &State) -> void,
-    unload:   fn(state: &State) -> void,
-    deinit:   fn(state: &State) -> void,
+    init:     fn(app: &App)&State,
+    update:   fn(app: &App, state: &State, delta_time: f32) %void,
+    draw:     fn(app: &App, state: &State) void,
+    reload:   fn(state: &State) void,
+    unload:   fn(state: &State) void,
+    deinit:   fn(state: &State) void,
 };
 
 const Game = struct {
@@ -32,7 +32,7 @@ const Game = struct {
     api: ?&API,
     state: ?&State,
 
-    pub fn load(path: &const u8, name: &const u8, game: &Game, app: &App) {
+    pub fn load(path: &const u8, name: &const u8, game: &Game, app: &App) void {
         var attr: c.struct_stat = undefined;
         if (c.stat(path, &attr) != 0) return;
         if (game.id == attr.st_ino) return;
@@ -52,19 +52,19 @@ const Game = struct {
                 game.state = game_state;
                 api.reload(game_state);
             } else {
-                %%io.stdout.printf("Could not load API");
+                warn("Could not load API");
                 _ = c.dlclose(handle);
                 game.handle = null;
                 game.id = 0;
             }
         } else {
-            %%io.stdout.printf("Could not load Lib");
+            warn("Could not load Lib");
             game.handle = null;
             game.id = 0;
         }
     }
     
-    pub fn unload(game: &Game) {
+    pub fn unload(game: &Game) void {
         if (game.handle) | handle | {
             const api = game.api ?? panic("unload: No API");
             const state = game.state ?? panic("unload: No State");
@@ -85,8 +85,8 @@ pub const App = struct {
     input:  InputManager,
     // audio:  AudioEngine,
 
-    pub fn init() -> &App {
-        var app = c.mem.create(App) %% unreachable;
+    pub fn init()&App {
+        var app = c.mem.create(App) catch unreachable;
 
         // Window
         app.window.init(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -111,7 +111,7 @@ pub const App = struct {
         return app;
     }
 
-    pub fn run (app: &App) {
+    pub fn run (app: &App) void {
         var game_lib = Game {
             .handle = null,
             .id = 0,
@@ -140,7 +140,7 @@ pub const App = struct {
                 var total_delta_time = current_ticks / TARGET_FRAMETIME;
                 while (total_delta_time > 0.0 and frameSteps < MAX_FRAME_STEPS) {
                     delta_time = if (total_delta_time < MAX_DELTA_TIME) total_delta_time else MAX_DELTA_TIME;
-                    api.update(app, state, delta_time) %% break;
+                    api.update(app, state, delta_time) catch break;
                     total_delta_time -= delta_time;
                     frameSteps += 1;
                 }

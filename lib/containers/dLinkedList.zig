@@ -5,21 +5,21 @@ const Allocator = memory.Allocator;
 
 error NotFound;
 
-pub fn DLinkedList(comptime T: type) -> type {
+pub fn DLinkedList(comptime T: type)type {
     struct {
         root: ?&&ListEntry,
         length: usize,
         allocator: &Allocator,
 
         const Self = this;
-        const EqualityFunc = fn(a: T, b: T) -> bool;
-        const ComparisonFunc = fn(a: T, b: T) -> isize;
+        const EqualityFunc = fn(a: T, b: T)bool;
+        const ComparisonFunc = fn(a: T, b: T)isize;
 
         const Iterator = struct {
             prev_next: ?&&ListEntry,
             current: ?&ListEntry,
 
-            pub fn next(iter: &Iterator) -> ?T {
+            pub fn next(iter: &Iterator)?T {
                 const p_n = if(iter.prev_next) | x | *x else null;
                 if (iter.current) | entry | {
                     // p_n might actually be null, check this
@@ -42,7 +42,7 @@ pub fn DLinkedList(comptime T: type) -> type {
             next: ?&ListEntry,
         };
 
-        pub fn init(allocator: &Allocator) -> Self {
+        pub fn init(allocator: &Allocator)Self {
             Self {
                 .root = null,
                 .length = 0,
@@ -50,7 +50,7 @@ pub fn DLinkedList(comptime T: type) -> type {
             }
         }
 
-        pub fn deinit(self: &Self) {
+        pub fn deinit(self: &Self) void {
             var entry = self.root;
             while (entry) | e | {
                 var next = (*e).next;
@@ -59,8 +59,8 @@ pub fn DLinkedList(comptime T: type) -> type {
             }
         }
 
-        pub fn prepend(list: &Self, data: T) -> %&ListEntry {
-            var newentry = %return list.allocator.create(ListEntry);
+        pub fn prepend(list: &Self, data: T) %&ListEntry {
+            var newentry = try list.allocator.create(ListEntry);
             newentry.data = data;
 
             if (list.root) | entry | {
@@ -74,8 +74,8 @@ pub fn DLinkedList(comptime T: type) -> type {
             return newentry;
         }
 
-        pub fn append(list: &Self, data: T) -> %&ListEntry {
-            var newentry = %return list.allocator.create(ListEntry);
+        pub fn append(list: &Self, data: T) %&ListEntry {
+            var newentry = try list.allocator.create(ListEntry);
             newentry.data = data;
             newentry.next = null;
 
@@ -93,7 +93,7 @@ pub fn DLinkedList(comptime T: type) -> type {
             return newentry;
         }
 
-        pub fn nth_entry(list: &const Self, n: usize) -> ?&ListEntry {
+        pub fn nth_entry(list: &const Self, n: usize)?&ListEntry {
             var i = usize(0);
             var entry = if(list.root) | r | *r else null;
             while(i < n) : ( i += 1) {
@@ -106,11 +106,11 @@ pub fn DLinkedList(comptime T: type) -> type {
             return entry;
         }
 
-        pub fn nth_data(list: &const Self, n: usize) -> ?T {
+        pub fn nth_data(list: &const Self, n: usize)?T {
             return if (nth_entry(list, n)) | entry | entry.data else null;
         }
 
-        pub fn find_data(list: &const Self, equal: EqualityFunc, data: T) -> ?&ListEntry {
+        pub fn find_data(list: &const Self, equal: EqualityFunc, data: T)?&ListEntry {
             var current = list;
             while(current) | c | : (current = c.next) {
                 if (equal(c.data, data) != 0) return c;
@@ -119,7 +119,7 @@ pub fn DLinkedList(comptime T: type) -> type {
             return null;
         }
 
-        pub fn length(list: &const Self) -> usize {
+        pub fn length(list: &const Self)usize {
             var length = 0;
             var entry = list;
             while (entry) | e | : ( entry = e.next ) {
@@ -128,9 +128,9 @@ pub fn DLinkedList(comptime T: type) -> type {
             return length;
         }
 
-        pub fn to_array(list: &const Self) -> []T {
+        pub fn to_array(list: &const Self)[]T {
             const length = length(list);
-            var array = %return list.allocator.alloc(T, length);
+            var array = try list.allocator.alloc(T, length);
 
             var current = list;
             { var i = usize(0); while (i < length) : (i += 1) {
@@ -142,7 +142,7 @@ pub fn DLinkedList(comptime T: type) -> type {
             return array;
         }
 
-        pub fn remove_entry(list: &Self, entry: &ListEntry) -> %void {
+        pub fn remove_entry(list: &Self, entry: &ListEntry) %void {
             if (list.root == null) {
                 return error.NotFound;
             }
@@ -165,7 +165,7 @@ pub fn DLinkedList(comptime T: type) -> type {
             list.allocator.destroy(entry);
         }
 
-        pub fn remove_data(list: &Self, equal: EqualityFunc, data: T) -> usize {
+        pub fn remove_data(list: &Self, equal: EqualityFunc, data: T)usize {
             var entries_removed = usize(0);
 
             var current = list.root;
@@ -192,7 +192,7 @@ pub fn DLinkedList(comptime T: type) -> type {
             return entries_removed;
         }
 
-        pub fn iterate(list: &Self) -> Iterator {
+        pub fn iterate(list: &Self)Iterator {
             Iterator {
                 .prev_next = list.root,
                 .current = null,
@@ -203,7 +203,7 @@ pub fn DLinkedList(comptime T: type) -> type {
 
 const c = @import("../c.zig");
 
-fn eql(a: i32, b: i32) -> bool {
+fn eql(a: i32, b: i32)bool {
     return a == b
 }
 

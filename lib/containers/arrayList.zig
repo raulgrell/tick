@@ -5,60 +5,60 @@ const Allocator = memory.Allocator;
 
 error NotFound;
 
-pub fn ArrayList(comptime T: type) -> type {
-    struct {
+pub fn ArrayList(comptime T: type)type {
+    return struct {
         data: []T,
         length: usize,
         allocator: &Allocator,
         
         const Self = this;
-        const EqualityFunc = fn(a: T, b: T) -> bool;
-        const ComparisonFunc = fn(a: T, b: T) -> isize;
+        const EqualityFunc = fn(a: T, b: T)bool;
+        const ComparisonFunc = fn(a: T, b: T)isize;
 
         const initial_size = 16;
         const growth_factor = 2;
 
-        pub fn init(allocator: &Allocator) -> Self {
-            Self {
+        pub fn init(allocator: &Allocator)Self {
+            return Self {
                 .data = []T {},
                 .length = 0,
                 .allocator = allocator,
-            }
+            };
         }
 
-        pub fn deinit(self: &Self) {
+        pub fn deinit(self: &Self) void {
             self.allocator.free(self.data);
         }
 
-        pub fn toSlice(self: &const Self) -> []T {
+        pub fn toSlice(self: &const Self)[]T {
             return self.data[0..self.length];
         }
 
-        pub fn toSliceConst(self: &const Self) -> []const T {
+        pub fn toSliceConst(self: &const Self)[]const T {
             return self.data[0..self.length];
         }
 
-        pub fn last(self: &const Self) -> T {
+        pub fn last(self: &const Self) T {
             return self.data[self.length];
         }
 
-        pub fn pop(self: &Self) -> T {
+        pub fn pop(self: &Self) T {
             const last_item = self.last();
             self.length -= 1;
             return last_item;
         }
 
-        pub fn append(self: &Self, data: &const T) -> %void {
-            return insert(self, self.length, data);
+        pub fn append(self: &Self, data: &const T) %void {
+            try insert(self, self.length, data);
         }
 
-        pub fn prepend(self: &Self, data: &const T) -> %void {
-            return insert(self, 0, data);
+        pub fn prepend(self: &Self, data: &const T) %void {
+            try insert(self, 0, data);
         }
 
-        pub fn insert(self: &Self, index: usize, data: &const T) -> %void {
+        pub fn insert(self: &Self, index: usize, data: &const T) %void {
             if (index > self.length) return error.NoMem;
-            %return self.reserve(self.length + 1);
+            try self.reserve(self.length + 1);
             // Move the contents of the array forward from the index onwards
             _ = memory.move(T,
                     self.data[self.length - index .. self.length + 1],
@@ -69,20 +69,19 @@ pub fn ArrayList(comptime T: type) -> type {
             self.length += 1;
         }
 
-        pub fn reserve(self: &Self, new_size: usize) -> %void {
+        pub fn reserve(self: &Self, new_size: usize) %void {
             if (self.data.len > new_size) return;
-            self.data = if (self.data.len > 0) {
-                 %%self.allocator.realloc(T, self.data, new_size)
-            } else {
-                %%self.allocator.alloc(T, new_size)
-            }
+            self.data = if (self.data.len > 0)
+                try self.allocator.realloc(T, self.data, new_size)
+            else
+                try self.allocator.alloc(T, new_size);
         }
 
-        pub fn remove(self: &Self, index: usize) -> %void {
-            remove_range(self, index, 1);
+        pub fn remove(self: &Self, index: usize) %void {
+            try remove_range(self, index, 1);
         }
 
-        pub fn remove_range(self: &Self, index: usize, length: usize) -> %void {
+        pub fn remove_range(self: &Self, index: usize, length: usize) %void {
             if (index > self.length or index + length > self.length) return;
 
             // Move back entries following range
@@ -93,10 +92,10 @@ pub fn ArrayList(comptime T: type) -> type {
             self.length -= length;
         }
 
-        pub fn splice(self: &Self, index: usize, length: usize, array: []const T) -> %void {
+        pub fn splice(self: &Self, index: usize, length: usize, array: []const T) %void {
             if (index > self.length or index + length > self.length) return;
 
-            %return self.reserve(self.length + array.len - length);
+            try self.reserve(self.length + array.len - length);
 
             // Adjust entries
             const adj = array.len - length;
@@ -112,27 +111,27 @@ pub fn ArrayList(comptime T: type) -> type {
             self.length -= length;
         }
 
-        pub fn indexOf(self: &Self, eqlFunc: EqualityFunc, data: T) -> %usize {
+        pub fn indexOf(self: &Self, eqlFunc: EqualityFunc, data: T) %usize {
             for (self.data[0..self.length]) | item, i | {
                 if(eqlFunc(item, data)) return i;
             }
             return error.NotFound;
         }
 
-        pub fn clear(self: &Self) {
+        pub fn clear(self: &Self) void {
             self.length = 0;
         }
-    }
+    };
 }
 
 const c = @import("../c.zig");
 
-fn cmp(a: i32, b: i32) -> isize {
+fn cmp(a: i32, b: i32)isize {
     if (a == b) return isize(0);
     return if(a > b) isize(-1) else isize(1);
 }
 
-fn eql(a: i32, b: i32) -> bool {
+fn eql(a: i32, b: i32)bool {
     return (a == b); 
 }
 

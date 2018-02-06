@@ -35,8 +35,8 @@ const LEVEL_DATA = [][]const u8 {
     "#              #",
     "#              #",
     "#        # #   #",
-    "#  @      #    #",
-    "#          #   #",
+    "#  @           #",
+    "#        #  #  #",
     "#     $        #",
     "#              #",
     "################",
@@ -61,15 +61,16 @@ pub const State = struct {
     tile_map: [256]?Texture,
 };
 
-fn init(app: &App) -> &State {
-    var state = c.mem.create(State) %% panic("cannot create state");
+fn init(app: &App)&State {
+    %%initSystem();
+    var state = c.mem.create(State) catch panic("cannot create state");
 
-    state.font = Spritesheet.init(FONT_PNG, FONT_CHAR_WIDTH, FONT_CHAR_HEIGHT) %% {
+    state.font = Spritesheet.init(FONT_PNG, FONT_CHAR_WIDTH, FONT_CHAR_HEIGHT) catch {
         panic("Unable to load spritesheet");
     };
-    state.noise = Sprite.init(NOISE_PNG) %% panic("Unable to load noise");
-    state.grass = Texture.init(GRASS_PNG) %% panic("Unable to load grass");
-    state.wood = Texture.init(WOOD_PNG) %% panic("Unable to load wood");
+    state.noise = Sprite.init(NOISE_PNG) catch panic("Unable to load noise");
+    state.grass = Texture.init(GRASS_PNG) catch panic("Unable to load grass");
+    state.wood = Texture.init(WOOD_PNG) catch panic("Unable to load wood");
     state.cursor_position = vec2(0, 0);
 
     state.tile_map[' '] = state.grass;
@@ -96,12 +97,12 @@ fn init(app: &App) -> &State {
     state.agent_controller = agent.Controller.init(f32(fb_width), f32(fb_height));
     state.agent_controller.add(&state.player_agent);
 
-    %%io.stdout.printf("init\n");
+    warn("init\n");
 
     return state;
 }
 
-fn update(app: &App, state: &State, deltaTime: f32) -> %void {
+fn update(app: &App, state: &State, deltaTime: f32) %void {
     // Update cursor
     state.cursor_position = app.input.cursor_position;
     
@@ -118,7 +119,7 @@ fn update(app: &App, state: &State, deltaTime: f32) -> %void {
     state.player_mouse.update(&state.level, deltaTime);
 }
 
-fn draw(app: &App, state: &State) {
+fn draw(app: &App, state: &State) void {
     // Update camera
     state.camera.update();
     
@@ -132,19 +133,19 @@ fn draw(app: &App, state: &State) {
     state.im_renderer.end();
 }
 
-fn reload(state: &State) -> void {
+fn reload(state: &State) void {
     state.level = Level.init(LEVEL_DATA[0..], HOT.DIMENSIONS_TILE);
     state.player_agent = agent.Agent.init(state.level.start.xyz(), HOT.DIMENSIONS_AGENT, HOT.SPEED_AGENT, &state.noise.texture);
-    %%io.stdout.printf("reload\n");
+    warn("reload\n");
 }
 
-fn unload(state: &State)  -> void {
-    %%io.stdout.printf("unload\n");
+fn unload(state: &State) void {
+    warn("unload\n");
 }
 
-fn deinit(state: &State)  -> void {
+fn deinit(state: &State) void {
     c.mem.destroy(state);
-    %%io.stdout.printf("deinit\n");
+    warn("deinit\n");
 }
 
 export var GAME = API {

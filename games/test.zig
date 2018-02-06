@@ -120,21 +120,21 @@ const FONT_PNG = @embedFile("../data/font.png");
 const NOISE_PNG = @embedFile("../data/tex.png");
 
 
-fn togglePause() {
+fn togglePause() void {
     GAME_DATA.is_paused = !(GAME_DATA.is_paused);
-    _= c.printf(c"Toggle Pause\n");
+    _= warn("Toggle Pause\n");
 }
 
-fn restartGame() {
+fn restartGame() void {
     GAME_DATA.is_paused = false;
-    _= c.printf(c"Restart Game\n");
+    _= warn("Restart Game\n");
 }
 
-pub fn init(app: &core.App) {
-    GAME_DATA.font = Spritesheet.init(FONT_PNG, FONT_CHAR_WIDTH, FONT_CHAR_HEIGHT) %% {
+pub fn init(app: &core.App) void {
+    GAME_DATA.font = Spritesheet.init(FONT_PNG, FONT_CHAR_WIDTH, FONT_CHAR_HEIGHT) catch {
         panic("Unable to load spritesheet");
     };
-    GAME_DATA.noise = Texture.init(NOISE_PNG) %% panic("Unable to load noise");
+    GAME_DATA.noise = Texture.init(NOISE_PNG) catch panic("Unable to load noise");
 
 
     tile_map[' '] = GAME_DATA.noise;
@@ -178,7 +178,7 @@ pub fn init(app: &core.App) {
     AGENT_CONTROLLER.addNew(agent.Agent.init(level_center.xyz().cast(f32), DIMENSIONS_AGENT, 2, &GAME_DATA.noise));
 }   
 
-pub fn update(app: &core.App, deltaTime: f32) -> %void {
+pub fn update(app: &core.App, deltaTime: f32) %void {
     if(app.input.keyPressed[c.GLFW_KEY_P]) togglePause();
     if(app.input.keyPressed[c.GLFW_KEY_R]) restartGame();
 
@@ -195,7 +195,7 @@ pub fn update(app: &core.App, deltaTime: f32) -> %void {
     PF_PLAYER.update(&LEVEL, deltaTime);
 }
 
-pub fn draw(app: &core.App) {
+pub fn draw(app: &core.App) void {
     const cursor = app.input.cursor_position;
     
     CAMERA.update();
@@ -233,10 +233,10 @@ pub fn draw(app: &core.App) {
         const bounds_spinner      = gui.Rectangle {.x = 64, .y = 288, .width = 128, .height = 32};
         const bounds_textbox      = gui.Rectangle {.x = 64, .y = 320, .width = 128, .height = 32};
         const bounds_icon         = gui.Rectangle {.x = 320, .y = 320, .width = 128, .height = 32};
-        
 
         GUI.Label( bounds_label, "Hello");
-        if (GUI.Button(bounds_button, "Hello")) %%std.io.stdout.printf("Button\n");
+        if (GUI.Button(bounds_button, "Hello"))
+            warn("Button\n");
 
         GAME_DATA.gui_toggle_active = GUI.ToggleButton(bounds_togglebutton, "Text", GAME_DATA.gui_toggle_active);
         GUI.ToggleGroup(bounds_togglegroup, GAME_DATA.gui_options[0..], &GAME_DATA.gui_togglegroup_active);
@@ -247,7 +247,7 @@ pub fn draw(app: &core.App) {
         GUI.ProgressBar(bounds_progressbar, 0, 100, &GAME_DATA.gui_float);
         GUI.Spinner(bounds_spinner, 0, 100, &GAME_DATA.gui_int);
         GUI.TextBox(bounds_textbox, "Text");
-        GUI.Icon(bounds_icon, &GAME_DATA.noise);
+        _ = GUI.Icon(bounds_icon, &GAME_DATA.noise);
     }
     IM_RENDERER.end();
 
@@ -276,12 +276,12 @@ pub fn draw(app: &core.App) {
     }
     LINE_RENDERER.end();
 
-    if (GAME_DATA.gui_toggle_active) %%std.io.stdout.printf("Toggle");
-    if (GAME_DATA.gui_togglegroup_active > 0) %%std.io.stdout.printf("{}", GAME_DATA.gui_togglegroup_active);
-    if (GAME_DATA.gui_checkbox_active) %%std.io.stdout.printf("Checkbox");
-    if (GAME_DATA.gui_combobox_active > 0) %%std.io.stdout.printf("{}", GAME_DATA.gui_combobox_active);
+    if (GAME_DATA.gui_toggle_active) warn("Toggle");
+    if (GAME_DATA.gui_togglegroup_active > 0) warn("{}", GAME_DATA.gui_togglegroup_active);
+    if (GAME_DATA.gui_checkbox_active) warn("Checkbox");
+    if (GAME_DATA.gui_combobox_active > 0) warn("{}", GAME_DATA.gui_combobox_active);
 }
 
-pub fn deinit(app: &core.App) {
+pub fn deinit(app: &core.App) void {
 
 }

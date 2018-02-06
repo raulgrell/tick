@@ -11,24 +11,24 @@ const Light = struct {
     intensity: f32,
     size: f32,
 
-    pub fn init(direction: &const Vec3, color: &const Vec4, intensity: f32, size: usize) -> Light {
-        Light {
+    pub fn init(direction: &const Vec3, color: &const Vec4, intensity: f32, size: usize)Light {
+        return Light {
             .color = color,
             .position = vec3(0, 0, 0),
             .direction = direction,
             .lightVector = vec3(0, 0, 0),
             .intensity = intensity,
             .size = size
-        }
+        };
     }
 
-    pub fn draw(self: &Light, r: &BatchRenderer) {
+    pub fn draw(self: &Light, r: &BatchRenderer) void {
         const destRect = vec4(self.position.x, self.position.y, self.size, self.size );
         const uvRect = vec4(-1.0, -1.0, 2.0, 2.0);
         r.submit(destRect, uvRect, 0, 0, self.colour, 0);
     }
 
-    pub fn render(self: Light, r: &LightRenderer) -> void {
+    pub fn render(self: Light, r: &LightRenderer) void {
         lr.submit(self.position, self.size, self.colour);
     }
 };
@@ -42,7 +42,7 @@ pub const LightShader = struct {
     uniform_tex: c.GLint,
     uniform_color: c.GLint,
 
-    pub fn init() -> LightShader {
+    pub fn init()LightShader {
         var self: LightShader = undefined;
 
         self.program = shader.ShaderProgram.init(
@@ -78,7 +78,7 @@ pub const LightShader = struct {
         return self;
     }
 
-    pub fn destroy(self: &LightShader) {
+    pub fn destroy(self: &LightShader) void {
         self.program.destroy();
     }
 };
@@ -86,22 +86,22 @@ pub const LightShader = struct {
 const LightSetup = struct {
     lights: ArrayList(Light),
 
-    pub fn init() -> LightSetup {
-        LightSetup {
+    pub fn init()LightSetup {
+        return LightSetup {
             .lights = ArrayList(Light).init()
-        }
+        };
     }
 
-    pub fn destroy() {
+    pub fn destroy() void {
         self.lights.deinit();
     }
 
-    pub fn add(light: &Light) -> &Light {
+    pub fn add(light: &Light)&Light {
         self.lights.append(light);
         return light;
     }
 
-    pub fn remove(light: &Light) {
+    pub fn remove(light: &Light) void {
         self.lights.remove(light);
     }
 };
@@ -110,43 +110,43 @@ const LightSetup = struct {
 const Colour = struct {
     rgba: [4]f32,
 
-    pub fn init(r: f32, g: f32, b: f32, a: f32) {
-        Colour {
+    pub fn init(r: f32, g: f32, b: f32, a: f32) void {
+        return Colour {
             .rgba = []f32 { r, g, b, a } 
-        }
+        };
     }
 };
 
 const ColourRGBA = struct {
     rgba: [4]u8,
 
-    pub fn init(r: u8, g: u8, b: u8, a: u8) {
-        ColourRGBA {
+    pub fn init(r: u8, g: u8, b: u8, a: u8) void {
+        return ColourRGBA {
             .rgba = []u8 { r, g, b, a } 
-        }
+        };
     }
 };
 
 const ColourRGB = struct {
     rgb: [3]u8,
 
-    pub fn init(r: u8, g: u8, b: u8) {
-        ColourRGB {
+    pub fn init(r: u8, g: u8, b: u8) void {
+        return ColourRGB {
             .rgb = []u8 { r, g, b } 
-        }
+        };
     }
 };
 
-pub fn RGBtoINT(color: &const ColourRGB) -> u32 {
+pub fn RGBtoINT(color: &const ColourRGB)u32 {
     return 65536 * color.r + 256 * color.g + color.b;
 }
 
-pub fn INTtoRGB(color: u32) -> ColourRGB {
-    ColourRGB {
+pub fn INTtoRGB(color: u32)ColourRGB {
+    return ColourRGB {
         .r = ( color / 65536 ) % 256,
         .g = ( color / 256 ) % 256,
         .b = color % 256,
-    }
+    };
 }
 
 const Material = struct {
@@ -156,7 +156,7 @@ const Material = struct {
     emission: Colour,
     shininess: f32,
 
-    pub fn apply(self: &Material) {
+    pub fn apply(self: &Material) void {
         c.glMaterialfv(c.GL_FRONT, c.GL_AMBIENT, self.ambient.rgba);
         c.glMaterialfv(c.GL_FRONT, c.GL_DIFFUSE, self.diffuse.rgba);
         c.glMaterialfv(c.GL_FRONT, c.GL_SPECULAR, self.specular.rgba);

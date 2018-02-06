@@ -12,7 +12,7 @@ pub const Particle2D = struct {
     width: f32,
 };
 
-pub fn defaultParticleUpdate(particle: &Particle2D, deltaTime: f32) {
+pub fn defaultParticleUpdate(particle: &Particle2D, deltaTime: f32) void {
     particle.position.offset(particle.velocity.mul_scalar(deltaTime));
 }
 
@@ -22,25 +22,25 @@ pub const ParticleEngine2D  = struct {
     batches: [MAX_BATCHES]&ParticleBatch2D,
     num_batches: u8,
 
-    pub fn init() -> ParticleEngine2D {
-        ParticleEngine2D {
+    pub fn init()ParticleEngine2D {
+        return ParticleEngine2D {
             .batches = undefined,
             .num_batches = 0,
-        }
+        };
     }
 
-    pub fn addParticleBatch(e: &ParticleEngine2D, pb: &ParticleBatch2D) -> void {
+    pub fn addParticleBatch(e: &ParticleEngine2D, pb: &ParticleBatch2D) void {
         e.batches[e.num_batches] = pb;
         e.num_batches += 1;
     }
 
-    pub fn update(e: &ParticleEngine2D, deltaTime: f32) -> void {
+    pub fn update(e: &ParticleEngine2D, deltaTime: f32) void {
         for (e.batches[0 .. e.num_batches - 1]) | batch, i |  {
             batch.update(deltaTime);
         }
     }
 
-    pub fn draw(e: &ParticleEngine2D, br: &BatchRenderer) -> void {
+    pub fn draw(e: &ParticleEngine2D, br: &BatchRenderer) void {
         for (e.batches[0 .. e.num_batches - 1]) | batch, i | {
             br.begin();
             {
@@ -53,7 +53,7 @@ pub const ParticleEngine2D  = struct {
 };
 
 const MAX_PARTICLES = 32;
-const UpdateFunction = fn(particle: &Particle2D, deltaTime: f32) -> void;
+const UpdateFunction = fn(particle: &Particle2D, deltaTime: f32) void;
 
 pub const ParticleBatch2D = struct {
     updateFn: UpdateFunction,
@@ -63,18 +63,18 @@ pub const ParticleBatch2D = struct {
     lastFreeParticle : usize,
     texture: &Texture,
 
-    pub fn init(texture: &Texture, maxParticles: usize, decayRate: f32,  updateFn: UpdateFunction) -> ParticleBatch2D {
-        ParticleBatch2D {
+    pub fn init(texture: &Texture, maxParticles: usize, decayRate: f32,  updateFn: UpdateFunction)ParticleBatch2D {
+        return ParticleBatch2D {
             .updateFn = updateFn,
             .decayRate = decayRate,
             .particles = undefined,
             .maxParticles = maxParticles,
             .lastFreeParticle = 0,
             .texture = texture
-        }
+        };
     }
     
-    pub fn addParticle(pb: &ParticleBatch2D, position: &const Vec2, velocity: &const Vec2, colour: &const Vec4, timer: f32, width: f32) -> void {
+    pub fn addParticle(pb: &ParticleBatch2D, position: &const Vec2, velocity: &const Vec2, colour: &const Vec4, timer: f32, width: f32) void {
         const particleIndex = pb.findFreeParticle();
         var particle = &pb.particles[particleIndex];
 
@@ -85,7 +85,7 @@ pub const ParticleBatch2D = struct {
         particle.width = width;
     }
     
-    pub fn update(pb: &ParticleBatch2D, deltaTime: f32) {
+    pub fn update(pb: &ParticleBatch2D, deltaTime: f32) void {
         for (pb.particles) | *particle, i |  {
             if (particle.timer > 0.0) {
                 pb.updateFn(particle, deltaTime);
@@ -94,7 +94,7 @@ pub const ParticleBatch2D = struct {
         }
     }
     
-    pub fn draw(pb: &ParticleBatch2D, br: &BatchRenderer) {
+    pub fn draw(pb: &ParticleBatch2D, br: &BatchRenderer) void {
         const uvRect = vec4(0.0, 0.0, 1.0, 1.0);
         for (pb.particles) | particle, i |  {
             if (particle.timer > 0.0) {
@@ -104,7 +104,7 @@ pub const ParticleBatch2D = struct {
         }
     }
     
-    fn findFreeParticle(pb: &ParticleBatch2D) -> usize {
+    fn findFreeParticle(pb: &ParticleBatch2D)usize {
         { var i = pb.lastFreeParticle; while(i < pb.maxParticles) : (i += 1 ){
             if (pb.particles[i].timer <= 0.0) {
                 pb.lastFreeParticle = i;

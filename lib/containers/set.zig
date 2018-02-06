@@ -6,7 +6,7 @@ const Allocator = memory.Allocator;
 error PrimeIndexOverflow;
 error AllocationFailure;
 
-pub fn Set(comptime T: type) -> type {
+pub fn Set(comptime T: type)type {
     struct {
         table: []?&Entry,
         entries: usize,
@@ -18,16 +18,16 @@ pub fn Set(comptime T: type) -> type {
         allocator: &Allocator,
 
         const Self = this;
-        const EqualityFunc = fn(a: T, b: T) -> bool;
-        const HashFunc = fn(value: T) -> usize;
-        const FreeFunc = fn(value: T) -> void;
+        const EqualityFunc = fn(a: T, b: T)bool;
+        const HashFunc = fn(value: T)usize;
+        const FreeFunc = fn(value: T) void;
 
         const Iterator = struct {
             set: &Self,
             next_entry: ?&Entry,
             next_chain: usize,
 
-            pub fn next(iterator: &Iterator) -> ?T {
+            pub fn next(iterator: &Iterator)?T {
                 var next_entry = iterator.next_entry ?? return null;
 
                 var set = iterator.set;
@@ -54,7 +54,7 @@ pub fn Set(comptime T: type) -> type {
                 return result;
             }
 
-            pub fn done(iterator: &Iterator) -> bool {
+            pub fn done(iterator: &Iterator)bool {
                 return iterator.next_entry == null;
             }
         };
@@ -64,7 +64,7 @@ pub fn Set(comptime T: type) -> type {
             next: ?&Entry,
         };
 
-        pub fn init(hash_func: HashFunc, equal_func: EqualityFunc, allocator: &Allocator) -> %Self {
+        pub fn init(hash_func: HashFunc, equal_func: EqualityFunc, allocator: &Allocator) %Self {
             var new_set = Self {
                 .hash_func = hash_func,
                 .equal_func = equal_func,
@@ -75,12 +75,12 @@ pub fn Set(comptime T: type) -> type {
                 .free_func = null,
                 .allocator = allocator
             };
-            %return allocate_table(&new_set);
+            try allocate_table(&new_set);
 
             return new_set;
         }
 
-        pub fn deinit(set: &Self) {
+        pub fn deinit(set: &Self) void {
             var i = usize(0);
             while (i < set.table_size) : (i += 1) {
                 var it = set.table[i];
@@ -94,9 +94,9 @@ pub fn Set(comptime T: type) -> type {
             set.allocator.free(set.table);
         }
 
-        pub fn insert(set: &Self, data: T) -> %void {
+        pub fn insert(set: &Self, data: T) %void {
             if ((set.entries * 3) / set.table_size > 0) {
-                %return set.grow();
+                try set.grow();
             }
 
             const index = set.hash_func(data) % set.table_size;
@@ -110,7 +110,7 @@ pub fn Set(comptime T: type) -> type {
                 it = entry.next;
             }
 
-            var newentry = %return set.allocator.create(Entry);
+            var newentry = try set.allocator.create(Entry);
             newentry.data = data;
             newentry.next = set.table[index];
 
@@ -118,7 +118,7 @@ pub fn Set(comptime T: type) -> type {
             set.entries += 1;
         }
 
-        pub fn remove(set: &Self, data: T) -> %void {
+        pub fn remove(set: &Self, data: T) %void {
             const index = set.hash_func(data) % set.table_size;
 
             var it = &set.table[index];
@@ -136,7 +136,7 @@ pub fn Set(comptime T: type) -> type {
             return error.NotFound;
         }
 
-        pub fn query(set: &Self, data: T) -> bool {
+        pub fn query(set: &Self, data: T)bool {
             const index = set.hash_func(data) % set.table_size;
 
             var it = set.table[index];
@@ -149,7 +149,7 @@ pub fn Set(comptime T: type) -> type {
             return false;
         }
 
-        pub fn to_array(set: &Self) -> []T {
+        pub fn to_array(set: &Self)[]T {
             var array = set.allocator.alloc(T, set.entries);
             var array_counter = 0;
 
@@ -164,7 +164,7 @@ pub fn Set(comptime T: type) -> type {
             return array;
         }
 
-        pub fn iterate(set: &Self) -> Iterator {
+        pub fn iterate(set: &Self)Iterator {
             var iter = Iterator {
                 .set = set,
                 .next_entry = null,
@@ -183,35 +183,35 @@ pub fn Set(comptime T: type) -> type {
             return iter;
         }
 
-        pub fn make_union(set1: &Self, set2: &Self) -> %Self {
-            var new_set = %return init(set1.hash_func, set1.equal_func, set1.allocator);
-            %defer new_set.allocator.destroy(new_set);
+        pub fn make_union(set1: &Self, set2: &Self) %Self {
+            var new_set = try init(set1.hash_func, set1.equal_func, set1.allocator);
+            errdefer new_set.allocator.destroy(new_set);
 
             var iterator = set1.iterate();
             while ( iterator.next()) | value | {
                 // Copy the value into the new set
-                %return new_set.insert(value)
+                try new_set.insert(value)
             }
 
             iterator = set2.iterate();
             while (iterator.next()) | value | {
                 // Do not insert if value is present
                 if (!new_set.query(value)) {
-                    %return new_set.insert(value)
+                    try new_set.insert(value)
                 }
             }
 
             return new_set;
         }
 
-        pub fn make_intersection(set1: &Self, set2: &Self) -> %Self {
-            var new_set = %return init(set1.hash_func, set2.equal_func, set1.allocator);
-            %defer new_set.allocator.destroy(new_set);
+        pub fn make_intersection(set1: &Self, set2: &Self) %Self {
+            var new_set = try init(set1.hash_func, set2.equal_func, set1.allocator);
+            errdefer new_set.allocator.destroy(new_set);
 
             var iterator = set1.iterate();
             while (iterator.next()) |value| {
                 if (set2.query(value)) {
-                    %return new_set.insert(value);
+                    try new_set.insert(value);
                 }
             }
             return new_set;
@@ -225,18 +225,18 @@ pub fn Set(comptime T: type) -> type {
             402653189, 805306457, 1610612741,
         };
 
-        fn register_free_function(set: &Self, free_func: FreeFunc) {
+        fn register_free_function(set: &Self, free_func: FreeFunc) void {
             set.free_func = free_func;
         }
 
-        fn grow(set: &Self)  -> %void {
+        fn grow(set: &Self) %void {
             var old_table = set.table;
             var old_table_size = set.table_size;
             var old_prime_index = set.prime_index;
             set.prime_index += 1;
 
             // Allocate the new table
-            %return allocate_table(set);
+            try allocate_table(set);
             set.table = old_table;
             set.table_size = old_table_size;
             set.prime_index = old_prime_index;
@@ -259,7 +259,7 @@ pub fn Set(comptime T: type) -> type {
             set.allocator.free(old_table);
         }
 
-        fn allocate_table(set: &Self) -> %void {
+        fn allocate_table(set: &Self) %void {
             // Determine the table size based on the current prime index.
             set.table_size = if (set.prime_index < primes.len) {
                 primes[set.prime_index]
@@ -268,11 +268,11 @@ pub fn Set(comptime T: type) -> type {
             };
 
             // Allocate the table and initialise to null
-            set.table = %return set.allocator.alloc(?&Entry, set.table_size);
+            set.table = try set.allocator.alloc(?&Entry, set.table_size);
             for (set.table) | *e | *e = null;
         }
 
-        fn free_entry(set: &Self, entry: &Entry) {
+        fn free_entry(set: &Self, entry: &Entry) void {
             if (set.free_func) | f | {
                 f(entry.data);
             }
@@ -283,11 +283,11 @@ pub fn Set(comptime T: type) -> type {
 
 const c = @import("../c.zig");
 
-fn eql(a: usize, b: usize) -> bool {
+fn eql(a: usize, b: usize)bool {
     return a == b
 }
 
-fn hsh(a: usize) -> usize {
+fn hsh(a: usize)usize {
     return a
 }
 

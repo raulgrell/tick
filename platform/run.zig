@@ -1,7 +1,7 @@
 const core  = @import("../src/core/index.zig");
 const game  = @import("../games/test.zig");
 
-pub fn main() -> %void {
+pub fn main() %void {
     var app = core.App.init();
     app.run(core.API {
         .init = game.init,

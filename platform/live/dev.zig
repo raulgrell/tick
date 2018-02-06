@@ -21,17 +21,17 @@ pub const State = struct {
 };
 
 pub const API = struct {
-    init:     fn() -> &State,
-    update:   fn(state: &State) -> %void,
-    draw:     fn(state: &State) -> void,
-    reload:   fn(state: &State) -> void,
-    unload:   fn(state: &State) -> void,
-    finalize: fn(state: &State) -> void,
+    init:     fn()&State,
+    update:   fn(state: &State) %void,
+    draw:     fn(state: &State) void,
+    reload:   fn(state: &State) void,
+    unload:   fn(state: &State) void,
+    finalize: fn(state: &State) void,
 };
 
 extern const GAME: API;
 
-fn load(path: &const u8, game: &Game) {
+fn load(path: &const u8, game: &Game) void {
     var attr: c.struct_stat = undefined;
     
     // Return if file not found
@@ -40,7 +40,7 @@ fn load(path: &const u8, game: &Game) {
     // Return if file unchanged
     if (game.id == attr.st_ino) return;
 
-    %%io.stdout.printf("Loading...\n");
+    %%io.warn("Loading...\n");
 
     // Unload current
     if (game.handle) | handle | {
@@ -74,9 +74,9 @@ fn load(path: &const u8, game: &Game) {
     }
 }
 
-fn unload(game: &Game) {
+fn unload(game: &Game) void {
     if (game.handle) | handle | {
-        %%io.stdout.printf("Unloading...\n");        
+        %%io.warn("Unloading...\n");        
         const api = game.api ?? panic("unload: No API");
         const state = game.state ?? panic("unload: No State");
         api.finalize(state);
@@ -87,7 +87,7 @@ fn unload(game: &Game) {
     }
 }
 
-pub fn main() -> %void {
+pub fn main() %void {
     var game = Game {
         .handle = null,
         .id = 0,
@@ -100,7 +100,7 @@ pub fn main() -> %void {
         if (game.handle) | handle | {
             const api = game.api ?? panic("loop: No API");
             const state = game.state ?? panic("loop: No state");
-            api.update(state) %% break;
+            api.update(state) catch break;
             api.draw(state);
         }
         _ = c.sleep(1); // in unistd

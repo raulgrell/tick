@@ -8,7 +8,7 @@ const HeapType = enum {
     Max,
 };
 
-pub fn BinomialHeap(comptime T: type) -> type {
+pub fn BinomialHeap(comptime T: type)type {
     struct {
         allocator: &Allocator,
         heap_type: HeapType,
@@ -17,15 +17,15 @@ pub fn BinomialHeap(comptime T: type) -> type {
         roots: []BinomialTree,
         
         const Self = this;
-        const EqualityFunc = fn(a: T, b: T) -> bool;
-        const ComparisonFunc = fn(a: T, b: T) -> isize;
+        const EqualityFunc = fn(a: T, b: T)bool;
+        const ComparisonFunc = fn(a: T, b: T)isize;
 
         const BinomialTree = struct {
             value: T,
             refcount: u16,
             subtrees: []&BinomialTree,
 
-            pub fn merge(heap: &Self, tree1: &BinomialTree, tree2: &BinomialTree) -> %&BinomialTree {
+            pub fn merge(heap: &Self, tree1: &BinomialTree, tree2: &BinomialTree) %&BinomialTree {
                 if (cmp(heap, tree1.value, tree2.value) > 0) {
                     // Swap tree1 and tree2
                     var tmp = tree1;
@@ -34,13 +34,13 @@ pub fn BinomialHeap(comptime T: type) -> type {
                 }
 
                 var new_tree = heap.allocator.create(BinomialTree);
-                %defer heap.allocator.destroy(new_tree);
+                errdefer heap.allocator.destroy(new_tree);
 
                 new_tree.refcount = 0;
                 new_tree.value = tree1.value;
 
                 const total_subtrees = tree1.subtrees.len + 1;
-                new_tree.subtrees = %return heap.allocator.alloc(&BinomialTree, total_subtrees);
+                new_tree.subtrees = try heap.allocator.alloc(&BinomialTree, total_subtrees);
                 // Copy subtrees of the smallest tree. The last entry in the array is the larger tree
                 mem.copy(T, new_tree.subtrees, tree1.subtrees);
                 new_tree.subtrees[total_subtrees - 1] = tree2;
@@ -52,14 +52,14 @@ pub fn BinomialHeap(comptime T: type) -> type {
             }
         };
 
-        fn merge_undo(new_roots: []&BinomialTree, count: usize) {
+        fn merge_undo(new_roots: []&BinomialTree, count: usize) void {
             { var i = usize(0); while( i <= count ) : (i += 1) {
                 heap.unref(new_roots[i]);
             }}
             heap.allocator.free(new_roots);
         }
 
-        pub fn init(heap_type: HeapType, compare_func: ComparisonFunc, allocator: &Allocator) -> Self {
+        pub fn init(heap_type: HeapType, compare_func: ComparisonFunc, allocator: &Allocator)Self {
             Self {
                 .allocator = allocator,
                 .heap_type = heap_type,
@@ -69,13 +69,13 @@ pub fn BinomialHeap(comptime T: type) -> type {
             }
         }
 
-        pub fn deinit(heap: &Self) {
+        pub fn deinit(heap: &Self) void {
             // Unreference all trees and subtrees.
             for (heap.roots) | *r, i | heap.unref(r);
             heap.allocator.free(heap.roots);
         }
 
-        pub fn push(heap: &Self, value: T) -> %void {
+        pub fn push(heap: &Self, value: T) %void {
             var new_tree = %%heap.allocator.alloc(BinomialTree, 1);
             new_tree[0].value = value;
             new_tree[0].refcount = 1;
@@ -90,13 +90,13 @@ pub fn BinomialHeap(comptime T: type) -> type {
             };
 
             // Perform the merge
-            const result = %return merge(heap, &tmp);
+            const result = try merge(heap, &tmp);
             heap.length += 1;
             // Remove reference to the new tree.
             heap.unref(new_tree.ptr);
         }
 
-        pub fn pop(heap: &Self) -> ?T {
+        pub fn pop(heap: &Self)?T {
             if (heap.length == 0) {
                 return null;
             }
@@ -138,11 +138,11 @@ pub fn BinomialHeap(comptime T: type) -> type {
             }
         }
 
-        pub fn ref(heap: &Self, tree: &BinomialTree) {
+        pub fn ref(heap: &Self, tree: &BinomialTree) void {
             tree.refcount += 1;
         }
 
-        pub fn unref(heap: &Self, tree: &BinomialTree) {
+        pub fn unref(heap: &Self, tree: &BinomialTree) void {
             // If last reference, unreference all subtrees and free.
             tree.refcount -= 1;
             if (tree.refcount == 0) {
@@ -152,7 +152,7 @@ pub fn BinomialHeap(comptime T: type) -> type {
             }
         }
 
-        pub fn cmp(heap: &Self, a: T, b: T) -> isize {
+        pub fn cmp(heap: &Self, a: T, b: T)isize {
             if (heap.heap_type == HeapType.Min) {
                 return heap.compare_func(a, b);
             } else {
@@ -160,7 +160,7 @@ pub fn BinomialHeap(comptime T: type) -> type {
             }
         }
 
-        pub fn merge(heap: &Self, other: &Self) -> %void {
+        pub fn merge(heap: &Self, other: &Self) %void {
             var vals: [3]&Self = undefined;
             var new_carry: &Self = undefined;
 
@@ -172,7 +172,7 @@ pub fn BinomialHeap(comptime T: type) -> type {
             };
 
             // Allocate an array for the new roots
-            var new_roots = %return heap.allocator.alloc(BinomialTree, max);
+            var new_roots = try heap.allocator.alloc(BinomialTree, max);
 
             // Go through one entry at a time.  This works kind of like a ripple-carry adder.
             var new_roots_length = usize(0);
@@ -247,7 +247,7 @@ pub fn BinomialHeap(comptime T: type) -> type {
 
 const c = @import("../c.zig");
 
-fn comp(a: i32, b: i32) -> isize {
+fn comp(a: i32, b: i32)isize {
     if (a == b) return isize(0);
     return if(a  > b) isize(1) else isize(-1);
 }

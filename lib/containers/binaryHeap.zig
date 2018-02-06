@@ -8,7 +8,7 @@ const HeapType = enum {
     Max,
 };
 
-pub fn BinaryHeap(comptime T: type) -> type {
+pub fn BinaryHeap(comptime T: type)type {
     struct {
         items: []T,
         // Make heaptype comptime?
@@ -18,9 +18,9 @@ pub fn BinaryHeap(comptime T: type) -> type {
         allocator: &Allocator,
 
         const Self = this;
-        const ComparisonFunc = fn(a: T, b: T) -> isize;
+        const ComparisonFunc = fn(a: T, b: T)isize;
         
-        pub fn init(heap_type: HeapType, comparison_func: ComparisonFunc, allocator: &Allocator) -> Self {
+        pub fn init(heap_type: HeapType, comparison_func: ComparisonFunc, allocator: &Allocator)Self {
             Self {
                 .heap_type = heap_type,
                 .comparison_func = comparison_func,
@@ -30,16 +30,16 @@ pub fn BinaryHeap(comptime T: type) -> type {
             }
         }
 
-        pub fn deinit(self: &Self) -> void {
+        pub fn deinit(self: &Self) void {
             self.allocator.free(self.items);
         }
 
-        pub fn insert(self: &Self, value: T) -> %void {
+        pub fn insert(self: &Self, value: T) %void {
             var values: &T = undefined;
 
             if (self.len + 1 > self.items.len) {
                 const new_size = (self.items.len + 2) *  2;
-                self.items = %return self.allocator.realloc(T, self.items, new_size);
+                self.items = try self.allocator.realloc(T, self.items, new_size);
             }
 
             // Add to the bottom of the heap and start from there 
@@ -65,7 +65,7 @@ pub fn BinaryHeap(comptime T: type) -> type {
             self.len += 1;
         }
 
-        pub fn pop(self: &Self) -> ?T {
+        pub fn pop(self: &Self)?T {
             if (self.len == 0) return null;
 
             const result = self.items[0];
@@ -105,7 +105,7 @@ pub fn BinaryHeap(comptime T: type) -> type {
             return result;
         }
 
-        fn cmp(self: &Self, data1: T, data2: T) -> isize {
+        fn cmp(self: &Self, data1: T, data2: T)isize {
             if (self.heap_type == HeapType.Min) {
                 return self.comparison_func(data1, data2);
             } else {
@@ -117,7 +117,7 @@ pub fn BinaryHeap(comptime T: type) -> type {
 
 const c = @import("../c.zig");
 
-fn comp(a: i32, b: i32) -> isize {
+fn comp(a: i32, b: i32)isize {
     if (a == b) return isize(0);
     return if(a  > b) isize(1) else isize(-1);
 }

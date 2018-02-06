@@ -3,21 +3,21 @@ const mem = @import("std").mem;
 const memory = @import("../memory.zig");
 const Allocator = memory.Allocator;
 
-pub fn SLinkedList(comptime T: type) -> type {
+pub fn SLinkedList(comptime T: type)type {
     struct {
         root: ?&&Entry,
         length: usize,
         allocator: &Allocator,
         
         const Self = this;
-        const EqualityFunc = fn(a: T, b: T) -> bool;
-        const ComparisonFunc = fn(a: T, b: T) -> isize;
+        const EqualityFunc = fn(a: T, b: T)bool;
+        const ComparisonFunc = fn(a: T, b: T)isize;
 
         const Iterator = struct {
             prev_next: &Self,
             current: &Entry,
 
-            pub fn done(iter: &Iterator) -> bool {
+            pub fn done(iter: &Iterator)bool {
                 if (iter.current == null or iter.current != *iter.prev_next) {
                     return *iter.prev_next == null;
                 } else {
@@ -25,7 +25,7 @@ pub fn SLinkedList(comptime T: type) -> type {
                 }
             }
 
-            pub fn next(iter: &Iterator) -> ?T {
+            pub fn next(iter: &Iterator)?T {
                 if (iter.current == null or iter.current != *iter.prev_next) {
                     iter.current = *iter.prev_next;
                 } else {
@@ -35,7 +35,7 @@ pub fn SLinkedList(comptime T: type) -> type {
                 return iter.current.data;
             }
 
-            pub fn remove(iter: &Iteratorator) -> %void {
+            pub fn remove(iter: &Iteratorator) %void {
                 if (iter.current == null or iter.current != *iter.prev_next) {
                     // No element, do nothing.
                 } else {
@@ -52,7 +52,7 @@ pub fn SLinkedList(comptime T: type) -> type {
             next: ?&Entry,
         };
 
-        pub fn init(allocator: &Allocator) -> Self {
+        pub fn init(allocator: &Allocator)Self {
             Self {
                 .root = null,
                 .length = 0,
@@ -60,7 +60,7 @@ pub fn SLinkedList(comptime T: type) -> type {
             }
         }
 
-        pub fn deinit(list: &Self) {
+        pub fn deinit(list: &Self) void {
             // var entry = list.root;
             // while (entry) | e | {
             //     const next = e.next;
@@ -69,11 +69,11 @@ pub fn SLinkedList(comptime T: type) -> type {
             // }
         }
 
-        pub fn grow(list: &Self) {
+        pub fn grow(list: &Self) void {
 
         }
 
-        pub fn prepend(list: &Self, data: T) -> %&Entry {
+        pub fn prepend(list: &Self, data: T) %&Entry {
             var newentry = list.allocator.create(Entry);
             newentry.data = data;
             newentry.next = *list;
@@ -82,8 +82,8 @@ pub fn SLinkedList(comptime T: type) -> type {
             return newentry;
         }
 
-        pub fn append(list: &Self, data: T) -> %&Entry {
-            var newentry = %return list.allocator.create(Entry);
+        pub fn append(list: &Self, data: T) %&Entry {
+            var newentry = try list.allocator.create(Entry);
             newentry.data = data;
             newentry.next = null;
 
@@ -99,7 +99,7 @@ pub fn SLinkedList(comptime T: type) -> type {
             return newentry;
         }
 
-        pub fn nth_entry(list: &Self, n: usize) -> ?&Entry {
+        pub fn nth_entry(list: &Self, n: usize)?&Entry {
             var entry = list;
             var i = usize(0);
             while (i < n) : (i += 1) {
@@ -112,7 +112,7 @@ pub fn SLinkedList(comptime T: type) -> type {
             return entry;
         }
 
-        pub fn nth_data(list: &Self, n: usize) -> ?T {
+        pub fn nth_data(list: &Self, n: usize)?T {
             return if (nth_entry(list, n)) | entry | {
                 entry.data
             } else {
@@ -120,7 +120,7 @@ pub fn SLinkedList(comptime T: type) -> type {
             };
         }
 
-        pub fn length(list: &Self) -> usize {
+        pub fn length(list: &Self)usize {
             var length = 0;
             var entry = list;
 
@@ -131,7 +131,7 @@ pub fn SLinkedList(comptime T: type) -> type {
             return length;
         }
 
-        pub fn to_array(list: &Self) -> []T {
+        pub fn to_array(list: &Self)[]T {
             const length = length(list);
             var array = list.allocator.alloc(T, length);
 
@@ -144,7 +144,7 @@ pub fn SLinkedList(comptime T: type) -> type {
             return array;
         }
 
-        pub fn remove_entry(list: &Self, entry: &Entry) -> %void {
+        pub fn remove_entry(list: &Self, entry: &Entry) %void {
             // Check if entry is head
             if (*list == entry) {
                 // Unlink and update head
@@ -168,7 +168,7 @@ pub fn SLinkedList(comptime T: type) -> type {
             list.allocator.free(entry);
         }
 
-        pub fn remove_data(list: &Self, equal: EqualityFunc , data: T) -> %usize {
+        pub fn remove_data(list: &Self, equal: EqualityFunc , data: T) %usize {
             var entries_removed = 0;
             var it = list;
             while (*it) | entry | {
@@ -185,11 +185,11 @@ pub fn SLinkedList(comptime T: type) -> type {
             return entries_removed;
         }
 
-        pub fn sort(list: &Self, compare_func: ComparisonFunc) {
+        pub fn sort(list: &Self, compare_func: ComparisonFunc) void {
             sort_internal(list, compare_func);
         }
 
-        pub fn find_data(list: &Self, equal: EqualityFunc, data: T) -> &Entry {
+        pub fn find_data(list: &Self, equal: EqualityFunc, data: T)&Entry {
             var it = list;
             while (it) | entry | : ( it = it.next) {
                 if (equal(it.data, data) != 0) {
@@ -199,14 +199,14 @@ pub fn SLinkedList(comptime T: type) -> type {
             return null;
         }
 
-        pub fn iterate(list: &Self, iter: &Iterator) -> Iterator {
+        pub fn iterate(list: &Self, iter: &Iterator)Iterator {
             Iterator {
                 .prev_next = list,
                 .current = null,
             }
         }
 
-        fn sort_internal(list: &Self, compare_func: ComparisonFunc) -> &Entry {
+        fn sort_internal(list: &Self, compare_func: ComparisonFunc)&Entry {
             // Already sorted
             if (*list == null or (*list).next == null) {
                 return *list;

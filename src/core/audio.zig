@@ -21,7 +21,7 @@ error Interrupted;
 error Underflow;
 error EncodingString;
 
-fn sio_err(err: c_int) -> %void {
+fn sio_err(err: c_int) %void {
     switch (c.SoundIoError(err)) {
         c.SoundIoError.None => {},
         c.SoundIoError.NoMem => error.NoMem,
@@ -45,7 +45,7 @@ fn sio_err(err: c_int) -> %void {
 
 var seconds_offset = f32(0.0);
 
-extern fn write_callback(os: ?&c.SoundIoOutStream, frame_count_min: c_int, frame_count_max: c_int) {
+extern fn write_callback(os: ?&c.SoundIoOutStream, frame_count_min: c_int, frame_count_max: c_int) void {
     const outstream = ??os;
     const layout: &c.SoundIoChannelLayout = &outstream.layout;
     const float_sample_rate = f32(outstream.sample_rate);
@@ -57,7 +57,7 @@ extern fn write_callback(os: ?&c.SoundIoOutStream, frame_count_min: c_int, frame
         var frame_count = frames_left;
         var areas: &c.SoundIoChannelArea = undefined;
 
-        sio_err(c.soundio_outstream_begin_write(outstream, @ptrCast(&?&c.SoundIoChannelArea, &areas), &frame_count)) %% |err| {
+        sio_err(c.soundio_outstream_begin_write(outstream, @ptrCast(&?&c.SoundIoChannelArea, &areas), &frame_count)) catch |err| {
             panic("write failed: {}", @errorName(err));
         };
 
@@ -79,7 +79,7 @@ extern fn write_callback(os: ?&c.SoundIoOutStream, frame_count_min: c_int, frame
 
         seconds_offset = c.fmodf(seconds_offset + seconds_per_frame * f32(frame_count), 1.0);
 
-        sio_err(c.soundio_outstream_end_write(outstream)) %% |err| {
+        sio_err(c.soundio_outstream_end_write(outstream)) catch |err| {
             panic("end write failed: {}", @errorName(err));
         };
 
@@ -93,12 +93,12 @@ pub const AudioEngine = struct {
     outstream: &c.SoundIoOutStream,
     audio_callback: AudioCallback,
 
-    fn init(self: &AudioEngine) -> %void {
+    fn init(self: &AudioEngine) %void {
         const soundio = c.soundio_create() ?? {
             panic("could not create soundio object: out of memory");
         };
 
-        sio_err(c.soundio_connect(soundio)) %% |err| {
+        sio_err(c.soundio_connect(soundio)) catch |err| {
             panic("unable to connect: {}", @errorName(err));
         };
 
@@ -122,47 +122,46 @@ pub const AudioEngine = struct {
         self.outstream = outstream;
     }
 
-    fn setAudioCallback(self: &AudioEngine, cb: AudioCallback) {
+    fn setAudioCallback(self: &AudioEngine, cb: AudioCallback) void {
         self.audio_callback = cb;
     }
 
-    fn open(self: &AudioEngine) -> %void {
+    fn open(self: &AudioEngine) %void {
         self.outstream.format = c.SoundIoFormat(usize(c.SoundIoFormatFloat32NE));
         self.outstream.write_callback = write_callback;
 
-        sio_err(c.soundio_outstream_open(self.outstream)) %% |err| {
+        sio_err(c.soundio_outstream_open(self.outstream)) catch |err| {
             panic("unable to open stream: {}", @errorName(err));
         };
 
         if (self.outstream.layout_error != 0)
-            %%io.stdout.printf("unable to set channel layout: {}\n", self.outstream.layout_error);
+            %%io.warn("unable to set channel layout: {}\n", self.outstream.layout_error);
     }
 
-    fn start(self: &AudioEngine) -> %void {
-        sio_err(c.soundio_outstream_start(self.outstream)) %% |err| {
+    fn start(self: &AudioEngine) %void {
+        sio_err(c.soundio_outstream_start(self.outstream)) catch |err| {
             panic("unable to start stream: {}", @errorName(err));
         };
     }
 
-    fn update(self: &AudioEngine) {
+    fn update(self: &AudioEngine) void {
         // Blocks
         // c.soundio_wait_events(self.sound_io);
     }
 
-    fn stop(self: &AudioEngine) {
+    fn stop(self: &AudioEngine) void {
     }
 
-    fn close(self: &AudioEngine) {
+    fn close(self: &AudioEngine) void {
     }
 
-    pub fn destroy(self: &AudioEngine) {
+    pub fn destroy(self: &AudioEngine) void {
         c.soundio_outstream_destroy(self.outstream);
         c.soundio_device_unref(self.device);
         c.soundio_destroy(self.soundio);
     }
 };
 
-// Wave type, defines audio wave data
 const Wave = struct {
     sampleCount: usize,   // Number of samples
     sampleRate: usize,    // Frequency (samples per second)
@@ -177,7 +176,6 @@ const Sound = struct {
     format: int,          // OpenAL audio format specifier
 };
 
-// Audio stream type
 const AudioStream = struct {
     sampleRate: usize,    // Frequency (samples per second)
     sampleSize: usize,    // Bit depth (bits per sample): 8, 16, 32 (24 not supported)

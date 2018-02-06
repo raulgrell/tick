@@ -12,10 +12,10 @@ pub const Sprite = struct {
     vertex_buffer: c.GLuint,
     uv_buffer: c.GLuint,
 
-    pub fn init(compressed_bytes: []const u8) -> %Sprite {
+    pub fn init(compressed_bytes: []const u8) %Sprite {
         
         var s = Sprite {
-            .texture = %return Texture.init(compressed_bytes),
+            .texture = try Texture.init(compressed_bytes),
             .vertex_buffer = 0,
             .uv_buffer = 0,
         };
@@ -35,13 +35,13 @@ pub const Sprite = struct {
         };
 
         c.glGenBuffers(1, &s.vertex_buffer);
-        %defer c.glDeleteBuffers(1, &s.vertex_buffer);
+        errdefer c.glDeleteBuffers(1, &s.vertex_buffer);
 
         c.glBindBuffer(c.GL_ARRAY_BUFFER, s.vertex_buffer);
         c.glBufferData(c.GL_ARRAY_BUFFER, 4 * 3 * @sizeOf(c.GLfloat), @ptrCast(&c_void, &vertices[0][0]), c.GL_STATIC_DRAW);
 
         c.glGenBuffers(1, &s.uv_buffer);
-        %defer c.glDeleteBuffers(1, &s.uv_buffer);
+        errdefer c.glDeleteBuffers(1, &s.uv_buffer);
 
         c.glBindBuffer(c.GL_ARRAY_BUFFER, s.uv_buffer);
         c.glBufferData(c.GL_ARRAY_BUFFER, 4 * 2 * @sizeOf(c.GLfloat), @ptrCast(&c_void, &tex_coords[0][0]), c.GL_STATIC_DRAW);
@@ -49,7 +49,7 @@ pub const Sprite = struct {
         return s;
     }
 
-    pub fn draw(s: &Sprite, shader: &TextureShader, mvp: &const Mat4) {
+    pub fn draw(s: &Sprite, shader: &TextureShader, mvp: &const Mat4) void {
         shader.program.bind();
         shader.program.setUniform_mat4(shader.uniform_mvp, mvp);
         shader.program.setUniform_int(shader.uniform_tex, c.GLint(s.texture.id));
@@ -76,10 +76,10 @@ pub const Spritesheet = struct {
     vertex_buffer: c.GLuint,
     tex_coord_buffers: []c.GLuint,
 
-    pub fn init(compressed_bytes: []const u8, w: usize, h: usize) -> %Spritesheet {
+    pub fn init(compressed_bytes: []const u8, w: usize, h: usize) %Spritesheet {
         var s: Spritesheet = undefined;
 
-        s.img = %return PngImage.create(compressed_bytes);
+        s.img = try PngImage.create(compressed_bytes);
         const col_count = s.img.width / w;
         const row_count = s.img.height / h;
         s.width = w;
@@ -87,7 +87,7 @@ pub const Spritesheet = struct {
         s.count = col_count * row_count;
 
         c.glGenTextures(1, &s.texture_id);
-        %defer c.glDeleteTextures(1, &s.texture_id);
+        errdefer c.glDeleteTextures(1, &s.texture_id);
 
         c.glBindTexture(c.GL_TEXTURE_2D, s.texture_id);
         c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MAG_FILTER, c.GL_NEAREST);
@@ -99,7 +99,7 @@ pub const Spritesheet = struct {
                 0, c.GL_RGBA, c.GL_UNSIGNED_BYTE, @ptrCast(&c_void, &s.img.raw[0]));
 
         c.glGenBuffers(1, &s.vertex_buffer);
-        %defer c.glDeleteBuffers(1, &s.vertex_buffer);
+        errdefer c.glDeleteBuffers(1, &s.vertex_buffer);
 
         const vertices = [][3]c.GLfloat {
             []c.GLfloat{0.0,          0.0,          0.0},
@@ -111,11 +111,11 @@ pub const Spritesheet = struct {
         c.glBindBuffer(c.GL_ARRAY_BUFFER, s.vertex_buffer);
         c.glBufferData(c.GL_ARRAY_BUFFER, 4 * 3 * @sizeOf(c.GLfloat), @ptrCast(&c_void, &vertices[0][0]), c.GL_STATIC_DRAW);
 
-        s.tex_coord_buffers = c.mem.alloc(c.GLuint, s.count) %% return error.NoMem;
-        %defer c.mem.free(s.tex_coord_buffers);
+        s.tex_coord_buffers = c.mem.alloc(c.GLuint, s.count) catch return error.NoMem;
+        errdefer c.mem.free(s.tex_coord_buffers);
 
         c.glGenBuffers(c.GLint(s.tex_coord_buffers.len), &s.tex_coord_buffers[0]);
-        %defer c.glDeleteBuffers(c.GLint(s.tex_coord_buffers.len), &s.tex_coord_buffers[0]);
+        errdefer c.glDeleteBuffers(c.GLint(s.tex_coord_buffers.len), &s.tex_coord_buffers[0]);
 
         for (s.tex_coord_buffers) |tex_coord_buffer, i| {
             const upside_down_row = i / col_count;
@@ -141,7 +141,7 @@ pub const Spritesheet = struct {
         return s;
     }
 
-    pub fn draw(s: &Spritesheet, shader: &TextureShader, index: usize, mvp: &const Mat4) {
+    pub fn draw(s: &Spritesheet, shader: &TextureShader, index: usize, mvp: &const Mat4) void {
         shader.program.bind();
         shader.program.setUniform_mat4(shader.uniform_mvp, mvp);
         shader.program.setUniform_int(shader.uniform_tex, c.GLint(s.texture_id));
@@ -160,7 +160,7 @@ pub const Spritesheet = struct {
         c.glDrawArrays(c.GL_TRIANGLE_STRIP, 0, 4);
     }
     
-    pub fn deinit(s: &Spritesheet) {
+    pub fn deinit(s: &Spritesheet) void {
         c.glDeleteBuffers(c.GLint(s.tex_coord_buffers.len), &s.tex_coord_buffers[0]);
         mem.free(c.GLuint, s.tex_coord_buffers);
         c.glDeleteBuffers(1, &s.vertex_buffer);
@@ -175,12 +175,12 @@ const Frame = struct {
     pos_offset: Vec2,
     frame_time: float,
 
-    fn init(rect: &const Rectangle, pos: &const Vec2, time: f32) -> Frame {
-        Frame {
+    fn init(rect: &const Rectangle, pos: &const Vec2, time: f32)Frame {
+        return Frame {
             .src_rect = rect,
             .pos_offset = pos,
             .frame_time = time,
-        }
+        };
     }
 };
 
@@ -201,18 +201,18 @@ const SpriteUnit = struct {
 
     const Self = this;
 
-    fn init() -> Self {
-        Self {
+    fn init()Self {
+        return Self {
             .current_frame = 0,
             .animation_speed = 1.0,
             .time = 0.0,
             .playing = false,
             .reverse = false,
             .loop = false,
-        }
+        };
     }
 
-    fn create(pos: &const Vec2, scale: &const Vec2, angle: f32, origin: &const Vec2, size: &const Vec2, file_path: []const u8, src_rect: &const Rectangle) {
+    fn create(pos: &const Vec2, scale: &const Vec2, angle: f32, origin: &const Vec2, size: &const Vec2, file_path: []const u8, src_rect: &const Rectangle) void {
         self.pos = pos;
         self.scale = scale;
         self.angle = angle;
@@ -254,19 +254,19 @@ const SpriteUnit = struct {
 
     }
 
-    fn create(pos: &const Vec2, size: &const Vec2, file_path: []const u8, src_rect: &const Rectangle) {
+    fn create(pos: &const Vec2, size: &const Vec2, file_path: []const u8, src_rect: &const Rectangle) void {
         this.setPos(pos);
         this.create(null, null, null, null, size, file_path, src_rect);
     }
 
-    fn loadTexture(file_path: []const u8) {
+    fn loadTexture(file_path: []const u8) void {
         if(!resManager.aquireTexture(self.texture, file_path)) {
             panic("Failed to aqure texture for use in Sprite: ", file_path);
             return;
         }
     }
 
-    fn addFrame(src_rect: &const Rectangle, pos_offset: &const Vec2, frame_time: f32) {
+    fn addFrame(src_rect: &const Rectangle, pos_offset: &const Vec2, frame_time: f32) void {
         const uv = Rectangle {
             .x = src_rect.x / self.texture.width,
             .y = (self.texture.height - (src_rect.y + src_rect.height)) / self.texture.height,
@@ -277,7 +277,7 @@ const SpriteUnit = struct {
         self.frames.emplace_back(uv, pos_offset, frame_time);
     }
 
-    fn createFrames(src_rect: &const Rectangle, rows: usize, cols: usize, animationTime: f32, padding: f32) {
+    fn createFrames(src_rect: &const Rectangle, rows: usize, cols: usize, animationTime: f32, padding: f32) void {
         self.frames.clear();
         self.frames.reserve(rows * cols);
 
@@ -299,7 +299,7 @@ const SpriteUnit = struct {
         this.setFrame(0);
     }
 
-    fn update(deltaTime: f32) {
+    fn update(deltaTime: f32) void {
         if(!self.playing) return;
 
         self.time += deltaTime;
@@ -327,34 +327,34 @@ const SpriteUnit = struct {
         }
     }
 
-    fn render(renderer: &BatchRenderer) {
+    fn render(renderer: &BatchRenderer) void {
         renderer.submit(this);
     }
 
-    fn scaleAnimationSpeed(scale: f32) {
+    fn scaleAnimationSpeed(scale: f32) void {
         self.animation_speed *= scale;
     }
 
-    fn pauseAnimation() {
+    fn pauseAnimation() void {
         self.playing = false;
     }
 
-    fn playAnimation() {
+    fn playAnimation() void {
         self.playing = true;
     }
 
-    fn stopAnimation() {
+    fn stopAnimation() void {
         self.playing = false;
         self.current_frame = 0;
         self.time = 0.0;
     }
 
-    fn reverse() {
+    fn reverse() void {
         self.reverse = !self.reverse;
         self.time = self.frames[self.current_frame].frame_time - self.time;
     }
 
-    fn hasAnimationEnded() -> bool {
+    fn hasAnimationEnded()bool {
         if(self.loop) return false;
 
         const lastFrame = if (self.reverse) 0 else self.frames.size() - 1;
@@ -363,7 +363,7 @@ const SpriteUnit = struct {
             and self.time >= self.frames[self.current_frame].frame_time * self.animation_speed);
     }
 
-    fn resetVerticies(size: &const Vec2) {
+    fn resetVerticies(size: &const Vec2) void {
         //set up vertex data in object(local) space
         self.verts.clear();
         self.verts.resize(4);
@@ -381,25 +381,25 @@ const SpriteUnit = struct {
         self.verts[3].setColor(VOLT_COLOR_WHITE);
     }
 
-    fn setTint(color: Colour) {
+    fn setTint(color: Colour) void {
         self.verts[0].setColor(color);
         self.verts[1].setColor(color);
         self.verts[2].setColor(color);
         self.verts[3].setColor(color);
     }
 
-    fn setDepth(depth: f32) {
+    fn setDepth(depth: f32) void {
         self.verts[0].setDepth(depth);
         self.verts[1].setDepth(depth);
         self.verts[2].setDepth(depth);
         self.verts[3].setDepth(depth);
     }
 
-    fn setAnimationTime(milliseconds: f32) {
+    fn setAnimationTime(milliseconds: f32) void {
         self.animation_speed = milliseconds / self.getAnimationTime();
     }
 
-    fn setFrame(frame_index: usize) {
+    fn setFrame(frame_index: usize) void {
         if(frame_index >= self.frames.size()) return;
 
         self.current_frame = frame_index;
@@ -414,32 +414,32 @@ const SpriteUnit = struct {
         self.verts[3].setUV(uv.x + uv.width, uv.y + uv.height);
     }
 
-    fn setAnimationTimeScale(animationTimeScale: f32) {
+    fn setAnimationTimeScale(animationTimeScale: f32) void {
         self.animation_speed = animationTimeScale;
     }
 
-    fn getVerts() -> []Vertex2D {
+    fn getVerts()[]Vertex2D {
         return self.verts;
     }
 
-    fn getIndices() -> []usize {
+    fn getIndices()[]usize {
         return []usize {0, 1, 2, 0, 2, 3};
     }
 
-    fn getIndexCount() -> usize {
+    fn getIndexCount()usize {
         return 6;
     }
 
-    fn getModelMatrix() -> Mat3 {
+    fn getModelMatrix()Mat3 {
         self.reconstructTransform();
         return (self.getTransform().getMatrix());
     }
 
-    fn getDepth() -> f32 {
+    fn getDepth()f32 {
         return self.verts[0].pos.z;
     }
 
-    fn getAnimationTime() -> f32 {
+    fn getAnimationTime()f32 {
         var time: f32 = 0.0;
 
         for(self.frames) | frame, i | {
