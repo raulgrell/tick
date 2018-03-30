@@ -6,77 +6,90 @@ pub fn build(b: &Builder) %void {
     const mode = b.standardReleaseOptions();
     const windows = b.option(bool, "windows", "create windows build") ?? false;
 
+    // Environment
+    b.addCIncludePath("deps");
     b.addCIncludePath("include");
 
-    // Statically linked
-    var exe = b.addExecutable("run", "platform/run.zig");
-    exe.addPackagePath("lib", "lib/index.zig");
-    exe.setBuildMode(mode);
-    
-    if (windows) {
-        exe.setTarget(builtin.Arch.x86_64, builtin.Os.windows, builtin.Environ.gnu);
-    }
-    
-    exe.linkSystemLibrary("c");
-    exe.linkSystemLibrary("m");
-    exe.linkSystemLibrary("z");
-    exe.linkSystemLibrary("glfw");
-    exe.linkSystemLibrary("epoxy");
-    exe.linkSystemLibrary("png");
-    exe.linkSystemLibrary("soundio");
-    b.installArtifact(exe);
-    
-    // Dynamically linked, hot reloading
-    var dev = b.addExecutable("dev", "platform/dev.zig");
-    dev.addPackagePath("lib", "lib/index.zig");
-    
-    dev.setBuildMode(mode);
-    
-    dev.linkSystemLibrary("c");
-    dev.linkSystemLibrary("m");
-    dev.linkSystemLibrary("z");
-    dev.linkSystemLibrary("dl");
-    dev.linkSystemLibrary("glfw");
-    dev.linkSystemLibrary("epoxy");
-    dev.linkSystemLibrary("png");
-    dev.linkSystemLibrary("soundio");
-    b.installArtifact(dev);
+    // C Dependencies
+    var glad = b.addCObject("glad", "deps/glad/glad.c");
 
+    //
     // Game lib
-    
+    //
     const version = b.version(0, 0, 1);
+    var game_lib = b.addSharedLibrary("game", "games/live.zig", version);
+    game_lib.addPackagePath("lib", "lib/index.zig");
 
-    var lib = b.addSharedLibrary("game", "games/live.zig", version);
-    lib.addPackagePath("lib", "lib/index.zig");
+    if (windows) {
+        game_lib.setTarget(builtin.Arch.x86_64, builtin.Os.windows, builtin.Environ.gnu);
+    }
 
-    // Dependencies
+    //
+    // Statically Linked Executable
+    //
+    var dist_exe = b.addExecutable("dist", "platform/run.zig");
+    dist_exe.addPackagePath("lib", "lib/index.zig");
+    dist_exe.addObject(glad);
 
-    // b.addLibPath("deps/");
-    // var deps = b.addCStaticLibrary("deps");
+    dist_exe.setBuildMode(mode);
+    if (windows) {
+        dist_exe.setTarget(builtin.Arch.x86_64, builtin.Os.windows, builtin.Environ.gnu);
+    }
 
-    // Default
-    b.default_step.dependOn(&exe.step);
-    b.default_step.dependOn(&dev.step);
-    b.default_step.dependOn(&lib.step);
-    // b.default_step.dependOn(&deps.step);
+    dist_exe.linkSystemLibrary("c");
+    dist_exe.linkSystemLibrary("m");
+    dist_exe.linkSystemLibrary("z");
+    dist_exe.linkSystemLibrary("dl");
+    dist_exe.linkSystemLibrary("glfw");
+    dist_exe.linkSystemLibrary("png");
+    dist_exe.linkSystemLibrary("soundio");
+    b.installArtifact(dist_exe);
 
+    const dist_command = b.addCommand(".", b.env_map, [][]const u8{dist_exe.getOutputPath()});
+    dist_command.step.dependOn(&glad.step);
+    dist_command.step.dependOn(&dist_exe.step);
+
+    //
+    // Dynamically Linked, Hot Reloading
+    //
+    var dev_exe = b.addExecutable("dev", "platform/dev.zig");
+    dev_exe.addPackagePath("lib", "lib/index.zig");
+    dev_exe.addObject(glad);
+
+    dev_exe.setBuildMode(mode);
+    if (windows) {
+        dev_exe.setTarget(builtin.Arch.x86_64, builtin.Os.windows, builtin.Environ.gnu);
+    }
+
+    dev_exe.linkSystemLibrary("c");
+    dev_exe.linkSystemLibrary("m");
+    dev_exe.linkSystemLibrary("z");
+    dev_exe.linkSystemLibrary("dl");
+    dev_exe.linkSystemLibrary("glfw");
+    dev_exe.linkSystemLibrary("png");
+    dev_exe.linkSystemLibrary("soundio");
+    b.installArtifact(dev_exe);
+
+    const dev_command = b.addCommand(".", b.env_map, [][]const u8{dev_exe.getOutputPath()});
+    dev_command.step.dependOn(&glad.step);
+    dev_command.step.dependOn(&dev_exe.step);
+    dev_command.step.dependOn(&game_lib.step);
+
+    //
     // Commands
-    const run_exe = b.addCommand(".", b.env_map, [][]const u8{exe.getOutputPath()});
-    run_exe.step.dependOn(&exe.step);
-    // run_exe.step.dependOn(&deps.step);
+    //
 
-    const run_dev = b.addCommand(".", b.env_map, [][]const u8{exe.getOutputPath()});
-    run_dev.step.dependOn(&dev.step);
-    run_dev.step.dependOn(&lib.step);
-    // run_exe.step.dependOn(&deps.step);    
+    b.default_step.dependOn(&glad.step);
+    b.default_step.dependOn(&game_lib.step);
+    b.default_step.dependOn(&dev_exe.step);
+    b.default_step.dependOn(&dist_exe.step);
+ 
+    const run = b.step("run", "Play the game");
+    run.dependOn(&dist_command.step);
     
-    // Steps
-    const play = b.step("play", "Play the game");
-    play.dependOn(&run_exe.step);
-    
-    const live = b.step("live", "Run live development environment");
-    live.dependOn(&run_dev.step);
+    const dev = b.step("dev", "Run live development environment");
+    dev.dependOn(&dev_command.step);
 
     const update = b.step("update", "Update game library");
-    update.dependOn(&lib.step);    
+    update.dependOn(&game_lib.step);    
 }

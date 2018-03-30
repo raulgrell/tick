@@ -30,7 +30,7 @@ pub const App = struct {
     input:    InputManager,
     // audio:    AudioEngine,
 
-    pub fn init()&App {
+    pub fn init() &App {
         var app = c.mem.create(App) catch unreachable;
 
         // Window

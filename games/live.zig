@@ -61,8 +61,7 @@ pub const State = struct {
     tile_map: [256]?Texture,
 };
 
-fn init(app: &App)&State {
-    %%initSystem();
+fn init(app: &App) &State {
     var state = c.mem.create(State) catch panic("cannot create state");
 
     state.font = Spritesheet.init(FONT_PNG, FONT_CHAR_WIDTH, FONT_CHAR_HEIGHT) catch {

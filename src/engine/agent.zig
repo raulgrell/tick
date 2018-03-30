@@ -23,7 +23,7 @@ pub const Agent = struct {
     radius: f32,
     // Spatial Partitioning
     owner_cell: ?&Cell,
-    cell_array_index: usize,
+    cell_array_index: ?usize,
 
     pub fn init(position: &const Vec3, dimensions: &const Vec3, speed: f32, agent_texture: &Texture) Agent {
         return Agent {
@@ -298,15 +298,16 @@ pub const Grid = struct {
     }
 
     pub fn removeFromCell(self: &Grid, agent: &Agent) void {
-        var agents = (agent.owner_cell ?? return).agents;
-        agents.data[agent.cell_array_index] = agents.last();
-        _ = agents.pop();
-        if ( agent.cell_array_index < agents.length ) {
-            agents.data[agent.cell_array_index].cell_array_index = agent.cell_array_index;
+        if (agent.owner_cell) | cell | {
+            var agents = cell.agents;
+            agents.data[??agent.cell_array_index] = agents.last();
+            _ = agents.pop();
+            if ( ??agent.cell_array_index < agents.length ) {
+                agents.data[??agent.cell_array_index].cell_array_index = agent.cell_array_index;
+            }
+            agent.cell_array_index = null;
+            agent.owner_cell = null;
         }
-        // Set the index of agent to -1
-        agent.cell_array_index = -1;
-        agent.owner_cell = null;
     }
 };
 
