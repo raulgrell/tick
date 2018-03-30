@@ -1,7 +1,16 @@
+<<<<<<< HEAD
+=======
+const std = @import("std");
+const builtin = @import("builtin");
+
+const is_windows = builtin.os == builtin.Os.windows;
+
+>>>>>>> Windows misc changes
 use @cImport({
     @cInclude("ctype.h");
     @cInclude("errno.h");
     @cInclude("stdio.h");
+<<<<<<< HEAD
     @cInclude("unistd.h");
     @cInclude("sys/ioctl.h");
     @cInclude("sys/types.h");
@@ -10,6 +19,19 @@ use @cImport({
 });
 
 const std = @import("std");
+=======
+    @cInclude("stdlib.h");
+    if (is_windows) {
+
+    } else {
+        @cInclude("unistd.h");
+        @cInclude("sys/ioctl.h");
+        @cInclude("sys/types.h");
+        @cInclude("termios.h");
+    }
+});
+
+>>>>>>> Windows misc changes
 
 const EditorConfig = struct {
     cx: c_int,

@@ -34,7 +34,6 @@ handling and nullable-type semantics. For more information, check out http://zig
 As well as the requirements for a Zig development environment, you will need:
 - libc
 - GLFW
-- zlib
 - libsoundio
 
 ## Usage

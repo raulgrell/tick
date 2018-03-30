@@ -15,7 +15,7 @@ pub fn SortedArray(comptime T: type)type {
         const EqualityFunc = fn(a: T, b: T)bool;
         const ComparisonFunc = fn(a: T, b: T)isize;
 
-        pub fn init(eqlFn: EqualityFunc, cmpFn: ComparisonFunc, allocator: &Allocator)Self {
+        pub fn init(eqlFn: EqualityFunc, cmpFn: ComparisonFunc, allocator: &Allocator) Self {
             Self {
                 .data = []T{},
                 .length = 0,

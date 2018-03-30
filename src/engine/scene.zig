@@ -422,7 +422,7 @@ pub const Level = struct {
     }
 };
 
-pub fn Tiles(comptime C: u32, comptime R: u32)type {
+pub fn Tiles(comptime C: u32, comptime R: u32) type {
     return struct {
         color: Vec4,
         tiles: [R][C]u8,

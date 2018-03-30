@@ -113,6 +113,13 @@ pub const Window = struct {
             CursorMode.Window => c.glfwSetCursor(win.window, win.cursor)
         }
     }
+
+    pub fn setKeyMods(win: &Window, mods: c_int, out: &c_int) {
+        if(mods & GLFW_MOD_CONTROL != 0) mKeyMods.mods |= GLFW_MOD_CONTROL;
+        if(mods & GLFW_MOD_SHIFT   != 0) mKeyMods.mods |= GLFW_MOD_SHIFT;
+        if(mods & GLFW_MOD_ALT     != 0) mKeyMods.mods |= GLFW_MOD_ALT;
+        if(mods & GLFW_MOD_SUPER   != 0) mKeyMods.mods |= GLFW_MOD_SUPER;
+    }
     
     pub fn running(win: &Window) bool {
         return (c.glfwWindowShouldClose(win.window) == c.GL_FALSE);
@@ -157,6 +164,7 @@ extern fn cursor_enter_callback(win: ?&c.GLFWwindow, entered: c_int) void {
         // The cursor left the client area of the window
     }
 }
+
 extern fn mouse_button_callback(win: ?&c.GLFWwindow, button: c_int, action: c_int, mods: c_int) void {
     if (button < 0) return;
     const app = @ptrCast(&App, @alignCast(@alignOf(App), ??c.glfwGetWindowUserPointer(win)));

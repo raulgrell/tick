@@ -1,3 +1,3 @@
-zig-cache
-todo
-.vscode
+zig-cache/
+todo/
+.vscode/

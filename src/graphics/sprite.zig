@@ -254,11 +254,6 @@ const SpriteUnit = struct {
 
     }
 
-    fn create(pos: &const Vec2, size: &const Vec2, file_path: []const u8, src_rect: &const Rectangle) void {
-        this.setPos(pos);
-        this.create(null, null, null, null, size, file_path, src_rect);
-    }
-
     fn loadTexture(file_path: []const u8) void {
         if(!resManager.aquireTexture(self.texture, file_path)) {
             panic("Failed to aqure texture for use in Sprite: ", file_path);

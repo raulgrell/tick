@@ -30,16 +30,18 @@ pub const App = struct {
     input:    InputManager,
     // audio:    AudioEngine,
 
-    pub fn init() &App {
+    pub fn init() !&App {
         var app = c.mem.create(App) catch unreachable;
 
         // Window
         app.window.init(WINDOW_WIDTH, WINDOW_HEIGHT);
         app.window.setWindowPointer(@ptrCast(&const u8, app));
 
+        // Cursor
         app.window.setCustomCursor();
         app.window.setCursorMode(CursorMode.Window);
 
+        // Options
         Window.setClearColor(0, 0, 0, 1);
         Window.enableBlending();
 
@@ -49,7 +51,7 @@ pub const App = struct {
         app.input.init();
 
         // Audio
-        // %%app.audio.init();
+        try app.audio.init();
         // %%app.audio.open();
         // %%app.audio.start();
 

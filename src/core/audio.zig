@@ -167,7 +167,7 @@ const Wave = struct {
     sampleRate: usize,    // Frequency (samples per second)
     sampleSize: usize,    // Bit depth (bits per sample): 8, 16, 32 (24 not supported)
     channels: usize,      // Number of channels (1-mono, 2-stereo)
-    data: &u8,          // Buffer data pointer
+    data: &u8,            // Buffer data pointer
 };
 
 const Sound = struct {
