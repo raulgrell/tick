@@ -1,7 +1,5 @@
 const assert = @import("std").debug.assert;
 const mem = @import("std").mem;
-const memory = @import("../memory.zig");
-const Allocator = memory.Allocator;
 
 pub fn RBTree(comptime K: type, comptime T: type)type {
     struct {

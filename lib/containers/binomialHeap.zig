@@ -1,17 +1,14 @@
 const assert = @import("std").debug.assert;
 const mem = @import("std").mem;
-const memory = @import("../memory.zig");
-const Allocator = memory.Allocator;
 
 const HeapType = enum {
     Min,
     Max,
 };
 
-pub fn BinomialHeap(comptime T: type)type {
+pub fn BinomialHeap(comptime T: type, comptime heap_type: HeapType) type {
     struct {
         allocator: &Allocator,
-        heap_type: HeapType,
         compare_func: ComparisonFunc,
         length: usize,
         roots: []BinomialTree,

@@ -1,9 +1,7 @@
 const assert = @import("std").debug.assert;
 const mem = @import("std").mem;
-const memory = @import("../memory.zig");
-const Allocator = memory.Allocator;
 
-pub fn SLinkedList(comptime T: type)type {
+pub fn SLinkedList(comptime T: type) type {
     struct {
         root: ?&&Entry,
         length: usize,

@@ -60,7 +60,7 @@ pub const StripRenderer = struct {
         var r = StripRenderer {
             .shader = s,
             .vao = 0,
-            .projection = Mat4.orthographic( 0.0, f32(fb_width), f32(fb_height), 0.0, 0.0, 1.0 ),
+            .projection = Mat4.orthographic(0.0, f32(fb_width), f32(fb_height), 0.0, 0.0, 1.0),
             .rectangleBuffer = 0,
             .triangleBuffer = 0,
         };
@@ -69,41 +69,47 @@ pub const StripRenderer = struct {
         c.glBindVertexArray(r.vao);
         
         c.glGenBuffers(1, &r.rectangleBuffer);
-        c.glBindBuffer(c.GL_ARRAY_BUFFER, r.rectangleBuffer);
+        c.glBindBuffer(c.GL_ARRAY_BUFFER, self.rectangleBuffer);
         c.glBufferData(
             c.GL_ARRAY_BUFFER,
             4 * 3 * @sizeOf(c.GLfloat),
             @ptrCast(&c_void, &rectangleVertices[0][0]),
             c.GL_STATIC_DRAW
-        );
+       );
 
         c.glGenBuffers(1, &r.triangleBuffer);
-        c.glBindBuffer(c.GL_ARRAY_BUFFER, r.triangleBuffer);
+        c.glBindBuffer(c.GL_ARRAY_BUFFER, self.triangleBuffer);
         c.glBufferData(
             c.GL_ARRAY_BUFFER,
             3 * 3 * @sizeOf(c.GLfloat),
             @ptrCast(&c_void, &triangleVertices[0][0]),
             c.GL_STATIC_DRAW
-        );
+       );
 
         return r;
     }
 
-    fn begin (r: &StripRenderer) void {
+    fn begin (self: &StripRenderer) void {
         c.glBindVertexArray(r.vao);
-        r.shader.program.bind();
+        self.shader.program.bind();
     }
 
-    fn end(r: &StripRenderer) void {
-        r.shader.program.unbind();
+    fn end(self: &StripRenderer) void {
+        self.shader.program.unbind();
         c.glBindVertexArray(0);        
     }
 
-    pub fn submitMvp(r: &StripRenderer, color: &const Vec4, mvp: &const Mat4) void {
-        r.shader.program.setUniform_vec4(r.shader.uniform_color, color);
-        r.shader.program.setUniform_mat4(r.shader.uniform_mvp, mvp);
+    pub fn submit(self: &StripRenderer, color: &const Vec4, x: f32, y: f32, w: f32, h: f32) void {
+        const model = Mat4.diagonal(1).translate(x, y, 0.0).scale(w, h, 0.0);
+        const mvp = self.projection.mul(model);
+        self.submitMvp(color, mvp);
+    }
 
-        c.glBindBuffer(c.GL_ARRAY_BUFFER, r.rectangleBuffer);
+    pub fn submitMvp(self: &StripRenderer, color: &const Vec4, mvp: &const Mat4) void {
+        self.shader.program.setUniform_vec4(r.shader.uniform_color, color);
+        self.shader.program.setUniform_mat4(r.shader.uniform_mvp, mvp);
+
+        c.glBindBuffer(c.GL_ARRAY_BUFFER, self.rectangleBuffer);
         c.glEnableVertexAttribArray(c.GLuint(r.shader.attrib_position));
         c.glVertexAttribPointer(
             c.GLuint(r.shader.attrib_position),
@@ -112,18 +118,12 @@ pub const StripRenderer = struct {
             c.GL_FALSE,
             0,
             null
-        );
+       );
 
         c.glDrawArrays(c.GL_TRIANGLE_STRIP, 0, 4);
     }
 
-    pub fn submit(r: &StripRenderer, color: &const Vec4, x: f32, y: f32, w: f32, h: f32) void {
-        const model = Mat4.diagonal(1).translate(x, y, 0.0).scale(w, h, 0.0);
-        const mvp = r.projection.mul(model);
-        r.submitMvp(color, mvp);
-    }
-
-    fn destroy(r: &StripRenderer) void {
+    fn destroy(self: &StripRenderer) void {
         if (r.vao != 0) c.glDeleteVertexArrays(1, &r.vao);
         if (r.rectangleBuffer != 0) c.glDeleteBuffers(1, &r.rectangleBuffer);
         if (r.triangleBuffer != 0) c.glDeleteBuffers(1, &r.triangleBuffer);
@@ -151,7 +151,7 @@ pub const LineRenderer = struct {
             .vao = 0,
             .vbo = 0,
             .ibo = 0,
-            .projection = Mat4.orthographic( 0.0, f32(fb_width), f32(fb_height), 0.0, 0.0, 1.0 ),
+            .projection = Mat4.orthographic(0.0, f32(fb_width), f32(fb_height), 0.0, 0.0, 1.0),
             .vertices = s_vertices[0..],
             .numVertices = 0,
             .indices = s_indices[0..],
@@ -163,10 +163,10 @@ pub const LineRenderer = struct {
         c.glBindVertexArray(r.vao);
 
         c.glGenBuffers(1, &r.vbo);
-        c.glBindBuffer(c.GL_ARRAY_BUFFER, r.vbo);
+        c.glBindBuffer(c.GL_ARRAY_BUFFER, self.vbo);
 
         c.glGenBuffers(1, &r.ibo);
-        c.glBindBuffer(c.GL_ELEMENT_ARRAY_BUFFER, r.ibo);
+        c.glBindBuffer(c.GL_ELEMENT_ARRAY_BUFFER, self.ibo);
 
         c.glEnableVertexAttribArray(c.GLuint(r.shader.attrib_position));
         c.glVertexAttribPointer(
@@ -176,7 +176,7 @@ pub const LineRenderer = struct {
             c.GL_FALSE,
             @sizeOf(Vertex),
             @intToPtr(&c_void, @offsetOf(Vertex, "position"))
-        );
+       );
 
         c.glEnableVertexAttribArray(c.GLuint(r.shader.attrib_color));
         c.glVertexAttribPointer(
@@ -186,7 +186,7 @@ pub const LineRenderer = struct {
             c.GL_FALSE,
             @sizeOf(Vertex),
             @intToPtr(&c_void,  @offsetOf(Vertex, "colour"))
-        );
+       );
 
         c.glBindBuffer(c.GL_ELEMENT_ARRAY_BUFFER, 0);
         c.glBindBuffer(c.GL_ARRAY_BUFFER, 0);
@@ -195,87 +195,87 @@ pub const LineRenderer = struct {
         return r;
     }
 
-    pub fn begin (r: &LineRenderer) void {
-        c.glBindVertexArray(r.vao);
+    pub fn begin (self: &LineRenderer) void {
+        c.glBindVertexArray(self.vao);
     }
 
-    pub fn end(r: &LineRenderer) void {
-        c.glBindBuffer(c.GL_ARRAY_BUFFER, r.vbo);
-        c.glBufferData(c.GL_ARRAY_BUFFER, r.numVertices * @sizeOf(Vertex), @intToPtr(&c_void, 0), c.GL_DYNAMIC_DRAW);
-        c.glBufferSubData(c.GL_ARRAY_BUFFER, 0, r.numVertices * @sizeOf(Vertex), @ptrCast(&c_void, r.vertices.ptr));
+    pub fn end(self: &LineRenderer) void {
+        c.glBindBuffer(c.GL_ARRAY_BUFFER, self.vbo);
+        c.glBufferData(c.GL_ARRAY_BUFFER, self.numVertices * @sizeOf(Vertex), @intToPtr(&c_void, 0), c.GL_DYNAMIC_DRAW);
+        c.glBufferSubData(c.GL_ARRAY_BUFFER, 0, self.numVertices * @sizeOf(Vertex), @ptrCast(&c_void, self.vertices.ptr));
         c.glBindBuffer(c.GL_ARRAY_BUFFER, 0);
 
-        c.glBindBuffer(c.GL_ELEMENT_ARRAY_BUFFER, r.ibo);
-        c.glBufferData(c.GL_ELEMENT_ARRAY_BUFFER, r.numIndices * @sizeOf(c.GLuint), @intToPtr(&c_void, 0), c.GL_DYNAMIC_DRAW);
-        c.glBufferSubData(c.GL_ELEMENT_ARRAY_BUFFER, 0, r.numIndices * @sizeOf(c.GLuint), @ptrCast(&c_void, r.indices.ptr));
+        c.glBindBuffer(c.GL_ELEMENT_ARRAY_BUFFER, self.ibo);
+        c.glBufferData(c.GL_ELEMENT_ARRAY_BUFFER, self.numIndices * @sizeOf(c.GLuint), @intToPtr(&c_void, 0), c.GL_DYNAMIC_DRAW);
+        c.glBufferSubData(c.GL_ELEMENT_ARRAY_BUFFER, 0, self.numIndices * @sizeOf(c.GLuint), @ptrCast(&c_void, self.indices.ptr));
         c.glBindBuffer(c.GL_ELEMENT_ARRAY_BUFFER, 0);
 
-        r.numElements = (c_int)(r.numIndices);
-        r.numIndices = 0;
-        r.numVertices = 0;
+        self.numElements = (c_int)(self.numIndices);
+        self.numIndices = 0;
+        self.numVertices = 0;
 
         debug.assertNoErrorGL();
     }
 
-    pub fn drawLine(r: &LineRenderer, colour: &const Vec4, a: &const Vec3, b: &const Vec3,) void {
-        const i = r.numVertices;
+    pub fn drawLine(self: &LineRenderer, colour: &const Vec4, a: &const Vec3, b: &const Vec3) void {
+        const i = self.numVertices;
 
-        r.vertices[i].position = *a;
-        r.vertices[i].colour = *colour;
-        r.vertices[i + 1].position = *b;
-        r.vertices[i + 1].colour = *colour;
+        self.vertices[i].position = *a;
+        self.vertices[i].colour = *colour;
+        self.vertices[i + 1].position = *b;
+        self.vertices[i + 1].colour = *colour;
 
-        r.numVertices += 2;
+        self.numVertices += 2;
 
-        const j = r.numIndices;
+        const j = self.numIndices;
 
-        r.indices[j] = i;
-        r.indices[j + 1] = i + 1;
+        self.indices[j] = i;
+        self.indices[j + 1] = i + 1;
 
-        r.numIndices += 2;
+        self.numIndices += 2;
     }
 
-    pub fn drawPolygon(r: &LineRenderer, colour: &const Vec4, center: &const Vec3, radius: f32, angle: f32, numSides: c_int) void {
-        const vertexOffset = r.numVertices;
+    pub fn drawPolygon(self: &LineRenderer, colour: &const Vec4, center: &const Vec3, radius: f32, angle: f32, numSides: c_int) void {
+        const vertexOffset = self.numVertices;
 
-        { var i = 0; while( i < numSides) : ( i += 1 ) {
-            const internalAngle = ( float(i) / numSides ) * PI * 2.0 + angle;
-            r.vertices[vertexOffset + i].position.x = cos(internalAngle) * radius + center.x;
-            r.vertices[vertexOffset + i].position.y = sin(internalAngle) * radius + center.y;
-            r.vertices[vertexOffset + i].colour = colour;
-        }}
-
-        r.numVertices += numSides;
-
-        const indexOffset = r.numIndices;
-
-        var j = 0;
-
-        while( j < numSides - 1) : ( j += 2 ) {
-            _indices[indexOffset + j] = vertexOffset + j;
-            _indices[indexOffset + j + 1] = vertexOffset + j + 1;
+        var i = 0;
+        while (i < numSides) : (i += 1) {
+            const internalAngle = (float(i) / numSides) * PI * 2.0 + angle;
+            self.vertices[vertexOffset + i].position.x = cos(internalAngle) * radius + center.x;
+            self.vertices[vertexOffset + i].position.y = sin(internalAngle) * radius + center.y;
+            self.vertices[vertexOffset + i].colour = colour;
         }
 
-        r.indices[indexOffset + j] = vertexOffset + numSides - 1;
-        r.indices[indexOffset + j + 1] = vertexOffset;
-        r.numIndices += numSides * 2;
+        self.numVertices += numSides;
+
+        const indexOffset = self.numIndices;
+
+        var j = 0;
+        while (j < numSides - 1) : (j += 2) {
+            self.indices[indexOffset + j] = vertexOffset + j;
+            self.indices[indexOffset + j + 1] = vertexOffset + j + 1;
+        }
+
+        self.indices[indexOffset + j] = vertexOffset + numSides - 1;
+        self.indices[indexOffset + j + 1] = vertexOffset;
+        self.numIndices += numSides * 2;
     }
 
-    pub fn render(r: &LineRenderer) void {
-        r.shader.program.bind();
-        r.shader.program.setUniform_mat4(r.shader.uniform_mvp,  &r.projection);
+    pub fn render(self: &LineRenderer) void {
+        self.shader.program.bind();
+        self.shader.program.setUniform_mat4(r.shader.uniform_mvp,  &r.projection);
 
         c.glLineWidth(1.0);
         c.glBindVertexArray(r.vao);
-        c.glDrawElements(c.GL_LINES, r.numElements, c.GL_UNSIGNED_INT, @intToPtr(&c_void, r.ibo));
+        c.glDrawElements(c.GL_LINES, self.numElements, c.GL_UNSIGNED_INT, @intToPtr(&c_void, self.ibo));
         c.glBindVertexArray(0);
 
-        r.shader.program.unbind();
+        self.shader.program.unbind();
 
         debug.assertNoErrorGL();
     }
 
-    pub fn destroy(r: &LineRenderer) void {
+    pub fn destroy(self: &LineRenderer) void {
         if (r.vao != 0) c.glDeleteVertexArrays(1, &r.vao);
         if (r.vbo != 0) c.glDeleteBuffers(1, &r.vbo);
         if (r.ibo != 0) c.glDeleteBuffers(1, &r.ibo);
@@ -285,7 +285,7 @@ pub const LineRenderer = struct {
 const Polygon = struct {
     vertices: ArrayList(Vertex),
 
-    fn rectangle(rect: &const Rectangle, color: &const Colour)Polygon {
+    fn rectangle(rect: &const Rectangle, color: &const Colour) Polygon {
         self.setPos(rect.getPos());
 
         self.vertices.resize(4);
@@ -307,7 +307,7 @@ const Polygon = struct {
         self.vertices[3].setColor(color);
     }
 
-    fn regular(center_position: Vec2, radius: f32, color: &const Color, num_verts: usize)Polygon{
+    fn regular(center_position: Vec2, radius: f32, color: &const Color, num_verts: usize) Polygon {
         self.setPos(center_position);
 
         if(num_verts == -1) {
@@ -346,11 +346,11 @@ const Polygon = struct {
         self.vertices.push_back(vertex);
     }
 
-    fn getVerts()[]Vertex {
+    fn getVerts() []Vertex {
         return &self.vertices;
     }
 
-    fn getIndices()[]usize {
+    fn getIndices() []usize {
         var indices = ((3 * (self.vertices.size())) - 6);
         var currentIndex = 0;
 
@@ -364,11 +364,11 @@ const Polygon = struct {
         return indices;
     }
 
-    fn getIndexCount()uint {
+    fn getIndexCount() usize {
         return uint((3 * (self.vertices.size())) - 6);
     }
 
-    fn getModelMatrix()Mat3 {
+    fn getModelMatrix() Mat3 {
         self.reconstructTransform();
         return self.getTransform().getMatrix();
     }

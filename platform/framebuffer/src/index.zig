@@ -1,8 +1,7 @@
 const win = @import("win32.zig");
 const x11 = @import("x11.zig");
 
-pub fn rgb(r: u8, g: u8, b: u8) u32 
-{
+pub fn rgb(r: u8, g: u8, b: u8) u32 {
     return u32(r) << 16 | u32(g) << 8 | b;
 }
 

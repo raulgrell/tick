@@ -48,7 +48,7 @@ $ zig build live
 
 This will clone tick and cd into its directory. ´zig build live´ will build and run the live environment.
 
-Zig will create an executable called 'dev', and a shared library 'libgame.so' that contains your game and
+Zig will create an executable called 'dev', and a shared library 'libgame.so' that contains your game and the
 engine code. Both of these files will be inside the zig-cache directory. In order to update your game code, run:
 
 ```
@@ -62,7 +62,7 @@ The rest of the project was inspired by
 
 ### Limitations
 
-Changing the definition of the State struct may require a rebuild of the live environment. I'm working on this.
+Changing the definition of the State struct may require a rebuild of the live environment.
 
 You cannot change the function signatures of the API without a recompile of the live executable. 
 I probably won't work on this, as it is but a minor inconvenience, and a major technical hurdle.
@@ -83,6 +83,6 @@ I probably won't work on this, as it is but a minor inconvenience, and a major t
 - Skeleton Animations
 - Integrated debugger
 - Networking
-- Platforms: SDL, Win32, X11, OSX, Android, iOS, Raspberry Pi
+- Platforms: SDL, Win32, X11, OSX, Raspberry Pi
 - Graphics: OpenGLES, DX12, Vulkan
 

@@ -1,12 +1,10 @@
 const assert = @import("std").debug.assert;
 const mem = @import("std").mem;
-const memory = @import("../memory.zig");
-const Allocator = memory.Allocator;
 
 error PrimeIndexOverflow;
 error AllocationFailure;
 
-pub fn Set(comptime T: type)type {
+pub fn Set(comptime T: type) type {
     struct {
         table: []?&Entry,
         entries: usize,

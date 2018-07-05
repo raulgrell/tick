@@ -29,23 +29,21 @@ pub const ParticleEngine2D  = struct {
         };
     }
 
-    pub fn addParticleBatch(e: &ParticleEngine2D, pb: &ParticleBatch2D) void {
-        e.batches[e.num_batches] = pb;
-        e.num_batches += 1;
+    pub fn addParticleBatch(self: &ParticleEngine2D, pb: &ParticleBatch2D) void {
+        self.batches[self.num_batches] = pb;
+        self.num_batches += 1;
     }
 
-    pub fn update(e: &ParticleEngine2D, deltaTime: f32) void {
-        for (e.batches[0 .. e.num_batches - 1]) | batch, i |  {
+    pub fn update(self: &ParticleEngine2D, deltaTime: f32) void {
+        for (self.batches[0 .. self.num_batches - 1]) | batch, i |  {
             batch.update(deltaTime);
         }
     }
 
-    pub fn draw(e: &ParticleEngine2D, br: &BatchRenderer) void {
-        for (e.batches[0 .. e.num_batches - 1]) | batch, i | {
+    pub fn draw(self: &ParticleEngine2D, br: &BatchRenderer) void {
+        for (self.batches[0 .. self.num_batches - 1]) | batch, i | {
             br.begin();
-            {
-                batch.draw(br);
-            }
+            batch.draw(br);
             br.end();
             br.render();
         }

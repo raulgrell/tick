@@ -3,6 +3,29 @@ use @import("../math/index.zig");
 
 const shader = @import("../graphics/shader.zig");
 
+const Lighting = struct {
+    lights: ArrayList(Light),
+
+    pub fn init() Lighting {
+        return Lighting {
+            .lights = ArrayList(Light).init()
+        };
+    }
+
+    pub fn destroy() void {
+        self.lights.deinit();
+    }
+
+    pub fn add(light: &Light) &Light {
+        self.lights.append(light);
+        return light;
+    }
+
+    pub fn remove(light: &Light) void {
+        self.lights.remove(light);
+    }
+};
+
 const Light = struct {
     color: Vec4,
     position: Vec3,
@@ -82,30 +105,6 @@ pub const LightShader = struct {
         self.program.destroy();
     }
 };
-
-const LightSetup = struct {
-    lights: ArrayList(Light),
-
-    pub fn init()LightSetup {
-        return LightSetup {
-            .lights = ArrayList(Light).init()
-        };
-    }
-
-    pub fn destroy() void {
-        self.lights.deinit();
-    }
-
-    pub fn add(light: &Light)&Light {
-        self.lights.append(light);
-        return light;
-    }
-
-    pub fn remove(light: &Light) void {
-        self.lights.remove(light);
-    }
-};
-
 
 const Colour = struct {
     rgba: [4]f32,

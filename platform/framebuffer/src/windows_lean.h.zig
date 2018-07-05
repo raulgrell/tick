@@ -1,5 +1,5 @@
-pub const va_list = ?&u8;
-//pub extern fn __va_start(arg0: ?&(?&u8)) void;
+pub const va_list = ?[*]u8;
+//pub extern fn __va_start(arg0: ?[*](?[*]u8)) void;
 pub const ptrdiff_t = c_longlong;
 pub const __vcrt_bool = bool;
 pub const wchar_t = c_ushort;
@@ -19,12 +19,12 @@ pub const enum__EXCEPTION_DISPOSITION = extern enum {
 };
 pub const EXCEPTION_DISPOSITION = enum__EXCEPTION_DISPOSITION;
 pub const DWORD = c_ulong;
-pub const PVOID = ?&c_void;
+pub const PVOID = ?*c_void;
 pub const ULONG_PTR = c_ulonglong;
 pub const struct__EXCEPTION_RECORD = extern struct {
     ExceptionCode: DWORD,
     ExceptionFlags: DWORD,
-    ExceptionRecord: ?&struct__EXCEPTION_RECORD,
+    ExceptionRecord: ?*struct__EXCEPTION_RECORD,
     ExceptionAddress: PVOID,
     NumberParameters: DWORD,
     ExceptionInformation: [15]ULONG_PTR,
@@ -137,10 +137,10 @@ pub const struct__IMAGE_RUNTIME_FUNCTION_ENTRY = extern struct {
         UnwindData: DWORD,
     },
 };
-pub const PRUNTIME_FUNCTION = ?&struct__IMAGE_RUNTIME_FUNCTION_ENTRY;
-pub const PCONTEXT = ?&struct__CONTEXT;
-pub const EXCEPTION_ROUTINE = extern fn(?&struct__EXCEPTION_RECORD, PVOID, ?&struct__CONTEXT, PVOID) EXCEPTION_DISPOSITION;
-pub const PEXCEPTION_ROUTINE = ?&EXCEPTION_ROUTINE;
+pub const PRUNTIME_FUNCTION = ?*struct__IMAGE_RUNTIME_FUNCTION_ENTRY;
+pub const PCONTEXT = ?*struct__CONTEXT;
+pub const EXCEPTION_ROUTINE = extern fn(?*struct__EXCEPTION_RECORD, PVOID, ?*struct__CONTEXT, PVOID) EXCEPTION_DISPOSITION;
+pub const PEXCEPTION_ROUTINE = ?[*]EXCEPTION_ROUTINE;
 pub const struct__UNWIND_HISTORY_TABLE_ENTRY = extern struct {
     ImageBase: DWORD64,
     FunctionEntry: PRUNTIME_FUNCTION,
@@ -156,7 +156,7 @@ pub const struct__UNWIND_HISTORY_TABLE = extern struct {
     HighAddress: DWORD64,
     Entry: [12]UNWIND_HISTORY_TABLE_ENTRY,
 };
-pub const PUNWIND_HISTORY_TABLE = ?&struct__UNWIND_HISTORY_TABLE;
+pub const PUNWIND_HISTORY_TABLE = ?*struct__UNWIND_HISTORY_TABLE;
 pub const struct__DISPATCHER_CONTEXT = extern struct {
     ControlPc: DWORD64,
     ImageBase: DWORD64,
@@ -170,50 +170,50 @@ pub const struct__DISPATCHER_CONTEXT = extern struct {
     ScopeIndex: DWORD,
     Fill0: DWORD,
 };
-//pub extern fn __C_specific_handler(ExceptionRecord: ?&struct__EXCEPTION_RECORD, EstablisherFrame: ?&c_void, ContextRecord: ?&struct__CONTEXT, DispatcherContext: ?&struct__DISPATCHER_CONTEXT) EXCEPTION_DISPOSITION;
+//pub extern fn __C_specific_handler(ExceptionRecord: ?*struct__EXCEPTION_RECORD, EstablisherFrame: ?*c_void, ContextRecord: ?*struct__CONTEXT, DispatcherContext: ?*struct__DISPATCHER_CONTEXT) EXCEPTION_DISPOSITION;
 //pub extern fn _exception_code() c_ulong;
-//pub extern fn _exception_info() ?&c_void;
+//pub extern fn _exception_info() ?*c_void;
 //pub extern fn _abnormal_termination() c_int;
-pub const __builtin_va_list = ?&u8;
+pub const __builtin_va_list = ?[*]u8;
 pub const __gnuc_va_list = __builtin_va_list;
 pub const ULONG = c_ulong;
-pub const PULONG = ?&ULONG;
+pub const PULONG = ?[*]ULONG;
 pub const USHORT = c_ushort;
-pub const PUSHORT = ?&USHORT;
+pub const PUSHORT = ?[*]USHORT;
 pub const UCHAR = u8;
-pub const PUCHAR = ?&UCHAR;
-pub const PSZ = ?&u8;
+pub const PUCHAR = ?[*]UCHAR;
+pub const PSZ = ?[*]u8;
 pub const BOOL = c_int;
 pub const FLOAT = f32;
-pub const PFLOAT = ?&FLOAT;
-pub const PBOOL = ?&BOOL;
-pub const LPBOOL = ?&BOOL;
-pub const PBYTE = ?&BYTE;
-pub const LPBYTE = ?&BYTE;
-pub const PINT = ?&c_int;
-pub const LPINT = ?&c_int;
-pub const PWORD = ?&WORD;
-pub const LPWORD = ?&WORD;
-pub const LPLONG = ?&c_long;
-pub const PDWORD = ?&DWORD;
-pub const LPDWORD = ?&DWORD;
-pub const LPVOID = ?&c_void;
-pub const LPCVOID = ?&const c_void;
+pub const PFLOAT = ?[*]FLOAT;
+pub const PBOOL = ?[*]BOOL;
+pub const LPBOOL = ?[*]BOOL;
+pub const PBYTE = ?[*]BYTE;
+pub const LPBYTE = ?[*]BYTE;
+pub const PINT = ?[*]c_int;
+pub const LPINT = ?[*]c_int;
+pub const PWORD = ?[*]WORD;
+pub const LPWORD = ?[*]WORD;
+pub const LPLONG = ?[*]c_long;
+pub const PDWORD = ?[*]DWORD;
+pub const LPDWORD = ?[*]DWORD;
+pub const LPVOID = ?*c_void;
+pub const LPCVOID = ?*const c_void;
 pub const INT = c_int;
 pub const UINT = c_uint;
-pub const PUINT = ?&c_uint;
+pub const PUINT = ?[*]c_uint;
 pub const __crt_bool = bool;
-//pub extern fn _invalid_parameter(arg0: ?&const wchar_t, arg1: ?&const wchar_t, arg2: ?&const wchar_t, arg3: c_uint, arg4: usize) void;
+//pub extern fn _invalid_parameter(arg0: ?[*]const wchar_t, arg1: ?[*]const wchar_t, arg2: ?[*]const wchar_t, arg3: c_uint, arg4: usize) void;
 //pub extern fn _invalid_parameter_noinfo() void;
 //pub extern fn _invalid_parameter_noinfo_noreturn() noreturn;
-//pub extern fn _invoke_watson(arg0: ?&const wchar_t, arg1: ?&const wchar_t, arg2: ?&const wchar_t, arg3: c_uint, arg4: usize) noreturn;
+//pub extern fn _invoke_watson(arg0: ?[*]const wchar_t, arg1: ?[*]const wchar_t, arg2: ?[*]const wchar_t, arg3: c_uint, arg4: usize) noreturn;
 pub const errno_t = c_int;
 pub const wint_t = c_ushort;
 pub const wctype_t = c_ushort;
 pub const __time32_t = c_long;
 pub const __time64_t = c_longlong;
 pub const struct___crt_locale_data_public = extern struct {
-    _locale_pctype: ?&const c_ushort,
+    _locale_pctype: ?[*]const c_ushort,
     _locale_mb_cur_max: c_int,
     _locale_lc_codepage: c_uint,
 };
@@ -221,11 +221,11 @@ pub const __crt_locale_data_public = struct___crt_locale_data_public;
 pub const struct___crt_locale_data = @OpaqueType();
 pub const struct___crt_multibyte_data = @OpaqueType();
 pub const struct___crt_locale_pointers = extern struct {
-    locinfo: ?&struct___crt_locale_data,
-    mbcinfo: ?&struct___crt_multibyte_data,
+    locinfo: ?*struct___crt_locale_data,
+    mbcinfo: ?*struct___crt_multibyte_data,
 };
 pub const __crt_locale_pointers = struct___crt_locale_pointers;
-pub const _locale_t = ?&__crt_locale_pointers;
+pub const _locale_t = ?[*]__crt_locale_pointers;
 pub const struct__Mbstatet = extern struct {
     _Wchar: c_ulong,
     _Byte: c_ushort,
@@ -235,8 +235,8 @@ pub const _Mbstatet = struct__Mbstatet;
 pub const mbstate_t = _Mbstatet;
 pub const time_t = __time64_t;
 pub const rsize_t = usize;
-//pub extern fn __pctype_func() ?&const c_ushort;
-//pub extern fn __pwctype_func() ?&const wctype_t;
+//pub extern fn __pctype_func() ?[*]const c_ushort;
+//pub extern fn __pwctype_func() ?[*]const wctype_t;
 //pub extern fn iswalnum(_C: wint_t) c_int;
 //pub extern fn iswalpha(_C: wint_t) c_int;
 //pub extern fn iswascii(_C: wint_t) c_int;
@@ -314,186 +314,186 @@ pub const rsize_t = usize;
 //pub extern fn ___mb_cur_max_func() c_int;
 //pub extern fn ___mb_cur_max_l_func(arg0: _locale_t) c_int;
 //pub extern fn _chvalidator(_Ch: c_int, _Mask: c_int) c_int;
-pub fn __acrt_get_locale_data_prefix(_LocalePointers: ?&const volatile c_void) ?&__crt_locale_data_public {
+pub fn __acrt_get_locale_data_prefix(_LocalePointers: ?*const volatile c_void) ?[*]__crt_locale_data_public {
     const _TypedLocalePointers: _locale_t = @ptrCast(_locale_t, _LocalePointers);
-    return @ptrCast(?&__crt_locale_data_public, (??_TypedLocalePointers).locinfo);
+    return @ptrCast(?[*]__crt_locale_data_public, (??_TypedLocalePointers).locinfo);
 }
 //pub extern fn _chvalidator_l(arg0: _locale_t, _Ch: c_int, _Mask: c_int) c_int;
 pub fn _chvalidchk_l(_C: c_int, _Mask: c_int, _Locale: _locale_t) c_int {
     return _chvalidator_l(_Locale, _C, _Mask);
 }
 pub fn _ischartype_l(_C: c_int, _Mask: c_int, _Locale: _locale_t) c_int {
-    if (_Locale and ((??__acrt_get_locale_data_prefix(@ptrCast(?&const volatile c_void, _Locale)))._locale_mb_cur_max > 1)) {
+    if (_locale_t and ((??__acrt_get_locale_data_prefix(@ptrCast(?*const volatile c_void, _Locale)))._locale_mb_cur_max > 1)) {
         return _isctype_l(_C, _Mask, _Locale);
     }
     return _chvalidchk_l(_C, _Mask, _Locale);
 }
 pub const POINTER_64_INT = c_ulonglong;
 pub const INT8 = i8;
-pub const PINT8 = ?&i8;
+pub const PINT8 = ?[*]i8;
 pub const INT16 = c_short;
-pub const PINT16 = ?&c_short;
+pub const PINT16 = ?[*]c_short;
 pub const INT32 = c_int;
-pub const PINT32 = ?&c_int;
+pub const PINT32 = ?[*]c_int;
 pub const INT64 = c_longlong;
-pub const PINT64 = ?&c_longlong;
+pub const PINT64 = ?[*]c_longlong;
 pub const UINT8 = u8;
-pub const PUINT8 = ?&u8;
+pub const PUINT8 = ?[*]u8;
 pub const UINT16 = c_ushort;
-pub const PUINT16 = ?&c_ushort;
+pub const PUINT16 = ?[*]c_ushort;
 pub const UINT32 = c_uint;
-pub const PUINT32 = ?&c_uint;
+pub const PUINT32 = ?[*]c_uint;
 pub const UINT64 = c_ulonglong;
-pub const PUINT64 = ?&c_ulonglong;
+pub const PUINT64 = ?[*]c_ulonglong;
 pub const LONG32 = c_int;
-pub const PLONG32 = ?&c_int;
+pub const PLONG32 = ?[*]c_int;
 pub const ULONG32 = c_uint;
-pub const PULONG32 = ?&c_uint;
+pub const PULONG32 = ?[*]c_uint;
 pub const DWORD32 = c_uint;
-pub const PDWORD32 = ?&c_uint;
+pub const PDWORD32 = ?[*]c_uint;
 pub const INT_PTR = c_longlong;
-pub const PINT_PTR = ?&c_longlong;
+pub const PINT_PTR = ?[*]c_longlong;
 pub const UINT_PTR = c_ulonglong;
-pub const PUINT_PTR = ?&c_ulonglong;
+pub const PUINT_PTR = ?[*]c_ulonglong;
 pub const LONG_PTR = c_longlong;
-pub const PLONG_PTR = ?&c_longlong;
-pub const PULONG_PTR = ?&c_ulonglong;
+pub const PLONG_PTR = ?[*]c_longlong;
+pub const PULONG_PTR = ?[*]c_ulonglong;
 pub const SHANDLE_PTR = c_longlong;
 pub const HANDLE_PTR = c_ulonglong;
 pub const UHALF_PTR = c_uint;
-pub const PUHALF_PTR = ?&c_uint;
+pub const PUHALF_PTR = ?[*]c_uint;
 pub const HALF_PTR = c_int;
-pub const PHALF_PTR = ?&c_int;
-pub fn HandleToULong(h: ?&const c_void) c_ulong {
+pub const PHALF_PTR = ?[*]c_int;
+pub fn HandleToULong(h: ?*const c_void) c_ulong {
     return c_ulong(ULONG_PTR(h));
 }
-pub fn HandleToLong(h: ?&const c_void) c_long {
+pub fn HandleToLong(h: ?*const c_void) c_long {
     return c_long(LONG_PTR(h));
 }
-pub fn ULongToHandle(h: c_ulong) ?&c_void {
-    return (?&c_void)(UINT_PTR(h));
+pub fn ULongToHandle(h: c_ulong) ?*c_void {
+    return (?*c_void)(UINT_PTR(h));
 }
-pub fn LongToHandle(h: c_long) ?&c_void {
-    return (?&c_void)(INT_PTR(h));
+pub fn LongToHandle(h: c_long) ?*c_void {
+    return (?*c_void)(INT_PTR(h));
 }
-pub fn PtrToUlong(p: ?&const c_void) c_ulong {
+pub fn PtrToUlong(p: ?*const c_void) c_ulong {
     return c_ulong(ULONG_PTR(p));
 }
-pub fn PtrToUint(p: ?&const c_void) c_uint {
+pub fn PtrToUint(p: ?*const c_void) c_uint {
     return c_uint(UINT_PTR(p));
 }
-pub fn PtrToUshort(p: ?&const c_void) c_ushort {
+pub fn PtrToUshort(p: ?*const c_void) c_ushort {
     return c_ushort(c_ulong(ULONG_PTR(p)));
 }
-pub fn PtrToLong(p: ?&const c_void) c_long {
+pub fn PtrToLong(p: ?*const c_void) c_long {
     return c_long(LONG_PTR(p));
 }
-pub fn PtrToInt(p: ?&const c_void) c_int {
+pub fn PtrToInt(p: ?*const c_void) c_int {
     return c_int(INT_PTR(p));
 }
-pub fn PtrToShort(p: ?&const c_void) c_short {
+pub fn PtrToShort(p: ?*const c_void) c_short {
     return c_short(c_long(LONG_PTR(p)));
 }
-pub fn IntToPtr(i: c_int) ?&c_void {
-    return (?&c_void)(INT_PTR(i));
+pub fn IntToPtr(i: c_int) ?*c_void {
+    return (?*c_void)(INT_PTR(i));
 }
-pub fn UIntToPtr(ui: c_uint) ?&c_void {
-    return (?&c_void)(UINT_PTR(ui));
+pub fn UIntToPtr(ui: c_uint) ?*c_void {
+    return (?*c_void)(UINT_PTR(ui));
 }
-pub fn LongToPtr(l: c_long) ?&c_void {
-    return (?&c_void)(LONG_PTR(l));
+pub fn LongToPtr(l: c_long) ?*c_void {
+    return (?*c_void)(LONG_PTR(l));
 }
-pub fn ULongToPtr(ul: c_ulong) ?&c_void {
-    return (?&c_void)(ULONG_PTR(ul));
+pub fn ULongToPtr(ul: c_ulong) ?*c_void {
+    return (?*c_void)(ULONG_PTR(ul));
 }
-pub fn Ptr32ToPtr(p: ?&const c_void) ?&c_void {
-    return (?&c_void)(ULONG_PTR(c_ulong(p)));
+pub fn Ptr32ToPtr(p: ?*const c_void) ?*c_void {
+    return (?*c_void)(ULONG_PTR(c_ulong(p)));
 }
-pub fn Handle32ToHandle(h: ?&const c_void) ?&c_void {
-    return (?&c_void)(LONG_PTR(c_long(h)));
+pub fn Handle32ToHandle(h: ?*const c_void) ?*c_void {
+    return (?*c_void)(LONG_PTR(c_long(h)));
 }
-pub fn PtrToPtr32(p: ?&const c_void) ?&c_void {
-    return (?&c_void)(c_ulong(ULONG_PTR(p)));
+pub fn PtrToPtr32(p: ?*const c_void) ?*c_void {
+    return (?*c_void)(c_ulong(ULONG_PTR(p)));
 }
 pub const SIZE_T = ULONG_PTR;
-pub const PSIZE_T = ?&ULONG_PTR;
+pub const PSIZE_T = ?[*]ULONG_PTR;
 pub const SSIZE_T = LONG_PTR;
-pub const PSSIZE_T = ?&LONG_PTR;
+pub const PSSIZE_T = ?[*]LONG_PTR;
 pub const DWORD_PTR = ULONG_PTR;
-pub const PDWORD_PTR = ?&ULONG_PTR;
+pub const PDWORD_PTR = ?[*]ULONG_PTR;
 pub const LONG64 = c_longlong;
-pub const PLONG64 = ?&c_longlong;
+pub const PLONG64 = ?[*]c_longlong;
 pub const ULONG64 = c_ulonglong;
-pub const PULONG64 = ?&c_ulonglong;
-pub const PDWORD64 = ?&c_ulonglong;
+pub const PULONG64 = ?[*]c_ulonglong;
+pub const PDWORD64 = ?[*]c_ulonglong;
 pub const KAFFINITY = ULONG_PTR;
-pub const PKAFFINITY = ?&KAFFINITY;
-pub const PVOID64 = ?&c_void;
+pub const PKAFFINITY = ?[*]KAFFINITY;
+pub const PVOID64 = ?*c_void;
 pub const CHAR = u8;
 pub const SHORT = c_short;
 pub const LONG = c_long;
 pub const WCHAR = wchar_t;
-pub const PWCHAR = ?&WCHAR;
-pub const LPWCH = ?&WCHAR;
-pub const PWCH = ?&WCHAR;
-pub const LPCWCH = ?&const WCHAR;
-pub const PCWCH = ?&const WCHAR;
-pub const NWPSTR = ?&WCHAR;
-pub const LPWSTR = ?&WCHAR;
-pub const PWSTR = ?&WCHAR;
-pub const PZPWSTR = ?&PWSTR;
-pub const PCZPWSTR = ?&const PWSTR;
-pub const LPUWSTR = ?&WCHAR;
-pub const PUWSTR = ?&WCHAR;
-pub const LPCWSTR = ?&const WCHAR;
-pub const PCWSTR = ?&const WCHAR;
-pub const PZPCWSTR = ?&PCWSTR;
-pub const PCZPCWSTR = ?&const PCWSTR;
-pub const LPCUWSTR = ?&const WCHAR;
-pub const PCUWSTR = ?&const WCHAR;
-pub const PZZWSTR = ?&WCHAR;
-pub const PCZZWSTR = ?&const WCHAR;
-pub const PUZZWSTR = ?&WCHAR;
-pub const PCUZZWSTR = ?&const WCHAR;
-pub const PNZWCH = ?&WCHAR;
-pub const PCNZWCH = ?&const WCHAR;
-pub const PUNZWCH = ?&WCHAR;
-pub const PCUNZWCH = ?&const WCHAR;
-pub const LPCWCHAR = ?&const WCHAR;
-pub const PCWCHAR = ?&const WCHAR;
-pub const LPCUWCHAR = ?&const WCHAR;
-pub const PCUWCHAR = ?&const WCHAR;
+pub const PWCHAR = ?[*]WCHAR;
+pub const LPWCH = ?[*]WCHAR;
+pub const PWCH = ?[*]WCHAR;
+pub const LPCWCH = ?[*]const WCHAR;
+pub const PCWCH = ?[*]const WCHAR;
+pub const NWPSTR = ?[*]WCHAR;
+pub const LPWSTR = ?[*]WCHAR;
+pub const PWSTR = ?[*]WCHAR;
+pub const PZPWSTR = ?[*]PWSTR;
+pub const PCZPWSTR = ?[*]const PWSTR;
+pub const LPUWSTR = ?[*]WCHAR;
+pub const PUWSTR = ?[*]WCHAR;
+pub const LPCWSTR = ?[*]const WCHAR;
+pub const PCWSTR = ?[*]const WCHAR;
+pub const PZPCWSTR = ?[*]PCWSTR;
+pub const PCZPCWSTR = ?[*]const PCWSTR;
+pub const LPCUWSTR = ?[*]const WCHAR;
+pub const PCUWSTR = ?[*]const WCHAR;
+pub const PZZWSTR = ?[*]WCHAR;
+pub const PCZZWSTR = ?[*]const WCHAR;
+pub const PUZZWSTR = ?[*]WCHAR;
+pub const PCUZZWSTR = ?[*]const WCHAR;
+pub const PNZWCH = ?[*]WCHAR;
+pub const PCNZWCH = ?[*]const WCHAR;
+pub const PUNZWCH = ?[*]WCHAR;
+pub const PCUNZWCH = ?[*]const WCHAR;
+pub const LPCWCHAR = ?[*]const WCHAR;
+pub const PCWCHAR = ?[*]const WCHAR;
+pub const LPCUWCHAR = ?[*]const WCHAR;
+pub const PCUWCHAR = ?[*]const WCHAR;
 pub const UCSCHAR = c_ulong;
-pub const PUCSCHAR = ?&UCSCHAR;
-pub const PCUCSCHAR = ?&const UCSCHAR;
-pub const PUCSSTR = ?&UCSCHAR;
-pub const PUUCSSTR = ?&UCSCHAR;
-pub const PCUCSSTR = ?&const UCSCHAR;
-pub const PCUUCSSTR = ?&const UCSCHAR;
-pub const PUUCSCHAR = ?&UCSCHAR;
-pub const PCUUCSCHAR = ?&const UCSCHAR;
-pub const PCHAR = ?&CHAR;
-pub const LPCH = ?&CHAR;
-pub const PCH = ?&CHAR;
-pub const LPCCH = ?&const CHAR;
-pub const PCCH = ?&const CHAR;
-pub const NPSTR = ?&CHAR;
-pub const LPSTR = ?&CHAR;
-pub const PSTR = ?&CHAR;
-pub const PZPSTR = ?&PSTR;
-pub const PCZPSTR = ?&const PSTR;
-pub const LPCSTR = ?&const CHAR;
-pub const PCSTR = ?&const CHAR;
-pub const PZPCSTR = ?&PCSTR;
-pub const PCZPCSTR = ?&const PCSTR;
-pub const PZZSTR = ?&CHAR;
-pub const PCZZSTR = ?&const CHAR;
-pub const PNZCH = ?&CHAR;
-pub const PCNZCH = ?&const CHAR;
+pub const PUCSCHAR = ?[*]UCSCHAR;
+pub const PCUCSCHAR = ?[*]const UCSCHAR;
+pub const PUCSSTR = ?[*]UCSCHAR;
+pub const PUUCSSTR = ?[*]UCSCHAR;
+pub const PCUCSSTR = ?[*]const UCSCHAR;
+pub const PCUUCSSTR = ?[*]const UCSCHAR;
+pub const PUUCSCHAR = ?[*]UCSCHAR;
+pub const PCUUCSCHAR = ?[*]const UCSCHAR;
+pub const PCHAR = ?[*]CHAR;
+pub const LPCH = ?[*]CHAR;
+pub const PCH = ?[*]CHAR;
+pub const LPCCH = ?[*]const CHAR;
+pub const PCCH = ?[*]const CHAR;
+pub const NPSTR = ?[*]CHAR;
+pub const LPSTR = ?[*]CHAR;
+pub const PSTR = ?[*]CHAR;
+pub const PZPSTR = ?[*]PSTR;
+pub const PCZPSTR = ?[*]const PSTR;
+pub const LPCSTR = ?[*]const CHAR;
+pub const PCSTR = ?[*]const CHAR;
+pub const PZPCSTR = ?[*]PCSTR;
+pub const PCZPCSTR = ?[*]const PCSTR;
+pub const PZZSTR = ?[*]CHAR;
+pub const PCZZSTR = ?[*]const CHAR;
+pub const PNZCH = ?[*]CHAR;
+pub const PCNZCH = ?[*]const CHAR;
 pub const TCHAR = u8;
-pub const PTCHAR = ?&u8;
+pub const PTCHAR = ?[*]u8;
 pub const TBYTE = u8;
-pub const PTBYTE = ?&u8;
+pub const PTBYTE = ?[*]u8;
 pub const LPTCH = LPCH;
 pub const PTCH = LPCH;
 pub const LPCTCH = LPCCH;
@@ -515,24 +515,24 @@ pub const PNZTCH = PNZCH;
 pub const PUNZTCH = PNZCH;
 pub const PCNZTCH = PCNZCH;
 pub const PCUNZTCH = PCNZCH;
-pub const PSHORT = ?&SHORT;
-pub const PLONG = ?&LONG;
+pub const PSHORT = ?[*]SHORT;
+pub const PLONG = ?[*]LONG;
 pub const struct__PROCESSOR_NUMBER = extern struct {
     Group: WORD,
     Number: BYTE,
     Reserved: BYTE,
 };
 pub const PROCESSOR_NUMBER = struct__PROCESSOR_NUMBER;
-pub const PPROCESSOR_NUMBER = ?&struct__PROCESSOR_NUMBER;
+pub const PPROCESSOR_NUMBER = ?*struct__PROCESSOR_NUMBER;
 pub const struct__GROUP_AFFINITY = extern struct {
     Mask: KAFFINITY,
     Group: WORD,
     Reserved: [3]WORD,
 };
 pub const GROUP_AFFINITY = struct__GROUP_AFFINITY;
-pub const PGROUP_AFFINITY = ?&struct__GROUP_AFFINITY;
-pub const HANDLE = ?&c_void;
-pub const PHANDLE = ?&HANDLE;
+pub const PGROUP_AFFINITY = ?*struct__GROUP_AFFINITY;
+pub const HANDLE = ?*c_void;
+pub const PHANDLE = ?[*]HANDLE;
 pub const FCHAR = BYTE;
 pub const FSHORT = WORD;
 pub const FLONG = DWORD;
@@ -541,18 +541,24 @@ pub const CCHAR = u8;
 pub const LCID = DWORD;
 pub const PLCID = PDWORD;
 pub const LANGID = WORD;
-pub const UNSPECIFIED_COMPARTMENT_ID: c_int = 0;
-pub const DEFAULT_COMPARTMENT_ID: c_int = 1;
-pub const COMPARTMENT_ID = c_int;
-pub const PCOMPARTMENT_ID = ?&c_int;
+pub const UNSPECIFIED_COMPARTMENT_ID = 0;
+pub const DEFAULT_COMPARTMENT_ID = 1;
+pub const COMPARTMENT_ID = extern enum {
+    UNSPECIFIED_COMPARTMENT_ID = 0,
+    DEFAULT_COMPARTMENT_ID = 1,
+};
+pub const PCOMPARTMENT_ID = ?[*]extern enum {
+    UNSPECIFIED_COMPARTMENT_ID = 0,
+    DEFAULT_COMPARTMENT_ID = 1,
+};
 pub const struct__FLOAT128 = extern struct {
     LowPart: c_longlong,
     HighPart: c_longlong,
 };
 pub const FLOAT128 = struct__FLOAT128;
-pub const PFLOAT128 = ?&FLOAT128;
-pub const PLONGLONG = ?&LONGLONG;
-pub const PULONGLONG = ?&ULONGLONG;
+pub const PFLOAT128 = ?[*]FLOAT128;
+pub const PLONGLONG = ?[*]LONGLONG;
+pub const PULONGLONG = ?[*]ULONGLONG;
 pub const USN = LONGLONG;
 pub const union__LARGE_INTEGER = extern union {
     @"": extern struct {
@@ -566,7 +572,7 @@ pub const union__LARGE_INTEGER = extern union {
     QuadPart: LONGLONG,
 };
 pub const LARGE_INTEGER = union__LARGE_INTEGER;
-pub const PLARGE_INTEGER = ?&LARGE_INTEGER;
+pub const PLARGE_INTEGER = ?[*]LARGE_INTEGER;
 pub const union__ULARGE_INTEGER = extern union {
     @"": extern struct {
         LowPart: DWORD,
@@ -579,19 +585,19 @@ pub const union__ULARGE_INTEGER = extern union {
     QuadPart: ULONGLONG,
 };
 pub const ULARGE_INTEGER = union__ULARGE_INTEGER;
-pub const PULARGE_INTEGER = ?&ULARGE_INTEGER;
+pub const PULARGE_INTEGER = ?[*]ULARGE_INTEGER;
 pub const RTL_REFERENCE_COUNT = LONG_PTR;
-pub const PRTL_REFERENCE_COUNT = ?&LONG_PTR;
+pub const PRTL_REFERENCE_COUNT = ?[*]LONG_PTR;
 pub const RTL_REFERENCE_COUNT32 = LONG;
-pub const PRTL_REFERENCE_COUNT32 = ?&LONG;
+pub const PRTL_REFERENCE_COUNT32 = ?[*]LONG;
 pub const struct__LUID = extern struct {
     LowPart: DWORD,
     HighPart: LONG,
 };
 pub const LUID = struct__LUID;
-pub const PLUID = ?&struct__LUID;
+pub const PLUID = ?*struct__LUID;
 pub const DWORDLONG = ULONGLONG;
-pub const PDWORDLONG = ?&DWORDLONG;
+pub const PDWORDLONG = ?[*]DWORDLONG;
 //pub extern fn _rotl8(Value: u8, Shift: u8) u8;
 //pub extern fn _rotl16(Value: c_ushort, Shift: u8) c_ushort;
 //pub extern fn _rotr8(Value: u8, Shift: u8) u8;
@@ -601,31 +607,31 @@ pub const PDWORDLONG = ?&DWORDLONG;
 //pub extern fn _rotr(Value: c_uint, Shift: c_int) c_uint;
 //pub extern fn _rotr64(Value: c_ulonglong, Shift: c_int) c_ulonglong;
 pub const BOOLEAN = BYTE;
-pub const PBOOLEAN = ?&BOOLEAN;
+pub const PBOOLEAN = ?[*]BOOLEAN;
 pub const struct__LIST_ENTRY = extern struct {
-    Flink: ?&struct__LIST_ENTRY,
-    Blink: ?&struct__LIST_ENTRY,
+    Flink: ?*struct__LIST_ENTRY,
+    Blink: ?*struct__LIST_ENTRY,
 };
 pub const LIST_ENTRY = struct__LIST_ENTRY;
-pub const PLIST_ENTRY = ?&struct__LIST_ENTRY;
-pub const PRLIST_ENTRY = ?&struct__LIST_ENTRY;
+pub const PLIST_ENTRY = ?*struct__LIST_ENTRY;
+pub const PRLIST_ENTRY = ?*struct__LIST_ENTRY;
 pub const struct__SINGLE_LIST_ENTRY = extern struct {
-    Next: ?&struct__SINGLE_LIST_ENTRY,
+    Next: ?*struct__SINGLE_LIST_ENTRY,
 };
 pub const SINGLE_LIST_ENTRY = struct__SINGLE_LIST_ENTRY;
-pub const PSINGLE_LIST_ENTRY = ?&struct__SINGLE_LIST_ENTRY;
+pub const PSINGLE_LIST_ENTRY = ?*struct__SINGLE_LIST_ENTRY;
 pub const struct_LIST_ENTRY32 = extern struct {
     Flink: DWORD,
     Blink: DWORD,
 };
 pub const LIST_ENTRY32 = struct_LIST_ENTRY32;
-pub const PLIST_ENTRY32 = ?&LIST_ENTRY32;
+pub const PLIST_ENTRY32 = ?[*]LIST_ENTRY32;
 pub const struct_LIST_ENTRY64 = extern struct {
     Flink: ULONGLONG,
     Blink: ULONGLONG,
 };
 pub const LIST_ENTRY64 = struct_LIST_ENTRY64;
-pub const PLIST_ENTRY64 = ?&LIST_ENTRY64;
+pub const PLIST_ENTRY64 = ?[*]LIST_ENTRY64;
 pub const struct__GUID = extern struct {
     Data1: c_ulong,
     Data2: c_ushort,
@@ -633,185 +639,251 @@ pub const struct__GUID = extern struct {
     Data4: [8]u8,
 };
 pub const GUID = struct__GUID;
-pub const LPGUID = ?&GUID;
-pub const LPCGUID = ?&const GUID;
+pub const LPGUID = ?[*]GUID;
+pub const LPCGUID = ?[*]const GUID;
 pub const IID = GUID;
-pub const LPIID = ?&IID;
+pub const LPIID = ?[*]IID;
 pub const CLSID = GUID;
-pub const LPCLSID = ?&CLSID;
+pub const LPCLSID = ?[*]CLSID;
 pub const FMTID = GUID;
-pub const LPFMTID = ?&FMTID;
-//pub extern fn _errno() ?&c_int;
+pub const LPFMTID = ?[*]FMTID;
+//pub extern fn _errno() ?[*]c_int;
 //pub extern fn _set_errno(_Value: c_int) errno_t;
-//pub extern fn _get_errno(_Value: ?&c_int) errno_t;
-//pub extern fn __doserrno() ?&c_ulong;
+//pub extern fn _get_errno(_Value: ?[*]c_int) errno_t;
+//pub extern fn __doserrno() ?[*]c_ulong;
 //pub extern fn _set_doserrno(_Value: c_ulong) errno_t;
-//pub extern fn _get_doserrno(_Value: ?&c_ulong) errno_t;
-//pub extern fn memchr(_Buf: ?&const c_void, _Val: c_int, _MaxCount: c_ulonglong) ?&c_void;
-//pub extern fn memcmp(_Buf1: ?&const c_void, _Buf2: ?&const c_void, _Size: c_ulonglong) c_int;
-//pub extern fn memcpy(_Dst: ?&c_void, _Src: ?&const c_void, _Size: c_ulonglong) ?&c_void;
-//pub extern fn memmove(_Dst: ?&c_void, _Src: ?&const c_void, _Size: c_ulonglong) ?&c_void;
-//pub extern fn memset(_Dst: ?&c_void, _Val: c_int, _Size: c_ulonglong) ?&c_void;
-//pub extern fn strchr(_Str: ?&const u8, _Val: c_int) ?&u8;
-//pub extern fn strrchr(_Str: ?&const u8, _Ch: c_int) ?&u8;
-//pub extern fn strstr(_Str: ?&const u8, _SubStr: ?&const u8) ?&u8;
-//pub extern fn wcschr(_Str: ?&const c_ushort, _Ch: c_ushort) ?&c_ushort;
-//pub extern fn wcsrchr(_Str: ?&const wchar_t, _Ch: wchar_t) ?&wchar_t;
-//pub extern fn wcsstr(_Str: ?&const wchar_t, _SubStr: ?&const wchar_t) ?&wchar_t;
-//pub extern fn _memicmp(_Buf1: ?&const c_void, _Buf2: ?&const c_void, _Size: usize) c_int;
-//pub extern fn _memicmp_l(_Buf1: ?&const c_void, _Buf2: ?&const c_void, _Size: usize, _Locale: _locale_t) c_int;
-//pub extern fn memccpy(_Dst: ?&c_void, _Src: ?&const c_void, _Val: c_int, _Size: usize) ?&c_void;
-//pub extern fn memicmp(_Buf1: ?&const c_void, _Buf2: ?&const c_void, _Size: usize) c_int;
-//pub extern fn wcscat_s(_Destination: ?&wchar_t, _SizeInWords: rsize_t, _Source: ?&const wchar_t) errno_t;
-//pub extern fn wcscpy_s(_Destination: ?&wchar_t, _SizeInWords: rsize_t, _Source: ?&const wchar_t) errno_t;
-//pub extern fn wcsncat_s(_Destination: ?&wchar_t, _SizeInWords: rsize_t, _Source: ?&const wchar_t, _MaxCount: rsize_t) errno_t;
-//pub extern fn wcsncpy_s(_Destination: ?&wchar_t, _SizeInWords: rsize_t, _Source: ?&const wchar_t, _MaxCount: rsize_t) errno_t;
-//pub extern fn wcstok_s(_String: ?&wchar_t, _Delimiter: ?&const wchar_t, _Context: ?&(?&wchar_t)) ?&wchar_t;
-//pub extern fn _wcsdup(_String: ?&const wchar_t) ?&wchar_t;
-//pub extern fn wcscat(_Destination: ?&wchar_t, _Source: ?&const wchar_t) ?&wchar_t;
-//pub extern fn wcscmp(_String1: ?&const c_ushort, _String2: ?&const c_ushort) c_int;
-//pub extern fn wcscpy(_Destination: ?&wchar_t, _Source: ?&const wchar_t) ?&wchar_t;
-//pub extern fn wcscspn(_String: ?&const wchar_t, _Control: ?&const wchar_t) usize;
-//pub extern fn wcslen(_String: ?&const c_ushort) c_ulonglong;
-//pub extern fn wcsnlen(_Source: ?&const wchar_t, _MaxCount: usize) usize;
-pub fn wcsnlen_s(_Source: ?&const wchar_t, _MaxCount: usize) usize {
+//pub extern fn _get_doserrno(_Value: ?[*]c_ulong) errno_t;
+//pub extern fn memchr(_Buf: ?*const c_void, _Val: c_int, _MaxCount: c_ulonglong) ?*c_void;
+//pub extern fn memcmp(_Buf1: ?*const c_void, _Buf2: ?*const c_void, _Size: c_ulonglong) c_int;
+//pub extern fn memcpy(_Dst: ?*c_void, _Src: ?*const c_void, _Size: c_ulonglong) ?*c_void;
+//pub extern fn memmove(_Dst: ?*c_void, _Src: ?*const c_void, _Size: c_ulonglong) ?*c_void;
+//pub extern fn memset(_Dst: ?*c_void, _Val: c_int, _Size: c_ulonglong) ?*c_void;
+//pub extern fn strchr(_Str: ?[*]const u8, _Val: c_int) ?[*]u8;
+//pub extern fn strrchr(_Str: ?[*]const u8, _Ch: c_int) ?[*]u8;
+//pub extern fn strstr(_Str: ?[*]const u8, _SubStr: ?[*]const u8) ?[*]u8;
+//pub extern fn wcschr(_Str: ?[*]const c_ushort, _Ch: c_ushort) ?[*]c_ushort;
+//pub extern fn wcsrchr(_Str: ?[*]const wchar_t, _Ch: wchar_t) ?[*]wchar_t;
+//pub extern fn wcsstr(_Str: ?[*]const wchar_t, _SubStr: ?[*]const wchar_t) ?[*]wchar_t;
+pub fn memcpy_s(_Destination: ?*c_void, _DestinationSize: rsize_t, _Source: ?*const c_void, _SourceSize: rsize_t) errno_t {
+    if (_SourceSize == c_ulonglong(0)) {
+        return 0;
+    }
+    {
+        var _Expr_val: c_int = !!(_Destination != (?*c_void)(0));
+        if (!(_Expr_val != 0)) {
+            (??_errno()).* = 22;
+            _invalid_parameter_noinfo();
+            return 22;
+        }
+    }
+    if ((_Source == @ptrCast(?*const c_void, (?*c_void)(0))) or (_DestinationSize < _SourceSize)) {
+        _ = memset(_Destination, 0, _DestinationSize);
+        {
+            var _Expr_val: c_int = !!(_Source != @ptrCast(?*const c_void, (?*c_void)(0)));
+            if (!(_Expr_val != 0)) {
+                (??_errno()).* = 22;
+                _invalid_parameter_noinfo();
+                return 22;
+            }
+        }
+        {
+            var _Expr_val: c_int = !!(_DestinationSize >= _SourceSize);
+            if (!(_Expr_val != 0)) {
+                (??_errno()).* = 34;
+                _invalid_parameter_noinfo();
+                return 34;
+            }
+        }
+        return 22;
+    }
+    _ = memcpy(_Destination, _Source, _SourceSize);
+    return 0;
+}
+pub fn memmove_s(_Destination: ?*c_void, _DestinationSize: rsize_t, _Source: ?*const c_void, _SourceSize: rsize_t) errno_t {
+    if (_SourceSize == c_ulonglong(0)) {
+        return 0;
+    }
+    {
+        var _Expr_val: c_int = !!(_Destination != (?*c_void)(0));
+        if (!(_Expr_val != 0)) {
+            (??_errno()).* = 22;
+            _invalid_parameter_noinfo();
+            return 22;
+        }
+    }
+    {
+        var _Expr_val: c_int = !!(_Source != @ptrCast(?*const c_void, (?*c_void)(0)));
+        if (!(_Expr_val != 0)) {
+            (??_errno()).* = 22;
+            _invalid_parameter_noinfo();
+            return 22;
+        }
+    }
+    {
+        var _Expr_val: c_int = !!(_DestinationSize >= _SourceSize);
+        if (!(_Expr_val != 0)) {
+            (??_errno()).* = 34;
+            _invalid_parameter_noinfo();
+            return 34;
+        }
+    }
+    _ = memmove(_Destination, _Source, _SourceSize);
+    return 0;
+}
+//pub extern fn _memicmp(_Buf1: ?*const c_void, _Buf2: ?*const c_void, _Size: usize) c_int;
+//pub extern fn _memicmp_l(_Buf1: ?*const c_void, _Buf2: ?*const c_void, _Size: usize, _Locale: _locale_t) c_int;
+//pub extern fn memccpy(_Dst: ?*c_void, _Src: ?*const c_void, _Val: c_int, _Size: usize) ?*c_void;
+//pub extern fn memicmp(_Buf1: ?*const c_void, _Buf2: ?*const c_void, _Size: usize) c_int;
+//pub extern fn wcscat_s(_Destination: ?[*]wchar_t, _SizeInWords: rsize_t, _Source: ?[*]const wchar_t) errno_t;
+//pub extern fn wcscpy_s(_Destination: ?[*]wchar_t, _SizeInWords: rsize_t, _Source: ?[*]const wchar_t) errno_t;
+//pub extern fn wcsncat_s(_Destination: ?[*]wchar_t, _SizeInWords: rsize_t, _Source: ?[*]const wchar_t, _MaxCount: rsize_t) errno_t;
+//pub extern fn wcsncpy_s(_Destination: ?[*]wchar_t, _SizeInWords: rsize_t, _Source: ?[*]const wchar_t, _MaxCount: rsize_t) errno_t;
+//pub extern fn wcstok_s(_String: ?[*]wchar_t, _Delimiter: ?[*]const wchar_t, _Context: ?[*](?[*]wchar_t)) ?[*]wchar_t;
+//pub extern fn _wcsdup(_String: ?[*]const wchar_t) ?[*]wchar_t;
+//pub extern fn wcscat(_Destination: ?[*]wchar_t, _Source: ?[*]const wchar_t) ?[*]wchar_t;
+//pub extern fn wcscmp(_String1: ?[*]const c_ushort, _String2: ?[*]const c_ushort) c_int;
+//pub extern fn wcscpy(_Destination: ?[*]wchar_t, _Source: ?[*]const wchar_t) ?[*]wchar_t;
+//pub extern fn wcscspn(_String: ?[*]const wchar_t, _Control: ?[*]const wchar_t) usize;
+//pub extern fn wcslen(_String: ?[*]const c_ushort) c_ulonglong;
+//pub extern fn wcsnlen(_Source: ?[*]const wchar_t, _MaxCount: usize) usize;
+pub fn wcsnlen_s(_Source: ?[*]const wchar_t, _MaxCount: usize) usize {
     return if (_Source == null) c_ulonglong(0) else wcsnlen(_Source, _MaxCount);
 }
-//pub extern fn wcsncat(_Destination: ?&wchar_t, _Source: ?&const wchar_t, _Count: usize) ?&wchar_t;
-//pub extern fn wcsncmp(_String1: ?&const c_ushort, _String2: ?&const c_ushort, _MaxCount: c_ulonglong) c_int;
-//pub extern fn wcsncpy(_Destination: ?&wchar_t, _Source: ?&const wchar_t, _Count: usize) ?&wchar_t;
-//pub extern fn wcspbrk(_String: ?&const wchar_t, _Control: ?&const wchar_t) ?&wchar_t;
-//pub extern fn wcsspn(_String: ?&const wchar_t, _Control: ?&const wchar_t) usize;
-//pub extern fn wcstok(_String: ?&wchar_t, _Delimiter: ?&const wchar_t, _Context: ?&(?&wchar_t)) ?&wchar_t;
-pub fn _wcstok(_String: ?&wchar_t, _Delimiter: ?&const wchar_t) ?&wchar_t {
+//pub extern fn wcsncat(_Destination: ?[*]wchar_t, _Source: ?[*]const wchar_t, _Count: usize) ?[*]wchar_t;
+//pub extern fn wcsncmp(_String1: ?[*]const c_ushort, _String2: ?[*]const c_ushort, _MaxCount: c_ulonglong) c_int;
+//pub extern fn wcsncpy(_Destination: ?[*]wchar_t, _Source: ?[*]const wchar_t, _Count: usize) ?[*]wchar_t;
+//pub extern fn wcspbrk(_String: ?[*]const wchar_t, _Control: ?[*]const wchar_t) ?[*]wchar_t;
+//pub extern fn wcsspn(_String: ?[*]const wchar_t, _Control: ?[*]const wchar_t) usize;
+//pub extern fn wcstok(_String: ?[*]wchar_t, _Delimiter: ?[*]const wchar_t, _Context: ?[*](?[*]wchar_t)) ?[*]wchar_t;
+pub fn _wcstok(_String: ?[*]wchar_t, _Delimiter: ?[*]const wchar_t) ?[*]wchar_t {
     return wcstok(_String, _Delimiter, null);
 }
-//pub extern fn _wcserror(_ErrorNumber: c_int) ?&wchar_t;
-//pub extern fn _wcserror_s(_Buffer: ?&wchar_t, _SizeInWords: usize, _ErrorNumber: c_int) errno_t;
-//pub extern fn __wcserror(_String: ?&const wchar_t) ?&wchar_t;
-//pub extern fn __wcserror_s(_Buffer: ?&wchar_t, _SizeInWords: usize, _ErrorMessage: ?&const wchar_t) errno_t;
-//pub extern fn _wcsicmp(_String1: ?&const wchar_t, _String2: ?&const wchar_t) c_int;
-//pub extern fn _wcsicmp_l(_String1: ?&const wchar_t, _String2: ?&const wchar_t, _Locale: _locale_t) c_int;
-//pub extern fn _wcsnicmp(_String1: ?&const wchar_t, _String2: ?&const wchar_t, _MaxCount: usize) c_int;
-//pub extern fn _wcsnicmp_l(_String1: ?&const wchar_t, _String2: ?&const wchar_t, _MaxCount: usize, _Locale: _locale_t) c_int;
-//pub extern fn _wcsnset_s(_Destination: ?&wchar_t, _SizeInWords: usize, _Value: wchar_t, _MaxCount: usize) errno_t;
-//pub extern fn _wcsnset(_String: ?&wchar_t, _Value: wchar_t, _MaxCount: usize) ?&wchar_t;
-//pub extern fn _wcsrev(_String: ?&wchar_t) ?&wchar_t;
-//pub extern fn _wcsset_s(_Destination: ?&wchar_t, _SizeInWords: usize, _Value: wchar_t) errno_t;
-//pub extern fn _wcsset(_String: ?&wchar_t, _Value: wchar_t) ?&wchar_t;
-//pub extern fn _wcslwr_s(_String: ?&wchar_t, _SizeInWords: usize) errno_t;
-//pub extern fn _wcslwr(_String: ?&wchar_t) ?&wchar_t;
-//pub extern fn _wcslwr_s_l(_String: ?&wchar_t, _SizeInWords: usize, _Locale: _locale_t) errno_t;
-//pub extern fn _wcslwr_l(_String: ?&wchar_t, _Locale: _locale_t) ?&wchar_t;
-//pub extern fn _wcsupr_s(_String: ?&wchar_t, _Size: usize) errno_t;
-//pub extern fn _wcsupr(_String: ?&wchar_t) ?&wchar_t;
-//pub extern fn _wcsupr_s_l(_String: ?&wchar_t, _Size: usize, _Locale: _locale_t) errno_t;
-//pub extern fn _wcsupr_l(_String: ?&wchar_t, _Locale: _locale_t) ?&wchar_t;
-//pub extern fn wcsxfrm(_Destination: ?&wchar_t, _Source: ?&const wchar_t, _MaxCount: usize) usize;
-//pub extern fn _wcsxfrm_l(_Destination: ?&wchar_t, _Source: ?&const wchar_t, _MaxCount: usize, _Locale: _locale_t) usize;
-//pub extern fn wcscoll(_String1: ?&const wchar_t, _String2: ?&const wchar_t) c_int;
-//pub extern fn _wcscoll_l(_String1: ?&const wchar_t, _String2: ?&const wchar_t, _Locale: _locale_t) c_int;
-//pub extern fn _wcsicoll(_String1: ?&const wchar_t, _String2: ?&const wchar_t) c_int;
-//pub extern fn _wcsicoll_l(_String1: ?&const wchar_t, _String2: ?&const wchar_t, _Locale: _locale_t) c_int;
-//pub extern fn _wcsncoll(_String1: ?&const wchar_t, _String2: ?&const wchar_t, _MaxCount: usize) c_int;
-//pub extern fn _wcsncoll_l(_String1: ?&const wchar_t, _String2: ?&const wchar_t, _MaxCount: usize, _Locale: _locale_t) c_int;
-//pub extern fn _wcsnicoll(_String1: ?&const wchar_t, _String2: ?&const wchar_t, _MaxCount: usize) c_int;
-//pub extern fn _wcsnicoll_l(_String1: ?&const wchar_t, _String2: ?&const wchar_t, _MaxCount: usize, _Locale: _locale_t) c_int;
-//pub extern fn wcsdup(_String: ?&const wchar_t) ?&wchar_t;
-//pub extern fn wcsicmp(_String1: ?&const wchar_t, _String2: ?&const wchar_t) c_int;
-//pub extern fn wcsnicmp(_String1: ?&const wchar_t, _String2: ?&const wchar_t, _MaxCount: usize) c_int;
-//pub extern fn wcsnset(_String: ?&wchar_t, _Value: wchar_t, _MaxCount: usize) ?&wchar_t;
-//pub extern fn wcsrev(_String: ?&wchar_t) ?&wchar_t;
-//pub extern fn wcsset(_String: ?&wchar_t, _Value: wchar_t) ?&wchar_t;
-//pub extern fn wcslwr(_String: ?&wchar_t) ?&wchar_t;
-//pub extern fn wcsupr(_String: ?&wchar_t) ?&wchar_t;
-//pub extern fn wcsicoll(_String1: ?&const wchar_t, _String2: ?&const wchar_t) c_int;
-//pub extern fn strcpy_s(_Destination: ?&u8, _SizeInBytes: rsize_t, _Source: ?&const u8) errno_t;
-//pub extern fn strcat_s(_Destination: ?&u8, _SizeInBytes: rsize_t, _Source: ?&const u8) errno_t;
-//pub extern fn strerror_s(_Buffer: ?&u8, _SizeInBytes: usize, _ErrorNumber: c_int) errno_t;
-//pub extern fn strncat_s(_Destination: ?&u8, _SizeInBytes: rsize_t, _Source: ?&const u8, _MaxCount: rsize_t) errno_t;
-//pub extern fn strncpy_s(_Destination: ?&u8, _SizeInBytes: rsize_t, _Source: ?&const u8, _MaxCount: rsize_t) errno_t;
-//pub extern fn strtok_s(_String: ?&u8, _Delimiter: ?&const u8, _Context: ?&(?&u8)) ?&u8;
-//pub extern fn _memccpy(_Dst: ?&c_void, _Src: ?&const c_void, _Val: c_int, _MaxCount: usize) ?&c_void;
-//pub extern fn strcat(_Destination: ?&u8, _Source: ?&const u8) ?&u8;
-//pub extern fn strcmp(_Str1: ?&const u8, _Str2: ?&const u8) c_int;
-//pub extern fn _strcmpi(_String1: ?&const u8, _String2: ?&const u8) c_int;
-//pub extern fn strcoll(_String1: ?&const u8, _String2: ?&const u8) c_int;
-//pub extern fn _strcoll_l(_String1: ?&const u8, _String2: ?&const u8, _Locale: _locale_t) c_int;
-//pub extern fn strcpy(_Dest: ?&u8, _Source: ?&const u8) ?&u8;
-//pub extern fn strcspn(_Str: ?&const u8, _Control: ?&const u8) c_ulonglong;
-//pub extern fn _strdup(_Source: ?&const u8) ?&u8;
-//pub extern fn _strerror(_ErrorMessage: ?&const u8) ?&u8;
-//pub extern fn _strerror_s(_Buffer: ?&u8, _SizeInBytes: usize, _ErrorMessage: ?&const u8) errno_t;
-//pub extern fn strerror(_ErrorMessage: c_int) ?&u8;
-//pub extern fn _stricmp(_String1: ?&const u8, _String2: ?&const u8) c_int;
-//pub extern fn _stricoll(_String1: ?&const u8, _String2: ?&const u8) c_int;
-//pub extern fn _stricoll_l(_String1: ?&const u8, _String2: ?&const u8, _Locale: _locale_t) c_int;
-//pub extern fn _stricmp_l(_String1: ?&const u8, _String2: ?&const u8, _Locale: _locale_t) c_int;
-//pub extern fn strlen(_Str: ?&const u8) c_ulonglong;
-//pub extern fn _strlwr_s(_String: ?&u8, _Size: usize) errno_t;
-//pub extern fn _strlwr(_String: ?&u8) ?&u8;
-//pub extern fn _strlwr_s_l(_String: ?&u8, _Size: usize, _Locale: _locale_t) errno_t;
-//pub extern fn _strlwr_l(_String: ?&u8, _Locale: _locale_t) ?&u8;
-//pub extern fn strncat(_Dest: ?&u8, _Source: ?&const u8, _Count: c_ulonglong) ?&u8;
-//pub extern fn strncmp(_Str1: ?&const u8, _Str2: ?&const u8, _MaxCount: c_ulonglong) c_int;
-//pub extern fn _strnicmp(_String1: ?&const u8, _String2: ?&const u8, _MaxCount: usize) c_int;
-//pub extern fn _strnicmp_l(_String1: ?&const u8, _String2: ?&const u8, _MaxCount: usize, _Locale: _locale_t) c_int;
-//pub extern fn _strnicoll(_String1: ?&const u8, _String2: ?&const u8, _MaxCount: usize) c_int;
-//pub extern fn _strnicoll_l(_String1: ?&const u8, _String2: ?&const u8, _MaxCount: usize, _Locale: _locale_t) c_int;
-//pub extern fn _strncoll(_String1: ?&const u8, _String2: ?&const u8, _MaxCount: usize) c_int;
-//pub extern fn _strncoll_l(_String1: ?&const u8, _String2: ?&const u8, _MaxCount: usize, _Locale: _locale_t) c_int;
-//pub extern fn __strncnt(_String: ?&const u8, _Count: usize) usize;
-//pub extern fn strncpy(_Destination: ?&u8, _Source: ?&const u8, _Count: c_ulonglong) ?&u8;
-//pub extern fn strnlen(_String: ?&const u8, _MaxCount: usize) usize;
-pub fn strnlen_s(_String: ?&const u8, _MaxCount: usize) usize {
+//pub extern fn _wcserror(_ErrorNumber: c_int) ?[*]wchar_t;
+//pub extern fn _wcserror_s(_Buffer: ?[*]wchar_t, _SizeInWords: usize, _ErrorNumber: c_int) errno_t;
+//pub extern fn __wcserror(_String: ?[*]const wchar_t) ?[*]wchar_t;
+//pub extern fn __wcserror_s(_Buffer: ?[*]wchar_t, _SizeInWords: usize, _ErrorMessage: ?[*]const wchar_t) errno_t;
+//pub extern fn _wcsicmp(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t) c_int;
+//pub extern fn _wcsicmp_l(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t, _Locale: _locale_t) c_int;
+//pub extern fn _wcsnicmp(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t, _MaxCount: usize) c_int;
+//pub extern fn _wcsnicmp_l(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t, _MaxCount: usize, _Locale: _locale_t) c_int;
+//pub extern fn _wcsnset_s(_Destination: ?[*]wchar_t, _SizeInWords: usize, _Value: wchar_t, _MaxCount: usize) errno_t;
+//pub extern fn _wcsnset(_String: ?[*]wchar_t, _Value: wchar_t, _MaxCount: usize) ?[*]wchar_t;
+//pub extern fn _wcsrev(_String: ?[*]wchar_t) ?[*]wchar_t;
+//pub extern fn _wcsset_s(_Destination: ?[*]wchar_t, _SizeInWords: usize, _Value: wchar_t) errno_t;
+//pub extern fn _wcsset(_String: ?[*]wchar_t, _Value: wchar_t) ?[*]wchar_t;
+//pub extern fn _wcslwr_s(_String: ?[*]wchar_t, _SizeInWords: usize) errno_t;
+//pub extern fn _wcslwr(_String: ?[*]wchar_t) ?[*]wchar_t;
+//pub extern fn _wcslwr_s_l(_String: ?[*]wchar_t, _SizeInWords: usize, _Locale: _locale_t) errno_t;
+//pub extern fn _wcslwr_l(_String: ?[*]wchar_t, _Locale: _locale_t) ?[*]wchar_t;
+//pub extern fn _wcsupr_s(_String: ?[*]wchar_t, _Size: usize) errno_t;
+//pub extern fn _wcsupr(_String: ?[*]wchar_t) ?[*]wchar_t;
+//pub extern fn _wcsupr_s_l(_String: ?[*]wchar_t, _Size: usize, _Locale: _locale_t) errno_t;
+//pub extern fn _wcsupr_l(_String: ?[*]wchar_t, _Locale: _locale_t) ?[*]wchar_t;
+//pub extern fn wcsxfrm(_Destination: ?[*]wchar_t, _Source: ?[*]const wchar_t, _MaxCount: usize) usize;
+//pub extern fn _wcsxfrm_l(_Destination: ?[*]wchar_t, _Source: ?[*]const wchar_t, _MaxCount: usize, _Locale: _locale_t) usize;
+//pub extern fn wcscoll(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t) c_int;
+//pub extern fn _wcscoll_l(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t, _Locale: _locale_t) c_int;
+//pub extern fn _wcsicoll(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t) c_int;
+//pub extern fn _wcsicoll_l(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t, _Locale: _locale_t) c_int;
+//pub extern fn _wcsncoll(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t, _MaxCount: usize) c_int;
+//pub extern fn _wcsncoll_l(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t, _MaxCount: usize, _Locale: _locale_t) c_int;
+//pub extern fn _wcsnicoll(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t, _MaxCount: usize) c_int;
+//pub extern fn _wcsnicoll_l(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t, _MaxCount: usize, _Locale: _locale_t) c_int;
+//pub extern fn wcsdup(_String: ?[*]const wchar_t) ?[*]wchar_t;
+//pub extern fn wcsicmp(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t) c_int;
+//pub extern fn wcsnicmp(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t, _MaxCount: usize) c_int;
+//pub extern fn wcsnset(_String: ?[*]wchar_t, _Value: wchar_t, _MaxCount: usize) ?[*]wchar_t;
+//pub extern fn wcsrev(_String: ?[*]wchar_t) ?[*]wchar_t;
+//pub extern fn wcsset(_String: ?[*]wchar_t, _Value: wchar_t) ?[*]wchar_t;
+//pub extern fn wcslwr(_String: ?[*]wchar_t) ?[*]wchar_t;
+//pub extern fn wcsupr(_String: ?[*]wchar_t) ?[*]wchar_t;
+//pub extern fn wcsicoll(_String1: ?[*]const wchar_t, _String2: ?[*]const wchar_t) c_int;
+//pub extern fn strcpy_s(_Destination: ?[*]u8, _SizeInBytes: rsize_t, _Source: ?[*]const u8) errno_t;
+//pub extern fn strcat_s(_Destination: ?[*]u8, _SizeInBytes: rsize_t, _Source: ?[*]const u8) errno_t;
+//pub extern fn strerror_s(_Buffer: ?[*]u8, _SizeInBytes: usize, _ErrorNumber: c_int) errno_t;
+//pub extern fn strncat_s(_Destination: ?[*]u8, _SizeInBytes: rsize_t, _Source: ?[*]const u8, _MaxCount: rsize_t) errno_t;
+//pub extern fn strncpy_s(_Destination: ?[*]u8, _SizeInBytes: rsize_t, _Source: ?[*]const u8, _MaxCount: rsize_t) errno_t;
+//pub extern fn strtok_s(_String: ?[*]u8, _Delimiter: ?[*]const u8, _Context: ?[*](?[*]u8)) ?[*]u8;
+//pub extern fn _memccpy(_Dst: ?*c_void, _Src: ?*const c_void, _Val: c_int, _MaxCount: usize) ?*c_void;
+//pub extern fn strcat(_Destination: ?[*]u8, _Source: ?[*]const u8) ?[*]u8;
+//pub extern fn strcmp(_Str1: ?[*]const u8, _Str2: ?[*]const u8) c_int;
+//pub extern fn _strcmpi(_String1: ?[*]const u8, _String2: ?[*]const u8) c_int;
+//pub extern fn strcoll(_String1: ?[*]const u8, _String2: ?[*]const u8) c_int;
+//pub extern fn _strcoll_l(_String1: ?[*]const u8, _String2: ?[*]const u8, _Locale: _locale_t) c_int;
+//pub extern fn strcpy(_Dest: ?[*]u8, _Source: ?[*]const u8) ?[*]u8;
+//pub extern fn strcspn(_Str: ?[*]const u8, _Control: ?[*]const u8) c_ulonglong;
+//pub extern fn _strdup(_Source: ?[*]const u8) ?[*]u8;
+//pub extern fn _strerror(_ErrorMessage: ?[*]const u8) ?[*]u8;
+//pub extern fn _strerror_s(_Buffer: ?[*]u8, _SizeInBytes: usize, _ErrorMessage: ?[*]const u8) errno_t;
+//pub extern fn strerror(_ErrorMessage: c_int) ?[*]u8;
+//pub extern fn _stricmp(_String1: ?[*]const u8, _String2: ?[*]const u8) c_int;
+//pub extern fn _stricoll(_String1: ?[*]const u8, _String2: ?[*]const u8) c_int;
+//pub extern fn _stricoll_l(_String1: ?[*]const u8, _String2: ?[*]const u8, _Locale: _locale_t) c_int;
+//pub extern fn _stricmp_l(_String1: ?[*]const u8, _String2: ?[*]const u8, _Locale: _locale_t) c_int;
+//pub extern fn strlen(_Str: ?[*]const u8) c_ulonglong;
+//pub extern fn _strlwr_s(_String: ?[*]u8, _Size: usize) errno_t;
+//pub extern fn _strlwr(_String: ?[*]u8) ?[*]u8;
+//pub extern fn _strlwr_s_l(_String: ?[*]u8, _Size: usize, _Locale: _locale_t) errno_t;
+//pub extern fn _strlwr_l(_String: ?[*]u8, _Locale: _locale_t) ?[*]u8;
+//pub extern fn strncat(_Dest: ?[*]u8, _Source: ?[*]const u8, _Count: c_ulonglong) ?[*]u8;
+//pub extern fn strncmp(_Str1: ?[*]const u8, _Str2: ?[*]const u8, _MaxCount: c_ulonglong) c_int;
+//pub extern fn _strnicmp(_String1: ?[*]const u8, _String2: ?[*]const u8, _MaxCount: usize) c_int;
+//pub extern fn _strnicmp_l(_String1: ?[*]const u8, _String2: ?[*]const u8, _MaxCount: usize, _Locale: _locale_t) c_int;
+//pub extern fn _strnicoll(_String1: ?[*]const u8, _String2: ?[*]const u8, _MaxCount: usize) c_int;
+//pub extern fn _strnicoll_l(_String1: ?[*]const u8, _String2: ?[*]const u8, _MaxCount: usize, _Locale: _locale_t) c_int;
+//pub extern fn _strncoll(_String1: ?[*]const u8, _String2: ?[*]const u8, _MaxCount: usize) c_int;
+//pub extern fn _strncoll_l(_String1: ?[*]const u8, _String2: ?[*]const u8, _MaxCount: usize, _Locale: _locale_t) c_int;
+//pub extern fn __strncnt(_String: ?[*]const u8, _Count: usize) usize;
+//pub extern fn strncpy(_Destination: ?[*]u8, _Source: ?[*]const u8, _Count: c_ulonglong) ?[*]u8;
+//pub extern fn strnlen(_String: ?[*]const u8, _MaxCount: usize) usize;
+pub fn strnlen_s(_String: ?[*]const u8, _MaxCount: usize) usize {
     return if (_String == null) c_ulonglong(0) else strnlen(_String, _MaxCount);
 }
-//pub extern fn _strnset(_Dest: ?&u8, _Val: c_int, _Count: usize) ?&u8;
-//pub extern fn _strnset_s(_String: ?&u8, _SizeInBytes: usize, _Value: c_int, _MaxCount: usize) errno_t;
-//pub extern fn strpbrk(_Str: ?&const u8, _Control: ?&const u8) ?&u8;
-//pub extern fn _strrev(_Str: ?&u8) ?&u8;
-//pub extern fn _strset_s(_Destination: ?&u8, _DestinationSize: usize, _Value: c_int) errno_t;
-//pub extern fn _strset(_Destination: ?&u8, _Value: c_int) ?&u8;
-//pub extern fn strspn(_Str: ?&const u8, _Control: ?&const u8) c_ulonglong;
-//pub extern fn strtok(_String: ?&u8, _Delimiter: ?&const u8) ?&u8;
-//pub extern fn _strupr_s(_String: ?&u8, _Size: usize) errno_t;
-//pub extern fn _strupr(_String: ?&u8) ?&u8;
-//pub extern fn _strupr_s_l(_String: ?&u8, _Size: usize, _Locale: _locale_t) errno_t;
-//pub extern fn _strupr_l(_String: ?&u8, _Locale: _locale_t) ?&u8;
-//pub extern fn strxfrm(_Destination: ?&u8, _Source: ?&const u8, _MaxCount: c_ulonglong) c_ulonglong;
-//pub extern fn _strxfrm_l(_Destination: ?&u8, _Source: ?&const u8, _MaxCount: usize, _Locale: _locale_t) usize;
-//pub extern fn strdup(_String: ?&const u8) ?&u8;
-//pub extern fn strcmpi(_String1: ?&const u8, _String2: ?&const u8) c_int;
-//pub extern fn stricmp(_String1: ?&const u8, _String2: ?&const u8) c_int;
-//pub extern fn strlwr(_String: ?&u8) ?&u8;
-//pub extern fn strnicmp(_String1: ?&const u8, _String2: ?&const u8, _MaxCount: usize) c_int;
-//pub extern fn strnset(_String: ?&u8, _Value: c_int, _MaxCount: usize) ?&u8;
-//pub extern fn strrev(_String: ?&u8) ?&u8;
-//pub extern fn strset(_String: ?&u8, _Value: c_int) ?&u8;
-//pub extern fn strupr(_String: ?&u8) ?&u8;
+//pub extern fn _strnset(_Dest: ?[*]u8, _Val: c_int, _Count: usize) ?[*]u8;
+//pub extern fn _strnset_s(_String: ?[*]u8, _SizeInBytes: usize, _Value: c_int, _MaxCount: usize) errno_t;
+//pub extern fn strpbrk(_Str: ?[*]const u8, _Control: ?[*]const u8) ?[*]u8;
+//pub extern fn _strrev(_Str: ?[*]u8) ?[*]u8;
+//pub extern fn _strset_s(_Destination: ?[*]u8, _DestinationSize: usize, _Value: c_int) errno_t;
+//pub extern fn _strset(_Destination: ?[*]u8, _Value: c_int) ?[*]u8;
+//pub extern fn strspn(_Str: ?[*]const u8, _Control: ?[*]const u8) c_ulonglong;
+//pub extern fn strtok(_String: ?[*]u8, _Delimiter: ?[*]const u8) ?[*]u8;
+//pub extern fn _strupr_s(_String: ?[*]u8, _Size: usize) errno_t;
+//pub extern fn _strupr(_String: ?[*]u8) ?[*]u8;
+//pub extern fn _strupr_s_l(_String: ?[*]u8, _Size: usize, _Locale: _locale_t) errno_t;
+//pub extern fn _strupr_l(_String: ?[*]u8, _Locale: _locale_t) ?[*]u8;
+//pub extern fn strxfrm(_Destination: ?[*]u8, _Source: ?[*]const u8, _MaxCount: c_ulonglong) c_ulonglong;
+//pub extern fn _strxfrm_l(_Destination: ?[*]u8, _Source: ?[*]const u8, _MaxCount: usize, _Locale: _locale_t) usize;
+//pub extern fn strdup(_String: ?[*]const u8) ?[*]u8;
+//pub extern fn strcmpi(_String1: ?[*]const u8, _String2: ?[*]const u8) c_int;
+//pub extern fn stricmp(_String1: ?[*]const u8, _String2: ?[*]const u8) c_int;
+//pub extern fn strlwr(_String: ?[*]u8) ?[*]u8;
+//pub extern fn strnicmp(_String1: ?[*]const u8, _String2: ?[*]const u8, _MaxCount: usize) c_int;
+//pub extern fn strnset(_String: ?[*]u8, _Value: c_int, _MaxCount: usize) ?[*]u8;
+//pub extern fn strrev(_String: ?[*]u8) ?[*]u8;
+//pub extern fn strset(_String: ?[*]u8, _Value: c_int) ?[*]u8;
+//pub extern fn strupr(_String: ?[*]u8) ?[*]u8;
 pub const struct__OBJECTID = extern struct {
     Lineage: GUID,
     Uniquifier: DWORD,
 };
 pub const OBJECTID = struct__OBJECTID;
 pub const KSPIN_LOCK = ULONG_PTR;
-pub const PKSPIN_LOCK = ?&KSPIN_LOCK;
-pub const PM128A = ?&struct__M128A;
-pub const PXSAVE_FORMAT = ?&struct__XSAVE_FORMAT;
+pub const PKSPIN_LOCK = ?[*]KSPIN_LOCK;
+pub const PM128A = ?*struct__M128A;
+pub const PXSAVE_FORMAT = ?*struct__XSAVE_FORMAT;
 pub const struct__XSAVE_AREA_HEADER = extern struct {
     Mask: DWORD64,
     CompactionMask: DWORD64,
     Reserved2: [6]DWORD64,
 };
 pub const XSAVE_AREA_HEADER = struct__XSAVE_AREA_HEADER;
-pub const PXSAVE_AREA_HEADER = ?&struct__XSAVE_AREA_HEADER;
+pub const PXSAVE_AREA_HEADER = ?*struct__XSAVE_AREA_HEADER;
 pub const struct__XSAVE_AREA = extern struct {
     LegacyState: XSAVE_FORMAT,
     Header: XSAVE_AREA_HEADER,
 };
 pub const XSAVE_AREA = struct__XSAVE_AREA;
-pub const PXSAVE_AREA = ?&struct__XSAVE_AREA;
+pub const PXSAVE_AREA = ?*struct__XSAVE_AREA;
 pub const struct__XSTATE_CONTEXT = extern struct {
     Mask: DWORD64,
     Length: DWORD,
@@ -820,7 +892,7 @@ pub const struct__XSTATE_CONTEXT = extern struct {
     Buffer: PVOID,
 };
 pub const XSTATE_CONTEXT = struct__XSTATE_CONTEXT;
-pub const PXSTATE_CONTEXT = ?&struct__XSTATE_CONTEXT;
+pub const PXSTATE_CONTEXT = ?*struct__XSTATE_CONTEXT;
 pub const struct__SCOPE_TABLE_AMD64 = extern struct {
     Count: DWORD,
     ScopeRecord: [1]extern struct {
@@ -831,75 +903,75 @@ pub const struct__SCOPE_TABLE_AMD64 = extern struct {
     },
 };
 pub const SCOPE_TABLE_AMD64 = struct__SCOPE_TABLE_AMD64;
-pub const PSCOPE_TABLE_AMD64 = ?&struct__SCOPE_TABLE_AMD64;
-//pub extern fn _bittest(Base: ?&const LONG, Offset: LONG) BOOLEAN;
-//pub extern fn _bittestandcomplement(Base: ?&LONG, Offset: LONG) BOOLEAN;
-//pub extern fn _bittestandset(Base: ?&LONG, Offset: LONG) BOOLEAN;
-//pub extern fn _bittestandreset(Base: ?&LONG, Offset: LONG) BOOLEAN;
-//pub extern fn _interlockedbittestandset(Base: ?&volatile c_long, Offset: c_long) u8;
-//pub extern fn _interlockedbittestandreset(Base: ?&volatile LONG, Offset: LONG) BOOLEAN;
-//pub extern fn _bittest64(Base: ?&const LONG64, Offset: LONG64) BOOLEAN;
-//pub extern fn _bittestandcomplement64(Base: ?&LONG64, Offset: LONG64) BOOLEAN;
-//pub extern fn _bittestandset64(Base: ?&LONG64, Offset: LONG64) BOOLEAN;
-//pub extern fn _bittestandreset64(Base: ?&LONG64, Offset: LONG64) BOOLEAN;
-//pub extern fn _interlockedbittestandset64(Base: ?&volatile LONG64, Offset: LONG64) BOOLEAN;
-//pub extern fn _interlockedbittestandreset64(Base: ?&volatile LONG64, Offset: LONG64) BOOLEAN;
-//pub extern fn _BitScanForward(Index: ?&c_ulong, Mask: c_ulong) u8;
-//pub extern fn _BitScanReverse(Index: ?&c_ulong, Mask: c_ulong) u8;
-//pub extern fn _BitScanForward64(Index: ?&c_ulong, Mask: c_ulonglong) u8;
-//pub extern fn _BitScanReverse64(Index: ?&c_ulong, Mask: c_ulonglong) u8;
-//pub extern fn _InterlockedIncrement16(Addend: ?&volatile c_short) c_short;
-//pub extern fn _InterlockedDecrement16(Addend: ?&volatile c_short) c_short;
-//pub extern fn _InterlockedCompareExchange16(Destination: ?&volatile c_short, ExChange: c_short, Comperand: c_short) c_short;
-//pub extern fn _InterlockedAnd(Destination: ?&volatile c_long, Value: c_long) c_long;
-//pub extern fn _InterlockedOr(Destination: ?&volatile c_long, Value: c_long) c_long;
-//pub extern fn _InterlockedXor(Destination: ?&volatile c_long, Value: c_long) c_long;
-//pub extern fn _InterlockedAnd64(Destination: ?&volatile c_longlong, Value: c_longlong) c_longlong;
-//pub extern fn _InterlockedOr64(Destination: ?&volatile c_longlong, Value: c_longlong) c_longlong;
-//pub extern fn _InterlockedXor64(Destination: ?&volatile c_longlong, Value: c_longlong) c_longlong;
-//pub extern fn _InterlockedIncrement(Addend: ?&volatile c_long) c_long;
-//pub extern fn _InterlockedDecrement(Addend: ?&volatile c_long) c_long;
-//pub extern fn _InterlockedExchange(Target: ?&volatile c_long, Value: c_long) c_long;
-//pub extern fn _InterlockedExchangeAdd(Addend: ?&volatile c_long, Value: c_long) c_long;
-//pub extern fn _InterlockedCompareExchange(Destination: ?&volatile c_long, ExChange: c_long, Comperand: c_long) c_long;
-//pub extern fn _InterlockedIncrement64(Addend: ?&volatile c_longlong) c_longlong;
-//pub extern fn _InterlockedDecrement64(Addend: ?&volatile c_longlong) c_longlong;
-//pub extern fn _InterlockedExchange64(Target: ?&volatile c_longlong, Value: c_longlong) c_longlong;
-//pub extern fn _InterlockedExchangeAdd64(Addend: ?&volatile c_longlong, Value: c_longlong) c_longlong;
-//pub extern fn _InterlockedCompareExchange64(Destination: ?&volatile c_longlong, ExChange: c_longlong, Comperand: c_longlong) c_longlong;
-//pub extern fn _InterlockedCompareExchange128(Destination: ?&volatile LONG64, ExchangeHigh: LONG64, ExchangeLow: LONG64, ComparandResult: ?&LONG64) BOOLEAN;
-//pub extern fn _InterlockedCompareExchangePointer(Destination: ?&volatile (?&c_void), Exchange: ?&c_void, Comperand: ?&c_void) ?&c_void;
-//pub extern fn _InterlockedExchangePointer(Target: ?&volatile (?&c_void), Value: ?&c_void) ?&c_void;
-//pub extern fn _InterlockedExchange8(Target: ?&volatile u8, Value: u8) u8;
-//pub extern fn _InterlockedExchange16(Destination: ?&volatile c_short, ExChange: c_short) c_short;
-//pub extern fn _InterlockedExchangeAdd8(_Addend: ?&volatile u8, _Value: u8) u8;
-//pub extern fn _InterlockedAnd8(Destination: ?&volatile u8, Value: u8) u8;
-//pub extern fn _InterlockedOr8(Destination: ?&volatile u8, Value: u8) u8;
-//pub extern fn _InterlockedXor8(Destination: ?&volatile u8, Value: u8) u8;
-//pub extern fn _InterlockedAnd16(Destination: ?&volatile c_short, Value: c_short) c_short;
-//pub extern fn _InterlockedOr16(Destination: ?&volatile c_short, Value: c_short) c_short;
-//pub extern fn _InterlockedXor16(Destination: ?&volatile c_short, Value: c_short) c_short;
-//pub extern fn __cpuidex(CPUInfo: ?&c_int, Function: c_int, SubLeaf: c_int) void;
-//pub extern fn _mm_clflush(Address: ?&const c_void) void;
+pub const PSCOPE_TABLE_AMD64 = ?*struct__SCOPE_TABLE_AMD64;
+//pub extern fn _bittest(Base: ?[*]const LONG, Offset: LONG) BOOLEAN;
+//pub extern fn _bittestandcomplement(Base: ?[*]LONG, Offset: LONG) BOOLEAN;
+//pub extern fn _bittestandset(Base: ?[*]LONG, Offset: LONG) BOOLEAN;
+//pub extern fn _bittestandreset(Base: ?[*]LONG, Offset: LONG) BOOLEAN;
+//pub extern fn _interlockedbittestandset(Base: ?[*]volatile c_long, Offset: c_long) u8;
+//pub extern fn _interlockedbittestandreset(Base: ?[*]volatile LONG, Offset: LONG) BOOLEAN;
+//pub extern fn _bittest64(Base: ?[*]const LONG64, Offset: LONG64) BOOLEAN;
+//pub extern fn _bittestandcomplement64(Base: ?[*]LONG64, Offset: LONG64) BOOLEAN;
+//pub extern fn _bittestandset64(Base: ?[*]LONG64, Offset: LONG64) BOOLEAN;
+//pub extern fn _bittestandreset64(Base: ?[*]LONG64, Offset: LONG64) BOOLEAN;
+//pub extern fn _interlockedbittestandset64(Base: ?[*]volatile LONG64, Offset: LONG64) BOOLEAN;
+//pub extern fn _interlockedbittestandreset64(Base: ?[*]volatile LONG64, Offset: LONG64) BOOLEAN;
+//pub extern fn _BitScanForward(Index: ?[*]c_ulong, Mask: c_ulong) u8;
+//pub extern fn _BitScanReverse(Index: ?[*]c_ulong, Mask: c_ulong) u8;
+//pub extern fn _BitScanForward64(Index: ?[*]c_ulong, Mask: c_ulonglong) u8;
+//pub extern fn _BitScanReverse64(Index: ?[*]c_ulong, Mask: c_ulonglong) u8;
+//pub extern fn _InterlockedIncrement16(Addend: ?[*]volatile c_short) c_short;
+//pub extern fn _InterlockedDecrement16(Addend: ?[*]volatile c_short) c_short;
+//pub extern fn _InterlockedCompareExchange16(Destination: ?[*]volatile c_short, ExChange: c_short, Comperand: c_short) c_short;
+//pub extern fn _InterlockedAnd(Destination: ?[*]volatile c_long, Value: c_long) c_long;
+//pub extern fn _InterlockedOr(Destination: ?[*]volatile c_long, Value: c_long) c_long;
+//pub extern fn _InterlockedXor(Destination: ?[*]volatile c_long, Value: c_long) c_long;
+//pub extern fn _InterlockedAnd64(Destination: ?[*]volatile c_longlong, Value: c_longlong) c_longlong;
+//pub extern fn _InterlockedOr64(Destination: ?[*]volatile c_longlong, Value: c_longlong) c_longlong;
+//pub extern fn _InterlockedXor64(Destination: ?[*]volatile c_longlong, Value: c_longlong) c_longlong;
+//pub extern fn _InterlockedIncrement(Addend: ?[*]volatile c_long) c_long;
+//pub extern fn _InterlockedDecrement(Addend: ?[*]volatile c_long) c_long;
+//pub extern fn _InterlockedExchange(Target: ?[*]volatile c_long, Value: c_long) c_long;
+//pub extern fn _InterlockedExchangeAdd(Addend: ?[*]volatile c_long, Value: c_long) c_long;
+//pub extern fn _InterlockedCompareExchange(Destination: ?[*]volatile c_long, ExChange: c_long, Comperand: c_long) c_long;
+//pub extern fn _InterlockedIncrement64(Addend: ?[*]volatile c_longlong) c_longlong;
+//pub extern fn _InterlockedDecrement64(Addend: ?[*]volatile c_longlong) c_longlong;
+//pub extern fn _InterlockedExchange64(Target: ?[*]volatile c_longlong, Value: c_longlong) c_longlong;
+//pub extern fn _InterlockedExchangeAdd64(Addend: ?[*]volatile c_longlong, Value: c_longlong) c_longlong;
+//pub extern fn _InterlockedCompareExchange64(Destination: ?[*]volatile c_longlong, ExChange: c_longlong, Comperand: c_longlong) c_longlong;
+//pub extern fn _InterlockedCompareExchange128(Destination: ?[*]volatile c_longlong, ExchangeHigh: c_longlong, ExchangeLow: c_longlong, ComparandResult: ?[*]c_longlong) u8;
+//pub extern fn _InterlockedCompareExchangePointer(Destination: ?[*]volatile (?*c_void), Exchange: ?*c_void, Comperand: ?*c_void) ?*c_void;
+//pub extern fn _InterlockedExchangePointer(Target: ?[*]volatile (?*c_void), Value: ?*c_void) ?*c_void;
+//pub extern fn _InterlockedExchange8(Target: ?[*]volatile u8, Value: u8) u8;
+//pub extern fn _InterlockedExchange16(Destination: ?[*]volatile c_short, ExChange: c_short) c_short;
+//pub extern fn _InterlockedExchangeAdd8(_Addend: ?[*]volatile u8, _Value: u8) u8;
+//pub extern fn _InterlockedAnd8(Destination: ?[*]volatile u8, Value: u8) u8;
+//pub extern fn _InterlockedOr8(Destination: ?[*]volatile u8, Value: u8) u8;
+//pub extern fn _InterlockedXor8(Destination: ?[*]volatile u8, Value: u8) u8;
+//pub extern fn _InterlockedAnd16(Destination: ?[*]volatile c_short, Value: c_short) c_short;
+//pub extern fn _InterlockedOr16(Destination: ?[*]volatile c_short, Value: c_short) c_short;
+//pub extern fn _InterlockedXor16(Destination: ?[*]volatile c_short, Value: c_short) c_short;
+//pub extern fn __cpuidex(CPUInfo: ?[*]c_int, Function: c_int, SubLeaf: c_int) void;
+//pub extern fn _mm_clflush(Address: ?*const c_void) void;
 //pub extern fn _ReadWriteBarrier() void;
 //pub extern fn __faststorefence() void;
 //pub extern fn _mm_lfence() void;
 //pub extern fn _mm_mfence() void;
 //pub extern fn _mm_sfence() void;
 //pub extern fn _mm_pause() void;
-//pub extern fn _mm_prefetch(a: ?&const u8, sel: c_int) void;
-//pub extern fn _m_prefetchw(Source: ?&const volatile c_void) void;
+//pub extern fn _mm_prefetch(a: ?[*]const u8, sel: c_int) void;
+//pub extern fn _m_prefetchw(Source: ?*const volatile c_void) void;
 //pub extern fn _mm_getcsr() c_uint;
 //pub extern fn _mm_setcsr(MxCsr: c_uint) void;
 //pub extern fn __getcallerseflags() c_uint;
 //pub extern fn __segmentlimit(Selector: DWORD) DWORD;
 //pub extern fn __readpmc(Counter: DWORD) DWORD64;
 //pub extern fn __rdtsc() c_ulonglong;
-//pub extern fn __movsb(Destination: PBYTE, Source: ?&const BYTE, Count: SIZE_T) void;
-//pub extern fn __movsw(Destination: PWORD, Source: ?&const WORD, Count: SIZE_T) void;
-//pub extern fn __movsd(Destination: PDWORD, Source: ?&const DWORD, Count: SIZE_T) void;
-//pub extern fn __movsq(Destination: PDWORD64, Source: ?&const DWORD64, Count: SIZE_T) void;
-//pub extern fn __stosb(Destination: ?&u8, Value: u8, Count: c_ulonglong) void;
+//pub extern fn __movsb(Destination: PBYTE, Source: ?[*]const BYTE, Count: SIZE_T) void;
+//pub extern fn __movsw(Destination: PWORD, Source: ?[*]const WORD, Count: SIZE_T) void;
+//pub extern fn __movsd(Destination: PDWORD, Source: ?[*]const DWORD, Count: SIZE_T) void;
+//pub extern fn __movsq(Destination: PDWORD64, Source: ?[*]const DWORD64, Count: SIZE_T) void;
+//pub extern fn __stosb(Destination: ?[*]u8, Value: u8, Count: c_ulonglong) void;
 //pub extern fn __stosw(Destination: PWORD, Value: WORD, Count: SIZE_T) void;
 //pub extern fn __stosd(Destination: PDWORD, Value: DWORD, Count: SIZE_T) void;
 //pub extern fn __stosq(Destination: PDWORD64, Value: DWORD64, Count: SIZE_T) void;
@@ -908,8 +980,8 @@ pub const PSCOPE_TABLE_AMD64 = ?&struct__SCOPE_TABLE_AMD64;
 //pub extern fn __popcnt64(operand: c_ulonglong) c_ulonglong;
 //pub extern fn __shiftleft128(LowPart: DWORD64, HighPart: DWORD64, Shift: BYTE) DWORD64;
 //pub extern fn __shiftright128(LowPart: DWORD64, HighPart: DWORD64, Shift: BYTE) DWORD64;
-//pub extern fn _mul128(Multiplier: c_longlong, Multiplicand: c_longlong, HighProduct: ?&c_longlong) c_longlong;
-//pub extern fn _umul128(Multiplier: c_ulonglong, Multiplicand: c_ulonglong, HighProduct: ?&c_ulonglong) c_ulonglong;
+//pub extern fn _mul128(Multiplier: c_longlong, Multiplicand: c_longlong, HighProduct: ?[*]c_longlong) c_longlong;
+//pub extern fn _umul128(Multiplier: c_ulonglong, Multiplicand: c_ulonglong, HighProduct: ?[*]c_ulonglong) c_ulonglong;
 //pub extern fn __readgsbyte(Offset: c_ulong) u8;
 //pub extern fn __readgsword(Offset: c_ulong) c_ushort;
 //pub extern fn __readgsdword(Offset: c_ulong) c_ulong;
@@ -926,26 +998,26 @@ pub const PSCOPE_TABLE_AMD64 = ?&struct__SCOPE_TABLE_AMD64;
 //pub extern fn __addgsdword(Offset: DWORD, Value: DWORD) void;
 //pub extern fn __incgsqword(Offset: DWORD) void;
 //pub extern fn __addgsqword(Offset: DWORD, Value: DWORD64) void;
-pub const PXMM_SAVE_AREA32 = ?&XSAVE_FORMAT;
+pub const PXMM_SAVE_AREA32 = ?[*]XSAVE_FORMAT;
 pub const CONTEXT = struct__CONTEXT;
 pub const RUNTIME_FUNCTION = struct__IMAGE_RUNTIME_FUNCTION_ENTRY;
 pub const SCOPE_TABLE = SCOPE_TABLE_AMD64;
-pub const PSCOPE_TABLE = ?&SCOPE_TABLE_AMD64;
-pub const PUNWIND_HISTORY_TABLE_ENTRY = ?&struct__UNWIND_HISTORY_TABLE_ENTRY;
+pub const PSCOPE_TABLE = ?[*]SCOPE_TABLE_AMD64;
+pub const PUNWIND_HISTORY_TABLE_ENTRY = ?*struct__UNWIND_HISTORY_TABLE_ENTRY;
 pub const UNWIND_HISTORY_TABLE = struct__UNWIND_HISTORY_TABLE;
 pub const GET_RUNTIME_FUNCTION_CALLBACK = extern fn(DWORD64, PVOID) PRUNTIME_FUNCTION;
-pub const PGET_RUNTIME_FUNCTION_CALLBACK = ?&GET_RUNTIME_FUNCTION_CALLBACK;
-pub const OUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK = extern fn(HANDLE, PVOID, PDWORD, ?&PRUNTIME_FUNCTION) DWORD;
-pub const POUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK = ?&OUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK;
+pub const PGET_RUNTIME_FUNCTION_CALLBACK = ?[*]GET_RUNTIME_FUNCTION_CALLBACK;
+pub const OUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK = extern fn(HANDLE, PVOID, PDWORD, ?[*]PRUNTIME_FUNCTION) DWORD;
+pub const POUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK = ?[*]OUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK;
 pub const DISPATCHER_CONTEXT = struct__DISPATCHER_CONTEXT;
-pub const PDISPATCHER_CONTEXT = ?&struct__DISPATCHER_CONTEXT;
+pub const PDISPATCHER_CONTEXT = ?*struct__DISPATCHER_CONTEXT;
 pub const EXCEPTION_RECORD = struct__EXCEPTION_RECORD;
-pub const PEXCEPTION_RECORD = ?&EXCEPTION_RECORD;
+pub const PEXCEPTION_RECORD = ?[*]EXCEPTION_RECORD;
 pub const struct__EXCEPTION_POINTERS = extern struct {
     ExceptionRecord: PEXCEPTION_RECORD,
     ContextRecord: PCONTEXT,
 };
-pub const PEXCEPTION_FILTER = ?extern fn(?&struct__EXCEPTION_POINTERS, PVOID) LONG;
+pub const PEXCEPTION_FILTER = ?extern fn(?*struct__EXCEPTION_POINTERS, PVOID) LONG;
 pub const PTERMINATION_HANDLER = ?extern fn(BOOLEAN, PVOID) void;
 pub const struct__KNONVOLATILE_CONTEXT_POINTERS = extern struct {
     @"": extern union {
@@ -992,7 +1064,7 @@ pub const struct__KNONVOLATILE_CONTEXT_POINTERS = extern struct {
     },
 };
 pub const KNONVOLATILE_CONTEXT_POINTERS = struct__KNONVOLATILE_CONTEXT_POINTERS;
-pub const PKNONVOLATILE_CONTEXT_POINTERS = ?&struct__KNONVOLATILE_CONTEXT_POINTERS;
+pub const PKNONVOLATILE_CONTEXT_POINTERS = ?*struct__KNONVOLATILE_CONTEXT_POINTERS;
 pub const struct__SCOPE_TABLE_ARM = extern struct {
     Count: DWORD,
     ScopeRecord: [1]extern struct {
@@ -1003,7 +1075,7 @@ pub const struct__SCOPE_TABLE_ARM = extern struct {
     },
 };
 pub const SCOPE_TABLE_ARM = struct__SCOPE_TABLE_ARM;
-pub const PSCOPE_TABLE_ARM = ?&struct__SCOPE_TABLE_ARM;
+pub const PSCOPE_TABLE_ARM = ?*struct__SCOPE_TABLE_ARM;
 pub const struct__SCOPE_TABLE_ARM64 = extern struct {
     Count: DWORD,
     ScopeRecord: [1]extern struct {
@@ -1014,7 +1086,7 @@ pub const struct__SCOPE_TABLE_ARM64 = extern struct {
     },
 };
 pub const SCOPE_TABLE_ARM64 = struct__SCOPE_TABLE_ARM64;
-pub const PSCOPE_TABLE_ARM64 = ?&struct__SCOPE_TABLE_ARM64;
+pub const PSCOPE_TABLE_ARM64 = ?*struct__SCOPE_TABLE_ARM64;
 pub const struct__KNONVOLATILE_CONTEXT_POINTERS_ARM64 = extern struct {
     X19: PDWORD64,
     X20: PDWORD64,
@@ -1038,7 +1110,7 @@ pub const struct__KNONVOLATILE_CONTEXT_POINTERS_ARM64 = extern struct {
     D15: PDWORD64,
 };
 pub const KNONVOLATILE_CONTEXT_POINTERS_ARM64 = struct__KNONVOLATILE_CONTEXT_POINTERS_ARM64;
-pub const PKNONVOLATILE_CONTEXT_POINTERS_ARM64 = ?&struct__KNONVOLATILE_CONTEXT_POINTERS_ARM64;
+pub const PKNONVOLATILE_CONTEXT_POINTERS_ARM64 = ?*struct__KNONVOLATILE_CONTEXT_POINTERS_ARM64;
 //pub extern fn __int2c() noreturn;
 pub const struct__LDT_ENTRY = extern struct {
     LimitLow: WORD,
@@ -1054,232 +1126,232 @@ pub const struct__LDT_ENTRY = extern struct {
     },
 };
 pub const LDT_ENTRY = struct__LDT_ENTRY;
-pub const PLDT_ENTRY = ?&struct__LDT_ENTRY;
-pub fn ReadAcquire8(Source: ?&const volatile CHAR) CHAR {
+pub const PLDT_ENTRY = ?*struct__LDT_ENTRY;
+pub fn ReadAcquire8(Source: ?[*]const volatile CHAR) CHAR {
     var Value: CHAR = undefined;
-    Value = (*??Source);
+    Value = (??Source).*;
     return Value;
 }
-pub fn ReadNoFence8(Source: ?&const volatile CHAR) CHAR {
+pub fn ReadNoFence8(Source: ?[*]const volatile CHAR) CHAR {
     var Value: CHAR = undefined;
-    Value = (*??Source);
+    Value = (??Source).*;
     return Value;
 }
-pub fn WriteRelease8(Destination: ?&volatile CHAR, Value: CHAR) void {
-    (*??Destination) = Value;
+pub fn WriteRelease8(Destination: ?[*]volatile CHAR, Value: CHAR) void {
+    (??Destination).* = Value;
     return;
 }
-pub fn WriteNoFence8(Destination: ?&volatile CHAR, Value: CHAR) void {
-    (*??Destination) = Value;
+pub fn WriteNoFence8(Destination: ?[*]volatile CHAR, Value: CHAR) void {
+    (??Destination).* = Value;
     return;
 }
-pub fn ReadAcquire16(Source: ?&const volatile SHORT) SHORT {
+pub fn ReadAcquire16(Source: ?[*]const volatile SHORT) SHORT {
     var Value: SHORT = undefined;
-    Value = (*??Source);
+    Value = (??Source).*;
     return Value;
 }
-pub fn ReadNoFence16(Source: ?&const volatile SHORT) SHORT {
+pub fn ReadNoFence16(Source: ?[*]const volatile SHORT) SHORT {
     var Value: SHORT = undefined;
-    Value = (*??Source);
+    Value = (??Source).*;
     return Value;
 }
-pub fn WriteRelease16(Destination: ?&volatile SHORT, Value: SHORT) void {
-    (*??Destination) = Value;
+pub fn WriteRelease16(Destination: ?[*]volatile SHORT, Value: SHORT) void {
+    (??Destination).* = Value;
     return;
 }
-pub fn WriteNoFence16(Destination: ?&volatile SHORT, Value: SHORT) void {
-    (*??Destination) = Value;
+pub fn WriteNoFence16(Destination: ?[*]volatile SHORT, Value: SHORT) void {
+    (??Destination).* = Value;
     return;
 }
-pub fn ReadAcquire(Source: ?&const volatile LONG) LONG {
+pub fn ReadAcquire(Source: ?[*]const volatile LONG) LONG {
     var Value: LONG = undefined;
-    Value = (*??Source);
+    Value = (??Source).*;
     return Value;
 }
-pub fn ReadNoFence(Source: ?&const volatile LONG) LONG {
+pub fn ReadNoFence(Source: ?[*]const volatile LONG) LONG {
     var Value: LONG = undefined;
-    Value = (*??Source);
+    Value = (??Source).*;
     return Value;
 }
-pub fn WriteRelease(Destination: ?&volatile LONG, Value: LONG) void {
-    (*??Destination) = Value;
+pub fn WriteRelease(Destination: ?[*]volatile LONG, Value: LONG) void {
+    (??Destination).* = Value;
     return;
 }
-pub fn WriteNoFence(Destination: ?&volatile LONG, Value: LONG) void {
-    (*??Destination) = Value;
+pub fn WriteNoFence(Destination: ?[*]volatile LONG, Value: LONG) void {
+    (??Destination).* = Value;
     return;
 }
-pub fn ReadAcquire64(Source: ?&const volatile LONG64) LONG64 {
+pub fn ReadAcquire64(Source: ?[*]const volatile LONG64) LONG64 {
     var Value: LONG64 = undefined;
-    Value = (*??Source);
+    Value = (??Source).*;
     return Value;
 }
-pub fn ReadNoFence64(Source: ?&const volatile LONG64) LONG64 {
+pub fn ReadNoFence64(Source: ?[*]const volatile LONG64) LONG64 {
     var Value: LONG64 = undefined;
-    Value = (*??Source);
+    Value = (??Source).*;
     return Value;
 }
-pub fn WriteRelease64(Destination: ?&volatile LONG64, Value: LONG64) void {
-    (*??Destination) = Value;
+pub fn WriteRelease64(Destination: ?[*]volatile LONG64, Value: LONG64) void {
+    (??Destination).* = Value;
     return;
 }
-pub fn WriteNoFence64(Destination: ?&volatile LONG64, Value: LONG64) void {
-    (*??Destination) = Value;
+pub fn WriteNoFence64(Destination: ?[*]volatile LONG64, Value: LONG64) void {
+    (??Destination).* = Value;
     return;
 }
-pub fn ReadRaw8(Source: ?&const volatile CHAR) CHAR {
+pub fn ReadRaw8(Source: ?[*]const volatile CHAR) CHAR {
     var Value: CHAR = undefined;
-    Value = (*??@ptrCast(?&CHAR, Source));
+    Value = (??@ptrCast(?[*]CHAR, Source)).*;
     return Value;
 }
-pub fn WriteRaw8(Destination: ?&volatile CHAR, Value: CHAR) void {
-    (*??@ptrCast(?&CHAR, Destination)) = Value;
+pub fn WriteRaw8(Destination: ?[*]volatile CHAR, Value: CHAR) void {
+    (??@ptrCast(?[*]CHAR, Destination)).* = Value;
     return;
 }
-pub fn ReadRaw16(Source: ?&const volatile SHORT) SHORT {
+pub fn ReadRaw16(Source: ?[*]const volatile SHORT) SHORT {
     var Value: SHORT = undefined;
-    Value = (*??@ptrCast(?&SHORT, Source));
+    Value = (??@ptrCast(?[*]SHORT, Source)).*;
     return Value;
 }
-pub fn WriteRaw16(Destination: ?&volatile SHORT, Value: SHORT) void {
-    (*??@ptrCast(?&SHORT, Destination)) = Value;
+pub fn WriteRaw16(Destination: ?[*]volatile SHORT, Value: SHORT) void {
+    (??@ptrCast(?[*]SHORT, Destination)).* = Value;
     return;
 }
-pub fn ReadRaw(Source: ?&const volatile LONG) LONG {
+pub fn ReadRaw(Source: ?[*]const volatile LONG) LONG {
     var Value: LONG = undefined;
-    Value = (*??@ptrCast(?&LONG, Source));
+    Value = (??@ptrCast(?[*]LONG, Source)).*;
     return Value;
 }
-pub fn WriteRaw(Destination: ?&volatile LONG, Value: LONG) void {
-    (*??@ptrCast(?&LONG, Destination)) = Value;
+pub fn WriteRaw(Destination: ?[*]volatile LONG, Value: LONG) void {
+    (??@ptrCast(?[*]LONG, Destination)).* = Value;
     return;
 }
-pub fn ReadRaw64(Source: ?&const volatile LONG64) LONG64 {
+pub fn ReadRaw64(Source: ?[*]const volatile LONG64) LONG64 {
     var Value: LONG64 = undefined;
-    Value = (*??@ptrCast(?&LONG64, Source));
+    Value = (??@ptrCast(?[*]LONG64, Source)).*;
     return Value;
 }
-pub fn WriteRaw64(Destination: ?&volatile LONG64, Value: LONG64) void {
-    (*??@ptrCast(?&LONG64, Destination)) = Value;
+pub fn WriteRaw64(Destination: ?[*]volatile LONG64, Value: LONG64) void {
+    (??@ptrCast(?[*]LONG64, Destination)).* = Value;
     return;
 }
-pub fn ReadUCharAcquire(Source: ?&const volatile BYTE) BYTE {
-    return BYTE(ReadAcquire8(@ptrCast(?&const volatile CHAR, @ptrCast(PCHAR, Source))));
+pub fn ReadUCharAcquire(Source: ?[*]const volatile BYTE) BYTE {
+    return BYTE(ReadAcquire8(@ptrCast(?[*]const volatile CHAR, @ptrCast(PCHAR, Source))));
 }
-pub fn ReadUCharNoFence(Source: ?&const volatile BYTE) BYTE {
-    return BYTE(ReadNoFence8(@ptrCast(?&const volatile CHAR, @ptrCast(PCHAR, Source))));
+pub fn ReadUCharNoFence(Source: ?[*]const volatile BYTE) BYTE {
+    return BYTE(ReadNoFence8(@ptrCast(?[*]const volatile CHAR, @ptrCast(PCHAR, Source))));
 }
-pub fn ReadBooleanAcquire(Source: ?&const volatile BOOLEAN) BYTE {
-    return BOOLEAN(ReadAcquire8(@ptrCast(?&const volatile CHAR, @ptrCast(PCHAR, Source))));
+pub fn ReadBooleanAcquire(Source: ?[*]const volatile BOOLEAN) BYTE {
+    return BOOLEAN(ReadAcquire8(@ptrCast(?[*]const volatile CHAR, @ptrCast(PCHAR, Source))));
 }
-pub fn ReadBooleanNoFence(Source: ?&const volatile BOOLEAN) BYTE {
-    return BOOLEAN(ReadNoFence8(@ptrCast(?&const volatile CHAR, @ptrCast(PCHAR, Source))));
+pub fn ReadBooleanNoFence(Source: ?[*]const volatile BOOLEAN) BYTE {
+    return BOOLEAN(ReadNoFence8(@ptrCast(?[*]const volatile CHAR, @ptrCast(PCHAR, Source))));
 }
-pub fn ReadUCharRaw(Source: ?&const volatile BYTE) BYTE {
-    return BYTE(ReadRaw8(@ptrCast(?&const volatile CHAR, @ptrCast(PCHAR, Source))));
+pub fn ReadUCharRaw(Source: ?[*]const volatile BYTE) BYTE {
+    return BYTE(ReadRaw8(@ptrCast(?[*]const volatile CHAR, @ptrCast(PCHAR, Source))));
 }
-pub fn WriteUCharRelease(Destination: ?&volatile BYTE, Value: BYTE) void {
-    WriteRelease8(@ptrCast(?&volatile CHAR, @ptrCast(PCHAR, Destination)), CHAR(Value));
+pub fn WriteUCharRelease(Destination: ?[*]volatile BYTE, Value: BYTE) void {
+    WriteRelease8(@ptrCast(?[*]volatile CHAR, @ptrCast(PCHAR, Destination)), CHAR(Value));
     return;
 }
-pub fn WriteUCharNoFence(Destination: ?&volatile BYTE, Value: BYTE) void {
-    WriteNoFence8(@ptrCast(?&volatile CHAR, @ptrCast(PCHAR, Destination)), CHAR(Value));
+pub fn WriteUCharNoFence(Destination: ?[*]volatile BYTE, Value: BYTE) void {
+    WriteNoFence8(@ptrCast(?[*]volatile CHAR, @ptrCast(PCHAR, Destination)), CHAR(Value));
     return;
 }
-pub fn WriteBooleanRelease(Destination: ?&volatile BOOLEAN, Value: BOOLEAN) void {
-    WriteRelease8(@ptrCast(?&volatile CHAR, @ptrCast(PCHAR, Destination)), CHAR(Value));
+pub fn WriteBooleanRelease(Destination: ?[*]volatile BOOLEAN, Value: BOOLEAN) void {
+    WriteRelease8(@ptrCast(?[*]volatile CHAR, @ptrCast(PCHAR, Destination)), CHAR(Value));
     return;
 }
-pub fn WriteBooleanNoFence(Destination: ?&volatile BOOLEAN, Value: BOOLEAN) void {
-    WriteNoFence8(@ptrCast(?&volatile CHAR, @ptrCast(PCHAR, Destination)), CHAR(Value));
+pub fn WriteBooleanNoFence(Destination: ?[*]volatile BOOLEAN, Value: BOOLEAN) void {
+    WriteNoFence8(@ptrCast(?[*]volatile CHAR, @ptrCast(PCHAR, Destination)), CHAR(Value));
     return;
 }
-pub fn WriteUCharRaw(Destination: ?&volatile BYTE, Value: BYTE) void {
-    WriteRaw8(@ptrCast(?&volatile CHAR, @ptrCast(PCHAR, Destination)), CHAR(Value));
+pub fn WriteUCharRaw(Destination: ?[*]volatile BYTE, Value: BYTE) void {
+    WriteRaw8(@ptrCast(?[*]volatile CHAR, @ptrCast(PCHAR, Destination)), CHAR(Value));
     return;
 }
-pub fn ReadUShortAcquire(Source: ?&const volatile WORD) WORD {
-    return WORD(ReadAcquire16(@ptrCast(?&const volatile SHORT, @ptrCast(PSHORT, Source))));
+pub fn ReadUShortAcquire(Source: ?[*]const volatile WORD) WORD {
+    return WORD(ReadAcquire16(@ptrCast(?[*]const volatile SHORT, @ptrCast(PSHORT, Source))));
 }
-pub fn ReadUShortNoFence(Source: ?&const volatile WORD) WORD {
-    return WORD(ReadNoFence16(@ptrCast(?&const volatile SHORT, @ptrCast(PSHORT, Source))));
+pub fn ReadUShortNoFence(Source: ?[*]const volatile WORD) WORD {
+    return WORD(ReadNoFence16(@ptrCast(?[*]const volatile SHORT, @ptrCast(PSHORT, Source))));
 }
-pub fn ReadUShortRaw(Source: ?&const volatile WORD) WORD {
-    return WORD(ReadRaw16(@ptrCast(?&const volatile SHORT, @ptrCast(PSHORT, Source))));
+pub fn ReadUShortRaw(Source: ?[*]const volatile WORD) WORD {
+    return WORD(ReadRaw16(@ptrCast(?[*]const volatile SHORT, @ptrCast(PSHORT, Source))));
 }
-pub fn WriteUShortRelease(Destination: ?&volatile WORD, Value: WORD) void {
-    WriteRelease16(@ptrCast(?&volatile SHORT, @ptrCast(PSHORT, Destination)), SHORT(Value));
+pub fn WriteUShortRelease(Destination: ?[*]volatile WORD, Value: WORD) void {
+    WriteRelease16(@ptrCast(?[*]volatile SHORT, @ptrCast(PSHORT, Destination)), SHORT(Value));
     return;
 }
-pub fn WriteUShortNoFence(Destination: ?&volatile WORD, Value: WORD) void {
-    WriteNoFence16(@ptrCast(?&volatile SHORT, @ptrCast(PSHORT, Destination)), SHORT(Value));
+pub fn WriteUShortNoFence(Destination: ?[*]volatile WORD, Value: WORD) void {
+    WriteNoFence16(@ptrCast(?[*]volatile SHORT, @ptrCast(PSHORT, Destination)), SHORT(Value));
     return;
 }
-pub fn WriteUShortRaw(Destination: ?&volatile WORD, Value: WORD) void {
-    WriteRaw16(@ptrCast(?&volatile SHORT, @ptrCast(PSHORT, Destination)), SHORT(Value));
+pub fn WriteUShortRaw(Destination: ?[*]volatile WORD, Value: WORD) void {
+    WriteRaw16(@ptrCast(?[*]volatile SHORT, @ptrCast(PSHORT, Destination)), SHORT(Value));
     return;
 }
-pub fn ReadULongAcquire(Source: ?&const volatile DWORD) DWORD {
-    return DWORD(ReadAcquire(@ptrCast(?&const volatile LONG, @ptrCast(PLONG, Source))));
+pub fn ReadULongAcquire(Source: ?[*]const volatile DWORD) DWORD {
+    return DWORD(ReadAcquire(@ptrCast(?[*]const volatile LONG, @ptrCast(PLONG, Source))));
 }
-pub fn ReadULongNoFence(Source: ?&const volatile DWORD) DWORD {
-    return DWORD(ReadNoFence(@ptrCast(?&const volatile LONG, @ptrCast(PLONG, Source))));
+pub fn ReadULongNoFence(Source: ?[*]const volatile DWORD) DWORD {
+    return DWORD(ReadNoFence(@ptrCast(?[*]const volatile LONG, @ptrCast(PLONG, Source))));
 }
-pub fn ReadULongRaw(Source: ?&const volatile DWORD) DWORD {
-    return DWORD(ReadRaw(@ptrCast(?&const volatile LONG, @ptrCast(PLONG, Source))));
+pub fn ReadULongRaw(Source: ?[*]const volatile DWORD) DWORD {
+    return DWORD(ReadRaw(@ptrCast(?[*]const volatile LONG, @ptrCast(PLONG, Source))));
 }
-pub fn WriteULongRelease(Destination: ?&volatile DWORD, Value: DWORD) void {
-    WriteRelease(@ptrCast(?&volatile LONG, @ptrCast(PLONG, Destination)), LONG(Value));
+pub fn WriteULongRelease(Destination: ?[*]volatile DWORD, Value: DWORD) void {
+    WriteRelease(@ptrCast(?[*]volatile LONG, @ptrCast(PLONG, Destination)), LONG(Value));
     return;
 }
-pub fn WriteULongNoFence(Destination: ?&volatile DWORD, Value: DWORD) void {
-    WriteNoFence(@ptrCast(?&volatile LONG, @ptrCast(PLONG, Destination)), LONG(Value));
+pub fn WriteULongNoFence(Destination: ?[*]volatile DWORD, Value: DWORD) void {
+    WriteNoFence(@ptrCast(?[*]volatile LONG, @ptrCast(PLONG, Destination)), LONG(Value));
     return;
 }
-pub fn WriteULongRaw(Destination: ?&volatile DWORD, Value: DWORD) void {
-    WriteRaw(@ptrCast(?&volatile LONG, @ptrCast(PLONG, Destination)), LONG(Value));
+pub fn WriteULongRaw(Destination: ?[*]volatile DWORD, Value: DWORD) void {
+    WriteRaw(@ptrCast(?[*]volatile LONG, @ptrCast(PLONG, Destination)), LONG(Value));
     return;
 }
-pub fn ReadULong64Acquire(Source: ?&const volatile DWORD64) DWORD64 {
-    return DWORD64(ReadAcquire64(@ptrCast(?&const volatile LONG64, @ptrCast(PLONG64, Source))));
+pub fn ReadULong64Acquire(Source: ?[*]const volatile DWORD64) DWORD64 {
+    return DWORD64(ReadAcquire64(@ptrCast(?[*]const volatile LONG64, @ptrCast(PLONG64, Source))));
 }
-pub fn ReadULong64NoFence(Source: ?&const volatile DWORD64) DWORD64 {
-    return DWORD64(ReadNoFence64(@ptrCast(?&const volatile LONG64, @ptrCast(PLONG64, Source))));
+pub fn ReadULong64NoFence(Source: ?[*]const volatile DWORD64) DWORD64 {
+    return DWORD64(ReadNoFence64(@ptrCast(?[*]const volatile LONG64, @ptrCast(PLONG64, Source))));
 }
-pub fn ReadULong64Raw(Source: ?&const volatile DWORD64) DWORD64 {
-    return DWORD64(ReadRaw64(@ptrCast(?&const volatile LONG64, @ptrCast(PLONG64, Source))));
+pub fn ReadULong64Raw(Source: ?[*]const volatile DWORD64) DWORD64 {
+    return DWORD64(ReadRaw64(@ptrCast(?[*]const volatile LONG64, @ptrCast(PLONG64, Source))));
 }
-pub fn WriteULong64Release(Destination: ?&volatile DWORD64, Value: DWORD64) void {
-    WriteRelease64(@ptrCast(?&volatile LONG64, @ptrCast(PLONG64, Destination)), LONG64(Value));
+pub fn WriteULong64Release(Destination: ?[*]volatile DWORD64, Value: DWORD64) void {
+    WriteRelease64(@ptrCast(?[*]volatile LONG64, @ptrCast(PLONG64, Destination)), LONG64(Value));
     return;
 }
-pub fn WriteULong64NoFence(Destination: ?&volatile DWORD64, Value: DWORD64) void {
-    WriteNoFence64(@ptrCast(?&volatile LONG64, @ptrCast(PLONG64, Destination)), LONG64(Value));
+pub fn WriteULong64NoFence(Destination: ?[*]volatile DWORD64, Value: DWORD64) void {
+    WriteNoFence64(@ptrCast(?[*]volatile LONG64, @ptrCast(PLONG64, Destination)), LONG64(Value));
     return;
 }
-pub fn WriteULong64Raw(Destination: ?&volatile DWORD64, Value: DWORD64) void {
-    WriteRaw64(@ptrCast(?&volatile LONG64, @ptrCast(PLONG64, Destination)), LONG64(Value));
+pub fn WriteULong64Raw(Destination: ?[*]volatile DWORD64, Value: DWORD64) void {
+    WriteRaw64(@ptrCast(?[*]volatile LONG64, @ptrCast(PLONG64, Destination)), LONG64(Value));
     return;
 }
-pub fn ReadPointerAcquire(Source: ?&const volatile PVOID) PVOID {
-    return PVOID(ReadAcquire64(@ptrCast(?&const volatile LONG64, @ptrCast(PLONG64, Source))));
+pub fn ReadPointerAcquire(Source: ?[*]const volatile PVOID) PVOID {
+    return PVOID(ReadAcquire64(@ptrCast(?[*]const volatile LONG64, @ptrCast(PLONG64, Source))));
 }
-pub fn ReadPointerNoFence(Source: ?&const volatile PVOID) PVOID {
-    return PVOID(ReadNoFence64(@ptrCast(?&const volatile LONG64, @ptrCast(PLONG64, Source))));
+pub fn ReadPointerNoFence(Source: ?[*]const volatile PVOID) PVOID {
+    return PVOID(ReadNoFence64(@ptrCast(?[*]const volatile LONG64, @ptrCast(PLONG64, Source))));
 }
-pub fn ReadPointerRaw(Source: ?&const volatile PVOID) PVOID {
-    return PVOID(ReadRaw64(@ptrCast(?&const volatile LONG64, @ptrCast(PLONG64, Source))));
+pub fn ReadPointerRaw(Source: ?[*]const volatile PVOID) PVOID {
+    return PVOID(ReadRaw64(@ptrCast(?[*]const volatile LONG64, @ptrCast(PLONG64, Source))));
 }
-pub fn WritePointerRelease(Destination: ?&volatile PVOID, Value: PVOID) void {
-    WriteRelease64(@ptrCast(?&volatile LONG64, @ptrCast(PLONG64, Destination)), LONG64(Value));
+pub fn WritePointerRelease(Destination: ?[*]volatile PVOID, Value: PVOID) void {
+    WriteRelease64(@ptrCast(?[*]volatile LONG64, @ptrCast(PLONG64, Destination)), LONG64(Value));
     return;
 }
-pub fn WritePointerNoFence(Destination: ?&volatile PVOID, Value: PVOID) void {
-    WriteNoFence64(@ptrCast(?&volatile LONG64, @ptrCast(PLONG64, Destination)), LONG64(Value));
+pub fn WritePointerNoFence(Destination: ?[*]volatile PVOID, Value: PVOID) void {
+    WriteNoFence64(@ptrCast(?[*]volatile LONG64, @ptrCast(PLONG64, Destination)), LONG64(Value));
     return;
 }
-pub fn WritePointerRaw(Destination: ?&volatile PVOID, Value: PVOID) void {
-    WriteRaw64(@ptrCast(?&volatile LONG64, @ptrCast(PLONG64, Destination)), LONG64(Value));
+pub fn WritePointerRaw(Destination: ?[*]volatile PVOID, Value: PVOID) void {
+    WriteRaw64(@ptrCast(?[*]volatile LONG64, @ptrCast(PLONG64, Destination)), LONG64(Value));
     return;
 }
 pub const struct__WOW64_FLOATING_SAVE_AREA = extern struct {
@@ -1294,7 +1366,7 @@ pub const struct__WOW64_FLOATING_SAVE_AREA = extern struct {
     Cr0NpxState: DWORD,
 };
 pub const WOW64_FLOATING_SAVE_AREA = struct__WOW64_FLOATING_SAVE_AREA;
-pub const PWOW64_FLOATING_SAVE_AREA = ?&WOW64_FLOATING_SAVE_AREA;
+pub const PWOW64_FLOATING_SAVE_AREA = ?[*]WOW64_FLOATING_SAVE_AREA;
 pub const struct__WOW64_CONTEXT = extern struct {
     ContextFlags: DWORD,
     Dr0: DWORD,
@@ -1323,7 +1395,7 @@ pub const struct__WOW64_CONTEXT = extern struct {
     ExtendedRegisters: [512]BYTE,
 };
 pub const WOW64_CONTEXT = struct__WOW64_CONTEXT;
-pub const PWOW64_CONTEXT = ?&WOW64_CONTEXT;
+pub const PWOW64_CONTEXT = ?[*]WOW64_CONTEXT;
 pub const struct__WOW64_LDT_ENTRY = extern struct {
     LimitLow: WORD,
     BaseLow: WORD,
@@ -1338,13 +1410,13 @@ pub const struct__WOW64_LDT_ENTRY = extern struct {
     },
 };
 pub const WOW64_LDT_ENTRY = struct__WOW64_LDT_ENTRY;
-pub const PWOW64_LDT_ENTRY = ?&struct__WOW64_LDT_ENTRY;
+pub const PWOW64_LDT_ENTRY = ?*struct__WOW64_LDT_ENTRY;
 pub const struct__WOW64_DESCRIPTOR_TABLE_ENTRY = extern struct {
     Selector: DWORD,
     Descriptor: WOW64_LDT_ENTRY,
 };
 pub const WOW64_DESCRIPTOR_TABLE_ENTRY = struct__WOW64_DESCRIPTOR_TABLE_ENTRY;
-pub const PWOW64_DESCRIPTOR_TABLE_ENTRY = ?&struct__WOW64_DESCRIPTOR_TABLE_ENTRY;
+pub const PWOW64_DESCRIPTOR_TABLE_ENTRY = ?*struct__WOW64_DESCRIPTOR_TABLE_ENTRY;
 pub const struct__EXCEPTION_RECORD32 = extern struct {
     ExceptionCode: DWORD,
     ExceptionFlags: DWORD,
@@ -1354,7 +1426,7 @@ pub const struct__EXCEPTION_RECORD32 = extern struct {
     ExceptionInformation: [15]DWORD,
 };
 pub const EXCEPTION_RECORD32 = struct__EXCEPTION_RECORD32;
-pub const PEXCEPTION_RECORD32 = ?&struct__EXCEPTION_RECORD32;
+pub const PEXCEPTION_RECORD32 = ?*struct__EXCEPTION_RECORD32;
 pub const struct__EXCEPTION_RECORD64 = extern struct {
     ExceptionCode: DWORD,
     ExceptionFlags: DWORD,
@@ -1365,15 +1437,15 @@ pub const struct__EXCEPTION_RECORD64 = extern struct {
     ExceptionInformation: [15]DWORD64,
 };
 pub const EXCEPTION_RECORD64 = struct__EXCEPTION_RECORD64;
-pub const PEXCEPTION_RECORD64 = ?&struct__EXCEPTION_RECORD64;
+pub const PEXCEPTION_RECORD64 = ?*struct__EXCEPTION_RECORD64;
 pub const EXCEPTION_POINTERS = struct__EXCEPTION_POINTERS;
-pub const PEXCEPTION_POINTERS = ?&struct__EXCEPTION_POINTERS;
+pub const PEXCEPTION_POINTERS = ?*struct__EXCEPTION_POINTERS;
 pub const PACCESS_TOKEN = PVOID;
 pub const PSECURITY_DESCRIPTOR = PVOID;
 pub const PSID = PVOID;
 pub const PCLAIMS_BLOB = PVOID;
 pub const ACCESS_MASK = DWORD;
-pub const PACCESS_MASK = ?&ACCESS_MASK;
+pub const PACCESS_MASK = ?[*]ACCESS_MASK;
 pub const struct__GENERIC_MAPPING = extern struct {
     GenericRead: ACCESS_MASK,
     GenericWrite: ACCESS_MASK,
@@ -1381,20 +1453,20 @@ pub const struct__GENERIC_MAPPING = extern struct {
     GenericAll: ACCESS_MASK,
 };
 pub const GENERIC_MAPPING = struct__GENERIC_MAPPING;
-pub const PGENERIC_MAPPING = ?&GENERIC_MAPPING;
+pub const PGENERIC_MAPPING = ?[*]GENERIC_MAPPING;
 pub const struct__LUID_AND_ATTRIBUTES = extern struct {
     Luid: LUID,
     Attributes: DWORD,
 };
 pub const LUID_AND_ATTRIBUTES = struct__LUID_AND_ATTRIBUTES;
-pub const PLUID_AND_ATTRIBUTES = ?&struct__LUID_AND_ATTRIBUTES;
+pub const PLUID_AND_ATTRIBUTES = ?*struct__LUID_AND_ATTRIBUTES;
 pub const LUID_AND_ATTRIBUTES_ARRAY = [1]LUID_AND_ATTRIBUTES;
-pub const PLUID_AND_ATTRIBUTES_ARRAY = ?&LUID_AND_ATTRIBUTES_ARRAY;
+pub const PLUID_AND_ATTRIBUTES_ARRAY = ?[*]LUID_AND_ATTRIBUTES_ARRAY;
 pub const struct__SID_IDENTIFIER_AUTHORITY = extern struct {
     Value: [6]BYTE,
 };
 pub const SID_IDENTIFIER_AUTHORITY = struct__SID_IDENTIFIER_AUTHORITY;
-pub const PSID_IDENTIFIER_AUTHORITY = ?&struct__SID_IDENTIFIER_AUTHORITY;
+pub const PSID_IDENTIFIER_AUTHORITY = ?*struct__SID_IDENTIFIER_AUTHORITY;
 pub const struct__SID = extern struct {
     Revision: BYTE,
     SubAuthorityCount: BYTE,
@@ -1402,164 +1474,296 @@ pub const struct__SID = extern struct {
     SubAuthority: [1]DWORD,
 };
 pub const SID = struct__SID;
-pub const PISID = ?&struct__SID;
+pub const PISID = ?*struct__SID;
 pub const union__SE_SID = extern union {
     Sid: SID,
     Buffer: [68]BYTE,
 };
 pub const SE_SID = union__SE_SID;
-pub const PSE_SID = ?&union__SE_SID;
-pub const SidTypeUser: c_int = 1;
-pub const SidTypeGroup: c_int = 2;
-pub const SidTypeDomain: c_int = 3;
-pub const SidTypeAlias: c_int = 4;
-pub const SidTypeWellKnownGroup: c_int = 5;
-pub const SidTypeDeletedAccount: c_int = 6;
-pub const SidTypeInvalid: c_int = 7;
-pub const SidTypeUnknown: c_int = 8;
-pub const SidTypeComputer: c_int = 9;
-pub const SidTypeLabel: c_int = 10;
-pub const SidTypeLogonSession: c_int = 11;
-pub const enum__SID_NAME_USE = c_int;
+pub const PSE_SID = ?[*]union__SE_SID;
+pub const SidTypeUser = enum__SID_NAME_USE.SidTypeUser;
+pub const SidTypeGroup = enum__SID_NAME_USE.SidTypeGroup;
+pub const SidTypeDomain = enum__SID_NAME_USE.SidTypeDomain;
+pub const SidTypeAlias = enum__SID_NAME_USE.SidTypeAlias;
+pub const SidTypeWellKnownGroup = enum__SID_NAME_USE.SidTypeWellKnownGroup;
+pub const SidTypeDeletedAccount = enum__SID_NAME_USE.SidTypeDeletedAccount;
+pub const SidTypeInvalid = enum__SID_NAME_USE.SidTypeInvalid;
+pub const SidTypeUnknown = enum__SID_NAME_USE.SidTypeUnknown;
+pub const SidTypeComputer = enum__SID_NAME_USE.SidTypeComputer;
+pub const SidTypeLabel = enum__SID_NAME_USE.SidTypeLabel;
+pub const SidTypeLogonSession = enum__SID_NAME_USE.SidTypeLogonSession;
+pub const enum__SID_NAME_USE = extern enum {
+    SidTypeUser = 1,
+    SidTypeGroup = 2,
+    SidTypeDomain = 3,
+    SidTypeAlias = 4,
+    SidTypeWellKnownGroup = 5,
+    SidTypeDeletedAccount = 6,
+    SidTypeInvalid = 7,
+    SidTypeUnknown = 8,
+    SidTypeComputer = 9,
+    SidTypeLabel = 10,
+    SidTypeLogonSession = 11,
+};
 pub const SID_NAME_USE = enum__SID_NAME_USE;
-pub const PSID_NAME_USE = ?&enum__SID_NAME_USE;
+pub const PSID_NAME_USE = ?[*]enum__SID_NAME_USE;
 pub const struct__SID_AND_ATTRIBUTES = extern struct {
     Sid: PSID,
     Attributes: DWORD,
 };
 pub const SID_AND_ATTRIBUTES = struct__SID_AND_ATTRIBUTES;
-pub const PSID_AND_ATTRIBUTES = ?&struct__SID_AND_ATTRIBUTES;
+pub const PSID_AND_ATTRIBUTES = ?*struct__SID_AND_ATTRIBUTES;
 pub const SID_AND_ATTRIBUTES_ARRAY = [1]SID_AND_ATTRIBUTES;
-pub const PSID_AND_ATTRIBUTES_ARRAY = ?&SID_AND_ATTRIBUTES_ARRAY;
+pub const PSID_AND_ATTRIBUTES_ARRAY = ?[*]SID_AND_ATTRIBUTES_ARRAY;
 pub const SID_HASH_ENTRY = ULONG_PTR;
-pub const PSID_HASH_ENTRY = ?&ULONG_PTR;
+pub const PSID_HASH_ENTRY = ?[*]ULONG_PTR;
 pub const struct__SID_AND_ATTRIBUTES_HASH = extern struct {
     SidCount: DWORD,
     SidAttr: PSID_AND_ATTRIBUTES,
     Hash: [32]SID_HASH_ENTRY,
 };
 pub const SID_AND_ATTRIBUTES_HASH = struct__SID_AND_ATTRIBUTES_HASH;
-pub const PSID_AND_ATTRIBUTES_HASH = ?&struct__SID_AND_ATTRIBUTES_HASH;
-pub const WinNullSid: c_int = 0;
-pub const WinWorldSid: c_int = 1;
-pub const WinLocalSid: c_int = 2;
-pub const WinCreatorOwnerSid: c_int = 3;
-pub const WinCreatorGroupSid: c_int = 4;
-pub const WinCreatorOwnerServerSid: c_int = 5;
-pub const WinCreatorGroupServerSid: c_int = 6;
-pub const WinNtAuthoritySid: c_int = 7;
-pub const WinDialupSid: c_int = 8;
-pub const WinNetworkSid: c_int = 9;
-pub const WinBatchSid: c_int = 10;
-pub const WinInteractiveSid: c_int = 11;
-pub const WinServiceSid: c_int = 12;
-pub const WinAnonymousSid: c_int = 13;
-pub const WinProxySid: c_int = 14;
-pub const WinEnterpriseControllersSid: c_int = 15;
-pub const WinSelfSid: c_int = 16;
-pub const WinAuthenticatedUserSid: c_int = 17;
-pub const WinRestrictedCodeSid: c_int = 18;
-pub const WinTerminalServerSid: c_int = 19;
-pub const WinRemoteLogonIdSid: c_int = 20;
-pub const WinLogonIdsSid: c_int = 21;
-pub const WinLocalSystemSid: c_int = 22;
-pub const WinLocalServiceSid: c_int = 23;
-pub const WinNetworkServiceSid: c_int = 24;
-pub const WinBuiltinDomainSid: c_int = 25;
-pub const WinBuiltinAdministratorsSid: c_int = 26;
-pub const WinBuiltinUsersSid: c_int = 27;
-pub const WinBuiltinGuestsSid: c_int = 28;
-pub const WinBuiltinPowerUsersSid: c_int = 29;
-pub const WinBuiltinAccountOperatorsSid: c_int = 30;
-pub const WinBuiltinSystemOperatorsSid: c_int = 31;
-pub const WinBuiltinPrintOperatorsSid: c_int = 32;
-pub const WinBuiltinBackupOperatorsSid: c_int = 33;
-pub const WinBuiltinReplicatorSid: c_int = 34;
-pub const WinBuiltinPreWindows2000CompatibleAccessSid: c_int = 35;
-pub const WinBuiltinRemoteDesktopUsersSid: c_int = 36;
-pub const WinBuiltinNetworkConfigurationOperatorsSid: c_int = 37;
-pub const WinAccountAdministratorSid: c_int = 38;
-pub const WinAccountGuestSid: c_int = 39;
-pub const WinAccountKrbtgtSid: c_int = 40;
-pub const WinAccountDomainAdminsSid: c_int = 41;
-pub const WinAccountDomainUsersSid: c_int = 42;
-pub const WinAccountDomainGuestsSid: c_int = 43;
-pub const WinAccountComputersSid: c_int = 44;
-pub const WinAccountControllersSid: c_int = 45;
-pub const WinAccountCertAdminsSid: c_int = 46;
-pub const WinAccountSchemaAdminsSid: c_int = 47;
-pub const WinAccountEnterpriseAdminsSid: c_int = 48;
-pub const WinAccountPolicyAdminsSid: c_int = 49;
-pub const WinAccountRasAndIasServersSid: c_int = 50;
-pub const WinNTLMAuthenticationSid: c_int = 51;
-pub const WinDigestAuthenticationSid: c_int = 52;
-pub const WinSChannelAuthenticationSid: c_int = 53;
-pub const WinThisOrganizationSid: c_int = 54;
-pub const WinOtherOrganizationSid: c_int = 55;
-pub const WinBuiltinIncomingForestTrustBuildersSid: c_int = 56;
-pub const WinBuiltinPerfMonitoringUsersSid: c_int = 57;
-pub const WinBuiltinPerfLoggingUsersSid: c_int = 58;
-pub const WinBuiltinAuthorizationAccessSid: c_int = 59;
-pub const WinBuiltinTerminalServerLicenseServersSid: c_int = 60;
-pub const WinBuiltinDCOMUsersSid: c_int = 61;
-pub const WinBuiltinIUsersSid: c_int = 62;
-pub const WinIUserSid: c_int = 63;
-pub const WinBuiltinCryptoOperatorsSid: c_int = 64;
-pub const WinUntrustedLabelSid: c_int = 65;
-pub const WinLowLabelSid: c_int = 66;
-pub const WinMediumLabelSid: c_int = 67;
-pub const WinHighLabelSid: c_int = 68;
-pub const WinSystemLabelSid: c_int = 69;
-pub const WinWriteRestrictedCodeSid: c_int = 70;
-pub const WinCreatorOwnerRightsSid: c_int = 71;
-pub const WinCacheablePrincipalsGroupSid: c_int = 72;
-pub const WinNonCacheablePrincipalsGroupSid: c_int = 73;
-pub const WinEnterpriseReadonlyControllersSid: c_int = 74;
-pub const WinAccountReadonlyControllersSid: c_int = 75;
-pub const WinBuiltinEventLogReadersGroup: c_int = 76;
-pub const WinNewEnterpriseReadonlyControllersSid: c_int = 77;
-pub const WinBuiltinCertSvcDComAccessGroup: c_int = 78;
-pub const WinMediumPlusLabelSid: c_int = 79;
-pub const WinLocalLogonSid: c_int = 80;
-pub const WinConsoleLogonSid: c_int = 81;
-pub const WinThisOrganizationCertificateSid: c_int = 82;
-pub const WinApplicationPackageAuthoritySid: c_int = 83;
-pub const WinBuiltinAnyPackageSid: c_int = 84;
-pub const WinCapabilityInternetClientSid: c_int = 85;
-pub const WinCapabilityInternetClientServerSid: c_int = 86;
-pub const WinCapabilityPrivateNetworkClientServerSid: c_int = 87;
-pub const WinCapabilityPicturesLibrarySid: c_int = 88;
-pub const WinCapabilityVideosLibrarySid: c_int = 89;
-pub const WinCapabilityMusicLibrarySid: c_int = 90;
-pub const WinCapabilityDocumentsLibrarySid: c_int = 91;
-pub const WinCapabilitySharedUserCertificatesSid: c_int = 92;
-pub const WinCapabilityEnterpriseAuthenticationSid: c_int = 93;
-pub const WinCapabilityRemovableStorageSid: c_int = 94;
-pub const WinBuiltinRDSRemoteAccessServersSid: c_int = 95;
-pub const WinBuiltinRDSEndpointServersSid: c_int = 96;
-pub const WinBuiltinRDSManagementServersSid: c_int = 97;
-pub const WinUserModeDriversSid: c_int = 98;
-pub const WinBuiltinHyperVAdminsSid: c_int = 99;
-pub const WinAccountCloneableControllersSid: c_int = 100;
-pub const WinBuiltinAccessControlAssistanceOperatorsSid: c_int = 101;
-pub const WinBuiltinRemoteManagementUsersSid: c_int = 102;
-pub const WinAuthenticationAuthorityAssertedSid: c_int = 103;
-pub const WinAuthenticationServiceAssertedSid: c_int = 104;
-pub const WinLocalAccountSid: c_int = 105;
-pub const WinLocalAccountAndAdministratorSid: c_int = 106;
-pub const WinAccountProtectedUsersSid: c_int = 107;
-pub const WinCapabilityAppointmentsSid: c_int = 108;
-pub const WinCapabilityContactsSid: c_int = 109;
-pub const WinAccountDefaultSystemManagedSid: c_int = 110;
-pub const WinBuiltinDefaultSystemManagedGroupSid: c_int = 111;
-pub const WinBuiltinStorageReplicaAdminsSid: c_int = 112;
-pub const WinAccountKeyAdminsSid: c_int = 113;
-pub const WinAccountEnterpriseKeyAdminsSid: c_int = 114;
-pub const WinAuthenticationKeyTrustSid: c_int = 115;
-pub const WinAuthenticationKeyPropertyMFASid: c_int = 116;
-pub const WinAuthenticationKeyPropertyAttestationSid: c_int = 117;
-pub const WinAuthenticationFreshKeyAuthSid: c_int = 118;
-pub const WELL_KNOWN_SID_TYPE = c_int;
+pub const PSID_AND_ATTRIBUTES_HASH = ?*struct__SID_AND_ATTRIBUTES_HASH;
+pub const WinNullSid = 0;
+pub const WinWorldSid = 1;
+pub const WinLocalSid = 2;
+pub const WinCreatorOwnerSid = 3;
+pub const WinCreatorGroupSid = 4;
+pub const WinCreatorOwnerServerSid = 5;
+pub const WinCreatorGroupServerSid = 6;
+pub const WinNtAuthoritySid = 7;
+pub const WinDialupSid = 8;
+pub const WinNetworkSid = 9;
+pub const WinBatchSid = 10;
+pub const WinInteractiveSid = 11;
+pub const WinServiceSid = 12;
+pub const WinAnonymousSid = 13;
+pub const WinProxySid = 14;
+pub const WinEnterpriseControllersSid = 15;
+pub const WinSelfSid = 16;
+pub const WinAuthenticatedUserSid = 17;
+pub const WinRestrictedCodeSid = 18;
+pub const WinTerminalServerSid = 19;
+pub const WinRemoteLogonIdSid = 20;
+pub const WinLogonIdsSid = 21;
+pub const WinLocalSystemSid = 22;
+pub const WinLocalServiceSid = 23;
+pub const WinNetworkServiceSid = 24;
+pub const WinBuiltinDomainSid = 25;
+pub const WinBuiltinAdministratorsSid = 26;
+pub const WinBuiltinUsersSid = 27;
+pub const WinBuiltinGuestsSid = 28;
+pub const WinBuiltinPowerUsersSid = 29;
+pub const WinBuiltinAccountOperatorsSid = 30;
+pub const WinBuiltinSystemOperatorsSid = 31;
+pub const WinBuiltinPrintOperatorsSid = 32;
+pub const WinBuiltinBackupOperatorsSid = 33;
+pub const WinBuiltinReplicatorSid = 34;
+pub const WinBuiltinPreWindows2000CompatibleAccessSid = 35;
+pub const WinBuiltinRemoteDesktopUsersSid = 36;
+pub const WinBuiltinNetworkConfigurationOperatorsSid = 37;
+pub const WinAccountAdministratorSid = 38;
+pub const WinAccountGuestSid = 39;
+pub const WinAccountKrbtgtSid = 40;
+pub const WinAccountDomainAdminsSid = 41;
+pub const WinAccountDomainUsersSid = 42;
+pub const WinAccountDomainGuestsSid = 43;
+pub const WinAccountComputersSid = 44;
+pub const WinAccountControllersSid = 45;
+pub const WinAccountCertAdminsSid = 46;
+pub const WinAccountSchemaAdminsSid = 47;
+pub const WinAccountEnterpriseAdminsSid = 48;
+pub const WinAccountPolicyAdminsSid = 49;
+pub const WinAccountRasAndIasServersSid = 50;
+pub const WinNTLMAuthenticationSid = 51;
+pub const WinDigestAuthenticationSid = 52;
+pub const WinSChannelAuthenticationSid = 53;
+pub const WinThisOrganizationSid = 54;
+pub const WinOtherOrganizationSid = 55;
+pub const WinBuiltinIncomingForestTrustBuildersSid = 56;
+pub const WinBuiltinPerfMonitoringUsersSid = 57;
+pub const WinBuiltinPerfLoggingUsersSid = 58;
+pub const WinBuiltinAuthorizationAccessSid = 59;
+pub const WinBuiltinTerminalServerLicenseServersSid = 60;
+pub const WinBuiltinDCOMUsersSid = 61;
+pub const WinBuiltinIUsersSid = 62;
+pub const WinIUserSid = 63;
+pub const WinBuiltinCryptoOperatorsSid = 64;
+pub const WinUntrustedLabelSid = 65;
+pub const WinLowLabelSid = 66;
+pub const WinMediumLabelSid = 67;
+pub const WinHighLabelSid = 68;
+pub const WinSystemLabelSid = 69;
+pub const WinWriteRestrictedCodeSid = 70;
+pub const WinCreatorOwnerRightsSid = 71;
+pub const WinCacheablePrincipalsGroupSid = 72;
+pub const WinNonCacheablePrincipalsGroupSid = 73;
+pub const WinEnterpriseReadonlyControllersSid = 74;
+pub const WinAccountReadonlyControllersSid = 75;
+pub const WinBuiltinEventLogReadersGroup = 76;
+pub const WinNewEnterpriseReadonlyControllersSid = 77;
+pub const WinBuiltinCertSvcDComAccessGroup = 78;
+pub const WinMediumPlusLabelSid = 79;
+pub const WinLocalLogonSid = 80;
+pub const WinConsoleLogonSid = 81;
+pub const WinThisOrganizationCertificateSid = 82;
+pub const WinApplicationPackageAuthoritySid = 83;
+pub const WinBuiltinAnyPackageSid = 84;
+pub const WinCapabilityInternetClientSid = 85;
+pub const WinCapabilityInternetClientServerSid = 86;
+pub const WinCapabilityPrivateNetworkClientServerSid = 87;
+pub const WinCapabilityPicturesLibrarySid = 88;
+pub const WinCapabilityVideosLibrarySid = 89;
+pub const WinCapabilityMusicLibrarySid = 90;
+pub const WinCapabilityDocumentsLibrarySid = 91;
+pub const WinCapabilitySharedUserCertificatesSid = 92;
+pub const WinCapabilityEnterpriseAuthenticationSid = 93;
+pub const WinCapabilityRemovableStorageSid = 94;
+pub const WinBuiltinRDSRemoteAccessServersSid = 95;
+pub const WinBuiltinRDSEndpointServersSid = 96;
+pub const WinBuiltinRDSManagementServersSid = 97;
+pub const WinUserModeDriversSid = 98;
+pub const WinBuiltinHyperVAdminsSid = 99;
+pub const WinAccountCloneableControllersSid = 100;
+pub const WinBuiltinAccessControlAssistanceOperatorsSid = 101;
+pub const WinBuiltinRemoteManagementUsersSid = 102;
+pub const WinAuthenticationAuthorityAssertedSid = 103;
+pub const WinAuthenticationServiceAssertedSid = 104;
+pub const WinLocalAccountSid = 105;
+pub const WinLocalAccountAndAdministratorSid = 106;
+pub const WinAccountProtectedUsersSid = 107;
+pub const WinCapabilityAppointmentsSid = 108;
+pub const WinCapabilityContactsSid = 109;
+pub const WinAccountDefaultSystemManagedSid = 110;
+pub const WinBuiltinDefaultSystemManagedGroupSid = 111;
+pub const WinBuiltinStorageReplicaAdminsSid = 112;
+pub const WinAccountKeyAdminsSid = 113;
+pub const WinAccountEnterpriseKeyAdminsSid = 114;
+pub const WinAuthenticationKeyTrustSid = 115;
+pub const WinAuthenticationKeyPropertyMFASid = 116;
+pub const WinAuthenticationKeyPropertyAttestationSid = 117;
+pub const WinAuthenticationFreshKeyAuthSid = 118;
+pub const WELL_KNOWN_SID_TYPE = extern enum {
+    WinNullSid = 0,
+    WinWorldSid = 1,
+    WinLocalSid = 2,
+    WinCreatorOwnerSid = 3,
+    WinCreatorGroupSid = 4,
+    WinCreatorOwnerServerSid = 5,
+    WinCreatorGroupServerSid = 6,
+    WinNtAuthoritySid = 7,
+    WinDialupSid = 8,
+    WinNetworkSid = 9,
+    WinBatchSid = 10,
+    WinInteractiveSid = 11,
+    WinServiceSid = 12,
+    WinAnonymousSid = 13,
+    WinProxySid = 14,
+    WinEnterpriseControllersSid = 15,
+    WinSelfSid = 16,
+    WinAuthenticatedUserSid = 17,
+    WinRestrictedCodeSid = 18,
+    WinTerminalServerSid = 19,
+    WinRemoteLogonIdSid = 20,
+    WinLogonIdsSid = 21,
+    WinLocalSystemSid = 22,
+    WinLocalServiceSid = 23,
+    WinNetworkServiceSid = 24,
+    WinBuiltinDomainSid = 25,
+    WinBuiltinAdministratorsSid = 26,
+    WinBuiltinUsersSid = 27,
+    WinBuiltinGuestsSid = 28,
+    WinBuiltinPowerUsersSid = 29,
+    WinBuiltinAccountOperatorsSid = 30,
+    WinBuiltinSystemOperatorsSid = 31,
+    WinBuiltinPrintOperatorsSid = 32,
+    WinBuiltinBackupOperatorsSid = 33,
+    WinBuiltinReplicatorSid = 34,
+    WinBuiltinPreWindows2000CompatibleAccessSid = 35,
+    WinBuiltinRemoteDesktopUsersSid = 36,
+    WinBuiltinNetworkConfigurationOperatorsSid = 37,
+    WinAccountAdministratorSid = 38,
+    WinAccountGuestSid = 39,
+    WinAccountKrbtgtSid = 40,
+    WinAccountDomainAdminsSid = 41,
+    WinAccountDomainUsersSid = 42,
+    WinAccountDomainGuestsSid = 43,
+    WinAccountComputersSid = 44,
+    WinAccountControllersSid = 45,
+    WinAccountCertAdminsSid = 46,
+    WinAccountSchemaAdminsSid = 47,
+    WinAccountEnterpriseAdminsSid = 48,
+    WinAccountPolicyAdminsSid = 49,
+    WinAccountRasAndIasServersSid = 50,
+    WinNTLMAuthenticationSid = 51,
+    WinDigestAuthenticationSid = 52,
+    WinSChannelAuthenticationSid = 53,
+    WinThisOrganizationSid = 54,
+    WinOtherOrganizationSid = 55,
+    WinBuiltinIncomingForestTrustBuildersSid = 56,
+    WinBuiltinPerfMonitoringUsersSid = 57,
+    WinBuiltinPerfLoggingUsersSid = 58,
+    WinBuiltinAuthorizationAccessSid = 59,
+    WinBuiltinTerminalServerLicenseServersSid = 60,
+    WinBuiltinDCOMUsersSid = 61,
+    WinBuiltinIUsersSid = 62,
+    WinIUserSid = 63,
+    WinBuiltinCryptoOperatorsSid = 64,
+    WinUntrustedLabelSid = 65,
+    WinLowLabelSid = 66,
+    WinMediumLabelSid = 67,
+    WinHighLabelSid = 68,
+    WinSystemLabelSid = 69,
+    WinWriteRestrictedCodeSid = 70,
+    WinCreatorOwnerRightsSid = 71,
+    WinCacheablePrincipalsGroupSid = 72,
+    WinNonCacheablePrincipalsGroupSid = 73,
+    WinEnterpriseReadonlyControllersSid = 74,
+    WinAccountReadonlyControllersSid = 75,
+    WinBuiltinEventLogReadersGroup = 76,
+    WinNewEnterpriseReadonlyControllersSid = 77,
+    WinBuiltinCertSvcDComAccessGroup = 78,
+    WinMediumPlusLabelSid = 79,
+    WinLocalLogonSid = 80,
+    WinConsoleLogonSid = 81,
+    WinThisOrganizationCertificateSid = 82,
+    WinApplicationPackageAuthoritySid = 83,
+    WinBuiltinAnyPackageSid = 84,
+    WinCapabilityInternetClientSid = 85,
+    WinCapabilityInternetClientServerSid = 86,
+    WinCapabilityPrivateNetworkClientServerSid = 87,
+    WinCapabilityPicturesLibrarySid = 88,
+    WinCapabilityVideosLibrarySid = 89,
+    WinCapabilityMusicLibrarySid = 90,
+    WinCapabilityDocumentsLibrarySid = 91,
+    WinCapabilitySharedUserCertificatesSid = 92,
+    WinCapabilityEnterpriseAuthenticationSid = 93,
+    WinCapabilityRemovableStorageSid = 94,
+    WinBuiltinRDSRemoteAccessServersSid = 95,
+    WinBuiltinRDSEndpointServersSid = 96,
+    WinBuiltinRDSManagementServersSid = 97,
+    WinUserModeDriversSid = 98,
+    WinBuiltinHyperVAdminsSid = 99,
+    WinAccountCloneableControllersSid = 100,
+    WinBuiltinAccessControlAssistanceOperatorsSid = 101,
+    WinBuiltinRemoteManagementUsersSid = 102,
+    WinAuthenticationAuthorityAssertedSid = 103,
+    WinAuthenticationServiceAssertedSid = 104,
+    WinLocalAccountSid = 105,
+    WinLocalAccountAndAdministratorSid = 106,
+    WinAccountProtectedUsersSid = 107,
+    WinCapabilityAppointmentsSid = 108,
+    WinCapabilityContactsSid = 109,
+    WinAccountDefaultSystemManagedSid = 110,
+    WinBuiltinDefaultSystemManagedGroupSid = 111,
+    WinBuiltinStorageReplicaAdminsSid = 112,
+    WinAccountKeyAdminsSid = 113,
+    WinAccountEnterpriseKeyAdminsSid = 114,
+    WinAuthenticationKeyTrustSid = 115,
+    WinAuthenticationKeyPropertyMFASid = 116,
+    WinAuthenticationKeyPropertyAttestationSid = 117,
+    WinAuthenticationFreshKeyAuthSid = 118,
+};
 pub const struct__ACL = extern struct {
     AclRevision: BYTE,
     Sbz1: BYTE,
@@ -1568,77 +1772,77 @@ pub const struct__ACL = extern struct {
     Sbz2: WORD,
 };
 pub const ACL = struct__ACL;
-pub const PACL = ?&ACL;
+pub const PACL = ?[*]ACL;
 pub const struct__ACE_HEADER = extern struct {
     AceType: BYTE,
     AceFlags: BYTE,
     AceSize: WORD,
 };
 pub const ACE_HEADER = struct__ACE_HEADER;
-pub const PACE_HEADER = ?&ACE_HEADER;
+pub const PACE_HEADER = ?[*]ACE_HEADER;
 pub const struct__ACCESS_ALLOWED_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
     SidStart: DWORD,
 };
 pub const ACCESS_ALLOWED_ACE = struct__ACCESS_ALLOWED_ACE;
-pub const PACCESS_ALLOWED_ACE = ?&ACCESS_ALLOWED_ACE;
+pub const PACCESS_ALLOWED_ACE = ?[*]ACCESS_ALLOWED_ACE;
 pub const struct__ACCESS_DENIED_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
     SidStart: DWORD,
 };
 pub const ACCESS_DENIED_ACE = struct__ACCESS_DENIED_ACE;
-pub const PACCESS_DENIED_ACE = ?&ACCESS_DENIED_ACE;
+pub const PACCESS_DENIED_ACE = ?[*]ACCESS_DENIED_ACE;
 pub const struct__SYSTEM_AUDIT_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
     SidStart: DWORD,
 };
 pub const SYSTEM_AUDIT_ACE = struct__SYSTEM_AUDIT_ACE;
-pub const PSYSTEM_AUDIT_ACE = ?&SYSTEM_AUDIT_ACE;
+pub const PSYSTEM_AUDIT_ACE = ?[*]SYSTEM_AUDIT_ACE;
 pub const struct__SYSTEM_ALARM_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
     SidStart: DWORD,
 };
 pub const SYSTEM_ALARM_ACE = struct__SYSTEM_ALARM_ACE;
-pub const PSYSTEM_ALARM_ACE = ?&SYSTEM_ALARM_ACE;
+pub const PSYSTEM_ALARM_ACE = ?[*]SYSTEM_ALARM_ACE;
 pub const struct__SYSTEM_RESOURCE_ATTRIBUTE_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
     SidStart: DWORD,
 };
 pub const SYSTEM_RESOURCE_ATTRIBUTE_ACE = struct__SYSTEM_RESOURCE_ATTRIBUTE_ACE;
-pub const PSYSTEM_RESOURCE_ATTRIBUTE_ACE = ?&struct__SYSTEM_RESOURCE_ATTRIBUTE_ACE;
+pub const PSYSTEM_RESOURCE_ATTRIBUTE_ACE = ?*struct__SYSTEM_RESOURCE_ATTRIBUTE_ACE;
 pub const struct__SYSTEM_SCOPED_POLICY_ID_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
     SidStart: DWORD,
 };
 pub const SYSTEM_SCOPED_POLICY_ID_ACE = struct__SYSTEM_SCOPED_POLICY_ID_ACE;
-pub const PSYSTEM_SCOPED_POLICY_ID_ACE = ?&struct__SYSTEM_SCOPED_POLICY_ID_ACE;
+pub const PSYSTEM_SCOPED_POLICY_ID_ACE = ?*struct__SYSTEM_SCOPED_POLICY_ID_ACE;
 pub const struct__SYSTEM_MANDATORY_LABEL_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
     SidStart: DWORD,
 };
 pub const SYSTEM_MANDATORY_LABEL_ACE = struct__SYSTEM_MANDATORY_LABEL_ACE;
-pub const PSYSTEM_MANDATORY_LABEL_ACE = ?&struct__SYSTEM_MANDATORY_LABEL_ACE;
+pub const PSYSTEM_MANDATORY_LABEL_ACE = ?*struct__SYSTEM_MANDATORY_LABEL_ACE;
 pub const struct__SYSTEM_PROCESS_TRUST_LABEL_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
     SidStart: DWORD,
 };
 pub const SYSTEM_PROCESS_TRUST_LABEL_ACE = struct__SYSTEM_PROCESS_TRUST_LABEL_ACE;
-pub const PSYSTEM_PROCESS_TRUST_LABEL_ACE = ?&struct__SYSTEM_PROCESS_TRUST_LABEL_ACE;
+pub const PSYSTEM_PROCESS_TRUST_LABEL_ACE = ?*struct__SYSTEM_PROCESS_TRUST_LABEL_ACE;
 pub const struct__SYSTEM_ACCESS_FILTER_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
     SidStart: DWORD,
 };
 pub const SYSTEM_ACCESS_FILTER_ACE = struct__SYSTEM_ACCESS_FILTER_ACE;
-pub const PSYSTEM_ACCESS_FILTER_ACE = ?&struct__SYSTEM_ACCESS_FILTER_ACE;
+pub const PSYSTEM_ACCESS_FILTER_ACE = ?*struct__SYSTEM_ACCESS_FILTER_ACE;
 pub const struct__ACCESS_ALLOWED_OBJECT_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
@@ -1648,7 +1852,7 @@ pub const struct__ACCESS_ALLOWED_OBJECT_ACE = extern struct {
     SidStart: DWORD,
 };
 pub const ACCESS_ALLOWED_OBJECT_ACE = struct__ACCESS_ALLOWED_OBJECT_ACE;
-pub const PACCESS_ALLOWED_OBJECT_ACE = ?&struct__ACCESS_ALLOWED_OBJECT_ACE;
+pub const PACCESS_ALLOWED_OBJECT_ACE = ?*struct__ACCESS_ALLOWED_OBJECT_ACE;
 pub const struct__ACCESS_DENIED_OBJECT_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
@@ -1658,7 +1862,7 @@ pub const struct__ACCESS_DENIED_OBJECT_ACE = extern struct {
     SidStart: DWORD,
 };
 pub const ACCESS_DENIED_OBJECT_ACE = struct__ACCESS_DENIED_OBJECT_ACE;
-pub const PACCESS_DENIED_OBJECT_ACE = ?&struct__ACCESS_DENIED_OBJECT_ACE;
+pub const PACCESS_DENIED_OBJECT_ACE = ?*struct__ACCESS_DENIED_OBJECT_ACE;
 pub const struct__SYSTEM_AUDIT_OBJECT_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
@@ -1668,7 +1872,7 @@ pub const struct__SYSTEM_AUDIT_OBJECT_ACE = extern struct {
     SidStart: DWORD,
 };
 pub const SYSTEM_AUDIT_OBJECT_ACE = struct__SYSTEM_AUDIT_OBJECT_ACE;
-pub const PSYSTEM_AUDIT_OBJECT_ACE = ?&struct__SYSTEM_AUDIT_OBJECT_ACE;
+pub const PSYSTEM_AUDIT_OBJECT_ACE = ?*struct__SYSTEM_AUDIT_OBJECT_ACE;
 pub const struct__SYSTEM_ALARM_OBJECT_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
@@ -1678,35 +1882,35 @@ pub const struct__SYSTEM_ALARM_OBJECT_ACE = extern struct {
     SidStart: DWORD,
 };
 pub const SYSTEM_ALARM_OBJECT_ACE = struct__SYSTEM_ALARM_OBJECT_ACE;
-pub const PSYSTEM_ALARM_OBJECT_ACE = ?&struct__SYSTEM_ALARM_OBJECT_ACE;
+pub const PSYSTEM_ALARM_OBJECT_ACE = ?*struct__SYSTEM_ALARM_OBJECT_ACE;
 pub const struct__ACCESS_ALLOWED_CALLBACK_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
     SidStart: DWORD,
 };
 pub const ACCESS_ALLOWED_CALLBACK_ACE = struct__ACCESS_ALLOWED_CALLBACK_ACE;
-pub const PACCESS_ALLOWED_CALLBACK_ACE = ?&struct__ACCESS_ALLOWED_CALLBACK_ACE;
+pub const PACCESS_ALLOWED_CALLBACK_ACE = ?*struct__ACCESS_ALLOWED_CALLBACK_ACE;
 pub const struct__ACCESS_DENIED_CALLBACK_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
     SidStart: DWORD,
 };
 pub const ACCESS_DENIED_CALLBACK_ACE = struct__ACCESS_DENIED_CALLBACK_ACE;
-pub const PACCESS_DENIED_CALLBACK_ACE = ?&struct__ACCESS_DENIED_CALLBACK_ACE;
+pub const PACCESS_DENIED_CALLBACK_ACE = ?*struct__ACCESS_DENIED_CALLBACK_ACE;
 pub const struct__SYSTEM_AUDIT_CALLBACK_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
     SidStart: DWORD,
 };
 pub const SYSTEM_AUDIT_CALLBACK_ACE = struct__SYSTEM_AUDIT_CALLBACK_ACE;
-pub const PSYSTEM_AUDIT_CALLBACK_ACE = ?&struct__SYSTEM_AUDIT_CALLBACK_ACE;
+pub const PSYSTEM_AUDIT_CALLBACK_ACE = ?*struct__SYSTEM_AUDIT_CALLBACK_ACE;
 pub const struct__SYSTEM_ALARM_CALLBACK_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
     SidStart: DWORD,
 };
 pub const SYSTEM_ALARM_CALLBACK_ACE = struct__SYSTEM_ALARM_CALLBACK_ACE;
-pub const PSYSTEM_ALARM_CALLBACK_ACE = ?&struct__SYSTEM_ALARM_CALLBACK_ACE;
+pub const PSYSTEM_ALARM_CALLBACK_ACE = ?*struct__SYSTEM_ALARM_CALLBACK_ACE;
 pub const struct__ACCESS_ALLOWED_CALLBACK_OBJECT_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
@@ -1716,7 +1920,7 @@ pub const struct__ACCESS_ALLOWED_CALLBACK_OBJECT_ACE = extern struct {
     SidStart: DWORD,
 };
 pub const ACCESS_ALLOWED_CALLBACK_OBJECT_ACE = struct__ACCESS_ALLOWED_CALLBACK_OBJECT_ACE;
-pub const PACCESS_ALLOWED_CALLBACK_OBJECT_ACE = ?&struct__ACCESS_ALLOWED_CALLBACK_OBJECT_ACE;
+pub const PACCESS_ALLOWED_CALLBACK_OBJECT_ACE = ?*struct__ACCESS_ALLOWED_CALLBACK_OBJECT_ACE;
 pub const struct__ACCESS_DENIED_CALLBACK_OBJECT_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
@@ -1726,7 +1930,7 @@ pub const struct__ACCESS_DENIED_CALLBACK_OBJECT_ACE = extern struct {
     SidStart: DWORD,
 };
 pub const ACCESS_DENIED_CALLBACK_OBJECT_ACE = struct__ACCESS_DENIED_CALLBACK_OBJECT_ACE;
-pub const PACCESS_DENIED_CALLBACK_OBJECT_ACE = ?&struct__ACCESS_DENIED_CALLBACK_OBJECT_ACE;
+pub const PACCESS_DENIED_CALLBACK_OBJECT_ACE = ?*struct__ACCESS_DENIED_CALLBACK_OBJECT_ACE;
 pub const struct__SYSTEM_AUDIT_CALLBACK_OBJECT_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
@@ -1736,7 +1940,7 @@ pub const struct__SYSTEM_AUDIT_CALLBACK_OBJECT_ACE = extern struct {
     SidStart: DWORD,
 };
 pub const SYSTEM_AUDIT_CALLBACK_OBJECT_ACE = struct__SYSTEM_AUDIT_CALLBACK_OBJECT_ACE;
-pub const PSYSTEM_AUDIT_CALLBACK_OBJECT_ACE = ?&struct__SYSTEM_AUDIT_CALLBACK_OBJECT_ACE;
+pub const PSYSTEM_AUDIT_CALLBACK_OBJECT_ACE = ?*struct__SYSTEM_AUDIT_CALLBACK_OBJECT_ACE;
 pub const struct__SYSTEM_ALARM_CALLBACK_OBJECT_ACE = extern struct {
     Header: ACE_HEADER,
     Mask: ACCESS_MASK,
@@ -1746,25 +1950,28 @@ pub const struct__SYSTEM_ALARM_CALLBACK_OBJECT_ACE = extern struct {
     SidStart: DWORD,
 };
 pub const SYSTEM_ALARM_CALLBACK_OBJECT_ACE = struct__SYSTEM_ALARM_CALLBACK_OBJECT_ACE;
-pub const PSYSTEM_ALARM_CALLBACK_OBJECT_ACE = ?&struct__SYSTEM_ALARM_CALLBACK_OBJECT_ACE;
-pub const AclRevisionInformation: c_int = 1;
-pub const AclSizeInformation: c_int = 2;
-pub const enum__ACL_INFORMATION_CLASS = c_int;
+pub const PSYSTEM_ALARM_CALLBACK_OBJECT_ACE = ?*struct__SYSTEM_ALARM_CALLBACK_OBJECT_ACE;
+pub const AclRevisionInformation = enum__ACL_INFORMATION_CLASS.AclRevisionInformation;
+pub const AclSizeInformation = enum__ACL_INFORMATION_CLASS.AclSizeInformation;
+pub const enum__ACL_INFORMATION_CLASS = extern enum {
+    AclRevisionInformation = 1,
+    AclSizeInformation = 2,
+};
 pub const ACL_INFORMATION_CLASS = enum__ACL_INFORMATION_CLASS;
 pub const struct__ACL_REVISION_INFORMATION = extern struct {
     AclRevision: DWORD,
 };
 pub const ACL_REVISION_INFORMATION = struct__ACL_REVISION_INFORMATION;
-pub const PACL_REVISION_INFORMATION = ?&ACL_REVISION_INFORMATION;
+pub const PACL_REVISION_INFORMATION = ?[*]ACL_REVISION_INFORMATION;
 pub const struct__ACL_SIZE_INFORMATION = extern struct {
     AceCount: DWORD,
     AclBytesInUse: DWORD,
     AclBytesFree: DWORD,
 };
 pub const ACL_SIZE_INFORMATION = struct__ACL_SIZE_INFORMATION;
-pub const PACL_SIZE_INFORMATION = ?&ACL_SIZE_INFORMATION;
+pub const PACL_SIZE_INFORMATION = ?[*]ACL_SIZE_INFORMATION;
 pub const SECURITY_DESCRIPTOR_CONTROL = WORD;
-pub const PSECURITY_DESCRIPTOR_CONTROL = ?&WORD;
+pub const PSECURITY_DESCRIPTOR_CONTROL = ?[*]WORD;
 pub const struct__SECURITY_DESCRIPTOR_RELATIVE = extern struct {
     Revision: BYTE,
     Sbz1: BYTE,
@@ -1775,7 +1982,7 @@ pub const struct__SECURITY_DESCRIPTOR_RELATIVE = extern struct {
     Dacl: DWORD,
 };
 pub const SECURITY_DESCRIPTOR_RELATIVE = struct__SECURITY_DESCRIPTOR_RELATIVE;
-pub const PISECURITY_DESCRIPTOR_RELATIVE = ?&struct__SECURITY_DESCRIPTOR_RELATIVE;
+pub const PISECURITY_DESCRIPTOR_RELATIVE = ?*struct__SECURITY_DESCRIPTOR_RELATIVE;
 pub const struct__SECURITY_DESCRIPTOR = extern struct {
     Revision: BYTE,
     Sbz1: BYTE,
@@ -1786,20 +1993,20 @@ pub const struct__SECURITY_DESCRIPTOR = extern struct {
     Dacl: PACL,
 };
 pub const SECURITY_DESCRIPTOR = struct__SECURITY_DESCRIPTOR;
-pub const PISECURITY_DESCRIPTOR = ?&struct__SECURITY_DESCRIPTOR;
+pub const PISECURITY_DESCRIPTOR = ?*struct__SECURITY_DESCRIPTOR;
 pub const struct__SECURITY_OBJECT_AI_PARAMS = extern struct {
     Size: DWORD,
     ConstraintMask: DWORD,
 };
 pub const SECURITY_OBJECT_AI_PARAMS = struct__SECURITY_OBJECT_AI_PARAMS;
-pub const PSECURITY_OBJECT_AI_PARAMS = ?&struct__SECURITY_OBJECT_AI_PARAMS;
+pub const PSECURITY_OBJECT_AI_PARAMS = ?*struct__SECURITY_OBJECT_AI_PARAMS;
 pub const struct__OBJECT_TYPE_LIST = extern struct {
     Level: WORD,
     Sbz: WORD,
-    ObjectType: ?&GUID,
+    ObjectType: ?[*]GUID,
 };
 pub const OBJECT_TYPE_LIST = struct__OBJECT_TYPE_LIST;
-pub const POBJECT_TYPE_LIST = ?&struct__OBJECT_TYPE_LIST;
+pub const POBJECT_TYPE_LIST = ?*struct__OBJECT_TYPE_LIST;
 pub const AuditEventObjectAccess = enum__AUDIT_EVENT_TYPE.AuditEventObjectAccess;
 pub const AuditEventDirectoryServiceAccess = enum__AUDIT_EVENT_TYPE.AuditEventDirectoryServiceAccess;
 pub const enum__AUDIT_EVENT_TYPE = extern enum {
@@ -1807,47 +2014,66 @@ pub const enum__AUDIT_EVENT_TYPE = extern enum {
     AuditEventDirectoryServiceAccess,
 };
 pub const AUDIT_EVENT_TYPE = enum__AUDIT_EVENT_TYPE;
-pub const PAUDIT_EVENT_TYPE = ?&enum__AUDIT_EVENT_TYPE;
+pub const PAUDIT_EVENT_TYPE = ?[*]enum__AUDIT_EVENT_TYPE;
 pub const struct__PRIVILEGE_SET = extern struct {
     PrivilegeCount: DWORD,
     Control: DWORD,
     Privilege: [1]LUID_AND_ATTRIBUTES,
 };
 pub const PRIVILEGE_SET = struct__PRIVILEGE_SET;
-pub const PPRIVILEGE_SET = ?&struct__PRIVILEGE_SET;
-pub const AccessReasonNone: c_int = 0;
-pub const AccessReasonAllowedAce: c_int = 65536;
-pub const AccessReasonDeniedAce: c_int = 131072;
-pub const AccessReasonAllowedParentAce: c_int = 196608;
-pub const AccessReasonDeniedParentAce: c_int = 262144;
-pub const AccessReasonNotGrantedByCape: c_int = 327680;
-pub const AccessReasonNotGrantedByParentCape: c_int = 393216;
-pub const AccessReasonNotGrantedToAppContainer: c_int = 458752;
-pub const AccessReasonMissingPrivilege: c_int = 1048576;
-pub const AccessReasonFromPrivilege: c_int = 2097152;
-pub const AccessReasonIntegrityLevel: c_int = 3145728;
-pub const AccessReasonOwnership: c_int = 4194304;
-pub const AccessReasonNullDacl: c_int = 5242880;
-pub const AccessReasonEmptyDacl: c_int = 6291456;
-pub const AccessReasonNoSD: c_int = 7340032;
-pub const AccessReasonNoGrant: c_int = 8388608;
-pub const AccessReasonTrustLabel: c_int = 9437184;
-pub const AccessReasonFilterAce: c_int = 10485760;
-pub const enum__ACCESS_REASON_TYPE = c_int;
+pub const PPRIVILEGE_SET = ?*struct__PRIVILEGE_SET;
+pub const AccessReasonNone = enum__ACCESS_REASON_TYPE.AccessReasonNone;
+pub const AccessReasonAllowedAce = enum__ACCESS_REASON_TYPE.AccessReasonAllowedAce;
+pub const AccessReasonDeniedAce = enum__ACCESS_REASON_TYPE.AccessReasonDeniedAce;
+pub const AccessReasonAllowedParentAce = enum__ACCESS_REASON_TYPE.AccessReasonAllowedParentAce;
+pub const AccessReasonDeniedParentAce = enum__ACCESS_REASON_TYPE.AccessReasonDeniedParentAce;
+pub const AccessReasonNotGrantedByCape = enum__ACCESS_REASON_TYPE.AccessReasonNotGrantedByCape;
+pub const AccessReasonNotGrantedByParentCape = enum__ACCESS_REASON_TYPE.AccessReasonNotGrantedByParentCape;
+pub const AccessReasonNotGrantedToAppContainer = enum__ACCESS_REASON_TYPE.AccessReasonNotGrantedToAppContainer;
+pub const AccessReasonMissingPrivilege = enum__ACCESS_REASON_TYPE.AccessReasonMissingPrivilege;
+pub const AccessReasonFromPrivilege = enum__ACCESS_REASON_TYPE.AccessReasonFromPrivilege;
+pub const AccessReasonIntegrityLevel = enum__ACCESS_REASON_TYPE.AccessReasonIntegrityLevel;
+pub const AccessReasonOwnership = enum__ACCESS_REASON_TYPE.AccessReasonOwnership;
+pub const AccessReasonNullDacl = enum__ACCESS_REASON_TYPE.AccessReasonNullDacl;
+pub const AccessReasonEmptyDacl = enum__ACCESS_REASON_TYPE.AccessReasonEmptyDacl;
+pub const AccessReasonNoSD = enum__ACCESS_REASON_TYPE.AccessReasonNoSD;
+pub const AccessReasonNoGrant = enum__ACCESS_REASON_TYPE.AccessReasonNoGrant;
+pub const AccessReasonTrustLabel = enum__ACCESS_REASON_TYPE.AccessReasonTrustLabel;
+pub const AccessReasonFilterAce = enum__ACCESS_REASON_TYPE.AccessReasonFilterAce;
+pub const enum__ACCESS_REASON_TYPE = extern enum {
+    AccessReasonNone = 0,
+    AccessReasonAllowedAce = 65536,
+    AccessReasonDeniedAce = 131072,
+    AccessReasonAllowedParentAce = 196608,
+    AccessReasonDeniedParentAce = 262144,
+    AccessReasonNotGrantedByCape = 327680,
+    AccessReasonNotGrantedByParentCape = 393216,
+    AccessReasonNotGrantedToAppContainer = 458752,
+    AccessReasonMissingPrivilege = 1048576,
+    AccessReasonFromPrivilege = 2097152,
+    AccessReasonIntegrityLevel = 3145728,
+    AccessReasonOwnership = 4194304,
+    AccessReasonNullDacl = 5242880,
+    AccessReasonEmptyDacl = 6291456,
+    AccessReasonNoSD = 7340032,
+    AccessReasonNoGrant = 8388608,
+    AccessReasonTrustLabel = 9437184,
+    AccessReasonFilterAce = 10485760,
+};
 pub const ACCESS_REASON_TYPE = enum__ACCESS_REASON_TYPE;
 pub const ACCESS_REASON = DWORD;
 pub const struct__ACCESS_REASONS = extern struct {
     Data: [32]ACCESS_REASON,
 };
 pub const ACCESS_REASONS = struct__ACCESS_REASONS;
-pub const PACCESS_REASONS = ?&struct__ACCESS_REASONS;
+pub const PACCESS_REASONS = ?*struct__ACCESS_REASONS;
 pub const struct__SE_SECURITY_DESCRIPTOR = extern struct {
     Size: DWORD,
     Flags: DWORD,
     SecurityDescriptor: PSECURITY_DESCRIPTOR,
 };
 pub const SE_SECURITY_DESCRIPTOR = struct__SE_SECURITY_DESCRIPTOR;
-pub const PSE_SECURITY_DESCRIPTOR = ?&struct__SE_SECURITY_DESCRIPTOR;
+pub const PSE_SECURITY_DESCRIPTOR = ?*struct__SE_SECURITY_DESCRIPTOR;
 pub const struct__SE_ACCESS_REQUEST = extern struct {
     Size: DWORD,
     SeSecurityDescriptor: PSE_SECURITY_DESCRIPTOR,
@@ -1859,17 +2085,17 @@ pub const struct__SE_ACCESS_REQUEST = extern struct {
     ObjectTypeList: POBJECT_TYPE_LIST,
 };
 pub const SE_ACCESS_REQUEST = struct__SE_ACCESS_REQUEST;
-pub const PSE_ACCESS_REQUEST = ?&struct__SE_ACCESS_REQUEST;
+pub const PSE_ACCESS_REQUEST = ?*struct__SE_ACCESS_REQUEST;
 pub const struct__SE_ACCESS_REPLY = extern struct {
     Size: DWORD,
     ResultListCount: DWORD,
     GrantedAccess: PACCESS_MASK,
     AccessStatus: PDWORD,
     AccessReason: PACCESS_REASONS,
-    Privileges: ?&PPRIVILEGE_SET,
+    Privileges: ?[*]PPRIVILEGE_SET,
 };
 pub const SE_ACCESS_REPLY = struct__SE_ACCESS_REPLY;
-pub const PSE_ACCESS_REPLY = ?&struct__SE_ACCESS_REPLY;
+pub const PSE_ACCESS_REPLY = ?*struct__SE_ACCESS_REPLY;
 pub const SecurityAnonymous = enum__SECURITY_IMPERSONATION_LEVEL.SecurityAnonymous;
 pub const SecurityIdentification = enum__SECURITY_IMPERSONATION_LEVEL.SecurityIdentification;
 pub const SecurityImpersonation = enum__SECURITY_IMPERSONATION_LEVEL.SecurityImpersonation;
@@ -1881,72 +2107,126 @@ pub const enum__SECURITY_IMPERSONATION_LEVEL = extern enum {
     SecurityDelegation,
 };
 pub const SECURITY_IMPERSONATION_LEVEL = enum__SECURITY_IMPERSONATION_LEVEL;
-pub const PSECURITY_IMPERSONATION_LEVEL = ?&enum__SECURITY_IMPERSONATION_LEVEL;
-pub const TokenPrimary: c_int = 1;
-pub const TokenImpersonation: c_int = 2;
-pub const enum__TOKEN_TYPE = c_int;
+pub const PSECURITY_IMPERSONATION_LEVEL = ?[*]enum__SECURITY_IMPERSONATION_LEVEL;
+pub const TokenPrimary = enum__TOKEN_TYPE.TokenPrimary;
+pub const TokenImpersonation = enum__TOKEN_TYPE.TokenImpersonation;
+pub const enum__TOKEN_TYPE = extern enum {
+    TokenPrimary = 1,
+    TokenImpersonation = 2,
+};
 pub const TOKEN_TYPE = enum__TOKEN_TYPE;
-pub const PTOKEN_TYPE = ?&TOKEN_TYPE;
-pub const TokenElevationTypeDefault: c_int = 1;
-pub const TokenElevationTypeFull: c_int = 2;
-pub const TokenElevationTypeLimited: c_int = 3;
-pub const enum__TOKEN_ELEVATION_TYPE = c_int;
+pub const PTOKEN_TYPE = ?[*]TOKEN_TYPE;
+pub const TokenElevationTypeDefault = enum__TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault;
+pub const TokenElevationTypeFull = enum__TOKEN_ELEVATION_TYPE.TokenElevationTypeFull;
+pub const TokenElevationTypeLimited = enum__TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited;
+pub const enum__TOKEN_ELEVATION_TYPE = extern enum {
+    TokenElevationTypeDefault = 1,
+    TokenElevationTypeFull = 2,
+    TokenElevationTypeLimited = 3,
+};
 pub const TOKEN_ELEVATION_TYPE = enum__TOKEN_ELEVATION_TYPE;
-pub const PTOKEN_ELEVATION_TYPE = ?&enum__TOKEN_ELEVATION_TYPE;
-pub const TokenUser: c_int = 1;
-pub const TokenGroups: c_int = 2;
-pub const TokenPrivileges: c_int = 3;
-pub const TokenOwner: c_int = 4;
-pub const TokenPrimaryGroup: c_int = 5;
-pub const TokenDefaultDacl: c_int = 6;
-pub const TokenSource: c_int = 7;
-pub const TokenType: c_int = 8;
-pub const TokenImpersonationLevel: c_int = 9;
-pub const TokenStatistics: c_int = 10;
-pub const TokenRestrictedSids: c_int = 11;
-pub const TokenSessionId: c_int = 12;
-pub const TokenGroupsAndPrivileges: c_int = 13;
-pub const TokenSessionReference: c_int = 14;
-pub const TokenSandBoxInert: c_int = 15;
-pub const TokenAuditPolicy: c_int = 16;
-pub const TokenOrigin: c_int = 17;
-pub const TokenElevationType: c_int = 18;
-pub const TokenLinkedToken: c_int = 19;
-pub const TokenElevation: c_int = 20;
-pub const TokenHasRestrictions: c_int = 21;
-pub const TokenAccessInformation: c_int = 22;
-pub const TokenVirtualizationAllowed: c_int = 23;
-pub const TokenVirtualizationEnabled: c_int = 24;
-pub const TokenIntegrityLevel: c_int = 25;
-pub const TokenUIAccess: c_int = 26;
-pub const TokenMandatoryPolicy: c_int = 27;
-pub const TokenLogonSid: c_int = 28;
-pub const TokenIsAppContainer: c_int = 29;
-pub const TokenCapabilities: c_int = 30;
-pub const TokenAppContainerSid: c_int = 31;
-pub const TokenAppContainerNumber: c_int = 32;
-pub const TokenUserClaimAttributes: c_int = 33;
-pub const TokenDeviceClaimAttributes: c_int = 34;
-pub const TokenRestrictedUserClaimAttributes: c_int = 35;
-pub const TokenRestrictedDeviceClaimAttributes: c_int = 36;
-pub const TokenDeviceGroups: c_int = 37;
-pub const TokenRestrictedDeviceGroups: c_int = 38;
-pub const TokenSecurityAttributes: c_int = 39;
-pub const TokenIsRestricted: c_int = 40;
-pub const TokenProcessTrustLevel: c_int = 41;
-pub const TokenPrivateNameSpace: c_int = 42;
-pub const TokenSingletonAttributes: c_int = 43;
-pub const TokenBnoIsolation: c_int = 44;
-pub const TokenChildProcessFlags: c_int = 45;
-pub const MaxTokenInfoClass: c_int = 46;
-pub const enum__TOKEN_INFORMATION_CLASS = c_int;
+pub const PTOKEN_ELEVATION_TYPE = ?[*]enum__TOKEN_ELEVATION_TYPE;
+pub const TokenUser = enum__TOKEN_INFORMATION_CLASS.TokenUser;
+pub const TokenGroups = enum__TOKEN_INFORMATION_CLASS.TokenGroups;
+pub const TokenPrivileges = enum__TOKEN_INFORMATION_CLASS.TokenPrivileges;
+pub const TokenOwner = enum__TOKEN_INFORMATION_CLASS.TokenOwner;
+pub const TokenPrimaryGroup = enum__TOKEN_INFORMATION_CLASS.TokenPrimaryGroup;
+pub const TokenDefaultDacl = enum__TOKEN_INFORMATION_CLASS.TokenDefaultDacl;
+pub const TokenSource = enum__TOKEN_INFORMATION_CLASS.TokenSource;
+pub const TokenType = enum__TOKEN_INFORMATION_CLASS.TokenType;
+pub const TokenImpersonationLevel = enum__TOKEN_INFORMATION_CLASS.TokenImpersonationLevel;
+pub const TokenStatistics = enum__TOKEN_INFORMATION_CLASS.TokenStatistics;
+pub const TokenRestrictedSids = enum__TOKEN_INFORMATION_CLASS.TokenRestrictedSids;
+pub const TokenSessionId = enum__TOKEN_INFORMATION_CLASS.TokenSessionId;
+pub const TokenGroupsAndPrivileges = enum__TOKEN_INFORMATION_CLASS.TokenGroupsAndPrivileges;
+pub const TokenSessionReference = enum__TOKEN_INFORMATION_CLASS.TokenSessionReference;
+pub const TokenSandBoxInert = enum__TOKEN_INFORMATION_CLASS.TokenSandBoxInert;
+pub const TokenAuditPolicy = enum__TOKEN_INFORMATION_CLASS.TokenAuditPolicy;
+pub const TokenOrigin = enum__TOKEN_INFORMATION_CLASS.TokenOrigin;
+pub const TokenElevationType = enum__TOKEN_INFORMATION_CLASS.TokenElevationType;
+pub const TokenLinkedToken = enum__TOKEN_INFORMATION_CLASS.TokenLinkedToken;
+pub const TokenElevation = enum__TOKEN_INFORMATION_CLASS.TokenElevation;
+pub const TokenHasRestrictions = enum__TOKEN_INFORMATION_CLASS.TokenHasRestrictions;
+pub const TokenAccessInformation = enum__TOKEN_INFORMATION_CLASS.TokenAccessInformation;
+pub const TokenVirtualizationAllowed = enum__TOKEN_INFORMATION_CLASS.TokenVirtualizationAllowed;
+pub const TokenVirtualizationEnabled = enum__TOKEN_INFORMATION_CLASS.TokenVirtualizationEnabled;
+pub const TokenIntegrityLevel = enum__TOKEN_INFORMATION_CLASS.TokenIntegrityLevel;
+pub const TokenUIAccess = enum__TOKEN_INFORMATION_CLASS.TokenUIAccess;
+pub const TokenMandatoryPolicy = enum__TOKEN_INFORMATION_CLASS.TokenMandatoryPolicy;
+pub const TokenLogonSid = enum__TOKEN_INFORMATION_CLASS.TokenLogonSid;
+pub const TokenIsAppContainer = enum__TOKEN_INFORMATION_CLASS.TokenIsAppContainer;
+pub const TokenCapabilities = enum__TOKEN_INFORMATION_CLASS.TokenCapabilities;
+pub const TokenAppContainerSid = enum__TOKEN_INFORMATION_CLASS.TokenAppContainerSid;
+pub const TokenAppContainerNumber = enum__TOKEN_INFORMATION_CLASS.TokenAppContainerNumber;
+pub const TokenUserClaimAttributes = enum__TOKEN_INFORMATION_CLASS.TokenUserClaimAttributes;
+pub const TokenDeviceClaimAttributes = enum__TOKEN_INFORMATION_CLASS.TokenDeviceClaimAttributes;
+pub const TokenRestrictedUserClaimAttributes = enum__TOKEN_INFORMATION_CLASS.TokenRestrictedUserClaimAttributes;
+pub const TokenRestrictedDeviceClaimAttributes = enum__TOKEN_INFORMATION_CLASS.TokenRestrictedDeviceClaimAttributes;
+pub const TokenDeviceGroups = enum__TOKEN_INFORMATION_CLASS.TokenDeviceGroups;
+pub const TokenRestrictedDeviceGroups = enum__TOKEN_INFORMATION_CLASS.TokenRestrictedDeviceGroups;
+pub const TokenSecurityAttributes = enum__TOKEN_INFORMATION_CLASS.TokenSecurityAttributes;
+pub const TokenIsRestricted = enum__TOKEN_INFORMATION_CLASS.TokenIsRestricted;
+pub const TokenProcessTrustLevel = enum__TOKEN_INFORMATION_CLASS.TokenProcessTrustLevel;
+pub const TokenPrivateNameSpace = enum__TOKEN_INFORMATION_CLASS.TokenPrivateNameSpace;
+pub const TokenSingletonAttributes = enum__TOKEN_INFORMATION_CLASS.TokenSingletonAttributes;
+pub const TokenBnoIsolation = enum__TOKEN_INFORMATION_CLASS.TokenBnoIsolation;
+pub const TokenChildProcessFlags = enum__TOKEN_INFORMATION_CLASS.TokenChildProcessFlags;
+pub const MaxTokenInfoClass = enum__TOKEN_INFORMATION_CLASS.MaxTokenInfoClass;
+pub const enum__TOKEN_INFORMATION_CLASS = extern enum {
+    TokenUser = 1,
+    TokenGroups = 2,
+    TokenPrivileges = 3,
+    TokenOwner = 4,
+    TokenPrimaryGroup = 5,
+    TokenDefaultDacl = 6,
+    TokenSource = 7,
+    TokenType = 8,
+    TokenImpersonationLevel = 9,
+    TokenStatistics = 10,
+    TokenRestrictedSids = 11,
+    TokenSessionId = 12,
+    TokenGroupsAndPrivileges = 13,
+    TokenSessionReference = 14,
+    TokenSandBoxInert = 15,
+    TokenAuditPolicy = 16,
+    TokenOrigin = 17,
+    TokenElevationType = 18,
+    TokenLinkedToken = 19,
+    TokenElevation = 20,
+    TokenHasRestrictions = 21,
+    TokenAccessInformation = 22,
+    TokenVirtualizationAllowed = 23,
+    TokenVirtualizationEnabled = 24,
+    TokenIntegrityLevel = 25,
+    TokenUIAccess = 26,
+    TokenMandatoryPolicy = 27,
+    TokenLogonSid = 28,
+    TokenIsAppContainer = 29,
+    TokenCapabilities = 30,
+    TokenAppContainerSid = 31,
+    TokenAppContainerNumber = 32,
+    TokenUserClaimAttributes = 33,
+    TokenDeviceClaimAttributes = 34,
+    TokenRestrictedUserClaimAttributes = 35,
+    TokenRestrictedDeviceClaimAttributes = 36,
+    TokenDeviceGroups = 37,
+    TokenRestrictedDeviceGroups = 38,
+    TokenSecurityAttributes = 39,
+    TokenIsRestricted = 40,
+    TokenProcessTrustLevel = 41,
+    TokenPrivateNameSpace = 42,
+    TokenSingletonAttributes = 43,
+    TokenBnoIsolation = 44,
+    TokenChildProcessFlags = 45,
+    MaxTokenInfoClass = 46,
+};
 pub const TOKEN_INFORMATION_CLASS = enum__TOKEN_INFORMATION_CLASS;
-pub const PTOKEN_INFORMATION_CLASS = ?&enum__TOKEN_INFORMATION_CLASS;
+pub const PTOKEN_INFORMATION_CLASS = ?[*]enum__TOKEN_INFORMATION_CLASS;
 pub const struct__TOKEN_USER = extern struct {
     User: SID_AND_ATTRIBUTES,
 };
 pub const TOKEN_USER = struct__TOKEN_USER;
-pub const PTOKEN_USER = ?&struct__TOKEN_USER;
+pub const PTOKEN_USER = ?*struct__TOKEN_USER;
 pub const struct__SE_TOKEN_USER = extern struct {
     @"": extern union {
         TokenUser: TOKEN_USER,
@@ -1964,38 +2244,38 @@ pub const struct__TOKEN_GROUPS = extern struct {
     Groups: [1]SID_AND_ATTRIBUTES,
 };
 pub const TOKEN_GROUPS = struct__TOKEN_GROUPS;
-pub const PTOKEN_GROUPS = ?&struct__TOKEN_GROUPS;
+pub const PTOKEN_GROUPS = ?*struct__TOKEN_GROUPS;
 pub const struct__TOKEN_PRIVILEGES = extern struct {
     PrivilegeCount: DWORD,
     Privileges: [1]LUID_AND_ATTRIBUTES,
 };
 pub const TOKEN_PRIVILEGES = struct__TOKEN_PRIVILEGES;
-pub const PTOKEN_PRIVILEGES = ?&struct__TOKEN_PRIVILEGES;
+pub const PTOKEN_PRIVILEGES = ?*struct__TOKEN_PRIVILEGES;
 pub const struct__TOKEN_OWNER = extern struct {
     Owner: PSID,
 };
 pub const TOKEN_OWNER = struct__TOKEN_OWNER;
-pub const PTOKEN_OWNER = ?&struct__TOKEN_OWNER;
+pub const PTOKEN_OWNER = ?*struct__TOKEN_OWNER;
 pub const struct__TOKEN_PRIMARY_GROUP = extern struct {
     PrimaryGroup: PSID,
 };
 pub const TOKEN_PRIMARY_GROUP = struct__TOKEN_PRIMARY_GROUP;
-pub const PTOKEN_PRIMARY_GROUP = ?&struct__TOKEN_PRIMARY_GROUP;
+pub const PTOKEN_PRIMARY_GROUP = ?*struct__TOKEN_PRIMARY_GROUP;
 pub const struct__TOKEN_DEFAULT_DACL = extern struct {
     DefaultDacl: PACL,
 };
 pub const TOKEN_DEFAULT_DACL = struct__TOKEN_DEFAULT_DACL;
-pub const PTOKEN_DEFAULT_DACL = ?&struct__TOKEN_DEFAULT_DACL;
+pub const PTOKEN_DEFAULT_DACL = ?*struct__TOKEN_DEFAULT_DACL;
 pub const struct__TOKEN_USER_CLAIMS = extern struct {
     UserClaims: PCLAIMS_BLOB,
 };
 pub const TOKEN_USER_CLAIMS = struct__TOKEN_USER_CLAIMS;
-pub const PTOKEN_USER_CLAIMS = ?&struct__TOKEN_USER_CLAIMS;
+pub const PTOKEN_USER_CLAIMS = ?*struct__TOKEN_USER_CLAIMS;
 pub const struct__TOKEN_DEVICE_CLAIMS = extern struct {
     DeviceClaims: PCLAIMS_BLOB,
 };
 pub const TOKEN_DEVICE_CLAIMS = struct__TOKEN_DEVICE_CLAIMS;
-pub const PTOKEN_DEVICE_CLAIMS = ?&struct__TOKEN_DEVICE_CLAIMS;
+pub const PTOKEN_DEVICE_CLAIMS = ?*struct__TOKEN_DEVICE_CLAIMS;
 pub const struct__TOKEN_GROUPS_AND_PRIVILEGES = extern struct {
     SidCount: DWORD,
     SidLength: DWORD,
@@ -2009,27 +2289,27 @@ pub const struct__TOKEN_GROUPS_AND_PRIVILEGES = extern struct {
     AuthenticationId: LUID,
 };
 pub const TOKEN_GROUPS_AND_PRIVILEGES = struct__TOKEN_GROUPS_AND_PRIVILEGES;
-pub const PTOKEN_GROUPS_AND_PRIVILEGES = ?&struct__TOKEN_GROUPS_AND_PRIVILEGES;
+pub const PTOKEN_GROUPS_AND_PRIVILEGES = ?*struct__TOKEN_GROUPS_AND_PRIVILEGES;
 pub const struct__TOKEN_LINKED_TOKEN = extern struct {
     LinkedToken: HANDLE,
 };
 pub const TOKEN_LINKED_TOKEN = struct__TOKEN_LINKED_TOKEN;
-pub const PTOKEN_LINKED_TOKEN = ?&struct__TOKEN_LINKED_TOKEN;
+pub const PTOKEN_LINKED_TOKEN = ?*struct__TOKEN_LINKED_TOKEN;
 pub const struct__TOKEN_ELEVATION = extern struct {
     TokenIsElevated: DWORD,
 };
 pub const TOKEN_ELEVATION = struct__TOKEN_ELEVATION;
-pub const PTOKEN_ELEVATION = ?&struct__TOKEN_ELEVATION;
+pub const PTOKEN_ELEVATION = ?*struct__TOKEN_ELEVATION;
 pub const struct__TOKEN_MANDATORY_LABEL = extern struct {
     Label: SID_AND_ATTRIBUTES,
 };
 pub const TOKEN_MANDATORY_LABEL = struct__TOKEN_MANDATORY_LABEL;
-pub const PTOKEN_MANDATORY_LABEL = ?&struct__TOKEN_MANDATORY_LABEL;
+pub const PTOKEN_MANDATORY_LABEL = ?*struct__TOKEN_MANDATORY_LABEL;
 pub const struct__TOKEN_MANDATORY_POLICY = extern struct {
     Policy: DWORD,
 };
 pub const TOKEN_MANDATORY_POLICY = struct__TOKEN_MANDATORY_POLICY;
-pub const PTOKEN_MANDATORY_POLICY = ?&struct__TOKEN_MANDATORY_POLICY;
+pub const PTOKEN_MANDATORY_POLICY = ?*struct__TOKEN_MANDATORY_POLICY;
 pub const PSECURITY_ATTRIBUTES_OPAQUE = PVOID;
 pub const struct__TOKEN_ACCESS_INFORMATION = extern struct {
     SidHash: PSID_AND_ATTRIBUTES_HASH,
@@ -2047,18 +2327,18 @@ pub const struct__TOKEN_ACCESS_INFORMATION = extern struct {
     SecurityAttributes: PSECURITY_ATTRIBUTES_OPAQUE,
 };
 pub const TOKEN_ACCESS_INFORMATION = struct__TOKEN_ACCESS_INFORMATION;
-pub const PTOKEN_ACCESS_INFORMATION = ?&struct__TOKEN_ACCESS_INFORMATION;
+pub const PTOKEN_ACCESS_INFORMATION = ?*struct__TOKEN_ACCESS_INFORMATION;
 pub const struct__TOKEN_AUDIT_POLICY = extern struct {
     PerUserPolicy: [30]BYTE,
 };
 pub const TOKEN_AUDIT_POLICY = struct__TOKEN_AUDIT_POLICY;
-pub const PTOKEN_AUDIT_POLICY = ?&struct__TOKEN_AUDIT_POLICY;
+pub const PTOKEN_AUDIT_POLICY = ?*struct__TOKEN_AUDIT_POLICY;
 pub const struct__TOKEN_SOURCE = extern struct {
     SourceName: [8]CHAR,
     SourceIdentifier: LUID,
 };
 pub const TOKEN_SOURCE = struct__TOKEN_SOURCE;
-pub const PTOKEN_SOURCE = ?&struct__TOKEN_SOURCE;
+pub const PTOKEN_SOURCE = ?*struct__TOKEN_SOURCE;
 pub const struct__TOKEN_STATISTICS = extern struct {
     TokenId: LUID,
     AuthenticationId: LUID,
@@ -2072,7 +2352,7 @@ pub const struct__TOKEN_STATISTICS = extern struct {
     ModifiedId: LUID,
 };
 pub const TOKEN_STATISTICS = struct__TOKEN_STATISTICS;
-pub const PTOKEN_STATISTICS = ?&struct__TOKEN_STATISTICS;
+pub const PTOKEN_STATISTICS = ?*struct__TOKEN_STATISTICS;
 pub const struct__TOKEN_CONTROL = extern struct {
     TokenId: LUID,
     AuthenticationId: LUID,
@@ -2080,50 +2360,58 @@ pub const struct__TOKEN_CONTROL = extern struct {
     TokenSource: TOKEN_SOURCE,
 };
 pub const TOKEN_CONTROL = struct__TOKEN_CONTROL;
-pub const PTOKEN_CONTROL = ?&struct__TOKEN_CONTROL;
+pub const PTOKEN_CONTROL = ?*struct__TOKEN_CONTROL;
 pub const struct__TOKEN_ORIGIN = extern struct {
     OriginatingLogonSession: LUID,
 };
 pub const TOKEN_ORIGIN = struct__TOKEN_ORIGIN;
-pub const PTOKEN_ORIGIN = ?&struct__TOKEN_ORIGIN;
-pub const MandatoryLevelUntrusted: c_int = 0;
-pub const MandatoryLevelLow: c_int = 1;
-pub const MandatoryLevelMedium: c_int = 2;
-pub const MandatoryLevelHigh: c_int = 3;
-pub const MandatoryLevelSystem: c_int = 4;
-pub const MandatoryLevelSecureProcess: c_int = 5;
-pub const MandatoryLevelCount: c_int = 6;
-pub const enum__MANDATORY_LEVEL = c_int;
+pub const PTOKEN_ORIGIN = ?*struct__TOKEN_ORIGIN;
+pub const MandatoryLevelUntrusted = enum__MANDATORY_LEVEL.MandatoryLevelUntrusted;
+pub const MandatoryLevelLow = enum__MANDATORY_LEVEL.MandatoryLevelLow;
+pub const MandatoryLevelMedium = enum__MANDATORY_LEVEL.MandatoryLevelMedium;
+pub const MandatoryLevelHigh = enum__MANDATORY_LEVEL.MandatoryLevelHigh;
+pub const MandatoryLevelSystem = enum__MANDATORY_LEVEL.MandatoryLevelSystem;
+pub const MandatoryLevelSecureProcess = enum__MANDATORY_LEVEL.MandatoryLevelSecureProcess;
+pub const MandatoryLevelCount = enum__MANDATORY_LEVEL.MandatoryLevelCount;
+pub const enum__MANDATORY_LEVEL = extern enum {
+    MandatoryLevelUntrusted = 0,
+    MandatoryLevelLow = 1,
+    MandatoryLevelMedium = 2,
+    MandatoryLevelHigh = 3,
+    MandatoryLevelSystem = 4,
+    MandatoryLevelSecureProcess = 5,
+    MandatoryLevelCount = 6,
+};
 pub const MANDATORY_LEVEL = enum__MANDATORY_LEVEL;
-pub const PMANDATORY_LEVEL = ?&enum__MANDATORY_LEVEL;
+pub const PMANDATORY_LEVEL = ?[*]enum__MANDATORY_LEVEL;
 pub const struct__TOKEN_APPCONTAINER_INFORMATION = extern struct {
     TokenAppContainer: PSID,
 };
 pub const TOKEN_APPCONTAINER_INFORMATION = struct__TOKEN_APPCONTAINER_INFORMATION;
-pub const PTOKEN_APPCONTAINER_INFORMATION = ?&struct__TOKEN_APPCONTAINER_INFORMATION;
+pub const PTOKEN_APPCONTAINER_INFORMATION = ?*struct__TOKEN_APPCONTAINER_INFORMATION;
 pub const struct__TOKEN_SID_INFORMATION = extern struct {
     Sid: PSID,
 };
 pub const TOKEN_SID_INFORMATION = struct__TOKEN_SID_INFORMATION;
-pub const PTOKEN_SID_INFORMATION = ?&struct__TOKEN_SID_INFORMATION;
+pub const PTOKEN_SID_INFORMATION = ?*struct__TOKEN_SID_INFORMATION;
 pub const struct__TOKEN_BNO_ISOLATION_INFORMATION = extern struct {
     IsolationPrefix: PWSTR,
     IsolationEnabled: BOOLEAN,
 };
 pub const TOKEN_BNO_ISOLATION_INFORMATION = struct__TOKEN_BNO_ISOLATION_INFORMATION;
-pub const PTOKEN_BNO_ISOLATION_INFORMATION = ?&struct__TOKEN_BNO_ISOLATION_INFORMATION;
+pub const PTOKEN_BNO_ISOLATION_INFORMATION = ?*struct__TOKEN_BNO_ISOLATION_INFORMATION;
 pub const struct__CLAIM_SECURITY_ATTRIBUTE_FQBN_VALUE = extern struct {
     Version: DWORD64,
     Name: PWSTR,
 };
 pub const CLAIM_SECURITY_ATTRIBUTE_FQBN_VALUE = struct__CLAIM_SECURITY_ATTRIBUTE_FQBN_VALUE;
-pub const PCLAIM_SECURITY_ATTRIBUTE_FQBN_VALUE = ?&struct__CLAIM_SECURITY_ATTRIBUTE_FQBN_VALUE;
+pub const PCLAIM_SECURITY_ATTRIBUTE_FQBN_VALUE = ?*struct__CLAIM_SECURITY_ATTRIBUTE_FQBN_VALUE;
 pub const struct__CLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE = extern struct {
     pValue: PVOID,
     ValueLength: DWORD,
 };
 pub const CLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE = struct__CLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE;
-pub const PCLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE = ?&struct__CLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE;
+pub const PCLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE = ?*struct__CLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE;
 pub const struct__CLAIM_SECURITY_ATTRIBUTE_V1 = extern struct {
     Name: PWSTR,
     ValueType: WORD,
@@ -2133,13 +2421,13 @@ pub const struct__CLAIM_SECURITY_ATTRIBUTE_V1 = extern struct {
     Values: extern union {
         pInt64: PLONG64,
         pUint64: PDWORD64,
-        ppString: ?&PWSTR,
+        ppString: ?[*]PWSTR,
         pFqbn: PCLAIM_SECURITY_ATTRIBUTE_FQBN_VALUE,
         pOctetString: PCLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE,
     },
 };
 pub const CLAIM_SECURITY_ATTRIBUTE_V1 = struct__CLAIM_SECURITY_ATTRIBUTE_V1;
-pub const PCLAIM_SECURITY_ATTRIBUTE_V1 = ?&struct__CLAIM_SECURITY_ATTRIBUTE_V1;
+pub const PCLAIM_SECURITY_ATTRIBUTE_V1 = ?*struct__CLAIM_SECURITY_ATTRIBUTE_V1;
 pub const struct__CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1 = extern struct {
     Name: DWORD,
     ValueType: WORD,
@@ -2155,7 +2443,7 @@ pub const struct__CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1 = extern struct {
     },
 };
 pub const CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1 = struct__CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1;
-pub const PCLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1 = ?&struct__CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1;
+pub const PCLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1 = ?*struct__CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1;
 pub const struct__CLAIM_SECURITY_ATTRIBUTES_INFORMATION = extern struct {
     Version: WORD,
     Reserved: WORD,
@@ -2165,9 +2453,9 @@ pub const struct__CLAIM_SECURITY_ATTRIBUTES_INFORMATION = extern struct {
     },
 };
 pub const CLAIM_SECURITY_ATTRIBUTES_INFORMATION = struct__CLAIM_SECURITY_ATTRIBUTES_INFORMATION;
-pub const PCLAIM_SECURITY_ATTRIBUTES_INFORMATION = ?&struct__CLAIM_SECURITY_ATTRIBUTES_INFORMATION;
+pub const PCLAIM_SECURITY_ATTRIBUTES_INFORMATION = ?*struct__CLAIM_SECURITY_ATTRIBUTES_INFORMATION;
 pub const SECURITY_CONTEXT_TRACKING_MODE = BOOLEAN;
-pub const PSECURITY_CONTEXT_TRACKING_MODE = ?&BOOLEAN;
+pub const PSECURITY_CONTEXT_TRACKING_MODE = ?[*]BOOLEAN;
 pub const struct__SECURITY_QUALITY_OF_SERVICE = extern struct {
     Length: DWORD,
     ImpersonationLevel: SECURITY_IMPERSONATION_LEVEL,
@@ -2175,7 +2463,7 @@ pub const struct__SECURITY_QUALITY_OF_SERVICE = extern struct {
     EffectiveOnly: BOOLEAN,
 };
 pub const SECURITY_QUALITY_OF_SERVICE = struct__SECURITY_QUALITY_OF_SERVICE;
-pub const PSECURITY_QUALITY_OF_SERVICE = ?&struct__SECURITY_QUALITY_OF_SERVICE;
+pub const PSECURITY_QUALITY_OF_SERVICE = ?*struct__SECURITY_QUALITY_OF_SERVICE;
 pub const struct__SE_IMPERSONATION_STATE = extern struct {
     Token: PACCESS_TOKEN,
     CopyOnOpen: BOOLEAN,
@@ -2183,25 +2471,37 @@ pub const struct__SE_IMPERSONATION_STATE = extern struct {
     Level: SECURITY_IMPERSONATION_LEVEL,
 };
 pub const SE_IMPERSONATION_STATE = struct__SE_IMPERSONATION_STATE;
-pub const PSE_IMPERSONATION_STATE = ?&struct__SE_IMPERSONATION_STATE;
+pub const PSE_IMPERSONATION_STATE = ?*struct__SE_IMPERSONATION_STATE;
 pub const SECURITY_INFORMATION = DWORD;
-pub const PSECURITY_INFORMATION = ?&DWORD;
+pub const PSECURITY_INFORMATION = ?[*]DWORD;
 pub const SE_SIGNING_LEVEL = BYTE;
-pub const PSE_SIGNING_LEVEL = ?&BYTE;
-pub const SeImageSignatureNone: c_int = 0;
-pub const SeImageSignatureEmbedded: c_int = 1;
-pub const SeImageSignatureCache: c_int = 2;
-pub const SeImageSignatureCatalogCached: c_int = 3;
-pub const SeImageSignatureCatalogNotCached: c_int = 4;
-pub const SeImageSignatureCatalogHint: c_int = 5;
-pub const SeImageSignaturePackageCatalog: c_int = 6;
-pub const enum__SE_IMAGE_SIGNATURE_TYPE = c_int;
+pub const PSE_SIGNING_LEVEL = ?[*]BYTE;
+pub const SeImageSignatureNone = enum__SE_IMAGE_SIGNATURE_TYPE.SeImageSignatureNone;
+pub const SeImageSignatureEmbedded = enum__SE_IMAGE_SIGNATURE_TYPE.SeImageSignatureEmbedded;
+pub const SeImageSignatureCache = enum__SE_IMAGE_SIGNATURE_TYPE.SeImageSignatureCache;
+pub const SeImageSignatureCatalogCached = enum__SE_IMAGE_SIGNATURE_TYPE.SeImageSignatureCatalogCached;
+pub const SeImageSignatureCatalogNotCached = enum__SE_IMAGE_SIGNATURE_TYPE.SeImageSignatureCatalogNotCached;
+pub const SeImageSignatureCatalogHint = enum__SE_IMAGE_SIGNATURE_TYPE.SeImageSignatureCatalogHint;
+pub const SeImageSignaturePackageCatalog = enum__SE_IMAGE_SIGNATURE_TYPE.SeImageSignaturePackageCatalog;
+pub const enum__SE_IMAGE_SIGNATURE_TYPE = extern enum {
+    SeImageSignatureNone = 0,
+    SeImageSignatureEmbedded = 1,
+    SeImageSignatureCache = 2,
+    SeImageSignatureCatalogCached = 3,
+    SeImageSignatureCatalogNotCached = 4,
+    SeImageSignatureCatalogHint = 5,
+    SeImageSignaturePackageCatalog = 6,
+};
 pub const SE_IMAGE_SIGNATURE_TYPE = enum__SE_IMAGE_SIGNATURE_TYPE;
-pub const PSE_IMAGE_SIGNATURE_TYPE = ?&enum__SE_IMAGE_SIGNATURE_TYPE;
-pub const SeLearningModeInvalidType: c_int = 0;
-pub const SeLearningModeSettings: c_int = 1;
-pub const SeLearningModeMax: c_int = 2;
-pub const enum__SE_LEARNING_MODE_DATA_TYPE = c_int;
+pub const PSE_IMAGE_SIGNATURE_TYPE = ?[*]enum__SE_IMAGE_SIGNATURE_TYPE;
+pub const SeLearningModeInvalidType = enum__SE_LEARNING_MODE_DATA_TYPE.SeLearningModeInvalidType;
+pub const SeLearningModeSettings = enum__SE_LEARNING_MODE_DATA_TYPE.SeLearningModeSettings;
+pub const SeLearningModeMax = enum__SE_LEARNING_MODE_DATA_TYPE.SeLearningModeMax;
+pub const enum__SE_LEARNING_MODE_DATA_TYPE = extern enum {
+    SeLearningModeInvalidType = 0,
+    SeLearningModeSettings = 1,
+    SeLearningModeMax = 2,
+};
 pub const SE_LEARNING_MODE_DATA_TYPE = enum__SE_LEARNING_MODE_DATA_TYPE;
 pub const struct__SECURITY_CAPABILITIES = extern struct {
     AppContainerSid: PSID,
@@ -2210,23 +2510,23 @@ pub const struct__SECURITY_CAPABILITIES = extern struct {
     Reserved: DWORD,
 };
 pub const SECURITY_CAPABILITIES = struct__SECURITY_CAPABILITIES;
-pub const PSECURITY_CAPABILITIES = ?&struct__SECURITY_CAPABILITIES;
-pub const LPSECURITY_CAPABILITIES = ?&struct__SECURITY_CAPABILITIES;
+pub const PSECURITY_CAPABILITIES = ?*struct__SECURITY_CAPABILITIES;
+pub const LPSECURITY_CAPABILITIES = ?*struct__SECURITY_CAPABILITIES;
 pub const struct__JOB_SET_ARRAY = extern struct {
     JobHandle: HANDLE,
     MemberLevel: DWORD,
     Flags: DWORD,
 };
 pub const JOB_SET_ARRAY = struct__JOB_SET_ARRAY;
-pub const PJOB_SET_ARRAY = ?&struct__JOB_SET_ARRAY;
+pub const PJOB_SET_ARRAY = ?*struct__JOB_SET_ARRAY;
 pub const struct__EXCEPTION_REGISTRATION_RECORD = extern struct {
-    Next: ?&struct__EXCEPTION_REGISTRATION_RECORD,
+    Next: ?*struct__EXCEPTION_REGISTRATION_RECORD,
     Handler: PEXCEPTION_ROUTINE,
 };
 pub const EXCEPTION_REGISTRATION_RECORD = struct__EXCEPTION_REGISTRATION_RECORD;
-pub const PEXCEPTION_REGISTRATION_RECORD = ?&EXCEPTION_REGISTRATION_RECORD;
+pub const PEXCEPTION_REGISTRATION_RECORD = ?[*]EXCEPTION_REGISTRATION_RECORD;
 pub const struct__NT_TIB = extern struct {
-    ExceptionList: ?&struct__EXCEPTION_REGISTRATION_RECORD,
+    ExceptionList: ?*struct__EXCEPTION_REGISTRATION_RECORD,
     StackBase: PVOID,
     StackLimit: PVOID,
     SubSystemTib: PVOID,
@@ -2235,10 +2535,10 @@ pub const struct__NT_TIB = extern struct {
         Version: DWORD,
     },
     ArbitraryUserPointer: PVOID,
-    Self: ?&struct__NT_TIB,
+    Self: ?*struct__NT_TIB,
 };
 pub const NT_TIB = struct__NT_TIB;
-pub const PNT_TIB = ?&NT_TIB;
+pub const PNT_TIB = ?[*]NT_TIB;
 pub const struct__NT_TIB32 = extern struct {
     ExceptionList: DWORD,
     StackBase: DWORD,
@@ -2252,7 +2552,7 @@ pub const struct__NT_TIB32 = extern struct {
     Self: DWORD,
 };
 pub const NT_TIB32 = struct__NT_TIB32;
-pub const PNT_TIB32 = ?&struct__NT_TIB32;
+pub const PNT_TIB32 = ?*struct__NT_TIB32;
 pub const struct__NT_TIB64 = extern struct {
     ExceptionList: DWORD64,
     StackBase: DWORD64,
@@ -2266,14 +2566,14 @@ pub const struct__NT_TIB64 = extern struct {
     Self: DWORD64,
 };
 pub const NT_TIB64 = struct__NT_TIB64;
-pub const PNT_TIB64 = ?&struct__NT_TIB64;
+pub const PNT_TIB64 = ?*struct__NT_TIB64;
 pub const struct__UMS_CREATE_THREAD_ATTRIBUTES = extern struct {
     UmsVersion: DWORD,
     UmsContext: PVOID,
     UmsCompletionList: PVOID,
 };
 pub const UMS_CREATE_THREAD_ATTRIBUTES = struct__UMS_CREATE_THREAD_ATTRIBUTES;
-pub const PUMS_CREATE_THREAD_ATTRIBUTES = ?&struct__UMS_CREATE_THREAD_ATTRIBUTES;
+pub const PUMS_CREATE_THREAD_ATTRIBUTES = ?*struct__UMS_CREATE_THREAD_ATTRIBUTES;
 pub const struct__WOW64_ARCHITECTURE_INFORMATION = @OpaqueType();
 pub const WOW64_ARCHITECTURE_INFORMATION = struct__WOW64_ARCHITECTURE_INFORMATION;
 pub const struct__QUOTA_LIMITS = extern struct {
@@ -2285,13 +2585,13 @@ pub const struct__QUOTA_LIMITS = extern struct {
     TimeLimit: LARGE_INTEGER,
 };
 pub const QUOTA_LIMITS = struct__QUOTA_LIMITS;
-pub const PQUOTA_LIMITS = ?&struct__QUOTA_LIMITS;
+pub const PQUOTA_LIMITS = ?*struct__QUOTA_LIMITS;
 pub const union__RATE_QUOTA_LIMIT = extern union {
     RateData: DWORD,
     @"": @OpaqueType(),
 };
 pub const RATE_QUOTA_LIMIT = union__RATE_QUOTA_LIMIT;
-pub const PRATE_QUOTA_LIMIT = ?&union__RATE_QUOTA_LIMIT;
+pub const PRATE_QUOTA_LIMIT = ?[*]union__RATE_QUOTA_LIMIT;
 pub const struct__QUOTA_LIMITS_EX = extern struct {
     PagedPoolLimit: SIZE_T,
     NonPagedPoolLimit: SIZE_T,
@@ -2307,7 +2607,7 @@ pub const struct__QUOTA_LIMITS_EX = extern struct {
     CpuRateLimit: RATE_QUOTA_LIMIT,
 };
 pub const QUOTA_LIMITS_EX = struct__QUOTA_LIMITS_EX;
-pub const PQUOTA_LIMITS_EX = ?&struct__QUOTA_LIMITS_EX;
+pub const PQUOTA_LIMITS_EX = ?*struct__QUOTA_LIMITS_EX;
 pub const struct__IO_COUNTERS = extern struct {
     ReadOperationCount: ULONGLONG,
     WriteOperationCount: ULONGLONG,
@@ -2317,7 +2617,7 @@ pub const struct__IO_COUNTERS = extern struct {
     OtherTransferCount: ULONGLONG,
 };
 pub const IO_COUNTERS = struct__IO_COUNTERS;
-pub const PIO_COUNTERS = ?&IO_COUNTERS;
+pub const PIO_COUNTERS = ?[*]IO_COUNTERS;
 pub const PMCCounter = enum__HARDWARE_COUNTER_TYPE.PMCCounter;
 pub const MaxHardwareCounterType = enum__HARDWARE_COUNTER_TYPE.MaxHardwareCounterType;
 pub const enum__HARDWARE_COUNTER_TYPE = extern enum {
@@ -2325,7 +2625,7 @@ pub const enum__HARDWARE_COUNTER_TYPE = extern enum {
     MaxHardwareCounterType,
 };
 pub const HARDWARE_COUNTER_TYPE = enum__HARDWARE_COUNTER_TYPE;
-pub const PHARDWARE_COUNTER_TYPE = ?&enum__HARDWARE_COUNTER_TYPE;
+pub const PHARDWARE_COUNTER_TYPE = ?[*]enum__HARDWARE_COUNTER_TYPE;
 pub const ProcessDEPPolicy = enum__PROCESS_MITIGATION_POLICY.ProcessDEPPolicy;
 pub const ProcessASLRPolicy = enum__PROCESS_MITIGATION_POLICY.ProcessASLRPolicy;
 pub const ProcessDynamicCodePolicy = enum__PROCESS_MITIGATION_POLICY.ProcessDynamicCodePolicy;
@@ -2359,7 +2659,7 @@ pub const enum__PROCESS_MITIGATION_POLICY = extern enum {
     MaxProcessMitigationPolicy,
 };
 pub const PROCESS_MITIGATION_POLICY = enum__PROCESS_MITIGATION_POLICY;
-pub const PPROCESS_MITIGATION_POLICY = ?&enum__PROCESS_MITIGATION_POLICY;
+pub const PPROCESS_MITIGATION_POLICY = ?[*]enum__PROCESS_MITIGATION_POLICY;
 pub const struct__PROCESS_MITIGATION_ASLR_POLICY = extern struct {
     @"": extern union {
         Flags: DWORD,
@@ -2367,7 +2667,7 @@ pub const struct__PROCESS_MITIGATION_ASLR_POLICY = extern struct {
     },
 };
 pub const PROCESS_MITIGATION_ASLR_POLICY = struct__PROCESS_MITIGATION_ASLR_POLICY;
-pub const PPROCESS_MITIGATION_ASLR_POLICY = ?&struct__PROCESS_MITIGATION_ASLR_POLICY;
+pub const PPROCESS_MITIGATION_ASLR_POLICY = ?*struct__PROCESS_MITIGATION_ASLR_POLICY;
 pub const struct__PROCESS_MITIGATION_DEP_POLICY = extern struct {
     @"": extern union {
         Flags: DWORD,
@@ -2376,7 +2676,7 @@ pub const struct__PROCESS_MITIGATION_DEP_POLICY = extern struct {
     Permanent: BOOLEAN,
 };
 pub const PROCESS_MITIGATION_DEP_POLICY = struct__PROCESS_MITIGATION_DEP_POLICY;
-pub const PPROCESS_MITIGATION_DEP_POLICY = ?&struct__PROCESS_MITIGATION_DEP_POLICY;
+pub const PPROCESS_MITIGATION_DEP_POLICY = ?*struct__PROCESS_MITIGATION_DEP_POLICY;
 pub const struct__PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY = extern struct {
     @"": extern union {
         Flags: DWORD,
@@ -2384,7 +2684,7 @@ pub const struct__PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY = extern struct 
     },
 };
 pub const PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY = struct__PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY;
-pub const PPROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY = ?&struct__PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY;
+pub const PPROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY = ?*struct__PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY;
 pub const struct__PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY = extern struct {
     @"": extern union {
         Flags: DWORD,
@@ -2392,7 +2692,7 @@ pub const struct__PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY = extern struct 
     },
 };
 pub const PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY = struct__PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY;
-pub const PPROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY = ?&struct__PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY;
+pub const PPROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY = ?*struct__PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY;
 pub const struct__PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY = extern struct {
     @"": extern union {
         Flags: DWORD,
@@ -2400,7 +2700,7 @@ pub const struct__PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY = extern str
     },
 };
 pub const PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY = struct__PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY;
-pub const PPROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY = ?&struct__PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY;
+pub const PPROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY = ?*struct__PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY;
 pub const struct__PROCESS_MITIGATION_DYNAMIC_CODE_POLICY = extern struct {
     @"": extern union {
         Flags: DWORD,
@@ -2408,7 +2708,7 @@ pub const struct__PROCESS_MITIGATION_DYNAMIC_CODE_POLICY = extern struct {
     },
 };
 pub const PROCESS_MITIGATION_DYNAMIC_CODE_POLICY = struct__PROCESS_MITIGATION_DYNAMIC_CODE_POLICY;
-pub const PPROCESS_MITIGATION_DYNAMIC_CODE_POLICY = ?&struct__PROCESS_MITIGATION_DYNAMIC_CODE_POLICY;
+pub const PPROCESS_MITIGATION_DYNAMIC_CODE_POLICY = ?*struct__PROCESS_MITIGATION_DYNAMIC_CODE_POLICY;
 pub const struct__PROCESS_MITIGATION_CONTROL_FLOW_GUARD_POLICY = extern struct {
     @"": extern union {
         Flags: DWORD,
@@ -2416,7 +2716,7 @@ pub const struct__PROCESS_MITIGATION_CONTROL_FLOW_GUARD_POLICY = extern struct {
     },
 };
 pub const PROCESS_MITIGATION_CONTROL_FLOW_GUARD_POLICY = struct__PROCESS_MITIGATION_CONTROL_FLOW_GUARD_POLICY;
-pub const PPROCESS_MITIGATION_CONTROL_FLOW_GUARD_POLICY = ?&struct__PROCESS_MITIGATION_CONTROL_FLOW_GUARD_POLICY;
+pub const PPROCESS_MITIGATION_CONTROL_FLOW_GUARD_POLICY = ?*struct__PROCESS_MITIGATION_CONTROL_FLOW_GUARD_POLICY;
 pub const struct__PROCESS_MITIGATION_BINARY_SIGNATURE_POLICY = extern struct {
     @"": extern union {
         Flags: DWORD,
@@ -2424,7 +2724,7 @@ pub const struct__PROCESS_MITIGATION_BINARY_SIGNATURE_POLICY = extern struct {
     },
 };
 pub const PROCESS_MITIGATION_BINARY_SIGNATURE_POLICY = struct__PROCESS_MITIGATION_BINARY_SIGNATURE_POLICY;
-pub const PPROCESS_MITIGATION_BINARY_SIGNATURE_POLICY = ?&struct__PROCESS_MITIGATION_BINARY_SIGNATURE_POLICY;
+pub const PPROCESS_MITIGATION_BINARY_SIGNATURE_POLICY = ?*struct__PROCESS_MITIGATION_BINARY_SIGNATURE_POLICY;
 pub const struct__PROCESS_MITIGATION_FONT_DISABLE_POLICY = extern struct {
     @"": extern union {
         Flags: DWORD,
@@ -2432,7 +2732,7 @@ pub const struct__PROCESS_MITIGATION_FONT_DISABLE_POLICY = extern struct {
     },
 };
 pub const PROCESS_MITIGATION_FONT_DISABLE_POLICY = struct__PROCESS_MITIGATION_FONT_DISABLE_POLICY;
-pub const PPROCESS_MITIGATION_FONT_DISABLE_POLICY = ?&struct__PROCESS_MITIGATION_FONT_DISABLE_POLICY;
+pub const PPROCESS_MITIGATION_FONT_DISABLE_POLICY = ?*struct__PROCESS_MITIGATION_FONT_DISABLE_POLICY;
 pub const struct__PROCESS_MITIGATION_IMAGE_LOAD_POLICY = extern struct {
     @"": extern union {
         Flags: DWORD,
@@ -2440,7 +2740,7 @@ pub const struct__PROCESS_MITIGATION_IMAGE_LOAD_POLICY = extern struct {
     },
 };
 pub const PROCESS_MITIGATION_IMAGE_LOAD_POLICY = struct__PROCESS_MITIGATION_IMAGE_LOAD_POLICY;
-pub const PPROCESS_MITIGATION_IMAGE_LOAD_POLICY = ?&struct__PROCESS_MITIGATION_IMAGE_LOAD_POLICY;
+pub const PPROCESS_MITIGATION_IMAGE_LOAD_POLICY = ?*struct__PROCESS_MITIGATION_IMAGE_LOAD_POLICY;
 pub const struct__PROCESS_MITIGATION_SYSTEM_CALL_FILTER_POLICY = extern struct {
     @"": extern union {
         Flags: DWORD,
@@ -2448,7 +2748,7 @@ pub const struct__PROCESS_MITIGATION_SYSTEM_CALL_FILTER_POLICY = extern struct {
     },
 };
 pub const PROCESS_MITIGATION_SYSTEM_CALL_FILTER_POLICY = struct__PROCESS_MITIGATION_SYSTEM_CALL_FILTER_POLICY;
-pub const PPROCESS_MITIGATION_SYSTEM_CALL_FILTER_POLICY = ?&struct__PROCESS_MITIGATION_SYSTEM_CALL_FILTER_POLICY;
+pub const PPROCESS_MITIGATION_SYSTEM_CALL_FILTER_POLICY = ?*struct__PROCESS_MITIGATION_SYSTEM_CALL_FILTER_POLICY;
 pub const struct__PROCESS_MITIGATION_PAYLOAD_RESTRICTION_POLICY = extern struct {
     @"": extern union {
         Flags: DWORD,
@@ -2456,7 +2756,7 @@ pub const struct__PROCESS_MITIGATION_PAYLOAD_RESTRICTION_POLICY = extern struct 
     },
 };
 pub const PROCESS_MITIGATION_PAYLOAD_RESTRICTION_POLICY = struct__PROCESS_MITIGATION_PAYLOAD_RESTRICTION_POLICY;
-pub const PPROCESS_MITIGATION_PAYLOAD_RESTRICTION_POLICY = ?&struct__PROCESS_MITIGATION_PAYLOAD_RESTRICTION_POLICY;
+pub const PPROCESS_MITIGATION_PAYLOAD_RESTRICTION_POLICY = ?*struct__PROCESS_MITIGATION_PAYLOAD_RESTRICTION_POLICY;
 pub const struct__PROCESS_MITIGATION_CHILD_PROCESS_POLICY = extern struct {
     @"": extern union {
         Flags: DWORD,
@@ -2464,7 +2764,7 @@ pub const struct__PROCESS_MITIGATION_CHILD_PROCESS_POLICY = extern struct {
     },
 };
 pub const PROCESS_MITIGATION_CHILD_PROCESS_POLICY = struct__PROCESS_MITIGATION_CHILD_PROCESS_POLICY;
-pub const PPROCESS_MITIGATION_CHILD_PROCESS_POLICY = ?&struct__PROCESS_MITIGATION_CHILD_PROCESS_POLICY;
+pub const PPROCESS_MITIGATION_CHILD_PROCESS_POLICY = ?*struct__PROCESS_MITIGATION_CHILD_PROCESS_POLICY;
 pub const struct__JOBOBJECT_BASIC_ACCOUNTING_INFORMATION = extern struct {
     TotalUserTime: LARGE_INTEGER,
     TotalKernelTime: LARGE_INTEGER,
@@ -2476,7 +2776,7 @@ pub const struct__JOBOBJECT_BASIC_ACCOUNTING_INFORMATION = extern struct {
     TotalTerminatedProcesses: DWORD,
 };
 pub const JOBOBJECT_BASIC_ACCOUNTING_INFORMATION = struct__JOBOBJECT_BASIC_ACCOUNTING_INFORMATION;
-pub const PJOBOBJECT_BASIC_ACCOUNTING_INFORMATION = ?&struct__JOBOBJECT_BASIC_ACCOUNTING_INFORMATION;
+pub const PJOBOBJECT_BASIC_ACCOUNTING_INFORMATION = ?*struct__JOBOBJECT_BASIC_ACCOUNTING_INFORMATION;
 pub const struct__JOBOBJECT_BASIC_LIMIT_INFORMATION = extern struct {
     PerProcessUserTimeLimit: LARGE_INTEGER,
     PerJobUserTimeLimit: LARGE_INTEGER,
@@ -2489,7 +2789,7 @@ pub const struct__JOBOBJECT_BASIC_LIMIT_INFORMATION = extern struct {
     SchedulingClass: DWORD,
 };
 pub const JOBOBJECT_BASIC_LIMIT_INFORMATION = struct__JOBOBJECT_BASIC_LIMIT_INFORMATION;
-pub const PJOBOBJECT_BASIC_LIMIT_INFORMATION = ?&struct__JOBOBJECT_BASIC_LIMIT_INFORMATION;
+pub const PJOBOBJECT_BASIC_LIMIT_INFORMATION = ?*struct__JOBOBJECT_BASIC_LIMIT_INFORMATION;
 pub const struct__JOBOBJECT_EXTENDED_LIMIT_INFORMATION = extern struct {
     BasicLimitInformation: JOBOBJECT_BASIC_LIMIT_INFORMATION,
     IoInfo: IO_COUNTERS,
@@ -2499,19 +2799,19 @@ pub const struct__JOBOBJECT_EXTENDED_LIMIT_INFORMATION = extern struct {
     PeakJobMemoryUsed: SIZE_T,
 };
 pub const JOBOBJECT_EXTENDED_LIMIT_INFORMATION = struct__JOBOBJECT_EXTENDED_LIMIT_INFORMATION;
-pub const PJOBOBJECT_EXTENDED_LIMIT_INFORMATION = ?&struct__JOBOBJECT_EXTENDED_LIMIT_INFORMATION;
+pub const PJOBOBJECT_EXTENDED_LIMIT_INFORMATION = ?*struct__JOBOBJECT_EXTENDED_LIMIT_INFORMATION;
 pub const struct__JOBOBJECT_BASIC_PROCESS_ID_LIST = extern struct {
     NumberOfAssignedProcesses: DWORD,
     NumberOfProcessIdsInList: DWORD,
     ProcessIdList: [1]ULONG_PTR,
 };
 pub const JOBOBJECT_BASIC_PROCESS_ID_LIST = struct__JOBOBJECT_BASIC_PROCESS_ID_LIST;
-pub const PJOBOBJECT_BASIC_PROCESS_ID_LIST = ?&struct__JOBOBJECT_BASIC_PROCESS_ID_LIST;
+pub const PJOBOBJECT_BASIC_PROCESS_ID_LIST = ?*struct__JOBOBJECT_BASIC_PROCESS_ID_LIST;
 pub const struct__JOBOBJECT_BASIC_UI_RESTRICTIONS = extern struct {
     UIRestrictionsClass: DWORD,
 };
 pub const JOBOBJECT_BASIC_UI_RESTRICTIONS = struct__JOBOBJECT_BASIC_UI_RESTRICTIONS;
-pub const PJOBOBJECT_BASIC_UI_RESTRICTIONS = ?&struct__JOBOBJECT_BASIC_UI_RESTRICTIONS;
+pub const PJOBOBJECT_BASIC_UI_RESTRICTIONS = ?*struct__JOBOBJECT_BASIC_UI_RESTRICTIONS;
 pub const struct__JOBOBJECT_SECURITY_LIMIT_INFORMATION = extern struct {
     SecurityLimitFlags: DWORD,
     JobToken: HANDLE,
@@ -2520,41 +2820,49 @@ pub const struct__JOBOBJECT_SECURITY_LIMIT_INFORMATION = extern struct {
     RestrictedSids: PTOKEN_GROUPS,
 };
 pub const JOBOBJECT_SECURITY_LIMIT_INFORMATION = struct__JOBOBJECT_SECURITY_LIMIT_INFORMATION;
-pub const PJOBOBJECT_SECURITY_LIMIT_INFORMATION = ?&struct__JOBOBJECT_SECURITY_LIMIT_INFORMATION;
+pub const PJOBOBJECT_SECURITY_LIMIT_INFORMATION = ?*struct__JOBOBJECT_SECURITY_LIMIT_INFORMATION;
 pub const struct__JOBOBJECT_END_OF_JOB_TIME_INFORMATION = extern struct {
     EndOfJobTimeAction: DWORD,
 };
 pub const JOBOBJECT_END_OF_JOB_TIME_INFORMATION = struct__JOBOBJECT_END_OF_JOB_TIME_INFORMATION;
-pub const PJOBOBJECT_END_OF_JOB_TIME_INFORMATION = ?&struct__JOBOBJECT_END_OF_JOB_TIME_INFORMATION;
+pub const PJOBOBJECT_END_OF_JOB_TIME_INFORMATION = ?*struct__JOBOBJECT_END_OF_JOB_TIME_INFORMATION;
 pub const struct__JOBOBJECT_ASSOCIATE_COMPLETION_PORT = extern struct {
     CompletionKey: PVOID,
     CompletionPort: HANDLE,
 };
 pub const JOBOBJECT_ASSOCIATE_COMPLETION_PORT = struct__JOBOBJECT_ASSOCIATE_COMPLETION_PORT;
-pub const PJOBOBJECT_ASSOCIATE_COMPLETION_PORT = ?&struct__JOBOBJECT_ASSOCIATE_COMPLETION_PORT;
+pub const PJOBOBJECT_ASSOCIATE_COMPLETION_PORT = ?*struct__JOBOBJECT_ASSOCIATE_COMPLETION_PORT;
 pub const struct__JOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION = extern struct {
     BasicInfo: JOBOBJECT_BASIC_ACCOUNTING_INFORMATION,
     IoInfo: IO_COUNTERS,
 };
 pub const JOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION = struct__JOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION;
-pub const PJOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION = ?&struct__JOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION;
+pub const PJOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION = ?*struct__JOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION;
 pub const struct__JOBOBJECT_JOBSET_INFORMATION = extern struct {
     MemberLevel: DWORD,
 };
 pub const JOBOBJECT_JOBSET_INFORMATION = struct__JOBOBJECT_JOBSET_INFORMATION;
-pub const PJOBOBJECT_JOBSET_INFORMATION = ?&struct__JOBOBJECT_JOBSET_INFORMATION;
-pub const ToleranceLow: c_int = 1;
-pub const ToleranceMedium: c_int = 2;
-pub const ToleranceHigh: c_int = 3;
-pub const enum__JOBOBJECT_RATE_CONTROL_TOLERANCE = c_int;
+pub const PJOBOBJECT_JOBSET_INFORMATION = ?*struct__JOBOBJECT_JOBSET_INFORMATION;
+pub const ToleranceLow = enum__JOBOBJECT_RATE_CONTROL_TOLERANCE.ToleranceLow;
+pub const ToleranceMedium = enum__JOBOBJECT_RATE_CONTROL_TOLERANCE.ToleranceMedium;
+pub const ToleranceHigh = enum__JOBOBJECT_RATE_CONTROL_TOLERANCE.ToleranceHigh;
+pub const enum__JOBOBJECT_RATE_CONTROL_TOLERANCE = extern enum {
+    ToleranceLow = 1,
+    ToleranceMedium = 2,
+    ToleranceHigh = 3,
+};
 pub const JOBOBJECT_RATE_CONTROL_TOLERANCE = enum__JOBOBJECT_RATE_CONTROL_TOLERANCE;
-pub const PJOBOBJECT_RATE_CONTROL_TOLERANCE = ?&enum__JOBOBJECT_RATE_CONTROL_TOLERANCE;
-pub const ToleranceIntervalShort: c_int = 1;
-pub const ToleranceIntervalMedium: c_int = 2;
-pub const ToleranceIntervalLong: c_int = 3;
-pub const enum__JOBOBJECT_RATE_CONTROL_TOLERANCE_INTERVAL = c_int;
+pub const PJOBOBJECT_RATE_CONTROL_TOLERANCE = ?[*]enum__JOBOBJECT_RATE_CONTROL_TOLERANCE;
+pub const ToleranceIntervalShort = enum__JOBOBJECT_RATE_CONTROL_TOLERANCE_INTERVAL.ToleranceIntervalShort;
+pub const ToleranceIntervalMedium = enum__JOBOBJECT_RATE_CONTROL_TOLERANCE_INTERVAL.ToleranceIntervalMedium;
+pub const ToleranceIntervalLong = enum__JOBOBJECT_RATE_CONTROL_TOLERANCE_INTERVAL.ToleranceIntervalLong;
+pub const enum__JOBOBJECT_RATE_CONTROL_TOLERANCE_INTERVAL = extern enum {
+    ToleranceIntervalShort = 1,
+    ToleranceIntervalMedium = 2,
+    ToleranceIntervalLong = 3,
+};
 pub const JOBOBJECT_RATE_CONTROL_TOLERANCE_INTERVAL = enum__JOBOBJECT_RATE_CONTROL_TOLERANCE_INTERVAL;
-pub const PJOBOBJECT_RATE_CONTROL_TOLERANCE_INTERVAL = ?&enum__JOBOBJECT_RATE_CONTROL_TOLERANCE_INTERVAL;
+pub const PJOBOBJECT_RATE_CONTROL_TOLERANCE_INTERVAL = ?[*]enum__JOBOBJECT_RATE_CONTROL_TOLERANCE_INTERVAL;
 pub const struct__JOBOBJECT_NOTIFICATION_LIMIT_INFORMATION = extern struct {
     IoReadBytesLimit: DWORD64,
     IoWriteBytesLimit: DWORD64,
@@ -2565,7 +2873,7 @@ pub const struct__JOBOBJECT_NOTIFICATION_LIMIT_INFORMATION = extern struct {
     LimitFlags: DWORD,
 };
 pub const JOBOBJECT_NOTIFICATION_LIMIT_INFORMATION = struct__JOBOBJECT_NOTIFICATION_LIMIT_INFORMATION;
-pub const PJOBOBJECT_NOTIFICATION_LIMIT_INFORMATION = ?&struct__JOBOBJECT_NOTIFICATION_LIMIT_INFORMATION;
+pub const PJOBOBJECT_NOTIFICATION_LIMIT_INFORMATION = ?*struct__JOBOBJECT_NOTIFICATION_LIMIT_INFORMATION;
 pub const struct_JOBOBJECT_NOTIFICATION_LIMIT_INFORMATION_2 = extern struct {
     IoReadBytesLimit: DWORD64,
     IoWriteBytesLimit: DWORD64,
@@ -2605,7 +2913,7 @@ pub const struct__JOBOBJECT_LIMIT_VIOLATION_INFORMATION = extern struct {
     RateControlToleranceLimit: JOBOBJECT_RATE_CONTROL_TOLERANCE,
 };
 pub const JOBOBJECT_LIMIT_VIOLATION_INFORMATION = struct__JOBOBJECT_LIMIT_VIOLATION_INFORMATION;
-pub const PJOBOBJECT_LIMIT_VIOLATION_INFORMATION = ?&struct__JOBOBJECT_LIMIT_VIOLATION_INFORMATION;
+pub const PJOBOBJECT_LIMIT_VIOLATION_INFORMATION = ?*struct__JOBOBJECT_LIMIT_VIOLATION_INFORMATION;
 pub const struct_JOBOBJECT_LIMIT_VIOLATION_INFORMATION_2 = extern struct {
     LimitFlags: DWORD,
     ViolationLimitFlags: DWORD,
@@ -2647,12 +2955,17 @@ pub const struct__JOBOBJECT_CPU_RATE_CONTROL_INFORMATION = extern struct {
     },
 };
 pub const JOBOBJECT_CPU_RATE_CONTROL_INFORMATION = struct__JOBOBJECT_CPU_RATE_CONTROL_INFORMATION;
-pub const PJOBOBJECT_CPU_RATE_CONTROL_INFORMATION = ?&struct__JOBOBJECT_CPU_RATE_CONTROL_INFORMATION;
-pub const JOB_OBJECT_NET_RATE_CONTROL_ENABLE: c_int = 1;
-pub const JOB_OBJECT_NET_RATE_CONTROL_MAX_BANDWIDTH: c_int = 2;
-pub const JOB_OBJECT_NET_RATE_CONTROL_DSCP_TAG: c_int = 4;
-pub const JOB_OBJECT_NET_RATE_CONTROL_VALID_FLAGS: c_int = 7;
-pub const enum_JOB_OBJECT_NET_RATE_CONTROL_FLAGS = c_int;
+pub const PJOBOBJECT_CPU_RATE_CONTROL_INFORMATION = ?*struct__JOBOBJECT_CPU_RATE_CONTROL_INFORMATION;
+pub const JOB_OBJECT_NET_RATE_CONTROL_ENABLE = enum_JOB_OBJECT_NET_RATE_CONTROL_FLAGS.JOB_OBJECT_NET_RATE_CONTROL_ENABLE;
+pub const JOB_OBJECT_NET_RATE_CONTROL_MAX_BANDWIDTH = enum_JOB_OBJECT_NET_RATE_CONTROL_FLAGS.JOB_OBJECT_NET_RATE_CONTROL_MAX_BANDWIDTH;
+pub const JOB_OBJECT_NET_RATE_CONTROL_DSCP_TAG = enum_JOB_OBJECT_NET_RATE_CONTROL_FLAGS.JOB_OBJECT_NET_RATE_CONTROL_DSCP_TAG;
+pub const JOB_OBJECT_NET_RATE_CONTROL_VALID_FLAGS = enum_JOB_OBJECT_NET_RATE_CONTROL_FLAGS.JOB_OBJECT_NET_RATE_CONTROL_VALID_FLAGS;
+pub const enum_JOB_OBJECT_NET_RATE_CONTROL_FLAGS = extern enum {
+    JOB_OBJECT_NET_RATE_CONTROL_ENABLE = 1,
+    JOB_OBJECT_NET_RATE_CONTROL_MAX_BANDWIDTH = 2,
+    JOB_OBJECT_NET_RATE_CONTROL_DSCP_TAG = 4,
+    JOB_OBJECT_NET_RATE_CONTROL_VALID_FLAGS = 7,
+};
 pub const JOB_OBJECT_NET_RATE_CONTROL_FLAGS = enum_JOB_OBJECT_NET_RATE_CONTROL_FLAGS;
 pub const __C_ASSERT__ = [1]u8;
 pub const struct_JOBOBJECT_NET_RATE_CONTROL_INFORMATION = extern struct {
@@ -2661,10 +2974,14 @@ pub const struct_JOBOBJECT_NET_RATE_CONTROL_INFORMATION = extern struct {
     DscpTag: BYTE,
 };
 pub const JOBOBJECT_NET_RATE_CONTROL_INFORMATION = struct_JOBOBJECT_NET_RATE_CONTROL_INFORMATION;
-pub const JOB_OBJECT_IO_RATE_CONTROL_ENABLE: c_int = 1;
-pub const JOB_OBJECT_IO_RATE_CONTROL_STANDALONE_VOLUME: c_int = 2;
-pub const JOB_OBJECT_IO_RATE_CONTROL_VALID_FLAGS: c_int = 3;
-pub const enum_JOB_OBJECT_IO_RATE_CONTROL_FLAGS = c_int;
+pub const JOB_OBJECT_IO_RATE_CONTROL_ENABLE = enum_JOB_OBJECT_IO_RATE_CONTROL_FLAGS.JOB_OBJECT_IO_RATE_CONTROL_ENABLE;
+pub const JOB_OBJECT_IO_RATE_CONTROL_STANDALONE_VOLUME = enum_JOB_OBJECT_IO_RATE_CONTROL_FLAGS.JOB_OBJECT_IO_RATE_CONTROL_STANDALONE_VOLUME;
+pub const JOB_OBJECT_IO_RATE_CONTROL_VALID_FLAGS = enum_JOB_OBJECT_IO_RATE_CONTROL_FLAGS.JOB_OBJECT_IO_RATE_CONTROL_VALID_FLAGS;
+pub const enum_JOB_OBJECT_IO_RATE_CONTROL_FLAGS = extern enum {
+    JOB_OBJECT_IO_RATE_CONTROL_ENABLE = 1,
+    JOB_OBJECT_IO_RATE_CONTROL_STANDALONE_VOLUME = 2,
+    JOB_OBJECT_IO_RATE_CONTROL_VALID_FLAGS = 3,
+};
 pub const JOB_OBJECT_IO_RATE_CONTROL_FLAGS = enum_JOB_OBJECT_IO_RATE_CONTROL_FLAGS;
 pub const struct_JOBOBJECT_IO_RATE_CONTROL_INFORMATION_NATIVE = extern struct {
     MaxIops: LONG64,
@@ -2715,10 +3032,14 @@ pub const struct_JOBOBJECT_IO_RATE_CONTROL_INFORMATION_NATIVE_V3 = extern struct
     LimitExcessNotifyTimePercent: LONG64,
 };
 pub const JOBOBJECT_IO_RATE_CONTROL_INFORMATION_NATIVE_V3 = struct_JOBOBJECT_IO_RATE_CONTROL_INFORMATION_NATIVE_V3;
-pub const JOBOBJECT_IO_ATTRIBUTION_CONTROL_ENABLE: c_int = 1;
-pub const JOBOBJECT_IO_ATTRIBUTION_CONTROL_DISABLE: c_int = 2;
-pub const JOBOBJECT_IO_ATTRIBUTION_CONTROL_VALID_FLAGS: c_int = 3;
-pub const enum_JOBOBJECT_IO_ATTRIBUTION_CONTROL_FLAGS = c_int;
+pub const JOBOBJECT_IO_ATTRIBUTION_CONTROL_ENABLE = enum_JOBOBJECT_IO_ATTRIBUTION_CONTROL_FLAGS.JOBOBJECT_IO_ATTRIBUTION_CONTROL_ENABLE;
+pub const JOBOBJECT_IO_ATTRIBUTION_CONTROL_DISABLE = enum_JOBOBJECT_IO_ATTRIBUTION_CONTROL_FLAGS.JOBOBJECT_IO_ATTRIBUTION_CONTROL_DISABLE;
+pub const JOBOBJECT_IO_ATTRIBUTION_CONTROL_VALID_FLAGS = enum_JOBOBJECT_IO_ATTRIBUTION_CONTROL_FLAGS.JOBOBJECT_IO_ATTRIBUTION_CONTROL_VALID_FLAGS;
+pub const enum_JOBOBJECT_IO_ATTRIBUTION_CONTROL_FLAGS = extern enum {
+    JOBOBJECT_IO_ATTRIBUTION_CONTROL_ENABLE = 1,
+    JOBOBJECT_IO_ATTRIBUTION_CONTROL_DISABLE = 2,
+    JOBOBJECT_IO_ATTRIBUTION_CONTROL_VALID_FLAGS = 3,
+};
 pub const JOBOBJECT_IO_ATTRIBUTION_CONTROL_FLAGS = enum_JOBOBJECT_IO_ATTRIBUTION_CONTROL_FLAGS;
 pub const struct__JOBOBJECT_IO_ATTRIBUTION_STATS = extern struct {
     IoCount: ULONG_PTR,
@@ -2727,63 +3048,112 @@ pub const struct__JOBOBJECT_IO_ATTRIBUTION_STATS = extern struct {
     TotalSize: ULONGLONG,
 };
 pub const JOBOBJECT_IO_ATTRIBUTION_STATS = struct__JOBOBJECT_IO_ATTRIBUTION_STATS;
-pub const PJOBOBJECT_IO_ATTRIBUTION_STATS = ?&struct__JOBOBJECT_IO_ATTRIBUTION_STATS;
+pub const PJOBOBJECT_IO_ATTRIBUTION_STATS = ?*struct__JOBOBJECT_IO_ATTRIBUTION_STATS;
 pub const struct__JOBOBJECT_IO_ATTRIBUTION_INFORMATION = extern struct {
     ControlFlags: DWORD,
     ReadStats: JOBOBJECT_IO_ATTRIBUTION_STATS,
     WriteStats: JOBOBJECT_IO_ATTRIBUTION_STATS,
 };
 pub const JOBOBJECT_IO_ATTRIBUTION_INFORMATION = struct__JOBOBJECT_IO_ATTRIBUTION_INFORMATION;
-pub const PJOBOBJECT_IO_ATTRIBUTION_INFORMATION = ?&struct__JOBOBJECT_IO_ATTRIBUTION_INFORMATION;
-pub const JobObjectBasicAccountingInformation: c_int = 1;
-pub const JobObjectBasicLimitInformation: c_int = 2;
-pub const JobObjectBasicProcessIdList: c_int = 3;
-pub const JobObjectBasicUIRestrictions: c_int = 4;
-pub const JobObjectSecurityLimitInformation: c_int = 5;
-pub const JobObjectEndOfJobTimeInformation: c_int = 6;
-pub const JobObjectAssociateCompletionPortInformation: c_int = 7;
-pub const JobObjectBasicAndIoAccountingInformation: c_int = 8;
-pub const JobObjectExtendedLimitInformation: c_int = 9;
-pub const JobObjectJobSetInformation: c_int = 10;
-pub const JobObjectGroupInformation: c_int = 11;
-pub const JobObjectNotificationLimitInformation: c_int = 12;
-pub const JobObjectLimitViolationInformation: c_int = 13;
-pub const JobObjectGroupInformationEx: c_int = 14;
-pub const JobObjectCpuRateControlInformation: c_int = 15;
-pub const JobObjectCompletionFilter: c_int = 16;
-pub const JobObjectCompletionCounter: c_int = 17;
-pub const JobObjectReserved1Information: c_int = 18;
-pub const JobObjectReserved2Information: c_int = 19;
-pub const JobObjectReserved3Information: c_int = 20;
-pub const JobObjectReserved4Information: c_int = 21;
-pub const JobObjectReserved5Information: c_int = 22;
-pub const JobObjectReserved6Information: c_int = 23;
-pub const JobObjectReserved7Information: c_int = 24;
-pub const JobObjectReserved8Information: c_int = 25;
-pub const JobObjectReserved9Information: c_int = 26;
-pub const JobObjectReserved10Information: c_int = 27;
-pub const JobObjectReserved11Information: c_int = 28;
-pub const JobObjectReserved12Information: c_int = 29;
-pub const JobObjectReserved13Information: c_int = 30;
-pub const JobObjectReserved14Information: c_int = 31;
-pub const JobObjectNetRateControlInformation: c_int = 32;
-pub const JobObjectNotificationLimitInformation2: c_int = 33;
-pub const JobObjectLimitViolationInformation2: c_int = 34;
-pub const JobObjectCreateSilo: c_int = 35;
-pub const JobObjectSiloBasicInformation: c_int = 36;
-pub const JobObjectReserved15Information: c_int = 37;
-pub const JobObjectReserved16Information: c_int = 38;
-pub const JobObjectReserved17Information: c_int = 39;
-pub const JobObjectReserved18Information: c_int = 40;
-pub const JobObjectReserved19Information: c_int = 41;
-pub const JobObjectReserved20Information: c_int = 42;
-pub const JobObjectReserved21Information: c_int = 43;
-pub const JobObjectReserved22Information: c_int = 44;
-pub const JobObjectReserved23Information: c_int = 45;
-pub const JobObjectReserved24Information: c_int = 46;
-pub const JobObjectReserved25Information: c_int = 47;
-pub const MaxJobObjectInfoClass: c_int = 48;
-pub const enum__JOBOBJECTINFOCLASS = c_int;
+pub const PJOBOBJECT_IO_ATTRIBUTION_INFORMATION = ?*struct__JOBOBJECT_IO_ATTRIBUTION_INFORMATION;
+pub const JobObjectBasicAccountingInformation = enum__JOBOBJECTINFOCLASS.JobObjectBasicAccountingInformation;
+pub const JobObjectBasicLimitInformation = enum__JOBOBJECTINFOCLASS.JobObjectBasicLimitInformation;
+pub const JobObjectBasicProcessIdList = enum__JOBOBJECTINFOCLASS.JobObjectBasicProcessIdList;
+pub const JobObjectBasicUIRestrictions = enum__JOBOBJECTINFOCLASS.JobObjectBasicUIRestrictions;
+pub const JobObjectSecurityLimitInformation = enum__JOBOBJECTINFOCLASS.JobObjectSecurityLimitInformation;
+pub const JobObjectEndOfJobTimeInformation = enum__JOBOBJECTINFOCLASS.JobObjectEndOfJobTimeInformation;
+pub const JobObjectAssociateCompletionPortInformation = enum__JOBOBJECTINFOCLASS.JobObjectAssociateCompletionPortInformation;
+pub const JobObjectBasicAndIoAccountingInformation = enum__JOBOBJECTINFOCLASS.JobObjectBasicAndIoAccountingInformation;
+pub const JobObjectExtendedLimitInformation = enum__JOBOBJECTINFOCLASS.JobObjectExtendedLimitInformation;
+pub const JobObjectJobSetInformation = enum__JOBOBJECTINFOCLASS.JobObjectJobSetInformation;
+pub const JobObjectGroupInformation = enum__JOBOBJECTINFOCLASS.JobObjectGroupInformation;
+pub const JobObjectNotificationLimitInformation = enum__JOBOBJECTINFOCLASS.JobObjectNotificationLimitInformation;
+pub const JobObjectLimitViolationInformation = enum__JOBOBJECTINFOCLASS.JobObjectLimitViolationInformation;
+pub const JobObjectGroupInformationEx = enum__JOBOBJECTINFOCLASS.JobObjectGroupInformationEx;
+pub const JobObjectCpuRateControlInformation = enum__JOBOBJECTINFOCLASS.JobObjectCpuRateControlInformation;
+pub const JobObjectCompletionFilter = enum__JOBOBJECTINFOCLASS.JobObjectCompletionFilter;
+pub const JobObjectCompletionCounter = enum__JOBOBJECTINFOCLASS.JobObjectCompletionCounter;
+pub const JobObjectReserved1Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved1Information;
+pub const JobObjectReserved2Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved2Information;
+pub const JobObjectReserved3Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved3Information;
+pub const JobObjectReserved4Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved4Information;
+pub const JobObjectReserved5Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved5Information;
+pub const JobObjectReserved6Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved6Information;
+pub const JobObjectReserved7Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved7Information;
+pub const JobObjectReserved8Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved8Information;
+pub const JobObjectReserved9Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved9Information;
+pub const JobObjectReserved10Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved10Information;
+pub const JobObjectReserved11Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved11Information;
+pub const JobObjectReserved12Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved12Information;
+pub const JobObjectReserved13Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved13Information;
+pub const JobObjectReserved14Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved14Information;
+pub const JobObjectNetRateControlInformation = enum__JOBOBJECTINFOCLASS.JobObjectNetRateControlInformation;
+pub const JobObjectNotificationLimitInformation2 = enum__JOBOBJECTINFOCLASS.JobObjectNotificationLimitInformation2;
+pub const JobObjectLimitViolationInformation2 = enum__JOBOBJECTINFOCLASS.JobObjectLimitViolationInformation2;
+pub const JobObjectCreateSilo = enum__JOBOBJECTINFOCLASS.JobObjectCreateSilo;
+pub const JobObjectSiloBasicInformation = enum__JOBOBJECTINFOCLASS.JobObjectSiloBasicInformation;
+pub const JobObjectReserved15Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved15Information;
+pub const JobObjectReserved16Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved16Information;
+pub const JobObjectReserved17Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved17Information;
+pub const JobObjectReserved18Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved18Information;
+pub const JobObjectReserved19Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved19Information;
+pub const JobObjectReserved20Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved20Information;
+pub const JobObjectReserved21Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved21Information;
+pub const JobObjectReserved22Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved22Information;
+pub const JobObjectReserved23Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved23Information;
+pub const JobObjectReserved24Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved24Information;
+pub const JobObjectReserved25Information = enum__JOBOBJECTINFOCLASS.JobObjectReserved25Information;
+pub const MaxJobObjectInfoClass = enum__JOBOBJECTINFOCLASS.MaxJobObjectInfoClass;
+pub const enum__JOBOBJECTINFOCLASS = extern enum {
+    JobObjectBasicAccountingInformation = 1,
+    JobObjectBasicLimitInformation = 2,
+    JobObjectBasicProcessIdList = 3,
+    JobObjectBasicUIRestrictions = 4,
+    JobObjectSecurityLimitInformation = 5,
+    JobObjectEndOfJobTimeInformation = 6,
+    JobObjectAssociateCompletionPortInformation = 7,
+    JobObjectBasicAndIoAccountingInformation = 8,
+    JobObjectExtendedLimitInformation = 9,
+    JobObjectJobSetInformation = 10,
+    JobObjectGroupInformation = 11,
+    JobObjectNotificationLimitInformation = 12,
+    JobObjectLimitViolationInformation = 13,
+    JobObjectGroupInformationEx = 14,
+    JobObjectCpuRateControlInformation = 15,
+    JobObjectCompletionFilter = 16,
+    JobObjectCompletionCounter = 17,
+    JobObjectReserved1Information = 18,
+    JobObjectReserved2Information = 19,
+    JobObjectReserved3Information = 20,
+    JobObjectReserved4Information = 21,
+    JobObjectReserved5Information = 22,
+    JobObjectReserved6Information = 23,
+    JobObjectReserved7Information = 24,
+    JobObjectReserved8Information = 25,
+    JobObjectReserved9Information = 26,
+    JobObjectReserved10Information = 27,
+    JobObjectReserved11Information = 28,
+    JobObjectReserved12Information = 29,
+    JobObjectReserved13Information = 30,
+    JobObjectReserved14Information = 31,
+    JobObjectNetRateControlInformation = 32,
+    JobObjectNotificationLimitInformation2 = 33,
+    JobObjectLimitViolationInformation2 = 34,
+    JobObjectCreateSilo = 35,
+    JobObjectSiloBasicInformation = 36,
+    JobObjectReserved15Information = 37,
+    JobObjectReserved16Information = 38,
+    JobObjectReserved17Information = 39,
+    JobObjectReserved18Information = 40,
+    JobObjectReserved19Information = 41,
+    JobObjectReserved20Information = 42,
+    JobObjectReserved21Information = 43,
+    JobObjectReserved22Information = 44,
+    JobObjectReserved23Information = 45,
+    JobObjectReserved24Information = 46,
+    JobObjectReserved25Information = 47,
+    MaxJobObjectInfoClass = 48,
+};
 pub const JOBOBJECTINFOCLASS = enum__JOBOBJECTINFOCLASS;
 pub const struct__SILOOBJECT_BASIC_INFORMATION = extern struct {
     SiloId: DWORD,
@@ -2793,22 +3163,28 @@ pub const struct__SILOOBJECT_BASIC_INFORMATION = extern struct {
     Reserved: [3]BYTE,
 };
 pub const SILOOBJECT_BASIC_INFORMATION = struct__SILOOBJECT_BASIC_INFORMATION;
-pub const PSILOOBJECT_BASIC_INFORMATION = ?&struct__SILOOBJECT_BASIC_INFORMATION;
-pub const SERVERSILO_INITING: c_int = 0;
-pub const SERVERSILO_STARTED: c_int = 1;
-pub const SERVERSILO_SHUTTING_DOWN: c_int = 2;
-pub const SERVERSILO_TERMINATING: c_int = 3;
-pub const SERVERSILO_TERMINATED: c_int = 4;
-pub const enum__SERVERSILO_STATE = c_int;
+pub const PSILOOBJECT_BASIC_INFORMATION = ?*struct__SILOOBJECT_BASIC_INFORMATION;
+pub const SERVERSILO_INITING = enum__SERVERSILO_STATE.SERVERSILO_INITING;
+pub const SERVERSILO_STARTED = enum__SERVERSILO_STATE.SERVERSILO_STARTED;
+pub const SERVERSILO_SHUTTING_DOWN = enum__SERVERSILO_STATE.SERVERSILO_SHUTTING_DOWN;
+pub const SERVERSILO_TERMINATING = enum__SERVERSILO_STATE.SERVERSILO_TERMINATING;
+pub const SERVERSILO_TERMINATED = enum__SERVERSILO_STATE.SERVERSILO_TERMINATED;
+pub const enum__SERVERSILO_STATE = extern enum {
+    SERVERSILO_INITING = 0,
+    SERVERSILO_STARTED = 1,
+    SERVERSILO_SHUTTING_DOWN = 2,
+    SERVERSILO_TERMINATING = 3,
+    SERVERSILO_TERMINATED = 4,
+};
 pub const SERVERSILO_STATE = enum__SERVERSILO_STATE;
-pub const PSERVERSILO_STATE = ?&enum__SERVERSILO_STATE;
+pub const PSERVERSILO_STATE = ?[*]enum__SERVERSILO_STATE;
 pub const struct__SERVERSILO_BASIC_INFORMATION = extern struct {
     ServiceSessionId: DWORD,
     State: SERVERSILO_STATE,
     ExitStatus: DWORD,
 };
 pub const SERVERSILO_BASIC_INFORMATION = struct__SERVERSILO_BASIC_INFORMATION;
-pub const PSERVERSILO_BASIC_INFORMATION = ?&struct__SERVERSILO_BASIC_INFORMATION;
+pub const PSERVERSILO_BASIC_INFORMATION = ?*struct__SERVERSILO_BASIC_INFORMATION;
 pub const FirmwareTypeUnknown = enum__FIRMWARE_TYPE.FirmwareTypeUnknown;
 pub const FirmwareTypeBios = enum__FIRMWARE_TYPE.FirmwareTypeBios;
 pub const FirmwareTypeUefi = enum__FIRMWARE_TYPE.FirmwareTypeUefi;
@@ -2820,14 +3196,21 @@ pub const enum__FIRMWARE_TYPE = extern enum {
     FirmwareTypeMax,
 };
 pub const FIRMWARE_TYPE = enum__FIRMWARE_TYPE;
-pub const PFIRMWARE_TYPE = ?&enum__FIRMWARE_TYPE;
-pub const RelationProcessorCore: c_int = 0;
-pub const RelationNumaNode: c_int = 1;
-pub const RelationCache: c_int = 2;
-pub const RelationProcessorPackage: c_int = 3;
-pub const RelationGroup: c_int = 4;
-pub const RelationAll: c_int = 65535;
-pub const enum__LOGICAL_PROCESSOR_RELATIONSHIP = c_int;
+pub const PFIRMWARE_TYPE = ?[*]enum__FIRMWARE_TYPE;
+pub const RelationProcessorCore = enum__LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorCore;
+pub const RelationNumaNode = enum__LOGICAL_PROCESSOR_RELATIONSHIP.RelationNumaNode;
+pub const RelationCache = enum__LOGICAL_PROCESSOR_RELATIONSHIP.RelationCache;
+pub const RelationProcessorPackage = enum__LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorPackage;
+pub const RelationGroup = enum__LOGICAL_PROCESSOR_RELATIONSHIP.RelationGroup;
+pub const RelationAll = enum__LOGICAL_PROCESSOR_RELATIONSHIP.RelationAll;
+pub const enum__LOGICAL_PROCESSOR_RELATIONSHIP = extern enum {
+    RelationProcessorCore = 0,
+    RelationNumaNode = 1,
+    RelationCache = 2,
+    RelationProcessorPackage = 3,
+    RelationGroup = 4,
+    RelationAll = 65535,
+};
 pub const LOGICAL_PROCESSOR_RELATIONSHIP = enum__LOGICAL_PROCESSOR_RELATIONSHIP;
 pub const CacheUnified = enum__PROCESSOR_CACHE_TYPE.CacheUnified;
 pub const CacheInstruction = enum__PROCESSOR_CACHE_TYPE.CacheInstruction;
@@ -2848,7 +3231,7 @@ pub const struct__CACHE_DESCRIPTOR = extern struct {
     Type: PROCESSOR_CACHE_TYPE,
 };
 pub const CACHE_DESCRIPTOR = struct__CACHE_DESCRIPTOR;
-pub const PCACHE_DESCRIPTOR = ?&struct__CACHE_DESCRIPTOR;
+pub const PCACHE_DESCRIPTOR = ?*struct__CACHE_DESCRIPTOR;
 pub const struct__SYSTEM_LOGICAL_PROCESSOR_INFORMATION = extern struct {
     ProcessorMask: ULONG_PTR,
     Relationship: LOGICAL_PROCESSOR_RELATIONSHIP,
@@ -2864,7 +3247,7 @@ pub const struct__SYSTEM_LOGICAL_PROCESSOR_INFORMATION = extern struct {
     },
 };
 pub const SYSTEM_LOGICAL_PROCESSOR_INFORMATION = struct__SYSTEM_LOGICAL_PROCESSOR_INFORMATION;
-pub const PSYSTEM_LOGICAL_PROCESSOR_INFORMATION = ?&struct__SYSTEM_LOGICAL_PROCESSOR_INFORMATION;
+pub const PSYSTEM_LOGICAL_PROCESSOR_INFORMATION = ?*struct__SYSTEM_LOGICAL_PROCESSOR_INFORMATION;
 pub const struct__PROCESSOR_RELATIONSHIP = extern struct {
     Flags: BYTE,
     EfficiencyClass: BYTE,
@@ -2873,14 +3256,14 @@ pub const struct__PROCESSOR_RELATIONSHIP = extern struct {
     GroupMask: [1]GROUP_AFFINITY,
 };
 pub const PROCESSOR_RELATIONSHIP = struct__PROCESSOR_RELATIONSHIP;
-pub const PPROCESSOR_RELATIONSHIP = ?&struct__PROCESSOR_RELATIONSHIP;
+pub const PPROCESSOR_RELATIONSHIP = ?*struct__PROCESSOR_RELATIONSHIP;
 pub const struct__NUMA_NODE_RELATIONSHIP = extern struct {
     NodeNumber: DWORD,
     Reserved: [20]BYTE,
     GroupMask: GROUP_AFFINITY,
 };
 pub const NUMA_NODE_RELATIONSHIP = struct__NUMA_NODE_RELATIONSHIP;
-pub const PNUMA_NODE_RELATIONSHIP = ?&struct__NUMA_NODE_RELATIONSHIP;
+pub const PNUMA_NODE_RELATIONSHIP = ?*struct__NUMA_NODE_RELATIONSHIP;
 pub const struct__CACHE_RELATIONSHIP = extern struct {
     Level: BYTE,
     Associativity: BYTE,
@@ -2891,7 +3274,7 @@ pub const struct__CACHE_RELATIONSHIP = extern struct {
     GroupMask: GROUP_AFFINITY,
 };
 pub const CACHE_RELATIONSHIP = struct__CACHE_RELATIONSHIP;
-pub const PCACHE_RELATIONSHIP = ?&struct__CACHE_RELATIONSHIP;
+pub const PCACHE_RELATIONSHIP = ?*struct__CACHE_RELATIONSHIP;
 pub const struct__PROCESSOR_GROUP_INFO = extern struct {
     MaximumProcessorCount: BYTE,
     ActiveProcessorCount: BYTE,
@@ -2899,7 +3282,7 @@ pub const struct__PROCESSOR_GROUP_INFO = extern struct {
     ActiveProcessorMask: KAFFINITY,
 };
 pub const PROCESSOR_GROUP_INFO = struct__PROCESSOR_GROUP_INFO;
-pub const PPROCESSOR_GROUP_INFO = ?&struct__PROCESSOR_GROUP_INFO;
+pub const PPROCESSOR_GROUP_INFO = ?*struct__PROCESSOR_GROUP_INFO;
 pub const struct__GROUP_RELATIONSHIP = extern struct {
     MaximumGroupCount: WORD,
     ActiveGroupCount: WORD,
@@ -2907,7 +3290,7 @@ pub const struct__GROUP_RELATIONSHIP = extern struct {
     GroupInfo: [1]PROCESSOR_GROUP_INFO,
 };
 pub const GROUP_RELATIONSHIP = struct__GROUP_RELATIONSHIP;
-pub const PGROUP_RELATIONSHIP = ?&struct__GROUP_RELATIONSHIP;
+pub const PGROUP_RELATIONSHIP = ?*struct__GROUP_RELATIONSHIP;
 pub const struct__SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX = extern struct {
     Relationship: LOGICAL_PROCESSOR_RELATIONSHIP,
     Size: DWORD,
@@ -2919,13 +3302,13 @@ pub const struct__SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX = extern struct {
     },
 };
 pub const SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX = struct__SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX;
-pub const PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX = ?&struct__SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX;
+pub const PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX = ?*struct__SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX;
 pub const CpuSetInformation = enum__CPU_SET_INFORMATION_TYPE.CpuSetInformation;
 pub const enum__CPU_SET_INFORMATION_TYPE = extern enum {
     CpuSetInformation,
 };
 pub const CPU_SET_INFORMATION_TYPE = enum__CPU_SET_INFORMATION_TYPE;
-pub const PCPU_SET_INFORMATION_TYPE = ?&enum__CPU_SET_INFORMATION_TYPE;
+pub const PCPU_SET_INFORMATION_TYPE = ?[*]enum__CPU_SET_INFORMATION_TYPE;
 pub const struct__SYSTEM_CPU_SET_INFORMATION = extern struct {
     Size: DWORD,
     Type: CPU_SET_INFORMATION_TYPE,
@@ -2948,18 +3331,18 @@ pub const struct__SYSTEM_CPU_SET_INFORMATION = extern struct {
     },
 };
 pub const SYSTEM_CPU_SET_INFORMATION = struct__SYSTEM_CPU_SET_INFORMATION;
-pub const PSYSTEM_CPU_SET_INFORMATION = ?&struct__SYSTEM_CPU_SET_INFORMATION;
+pub const PSYSTEM_CPU_SET_INFORMATION = ?*struct__SYSTEM_CPU_SET_INFORMATION;
 pub const struct__SYSTEM_PROCESSOR_CYCLE_TIME_INFORMATION = extern struct {
     CycleTime: DWORD64,
 };
 pub const SYSTEM_PROCESSOR_CYCLE_TIME_INFORMATION = struct__SYSTEM_PROCESSOR_CYCLE_TIME_INFORMATION;
-pub const PSYSTEM_PROCESSOR_CYCLE_TIME_INFORMATION = ?&struct__SYSTEM_PROCESSOR_CYCLE_TIME_INFORMATION;
+pub const PSYSTEM_PROCESSOR_CYCLE_TIME_INFORMATION = ?*struct__SYSTEM_PROCESSOR_CYCLE_TIME_INFORMATION;
 pub const struct__XSTATE_FEATURE = extern struct {
     Offset: DWORD,
     Size: DWORD,
 };
 pub const XSTATE_FEATURE = struct__XSTATE_FEATURE;
-pub const PXSTATE_FEATURE = ?&struct__XSTATE_FEATURE;
+pub const PXSTATE_FEATURE = ?*struct__XSTATE_FEATURE;
 pub const struct__XSTATE_CONFIGURATION = extern struct {
     EnabledFeatures: DWORD64,
     EnabledVolatileFeatures: DWORD64,
@@ -2975,7 +3358,7 @@ pub const struct__XSTATE_CONFIGURATION = extern struct {
     AllFeatures: [64]DWORD,
 };
 pub const XSTATE_CONFIGURATION = struct__XSTATE_CONFIGURATION;
-pub const PXSTATE_CONFIGURATION = ?&struct__XSTATE_CONFIGURATION;
+pub const PXSTATE_CONFIGURATION = ?*struct__XSTATE_CONFIGURATION;
 pub const struct__MEMORY_BASIC_INFORMATION = extern struct {
     BaseAddress: PVOID,
     AllocationBase: PVOID,
@@ -2986,7 +3369,7 @@ pub const struct__MEMORY_BASIC_INFORMATION = extern struct {
     Type: DWORD,
 };
 pub const MEMORY_BASIC_INFORMATION = struct__MEMORY_BASIC_INFORMATION;
-pub const PMEMORY_BASIC_INFORMATION = ?&struct__MEMORY_BASIC_INFORMATION;
+pub const PMEMORY_BASIC_INFORMATION = ?*struct__MEMORY_BASIC_INFORMATION;
 pub const struct__MEMORY_BASIC_INFORMATION32 = extern struct {
     BaseAddress: DWORD,
     AllocationBase: DWORD,
@@ -2997,7 +3380,7 @@ pub const struct__MEMORY_BASIC_INFORMATION32 = extern struct {
     Type: DWORD,
 };
 pub const MEMORY_BASIC_INFORMATION32 = struct__MEMORY_BASIC_INFORMATION32;
-pub const PMEMORY_BASIC_INFORMATION32 = ?&struct__MEMORY_BASIC_INFORMATION32;
+pub const PMEMORY_BASIC_INFORMATION32 = ?*struct__MEMORY_BASIC_INFORMATION32;
 pub const struct__MEMORY_BASIC_INFORMATION64 = extern struct {
     BaseAddress: ULONGLONG,
     AllocationBase: ULONGLONG,
@@ -3010,18 +3393,18 @@ pub const struct__MEMORY_BASIC_INFORMATION64 = extern struct {
     __alignment2: DWORD,
 };
 pub const MEMORY_BASIC_INFORMATION64 = struct__MEMORY_BASIC_INFORMATION64;
-pub const PMEMORY_BASIC_INFORMATION64 = ?&struct__MEMORY_BASIC_INFORMATION64;
+pub const PMEMORY_BASIC_INFORMATION64 = ?*struct__MEMORY_BASIC_INFORMATION64;
 pub const struct__CFG_CALL_TARGET_INFO = extern struct {
     Offset: ULONG_PTR,
     Flags: ULONG_PTR,
 };
 pub const CFG_CALL_TARGET_INFO = struct__CFG_CALL_TARGET_INFO;
-pub const PCFG_CALL_TARGET_INFO = ?&struct__CFG_CALL_TARGET_INFO;
+pub const PCFG_CALL_TARGET_INFO = ?*struct__CFG_CALL_TARGET_INFO;
 pub const struct__ENCLAVE_CREATE_INFO_SGX = extern struct {
     Secs: [4096]BYTE,
 };
 pub const ENCLAVE_CREATE_INFO_SGX = struct__ENCLAVE_CREATE_INFO_SGX;
-pub const PENCLAVE_CREATE_INFO_SGX = ?&struct__ENCLAVE_CREATE_INFO_SGX;
+pub const PENCLAVE_CREATE_INFO_SGX = ?*struct__ENCLAVE_CREATE_INFO_SGX;
 pub const struct__ENCLAVE_INIT_INFO_SGX = extern struct {
     SigStruct: [1808]BYTE,
     Reserved1: [240]BYTE,
@@ -3029,27 +3412,27 @@ pub const struct__ENCLAVE_INIT_INFO_SGX = extern struct {
     Reserved2: [1744]BYTE,
 };
 pub const ENCLAVE_INIT_INFO_SGX = struct__ENCLAVE_INIT_INFO_SGX;
-pub const PENCLAVE_INIT_INFO_SGX = ?&struct__ENCLAVE_INIT_INFO_SGX;
+pub const PENCLAVE_INIT_INFO_SGX = ?*struct__ENCLAVE_INIT_INFO_SGX;
 pub const struct__ENCLAVE_CREATE_INFO_VBS = extern struct {
     Flags: DWORD,
     OwnerID: [32]BYTE,
 };
 pub const ENCLAVE_CREATE_INFO_VBS = struct__ENCLAVE_CREATE_INFO_VBS;
-pub const PENCLAVE_CREATE_INFO_VBS = ?&struct__ENCLAVE_CREATE_INFO_VBS;
+pub const PENCLAVE_CREATE_INFO_VBS = ?*struct__ENCLAVE_CREATE_INFO_VBS;
 pub const struct__ENCLAVE_INIT_INFO_VBS = extern struct {
     Length: DWORD,
     ThreadCount: DWORD,
 };
 pub const ENCLAVE_INIT_INFO_VBS = struct__ENCLAVE_INIT_INFO_VBS;
-pub const PENCLAVE_INIT_INFO_VBS = ?&struct__ENCLAVE_INIT_INFO_VBS;
+pub const PENCLAVE_INIT_INFO_VBS = ?*struct__ENCLAVE_INIT_INFO_VBS;
 pub const ENCLAVE_TARGET_FUNCTION = extern fn(PVOID) PVOID;
-pub const PENCLAVE_TARGET_FUNCTION = ?&ENCLAVE_TARGET_FUNCTION;
+pub const PENCLAVE_TARGET_FUNCTION = ?[*]ENCLAVE_TARGET_FUNCTION;
 pub const LPENCLAVE_TARGET_FUNCTION = PENCLAVE_TARGET_FUNCTION;
 pub const struct__FILE_ID_128 = extern struct {
     Identifier: [16]BYTE,
 };
 pub const FILE_ID_128 = struct__FILE_ID_128;
-pub const PFILE_ID_128 = ?&struct__FILE_ID_128;
+pub const PFILE_ID_128 = ?*struct__FILE_ID_128;
 pub const struct__FILE_NOTIFY_INFORMATION = extern struct {
     NextEntryOffset: DWORD,
     Action: DWORD,
@@ -3057,7 +3440,7 @@ pub const struct__FILE_NOTIFY_INFORMATION = extern struct {
     FileName: [1]WCHAR,
 };
 pub const FILE_NOTIFY_INFORMATION = struct__FILE_NOTIFY_INFORMATION;
-pub const PFILE_NOTIFY_INFORMATION = ?&struct__FILE_NOTIFY_INFORMATION;
+pub const PFILE_NOTIFY_INFORMATION = ?*struct__FILE_NOTIFY_INFORMATION;
 pub const struct__FILE_NOTIFY_EXTENDED_INFORMATION = extern struct {
     NextEntryOffset: DWORD,
     Action: DWORD,
@@ -3075,13 +3458,13 @@ pub const struct__FILE_NOTIFY_EXTENDED_INFORMATION = extern struct {
     FileName: [1]WCHAR,
 };
 pub const FILE_NOTIFY_EXTENDED_INFORMATION = struct__FILE_NOTIFY_EXTENDED_INFORMATION;
-pub const PFILE_NOTIFY_EXTENDED_INFORMATION = ?&struct__FILE_NOTIFY_EXTENDED_INFORMATION;
+pub const PFILE_NOTIFY_EXTENDED_INFORMATION = ?*struct__FILE_NOTIFY_EXTENDED_INFORMATION;
 pub const union__FILE_SEGMENT_ELEMENT = extern union {
     Buffer: PVOID64,
     Alignment: ULONGLONG,
 };
 pub const FILE_SEGMENT_ELEMENT = union__FILE_SEGMENT_ELEMENT;
-pub const PFILE_SEGMENT_ELEMENT = ?&union__FILE_SEGMENT_ELEMENT;
+pub const PFILE_SEGMENT_ELEMENT = ?[*]union__FILE_SEGMENT_ELEMENT;
 pub const struct__REPARSE_GUID_DATA_BUFFER = extern struct {
     ReparseTag: DWORD,
     ReparseDataLength: WORD,
@@ -3092,7 +3475,7 @@ pub const struct__REPARSE_GUID_DATA_BUFFER = extern struct {
     },
 };
 pub const REPARSE_GUID_DATA_BUFFER = struct__REPARSE_GUID_DATA_BUFFER;
-pub const PREPARSE_GUID_DATA_BUFFER = ?&struct__REPARSE_GUID_DATA_BUFFER;
+pub const PREPARSE_GUID_DATA_BUFFER = ?*struct__REPARSE_GUID_DATA_BUFFER;
 pub const struct__SCRUB_DATA_INPUT = extern struct {
     Size: DWORD,
     Flags: DWORD,
@@ -3102,13 +3485,13 @@ pub const struct__SCRUB_DATA_INPUT = extern struct {
     ResumeContext: [816]BYTE,
 };
 pub const SCRUB_DATA_INPUT = struct__SCRUB_DATA_INPUT;
-pub const PSCRUB_DATA_INPUT = ?&struct__SCRUB_DATA_INPUT;
+pub const PSCRUB_DATA_INPUT = ?*struct__SCRUB_DATA_INPUT;
 pub const struct__SCRUB_PARITY_EXTENT = extern struct {
     Offset: LONGLONG,
     Length: ULONGLONG,
 };
 pub const SCRUB_PARITY_EXTENT = struct__SCRUB_PARITY_EXTENT;
-pub const PSCRUB_PARITY_EXTENT = ?&struct__SCRUB_PARITY_EXTENT;
+pub const PSCRUB_PARITY_EXTENT = ?*struct__SCRUB_PARITY_EXTENT;
 pub const struct__SCRUB_PARITY_EXTENT_DATA = extern struct {
     Size: WORD,
     Flags: WORD,
@@ -3117,7 +3500,7 @@ pub const struct__SCRUB_PARITY_EXTENT_DATA = extern struct {
     ParityExtents: [1]SCRUB_PARITY_EXTENT,
 };
 pub const SCRUB_PARITY_EXTENT_DATA = struct__SCRUB_PARITY_EXTENT_DATA;
-pub const PSCRUB_PARITY_EXTENT_DATA = ?&struct__SCRUB_PARITY_EXTENT_DATA;
+pub const PSCRUB_PARITY_EXTENT_DATA = ?*struct__SCRUB_PARITY_EXTENT_DATA;
 pub const struct__SCRUB_DATA_OUTPUT = extern struct {
     Size: DWORD,
     Flags: DWORD,
@@ -3133,30 +3516,39 @@ pub const struct__SCRUB_DATA_OUTPUT = extern struct {
     ResumeContext: [816]BYTE,
 };
 pub const SCRUB_DATA_OUTPUT = struct__SCRUB_DATA_OUTPUT;
-pub const PSCRUB_DATA_OUTPUT = ?&struct__SCRUB_DATA_OUTPUT;
-pub const SharedVirtualDisksUnsupported: c_int = 0;
-pub const SharedVirtualDisksSupported: c_int = 1;
-pub const SharedVirtualDiskSnapshotsSupported: c_int = 3;
-pub const SharedVirtualDiskCDPSnapshotsSupported: c_int = 7;
-pub const enum__SharedVirtualDiskSupportType = c_int;
+pub const PSCRUB_DATA_OUTPUT = ?*struct__SCRUB_DATA_OUTPUT;
+pub const SharedVirtualDisksUnsupported = enum__SharedVirtualDiskSupportType.SharedVirtualDisksUnsupported;
+pub const SharedVirtualDisksSupported = enum__SharedVirtualDiskSupportType.SharedVirtualDisksSupported;
+pub const SharedVirtualDiskSnapshotsSupported = enum__SharedVirtualDiskSupportType.SharedVirtualDiskSnapshotsSupported;
+pub const SharedVirtualDiskCDPSnapshotsSupported = enum__SharedVirtualDiskSupportType.SharedVirtualDiskCDPSnapshotsSupported;
+pub const enum__SharedVirtualDiskSupportType = extern enum {
+    SharedVirtualDisksUnsupported = 0,
+    SharedVirtualDisksSupported = 1,
+    SharedVirtualDiskSnapshotsSupported = 3,
+    SharedVirtualDiskCDPSnapshotsSupported = 7,
+};
 pub const SharedVirtualDiskSupportType = enum__SharedVirtualDiskSupportType;
-pub const SharedVirtualDiskHandleStateNone: c_int = 0;
-pub const SharedVirtualDiskHandleStateFileShared: c_int = 1;
-pub const SharedVirtualDiskHandleStateHandleShared: c_int = 3;
-pub const enum__SharedVirtualDiskHandleState = c_int;
+pub const SharedVirtualDiskHandleStateNone = enum__SharedVirtualDiskHandleState.SharedVirtualDiskHandleStateNone;
+pub const SharedVirtualDiskHandleStateFileShared = enum__SharedVirtualDiskHandleState.SharedVirtualDiskHandleStateFileShared;
+pub const SharedVirtualDiskHandleStateHandleShared = enum__SharedVirtualDiskHandleState.SharedVirtualDiskHandleStateHandleShared;
+pub const enum__SharedVirtualDiskHandleState = extern enum {
+    SharedVirtualDiskHandleStateNone = 0,
+    SharedVirtualDiskHandleStateFileShared = 1,
+    SharedVirtualDiskHandleStateHandleShared = 3,
+};
 pub const SharedVirtualDiskHandleState = enum__SharedVirtualDiskHandleState;
 pub const struct__SHARED_VIRTUAL_DISK_SUPPORT = extern struct {
     SharedVirtualDiskSupport: SharedVirtualDiskSupportType,
     HandleState: SharedVirtualDiskHandleState,
 };
 pub const SHARED_VIRTUAL_DISK_SUPPORT = struct__SHARED_VIRTUAL_DISK_SUPPORT;
-pub const PSHARED_VIRTUAL_DISK_SUPPORT = ?&struct__SHARED_VIRTUAL_DISK_SUPPORT;
+pub const PSHARED_VIRTUAL_DISK_SUPPORT = ?*struct__SHARED_VIRTUAL_DISK_SUPPORT;
 pub const struct__NETWORK_APP_INSTANCE_EA = extern struct {
     AppInstanceID: GUID,
     CsvFlags: DWORD,
 };
 pub const NETWORK_APP_INSTANCE_EA = struct__NETWORK_APP_INSTANCE_EA;
-pub const PNETWORK_APP_INSTANCE_EA = ?&struct__NETWORK_APP_INSTANCE_EA;
+pub const PNETWORK_APP_INSTANCE_EA = ?*struct__NETWORK_APP_INSTANCE_EA;
 pub extern const GUID_MAX_POWER_SAVINGS: GUID;
 pub extern const GUID_MIN_POWER_SAVINGS: GUID;
 pub extern const GUID_TYPICAL_POWER_SAVINGS: GUID;
@@ -3338,58 +3730,104 @@ pub extern const GUID_INTSTEER_MODE: GUID;
 pub extern const GUID_INTSTEER_LOAD_PER_PROC_TRIGGER: GUID;
 pub extern const GUID_INTSTEER_TIME_UNPARK_TRIGGER: GUID;
 pub extern const GUID_MIXED_REALITY_MODE: GUID;
-pub const PowerSystemUnspecified: c_int = 0;
-pub const PowerSystemWorking: c_int = 1;
-pub const PowerSystemSleeping1: c_int = 2;
-pub const PowerSystemSleeping2: c_int = 3;
-pub const PowerSystemSleeping3: c_int = 4;
-pub const PowerSystemHibernate: c_int = 5;
-pub const PowerSystemShutdown: c_int = 6;
-pub const PowerSystemMaximum: c_int = 7;
-pub const enum__SYSTEM_POWER_STATE = c_int;
+pub const PowerSystemUnspecified = enum__SYSTEM_POWER_STATE.PowerSystemUnspecified;
+pub const PowerSystemWorking = enum__SYSTEM_POWER_STATE.PowerSystemWorking;
+pub const PowerSystemSleeping1 = enum__SYSTEM_POWER_STATE.PowerSystemSleeping1;
+pub const PowerSystemSleeping2 = enum__SYSTEM_POWER_STATE.PowerSystemSleeping2;
+pub const PowerSystemSleeping3 = enum__SYSTEM_POWER_STATE.PowerSystemSleeping3;
+pub const PowerSystemHibernate = enum__SYSTEM_POWER_STATE.PowerSystemHibernate;
+pub const PowerSystemShutdown = enum__SYSTEM_POWER_STATE.PowerSystemShutdown;
+pub const PowerSystemMaximum = enum__SYSTEM_POWER_STATE.PowerSystemMaximum;
+pub const enum__SYSTEM_POWER_STATE = extern enum {
+    PowerSystemUnspecified = 0,
+    PowerSystemWorking = 1,
+    PowerSystemSleeping1 = 2,
+    PowerSystemSleeping2 = 3,
+    PowerSystemSleeping3 = 4,
+    PowerSystemHibernate = 5,
+    PowerSystemShutdown = 6,
+    PowerSystemMaximum = 7,
+};
 pub const SYSTEM_POWER_STATE = enum__SYSTEM_POWER_STATE;
-pub const PSYSTEM_POWER_STATE = ?&enum__SYSTEM_POWER_STATE;
-pub const PowerActionNone: c_int = 0;
-pub const PowerActionReserved: c_int = 1;
-pub const PowerActionSleep: c_int = 2;
-pub const PowerActionHibernate: c_int = 3;
-pub const PowerActionShutdown: c_int = 4;
-pub const PowerActionShutdownReset: c_int = 5;
-pub const PowerActionShutdownOff: c_int = 6;
-pub const PowerActionWarmEject: c_int = 7;
-pub const PowerActionDisplayOff: c_int = 8;
-pub const POWER_ACTION = c_int;
-pub const PPOWER_ACTION = ?&c_int;
-pub const PowerDeviceUnspecified: c_int = 0;
-pub const PowerDeviceD0: c_int = 1;
-pub const PowerDeviceD1: c_int = 2;
-pub const PowerDeviceD2: c_int = 3;
-pub const PowerDeviceD3: c_int = 4;
-pub const PowerDeviceMaximum: c_int = 5;
-pub const enum__DEVICE_POWER_STATE = c_int;
+pub const PSYSTEM_POWER_STATE = ?[*]enum__SYSTEM_POWER_STATE;
+pub const PowerActionNone = 0;
+pub const PowerActionReserved = 1;
+pub const PowerActionSleep = 2;
+pub const PowerActionHibernate = 3;
+pub const PowerActionShutdown = 4;
+pub const PowerActionShutdownReset = 5;
+pub const PowerActionShutdownOff = 6;
+pub const PowerActionWarmEject = 7;
+pub const PowerActionDisplayOff = 8;
+pub const POWER_ACTION = extern enum {
+    PowerActionNone = 0,
+    PowerActionReserved = 1,
+    PowerActionSleep = 2,
+    PowerActionHibernate = 3,
+    PowerActionShutdown = 4,
+    PowerActionShutdownReset = 5,
+    PowerActionShutdownOff = 6,
+    PowerActionWarmEject = 7,
+    PowerActionDisplayOff = 8,
+};
+pub const PPOWER_ACTION = ?[*]extern enum {
+    PowerActionNone = 0,
+    PowerActionReserved = 1,
+    PowerActionSleep = 2,
+    PowerActionHibernate = 3,
+    PowerActionShutdown = 4,
+    PowerActionShutdownReset = 5,
+    PowerActionShutdownOff = 6,
+    PowerActionWarmEject = 7,
+    PowerActionDisplayOff = 8,
+};
+pub const PowerDeviceUnspecified = enum__DEVICE_POWER_STATE.PowerDeviceUnspecified;
+pub const PowerDeviceD0 = enum__DEVICE_POWER_STATE.PowerDeviceD0;
+pub const PowerDeviceD1 = enum__DEVICE_POWER_STATE.PowerDeviceD1;
+pub const PowerDeviceD2 = enum__DEVICE_POWER_STATE.PowerDeviceD2;
+pub const PowerDeviceD3 = enum__DEVICE_POWER_STATE.PowerDeviceD3;
+pub const PowerDeviceMaximum = enum__DEVICE_POWER_STATE.PowerDeviceMaximum;
+pub const enum__DEVICE_POWER_STATE = extern enum {
+    PowerDeviceUnspecified = 0,
+    PowerDeviceD0 = 1,
+    PowerDeviceD1 = 2,
+    PowerDeviceD2 = 3,
+    PowerDeviceD3 = 4,
+    PowerDeviceMaximum = 5,
+};
 pub const DEVICE_POWER_STATE = enum__DEVICE_POWER_STATE;
-pub const PDEVICE_POWER_STATE = ?&enum__DEVICE_POWER_STATE;
-pub const PowerMonitorOff: c_int = 0;
-pub const PowerMonitorOn: c_int = 1;
-pub const PowerMonitorDim: c_int = 2;
-pub const enum__MONITOR_DISPLAY_STATE = c_int;
+pub const PDEVICE_POWER_STATE = ?[*]enum__DEVICE_POWER_STATE;
+pub const PowerMonitorOff = enum__MONITOR_DISPLAY_STATE.PowerMonitorOff;
+pub const PowerMonitorOn = enum__MONITOR_DISPLAY_STATE.PowerMonitorOn;
+pub const PowerMonitorDim = enum__MONITOR_DISPLAY_STATE.PowerMonitorDim;
+pub const enum__MONITOR_DISPLAY_STATE = extern enum {
+    PowerMonitorOff = 0,
+    PowerMonitorOn = 1,
+    PowerMonitorDim = 2,
+};
 pub const MONITOR_DISPLAY_STATE = enum__MONITOR_DISPLAY_STATE;
-pub const PMONITOR_DISPLAY_STATE = ?&enum__MONITOR_DISPLAY_STATE;
-pub const PowerUserPresent: c_int = 0;
-pub const PowerUserNotPresent: c_int = 1;
-pub const PowerUserInactive: c_int = 2;
-pub const PowerUserMaximum: c_int = 3;
-pub const PowerUserInvalid: c_int = 3;
-pub const enum__USER_ACTIVITY_PRESENCE = c_int;
+pub const PMONITOR_DISPLAY_STATE = ?[*]enum__MONITOR_DISPLAY_STATE;
+pub const PowerUserPresent = enum__USER_ACTIVITY_PRESENCE.PowerUserPresent;
+pub const PowerUserNotPresent = enum__USER_ACTIVITY_PRESENCE.PowerUserNotPresent;
+pub const PowerUserInactive = enum__USER_ACTIVITY_PRESENCE.PowerUserInactive;
+pub const PowerUserMaximum = enum__USER_ACTIVITY_PRESENCE.PowerUserMaximum;
+pub const PowerUserInvalid = enum__USER_ACTIVITY_PRESENCE.PowerUserInvalid;
+pub const enum__USER_ACTIVITY_PRESENCE = extern enum {
+    PowerUserPresent = 0,
+    PowerUserNotPresent = 1,
+    PowerUserInactive = 2,
+    PowerUserMaximum = 3,
+    PowerUserInvalid = 3,
+};
 pub const USER_ACTIVITY_PRESENCE = enum__USER_ACTIVITY_PRESENCE;
-pub const PUSER_ACTIVITY_PRESENCE = ?&enum__USER_ACTIVITY_PRESENCE;
+pub const PUSER_ACTIVITY_PRESENCE = ?[*]enum__USER_ACTIVITY_PRESENCE;
 pub const EXECUTION_STATE = DWORD;
-pub const PEXECUTION_STATE = ?&DWORD;
+pub const PEXECUTION_STATE = ?[*]DWORD;
 pub const LT_DONT_CARE = 0;
 pub const LT_LOWEST_LATENCY = 1;
 pub const LATENCY_TIME = extern enum {
-    LT_DONT_CARE,
-    LT_LOWEST_LATENCY,
+    LT_DONT_CARE = 0,
+    LT_LOWEST_LATENCY = 1,
 };
 pub const PowerRequestDisplayRequired = enum__POWER_REQUEST_TYPE.PowerRequestDisplayRequired;
 pub const PowerRequestSystemRequired = enum__POWER_REQUEST_TYPE.PowerRequestSystemRequired;
@@ -3402,7 +3840,7 @@ pub const enum__POWER_REQUEST_TYPE = extern enum {
     PowerRequestExecutionRequired,
 };
 pub const POWER_REQUEST_TYPE = enum__POWER_REQUEST_TYPE;
-pub const PPOWER_REQUEST_TYPE = ?&enum__POWER_REQUEST_TYPE;
+pub const PPOWER_REQUEST_TYPE = ?[*]enum__POWER_REQUEST_TYPE;
 pub const struct_CM_Power_Data_s = extern struct {
     PD_Size: DWORD,
     PD_MostRecentPowerState: DEVICE_POWER_STATE,
@@ -3414,7 +3852,7 @@ pub const struct_CM_Power_Data_s = extern struct {
     PD_DeepestSystemWake: SYSTEM_POWER_STATE,
 };
 pub const CM_POWER_DATA = struct_CM_Power_Data_s;
-pub const PCM_POWER_DATA = ?&struct_CM_Power_Data_s;
+pub const PCM_POWER_DATA = ?*struct_CM_Power_Data_s;
 pub const SystemPowerPolicyAc = 0;
 pub const SystemPowerPolicyDc = 1;
 pub const VerifySystemPolicyAc = 2;
@@ -3512,144 +3950,152 @@ pub const EnergyTrackerQuery = 93;
 pub const UpdateBlackBoxRecorder = 94;
 pub const PowerInformationLevelMaximum = 95;
 pub const POWER_INFORMATION_LEVEL = extern enum {
-    SystemPowerPolicyAc,
-    SystemPowerPolicyDc,
-    VerifySystemPolicyAc,
-    VerifySystemPolicyDc,
-    SystemPowerCapabilities,
-    SystemBatteryState,
-    SystemPowerStateHandler,
-    ProcessorStateHandler,
-    SystemPowerPolicyCurrent,
-    AdministratorPowerPolicy,
-    SystemReserveHiberFile,
-    ProcessorInformation,
-    SystemPowerInformation,
-    ProcessorStateHandler2,
-    LastWakeTime,
-    LastSleepTime,
-    SystemExecutionState,
-    SystemPowerStateNotifyHandler,
-    ProcessorPowerPolicyAc,
-    ProcessorPowerPolicyDc,
-    VerifyProcessorPowerPolicyAc,
-    VerifyProcessorPowerPolicyDc,
-    ProcessorPowerPolicyCurrent,
-    SystemPowerStateLogging,
-    SystemPowerLoggingEntry,
-    SetPowerSettingValue,
-    NotifyUserPowerSetting,
-    PowerInformationLevelUnused0,
-    SystemMonitorHiberBootPowerOff,
-    SystemVideoState,
-    TraceApplicationPowerMessage,
-    TraceApplicationPowerMessageEnd,
-    ProcessorPerfStates,
-    ProcessorIdleStates,
-    ProcessorCap,
-    SystemWakeSource,
-    SystemHiberFileInformation,
-    TraceServicePowerMessage,
-    ProcessorLoad,
-    PowerShutdownNotification,
-    MonitorCapabilities,
-    SessionPowerInit,
-    SessionDisplayState,
-    PowerRequestCreate,
-    PowerRequestAction,
-    GetPowerRequestList,
-    ProcessorInformationEx,
-    NotifyUserModeLegacyPowerEvent,
-    GroupPark,
-    ProcessorIdleDomains,
-    WakeTimerList,
-    SystemHiberFileSize,
-    ProcessorIdleStatesHv,
-    ProcessorPerfStatesHv,
-    ProcessorPerfCapHv,
-    ProcessorSetIdle,
-    LogicalProcessorIdling,
-    UserPresence,
-    PowerSettingNotificationName,
-    GetPowerSettingValue,
-    IdleResiliency,
-    SessionRITState,
-    SessionConnectNotification,
-    SessionPowerCleanup,
-    SessionLockState,
-    SystemHiberbootState,
-    PlatformInformation,
-    PdcInvocation,
-    MonitorInvocation,
-    FirmwareTableInformationRegistered,
-    SetShutdownSelectedTime,
-    SuspendResumeInvocation,
-    PlmPowerRequestCreate,
-    ScreenOff,
-    CsDeviceNotification,
-    PlatformRole,
-    LastResumePerformance,
-    DisplayBurst,
-    ExitLatencySamplingPercentage,
-    RegisterSpmPowerSettings,
-    PlatformIdleStates,
-    ProcessorIdleVeto,
-    PlatformIdleVeto,
-    SystemBatteryStatePrecise,
-    ThermalEvent,
-    PowerRequestActionInternal,
-    BatteryDeviceState,
-    PowerInformationInternal,
-    ThermalStandby,
-    SystemHiberFileType,
-    PhysicalPowerButtonPress,
-    QueryPotentialDripsConstraint,
-    EnergyTrackerCreate,
-    EnergyTrackerQuery,
-    UpdateBlackBoxRecorder,
-    PowerInformationLevelMaximum,
+    SystemPowerPolicyAc = 0,
+    SystemPowerPolicyDc = 1,
+    VerifySystemPolicyAc = 2,
+    VerifySystemPolicyDc = 3,
+    SystemPowerCapabilities = 4,
+    SystemBatteryState = 5,
+    SystemPowerStateHandler = 6,
+    ProcessorStateHandler = 7,
+    SystemPowerPolicyCurrent = 8,
+    AdministratorPowerPolicy = 9,
+    SystemReserveHiberFile = 10,
+    ProcessorInformation = 11,
+    SystemPowerInformation = 12,
+    ProcessorStateHandler2 = 13,
+    LastWakeTime = 14,
+    LastSleepTime = 15,
+    SystemExecutionState = 16,
+    SystemPowerStateNotifyHandler = 17,
+    ProcessorPowerPolicyAc = 18,
+    ProcessorPowerPolicyDc = 19,
+    VerifyProcessorPowerPolicyAc = 20,
+    VerifyProcessorPowerPolicyDc = 21,
+    ProcessorPowerPolicyCurrent = 22,
+    SystemPowerStateLogging = 23,
+    SystemPowerLoggingEntry = 24,
+    SetPowerSettingValue = 25,
+    NotifyUserPowerSetting = 26,
+    PowerInformationLevelUnused0 = 27,
+    SystemMonitorHiberBootPowerOff = 28,
+    SystemVideoState = 29,
+    TraceApplicationPowerMessage = 30,
+    TraceApplicationPowerMessageEnd = 31,
+    ProcessorPerfStates = 32,
+    ProcessorIdleStates = 33,
+    ProcessorCap = 34,
+    SystemWakeSource = 35,
+    SystemHiberFileInformation = 36,
+    TraceServicePowerMessage = 37,
+    ProcessorLoad = 38,
+    PowerShutdownNotification = 39,
+    MonitorCapabilities = 40,
+    SessionPowerInit = 41,
+    SessionDisplayState = 42,
+    PowerRequestCreate = 43,
+    PowerRequestAction = 44,
+    GetPowerRequestList = 45,
+    ProcessorInformationEx = 46,
+    NotifyUserModeLegacyPowerEvent = 47,
+    GroupPark = 48,
+    ProcessorIdleDomains = 49,
+    WakeTimerList = 50,
+    SystemHiberFileSize = 51,
+    ProcessorIdleStatesHv = 52,
+    ProcessorPerfStatesHv = 53,
+    ProcessorPerfCapHv = 54,
+    ProcessorSetIdle = 55,
+    LogicalProcessorIdling = 56,
+    UserPresence = 57,
+    PowerSettingNotificationName = 58,
+    GetPowerSettingValue = 59,
+    IdleResiliency = 60,
+    SessionRITState = 61,
+    SessionConnectNotification = 62,
+    SessionPowerCleanup = 63,
+    SessionLockState = 64,
+    SystemHiberbootState = 65,
+    PlatformInformation = 66,
+    PdcInvocation = 67,
+    MonitorInvocation = 68,
+    FirmwareTableInformationRegistered = 69,
+    SetShutdownSelectedTime = 70,
+    SuspendResumeInvocation = 71,
+    PlmPowerRequestCreate = 72,
+    ScreenOff = 73,
+    CsDeviceNotification = 74,
+    PlatformRole = 75,
+    LastResumePerformance = 76,
+    DisplayBurst = 77,
+    ExitLatencySamplingPercentage = 78,
+    RegisterSpmPowerSettings = 79,
+    PlatformIdleStates = 80,
+    ProcessorIdleVeto = 81,
+    PlatformIdleVeto = 82,
+    SystemBatteryStatePrecise = 83,
+    ThermalEvent = 84,
+    PowerRequestActionInternal = 85,
+    BatteryDeviceState = 86,
+    PowerInformationInternal = 87,
+    ThermalStandby = 88,
+    SystemHiberFileType = 89,
+    PhysicalPowerButtonPress = 90,
+    QueryPotentialDripsConstraint = 91,
+    EnergyTrackerCreate = 92,
+    EnergyTrackerQuery = 93,
+    UpdateBlackBoxRecorder = 94,
+    PowerInformationLevelMaximum = 95,
 };
-pub const UserNotPresent: c_int = 0;
-pub const UserPresent: c_int = 1;
-pub const UserUnknown: c_int = 255;
-pub const POWER_USER_PRESENCE_TYPE = c_int;
-pub const PPOWER_USER_PRESENCE_TYPE = ?&c_int;
+pub const UserNotPresent = 0;
+pub const UserPresent = 1;
+pub const UserUnknown = 255;
+pub const POWER_USER_PRESENCE_TYPE = extern enum {
+    UserNotPresent = 0,
+    UserPresent = 1,
+    UserUnknown = 255,
+};
+pub const PPOWER_USER_PRESENCE_TYPE = ?[*]extern enum {
+    UserNotPresent = 0,
+    UserPresent = 1,
+    UserUnknown = 255,
+};
 pub const struct__POWER_USER_PRESENCE = extern struct {
     UserPresence: POWER_USER_PRESENCE_TYPE,
 };
 pub const POWER_USER_PRESENCE = struct__POWER_USER_PRESENCE;
-pub const PPOWER_USER_PRESENCE = ?&struct__POWER_USER_PRESENCE;
+pub const PPOWER_USER_PRESENCE = ?*struct__POWER_USER_PRESENCE;
 pub const struct__POWER_SESSION_CONNECT = extern struct {
     Connected: BOOLEAN,
     Console: BOOLEAN,
 };
 pub const POWER_SESSION_CONNECT = struct__POWER_SESSION_CONNECT;
-pub const PPOWER_SESSION_CONNECT = ?&struct__POWER_SESSION_CONNECT;
+pub const PPOWER_SESSION_CONNECT = ?*struct__POWER_SESSION_CONNECT;
 pub const struct__POWER_SESSION_TIMEOUTS = extern struct {
     InputTimeout: DWORD,
     DisplayTimeout: DWORD,
 };
 pub const POWER_SESSION_TIMEOUTS = struct__POWER_SESSION_TIMEOUTS;
-pub const PPOWER_SESSION_TIMEOUTS = ?&struct__POWER_SESSION_TIMEOUTS;
+pub const PPOWER_SESSION_TIMEOUTS = ?*struct__POWER_SESSION_TIMEOUTS;
 pub const struct__POWER_SESSION_RIT_STATE = extern struct {
     Active: BOOLEAN,
     LastInputTime: DWORD,
 };
 pub const POWER_SESSION_RIT_STATE = struct__POWER_SESSION_RIT_STATE;
-pub const PPOWER_SESSION_RIT_STATE = ?&struct__POWER_SESSION_RIT_STATE;
+pub const PPOWER_SESSION_RIT_STATE = ?*struct__POWER_SESSION_RIT_STATE;
 pub const struct__POWER_SESSION_WINLOGON = extern struct {
     SessionId: DWORD,
     Console: BOOLEAN,
     Locked: BOOLEAN,
 };
 pub const POWER_SESSION_WINLOGON = struct__POWER_SESSION_WINLOGON;
-pub const PPOWER_SESSION_WINLOGON = ?&struct__POWER_SESSION_WINLOGON;
+pub const PPOWER_SESSION_WINLOGON = ?*struct__POWER_SESSION_WINLOGON;
 pub const struct__POWER_IDLE_RESILIENCY = extern struct {
     CoalescingTimeout: DWORD,
     IdleResiliencyPeriod: DWORD,
 };
 pub const POWER_IDLE_RESILIENCY = struct__POWER_IDLE_RESILIENCY;
-pub const PPOWER_IDLE_RESILIENCY = ?&struct__POWER_IDLE_RESILIENCY;
+pub const PPOWER_IDLE_RESILIENCY = ?*struct__POWER_IDLE_RESILIENCY;
 pub const MonitorRequestReasonUnknown = 0;
 pub const MonitorRequestReasonPowerButton = 1;
 pub const MonitorRequestReasonRemoteConnection = 2;
@@ -3696,51 +4142,51 @@ pub const MonitorRequestReasonPdcSignalHeyCortana = 42;
 pub const MonitorRequestReasonPdcSignalHolographicShell = 43;
 pub const MonitorRequestReasonMax = 44;
 pub const POWER_MONITOR_REQUEST_REASON = extern enum {
-    MonitorRequestReasonUnknown,
-    MonitorRequestReasonPowerButton,
-    MonitorRequestReasonRemoteConnection,
-    MonitorRequestReasonScMonitorpower,
-    MonitorRequestReasonUserInput,
-    MonitorRequestReasonAcDcDisplayBurst,
-    MonitorRequestReasonUserDisplayBurst,
-    MonitorRequestReasonPoSetSystemState,
-    MonitorRequestReasonSetThreadExecutionState,
-    MonitorRequestReasonFullWake,
-    MonitorRequestReasonSessionUnlock,
-    MonitorRequestReasonScreenOffRequest,
-    MonitorRequestReasonIdleTimeout,
-    MonitorRequestReasonPolicyChange,
-    MonitorRequestReasonSleepButton,
-    MonitorRequestReasonLid,
-    MonitorRequestReasonBatteryCountChange,
-    MonitorRequestReasonGracePeriod,
-    MonitorRequestReasonPnP,
-    MonitorRequestReasonDP,
-    MonitorRequestReasonSxTransition,
-    MonitorRequestReasonSystemIdle,
-    MonitorRequestReasonNearProximity,
-    MonitorRequestReasonThermalStandby,
-    MonitorRequestReasonResumePdc,
-    MonitorRequestReasonResumeS4,
-    MonitorRequestReasonTerminal,
-    MonitorRequestReasonPdcSignal,
-    MonitorRequestReasonAcDcDisplayBurstSuppressed,
-    MonitorRequestReasonSystemStateEntered,
-    MonitorRequestReasonWinrt,
-    MonitorRequestReasonUserInputKeyboard,
-    MonitorRequestReasonUserInputMouse,
-    MonitorRequestReasonUserInputTouch,
-    MonitorRequestReasonUserInputPen,
-    MonitorRequestReasonUserInputAccelerometer,
-    MonitorRequestReasonUserInputHid,
-    MonitorRequestReasonUserInputPoUserPresent,
-    MonitorRequestReasonUserInputSessionSwitch,
-    MonitorRequestReasonUserInputInitialization,
-    MonitorRequestReasonPdcSignalWindowsMobilePwrNotif,
-    MonitorRequestReasonPdcSignalWindowsMobileShell,
-    MonitorRequestReasonPdcSignalHeyCortana,
-    MonitorRequestReasonPdcSignalHolographicShell,
-    MonitorRequestReasonMax,
+    MonitorRequestReasonUnknown = 0,
+    MonitorRequestReasonPowerButton = 1,
+    MonitorRequestReasonRemoteConnection = 2,
+    MonitorRequestReasonScMonitorpower = 3,
+    MonitorRequestReasonUserInput = 4,
+    MonitorRequestReasonAcDcDisplayBurst = 5,
+    MonitorRequestReasonUserDisplayBurst = 6,
+    MonitorRequestReasonPoSetSystemState = 7,
+    MonitorRequestReasonSetThreadExecutionState = 8,
+    MonitorRequestReasonFullWake = 9,
+    MonitorRequestReasonSessionUnlock = 10,
+    MonitorRequestReasonScreenOffRequest = 11,
+    MonitorRequestReasonIdleTimeout = 12,
+    MonitorRequestReasonPolicyChange = 13,
+    MonitorRequestReasonSleepButton = 14,
+    MonitorRequestReasonLid = 15,
+    MonitorRequestReasonBatteryCountChange = 16,
+    MonitorRequestReasonGracePeriod = 17,
+    MonitorRequestReasonPnP = 18,
+    MonitorRequestReasonDP = 19,
+    MonitorRequestReasonSxTransition = 20,
+    MonitorRequestReasonSystemIdle = 21,
+    MonitorRequestReasonNearProximity = 22,
+    MonitorRequestReasonThermalStandby = 23,
+    MonitorRequestReasonResumePdc = 24,
+    MonitorRequestReasonResumeS4 = 25,
+    MonitorRequestReasonTerminal = 26,
+    MonitorRequestReasonPdcSignal = 27,
+    MonitorRequestReasonAcDcDisplayBurstSuppressed = 28,
+    MonitorRequestReasonSystemStateEntered = 29,
+    MonitorRequestReasonWinrt = 30,
+    MonitorRequestReasonUserInputKeyboard = 31,
+    MonitorRequestReasonUserInputMouse = 32,
+    MonitorRequestReasonUserInputTouch = 33,
+    MonitorRequestReasonUserInputPen = 34,
+    MonitorRequestReasonUserInputAccelerometer = 35,
+    MonitorRequestReasonUserInputHid = 36,
+    MonitorRequestReasonUserInputPoUserPresent = 37,
+    MonitorRequestReasonUserInputSessionSwitch = 38,
+    MonitorRequestReasonUserInputInitialization = 39,
+    MonitorRequestReasonPdcSignalWindowsMobilePwrNotif = 40,
+    MonitorRequestReasonPdcSignalWindowsMobileShell = 41,
+    MonitorRequestReasonPdcSignalHeyCortana = 42,
+    MonitorRequestReasonPdcSignalHolographicShell = 43,
+    MonitorRequestReasonMax = 44,
 };
 pub const MonitorRequestTypeOff = enum__POWER_MONITOR_REQUEST_TYPE.MonitorRequestTypeOff;
 pub const MonitorRequestTypeOnAndPresent = enum__POWER_MONITOR_REQUEST_TYPE.MonitorRequestTypeOnAndPresent;
@@ -3756,23 +4202,23 @@ pub const struct__POWER_MONITOR_INVOCATION = extern struct {
     RequestReason: POWER_MONITOR_REQUEST_REASON,
 };
 pub const POWER_MONITOR_INVOCATION = struct__POWER_MONITOR_INVOCATION;
-pub const PPOWER_MONITOR_INVOCATION = ?&struct__POWER_MONITOR_INVOCATION;
+pub const PPOWER_MONITOR_INVOCATION = ?*struct__POWER_MONITOR_INVOCATION;
 pub const struct__RESUME_PERFORMANCE = extern struct {
     PostTimeMs: DWORD,
     TotalResumeTimeMs: ULONGLONG,
     ResumeCompleteTimestamp: ULONGLONG,
 };
 pub const RESUME_PERFORMANCE = struct__RESUME_PERFORMANCE;
-pub const PRESUME_PERFORMANCE = ?&struct__RESUME_PERFORMANCE;
+pub const PRESUME_PERFORMANCE = ?*struct__RESUME_PERFORMANCE;
 pub const PoAc = 0;
 pub const PoDc = 1;
 pub const PoHot = 2;
 pub const PoConditionMaximum = 3;
 pub const SYSTEM_POWER_CONDITION = extern enum {
-    PoAc,
-    PoDc,
-    PoHot,
-    PoConditionMaximum,
+    PoAc = 0,
+    PoDc = 1,
+    PoHot = 2,
+    PoConditionMaximum = 3,
 };
 pub const SET_POWER_SETTING_VALUE = extern struct {
     Version: DWORD,
@@ -3781,7 +4227,7 @@ pub const SET_POWER_SETTING_VALUE = extern struct {
     DataLength: DWORD,
     Data: [1]BYTE,
 };
-pub const PSET_POWER_SETTING_VALUE = ?&extern struct {
+pub const PSET_POWER_SETTING_VALUE = ?[*]extern struct {
     Version: DWORD,
     Guid: GUID,
     PowerCondition: SYSTEM_POWER_CONDITION,
@@ -3791,7 +4237,7 @@ pub const PSET_POWER_SETTING_VALUE = ?&extern struct {
 pub const NOTIFY_USER_POWER_SETTING = extern struct {
     Guid: GUID,
 };
-pub const PNOTIFY_USER_POWER_SETTING = ?&extern struct {
+pub const PNOTIFY_USER_POWER_SETTING = ?[*]extern struct {
     Guid: GUID,
 };
 pub const struct__APPLICATIONLAUNCH_SETTING_VALUE = extern struct {
@@ -3800,30 +4246,41 @@ pub const struct__APPLICATIONLAUNCH_SETTING_VALUE = extern struct {
     ButtonInstanceID: DWORD,
 };
 pub const APPLICATIONLAUNCH_SETTING_VALUE = struct__APPLICATIONLAUNCH_SETTING_VALUE;
-pub const PAPPLICATIONLAUNCH_SETTING_VALUE = ?&struct__APPLICATIONLAUNCH_SETTING_VALUE;
-pub const PlatformRoleUnspecified: c_int = 0;
-pub const PlatformRoleDesktop: c_int = 1;
-pub const PlatformRoleMobile: c_int = 2;
-pub const PlatformRoleWorkstation: c_int = 3;
-pub const PlatformRoleEnterpriseServer: c_int = 4;
-pub const PlatformRoleSOHOServer: c_int = 5;
-pub const PlatformRoleAppliancePC: c_int = 6;
-pub const PlatformRolePerformanceServer: c_int = 7;
-pub const PlatformRoleSlate: c_int = 8;
-pub const PlatformRoleMaximum: c_int = 9;
-pub const enum__POWER_PLATFORM_ROLE = c_int;
+pub const PAPPLICATIONLAUNCH_SETTING_VALUE = ?*struct__APPLICATIONLAUNCH_SETTING_VALUE;
+pub const PlatformRoleUnspecified = enum__POWER_PLATFORM_ROLE.PlatformRoleUnspecified;
+pub const PlatformRoleDesktop = enum__POWER_PLATFORM_ROLE.PlatformRoleDesktop;
+pub const PlatformRoleMobile = enum__POWER_PLATFORM_ROLE.PlatformRoleMobile;
+pub const PlatformRoleWorkstation = enum__POWER_PLATFORM_ROLE.PlatformRoleWorkstation;
+pub const PlatformRoleEnterpriseServer = enum__POWER_PLATFORM_ROLE.PlatformRoleEnterpriseServer;
+pub const PlatformRoleSOHOServer = enum__POWER_PLATFORM_ROLE.PlatformRoleSOHOServer;
+pub const PlatformRoleAppliancePC = enum__POWER_PLATFORM_ROLE.PlatformRoleAppliancePC;
+pub const PlatformRolePerformanceServer = enum__POWER_PLATFORM_ROLE.PlatformRolePerformanceServer;
+pub const PlatformRoleSlate = enum__POWER_PLATFORM_ROLE.PlatformRoleSlate;
+pub const PlatformRoleMaximum = enum__POWER_PLATFORM_ROLE.PlatformRoleMaximum;
+pub const enum__POWER_PLATFORM_ROLE = extern enum {
+    PlatformRoleUnspecified = 0,
+    PlatformRoleDesktop = 1,
+    PlatformRoleMobile = 2,
+    PlatformRoleWorkstation = 3,
+    PlatformRoleEnterpriseServer = 4,
+    PlatformRoleSOHOServer = 5,
+    PlatformRoleAppliancePC = 6,
+    PlatformRolePerformanceServer = 7,
+    PlatformRoleSlate = 8,
+    PlatformRoleMaximum = 9,
+};
 pub const POWER_PLATFORM_ROLE = enum__POWER_PLATFORM_ROLE;
-pub const PPOWER_PLATFORM_ROLE = ?&enum__POWER_PLATFORM_ROLE;
+pub const PPOWER_PLATFORM_ROLE = ?[*]enum__POWER_PLATFORM_ROLE;
 pub const struct__POWER_PLATFORM_INFORMATION = extern struct {
     AoAc: BOOLEAN,
 };
 pub const POWER_PLATFORM_INFORMATION = struct__POWER_PLATFORM_INFORMATION;
-pub const PPOWER_PLATFORM_INFORMATION = ?&struct__POWER_PLATFORM_INFORMATION;
+pub const PPOWER_PLATFORM_INFORMATION = ?*struct__POWER_PLATFORM_INFORMATION;
 pub const BATTERY_REPORTING_SCALE = extern struct {
     Granularity: DWORD,
     Capacity: DWORD,
 };
-pub const PBATTERY_REPORTING_SCALE = ?&extern struct {
+pub const PBATTERY_REPORTING_SCALE = ?[*]extern struct {
     Granularity: DWORD,
     Capacity: DWORD,
 };
@@ -3832,7 +4289,7 @@ pub const PPM_WMI_LEGACY_PERFSTATE = extern struct {
     Flags: DWORD,
     PercentFrequency: DWORD,
 };
-pub const PPPM_WMI_LEGACY_PERFSTATE = ?&extern struct {
+pub const PPPM_WMI_LEGACY_PERFSTATE = ?[*]extern struct {
     Frequency: DWORD,
     Flags: DWORD,
     PercentFrequency: DWORD,
@@ -3850,7 +4307,7 @@ pub const PPM_WMI_IDLE_STATE = extern struct {
     IdleHandler: DWORD,
     Reserved1: DWORD,
 };
-pub const PPPM_WMI_IDLE_STATE = ?&extern struct {
+pub const PPPM_WMI_IDLE_STATE = ?[*]extern struct {
     Latency: DWORD,
     Power: DWORD,
     TimeCheck: DWORD,
@@ -3871,7 +4328,7 @@ pub const PPM_WMI_IDLE_STATES = extern struct {
     TargetProcessors: DWORD64,
     State: [1]PPM_WMI_IDLE_STATE,
 };
-pub const PPPM_WMI_IDLE_STATES = ?&extern struct {
+pub const PPPM_WMI_IDLE_STATES = ?[*]extern struct {
     Type: DWORD,
     Count: DWORD,
     TargetState: DWORD,
@@ -3887,7 +4344,7 @@ pub const PPM_WMI_IDLE_STATES_EX = extern struct {
     TargetProcessors: PVOID,
     State: [1]PPM_WMI_IDLE_STATE,
 };
-pub const PPPM_WMI_IDLE_STATES_EX = ?&extern struct {
+pub const PPPM_WMI_IDLE_STATES_EX = ?[*]extern struct {
     Type: DWORD,
     Count: DWORD,
     TargetState: DWORD,
@@ -3911,7 +4368,7 @@ pub const PPM_WMI_PERF_STATE = extern struct {
     Reserved2: DWORD64,
     Reserved3: DWORD64,
 };
-pub const PPPM_WMI_PERF_STATE = ?&extern struct {
+pub const PPPM_WMI_PERF_STATE = ?[*]extern struct {
     Frequency: DWORD,
     Power: DWORD,
     PercentFrequency: BYTE,
@@ -3950,7 +4407,7 @@ pub const PPM_WMI_PERF_STATES = extern struct {
     Reserved2: DWORD64,
     State: [1]PPM_WMI_PERF_STATE,
 };
-pub const PPPM_WMI_PERF_STATES = ?&extern struct {
+pub const PPPM_WMI_PERF_STATES = ?[*]extern struct {
     Count: DWORD,
     MaxFrequency: DWORD,
     CurrentState: DWORD,
@@ -3996,7 +4453,7 @@ pub const PPM_WMI_PERF_STATES_EX = extern struct {
     Reserved2: DWORD64,
     State: [1]PPM_WMI_PERF_STATE,
 };
-pub const PPPM_WMI_PERF_STATES_EX = ?&extern struct {
+pub const PPPM_WMI_PERF_STATES_EX = ?[*]extern struct {
     Count: DWORD,
     MaxFrequency: DWORD,
     CurrentState: DWORD,
@@ -4026,7 +4483,7 @@ pub const PPM_IDLE_STATE_ACCOUNTING = extern struct {
     TotalTime: DWORD64,
     IdleTimeBuckets: [6]DWORD,
 };
-pub const PPPM_IDLE_STATE_ACCOUNTING = ?&extern struct {
+pub const PPPM_IDLE_STATE_ACCOUNTING = ?[*]extern struct {
     IdleTransitions: DWORD,
     FailedTransitions: DWORD,
     InvalidBucketIndex: DWORD,
@@ -4040,7 +4497,7 @@ pub const PPM_IDLE_ACCOUNTING = extern struct {
     StartTime: DWORD64,
     State: [1]PPM_IDLE_STATE_ACCOUNTING,
 };
-pub const PPPM_IDLE_ACCOUNTING = ?&extern struct {
+pub const PPPM_IDLE_ACCOUNTING = ?[*]extern struct {
     StateCount: DWORD,
     TotalTransitions: DWORD,
     ResetCount: DWORD,
@@ -4053,7 +4510,7 @@ pub const PPM_IDLE_STATE_BUCKET_EX = extern struct {
     MaxTimeUs: DWORD,
     Count: DWORD,
 };
-pub const PPPM_IDLE_STATE_BUCKET_EX = ?&extern struct {
+pub const PPPM_IDLE_STATE_BUCKET_EX = ?[*]extern struct {
     TotalTimeUs: DWORD64,
     MinTimeUs: DWORD,
     MaxTimeUs: DWORD,
@@ -4069,7 +4526,7 @@ pub const PPM_IDLE_STATE_ACCOUNTING_EX = extern struct {
     CancelledTransitions: DWORD,
     IdleTimeBuckets: [16]PPM_IDLE_STATE_BUCKET_EX,
 };
-pub const PPPM_IDLE_STATE_ACCOUNTING_EX = ?&extern struct {
+pub const PPPM_IDLE_STATE_ACCOUNTING_EX = ?[*]extern struct {
     TotalTime: DWORD64,
     IdleTransitions: DWORD,
     FailedTransitions: DWORD,
@@ -4087,7 +4544,7 @@ pub const PPM_IDLE_ACCOUNTING_EX = extern struct {
     StartTime: DWORD64,
     State: [1]PPM_IDLE_STATE_ACCOUNTING_EX,
 };
-pub const PPPM_IDLE_ACCOUNTING_EX = ?&extern struct {
+pub const PPPM_IDLE_ACCOUNTING_EX = ?[*]extern struct {
     StateCount: DWORD,
     TotalTransitions: DWORD,
     ResetCount: DWORD,
@@ -4112,7 +4569,7 @@ pub const PPM_PERFSTATE_EVENT = extern struct {
     Speed: DWORD,
     Processor: DWORD,
 };
-pub const PPPM_PERFSTATE_EVENT = ?&extern struct {
+pub const PPPM_PERFSTATE_EVENT = ?[*]extern struct {
     State: DWORD,
     Status: DWORD,
     Latency: DWORD,
@@ -4125,7 +4582,7 @@ pub const PPM_PERFSTATE_DOMAIN_EVENT = extern struct {
     Speed: DWORD,
     Processors: DWORD64,
 };
-pub const PPPM_PERFSTATE_DOMAIN_EVENT = ?&extern struct {
+pub const PPPM_PERFSTATE_DOMAIN_EVENT = ?[*]extern struct {
     State: DWORD,
     Latency: DWORD,
     Speed: DWORD,
@@ -4136,7 +4593,7 @@ pub const PPM_IDLESTATE_EVENT = extern struct {
     OldState: DWORD,
     Processors: DWORD64,
 };
-pub const PPPM_IDLESTATE_EVENT = ?&extern struct {
+pub const PPPM_IDLESTATE_EVENT = ?[*]extern struct {
     NewState: DWORD,
     OldState: DWORD,
     Processors: DWORD64,
@@ -4145,7 +4602,7 @@ pub const PPM_THERMALCHANGE_EVENT = extern struct {
     ThermalConstraint: DWORD,
     Processors: DWORD64,
 };
-pub const PPPM_THERMALCHANGE_EVENT = ?&extern struct {
+pub const PPPM_THERMALCHANGE_EVENT = ?[*]extern struct {
     ThermalConstraint: DWORD,
     Processors: DWORD64,
 };
@@ -4153,7 +4610,7 @@ pub const PPM_THERMAL_POLICY_EVENT = extern struct {
     Mode: BYTE,
     Processors: DWORD64,
 };
-pub const PPPM_THERMAL_POLICY_EVENT = ?&extern struct {
+pub const PPPM_THERMAL_POLICY_EVENT = ?[*]extern struct {
     Mode: BYTE,
     Processors: DWORD64,
 };
@@ -4162,7 +4619,7 @@ pub const POWER_ACTION_POLICY = extern struct {
     Flags: DWORD,
     EventCode: DWORD,
 };
-pub const PPOWER_ACTION_POLICY = ?&extern struct {
+pub const PPOWER_ACTION_POLICY = ?[*]extern struct {
     Action: POWER_ACTION,
     Flags: DWORD,
     EventCode: DWORD,
@@ -4174,7 +4631,7 @@ pub const SYSTEM_POWER_LEVEL = extern struct {
     PowerPolicy: POWER_ACTION_POLICY,
     MinSystemState: SYSTEM_POWER_STATE,
 };
-pub const PSYSTEM_POWER_LEVEL = ?&extern struct {
+pub const PSYSTEM_POWER_LEVEL = ?[*]extern struct {
     Enable: BOOLEAN,
     Spare: [3]BYTE,
     BatteryLevel: DWORD,
@@ -4212,14 +4669,14 @@ pub const struct__SYSTEM_POWER_POLICY = extern struct {
     OverThrottled: POWER_ACTION_POLICY,
 };
 pub const SYSTEM_POWER_POLICY = struct__SYSTEM_POWER_POLICY;
-pub const PSYSTEM_POWER_POLICY = ?&struct__SYSTEM_POWER_POLICY;
+pub const PSYSTEM_POWER_POLICY = ?*struct__SYSTEM_POWER_POLICY;
 pub const PROCESSOR_IDLESTATE_INFO = extern struct {
     TimeCheck: DWORD,
     DemotePercent: BYTE,
     PromotePercent: BYTE,
     Spare: [2]BYTE,
 };
-pub const PPROCESSOR_IDLESTATE_INFO = ?&extern struct {
+pub const PPROCESSOR_IDLESTATE_INFO = ?[*]extern struct {
     TimeCheck: DWORD,
     DemotePercent: BYTE,
     PromotePercent: BYTE,
@@ -4234,7 +4691,7 @@ pub const PROCESSOR_IDLESTATE_POLICY = extern struct {
     PolicyCount: DWORD,
     Policy: [3]PROCESSOR_IDLESTATE_INFO,
 };
-pub const PPROCESSOR_IDLESTATE_POLICY = ?&extern struct {
+pub const PPROCESSOR_IDLESTATE_POLICY = ?[*]extern struct {
     Revision: WORD,
     Flags: extern union {
         AsWORD: WORD,
@@ -4245,10 +4702,10 @@ pub const PPROCESSOR_IDLESTATE_POLICY = ?&extern struct {
 };
 pub const struct__PROCESSOR_POWER_POLICY_INFO = @OpaqueType();
 pub const PROCESSOR_POWER_POLICY_INFO = struct__PROCESSOR_POWER_POLICY_INFO;
-pub const PPROCESSOR_POWER_POLICY_INFO = ?&struct__PROCESSOR_POWER_POLICY_INFO;
+pub const PPROCESSOR_POWER_POLICY_INFO = ?*struct__PROCESSOR_POWER_POLICY_INFO;
 pub const struct__PROCESSOR_POWER_POLICY = @OpaqueType();
 pub const PROCESSOR_POWER_POLICY = struct__PROCESSOR_POWER_POLICY;
-pub const PPROCESSOR_POWER_POLICY = ?&struct__PROCESSOR_POWER_POLICY;
+pub const PPROCESSOR_POWER_POLICY = ?*struct__PROCESSOR_POWER_POLICY;
 pub const PROCESSOR_PERFSTATE_POLICY = extern struct {
     Revision: DWORD,
     MaxThrottle: BYTE,
@@ -4267,7 +4724,7 @@ pub const PROCESSOR_PERFSTATE_POLICY = extern struct {
     IncreasePercent: DWORD,
     DecreasePercent: DWORD,
 };
-pub const PPROCESSOR_PERFSTATE_POLICY = ?&extern struct {
+pub const PPROCESSOR_PERFSTATE_POLICY = ?[*]extern struct {
     Revision: DWORD,
     MaxThrottle: BYTE,
     MinThrottle: BYTE,
@@ -4294,24 +4751,33 @@ pub const struct__ADMINISTRATOR_POWER_POLICY = extern struct {
     MaxSpindownTimeout: DWORD,
 };
 pub const ADMINISTRATOR_POWER_POLICY = struct__ADMINISTRATOR_POWER_POLICY;
-pub const PADMINISTRATOR_POWER_POLICY = ?&struct__ADMINISTRATOR_POWER_POLICY;
-pub const HiberFileBucket1GB: c_int = 0;
-pub const HiberFileBucket2GB: c_int = 1;
-pub const HiberFileBucket4GB: c_int = 2;
-pub const HiberFileBucket8GB: c_int = 3;
-pub const HiberFileBucket16GB: c_int = 4;
-pub const HiberFileBucket32GB: c_int = 5;
-pub const HiberFileBucketUnlimited: c_int = 6;
-pub const HiberFileBucketMax: c_int = 7;
-pub const enum__HIBERFILE_BUCKET_SIZE = c_int;
+pub const PADMINISTRATOR_POWER_POLICY = ?*struct__ADMINISTRATOR_POWER_POLICY;
+pub const HiberFileBucket1GB = enum__HIBERFILE_BUCKET_SIZE.HiberFileBucket1GB;
+pub const HiberFileBucket2GB = enum__HIBERFILE_BUCKET_SIZE.HiberFileBucket2GB;
+pub const HiberFileBucket4GB = enum__HIBERFILE_BUCKET_SIZE.HiberFileBucket4GB;
+pub const HiberFileBucket8GB = enum__HIBERFILE_BUCKET_SIZE.HiberFileBucket8GB;
+pub const HiberFileBucket16GB = enum__HIBERFILE_BUCKET_SIZE.HiberFileBucket16GB;
+pub const HiberFileBucket32GB = enum__HIBERFILE_BUCKET_SIZE.HiberFileBucket32GB;
+pub const HiberFileBucketUnlimited = enum__HIBERFILE_BUCKET_SIZE.HiberFileBucketUnlimited;
+pub const HiberFileBucketMax = enum__HIBERFILE_BUCKET_SIZE.HiberFileBucketMax;
+pub const enum__HIBERFILE_BUCKET_SIZE = extern enum {
+    HiberFileBucket1GB = 0,
+    HiberFileBucket2GB = 1,
+    HiberFileBucket4GB = 2,
+    HiberFileBucket8GB = 3,
+    HiberFileBucket16GB = 4,
+    HiberFileBucket32GB = 5,
+    HiberFileBucketUnlimited = 6,
+    HiberFileBucketMax = 7,
+};
 pub const HIBERFILE_BUCKET_SIZE = enum__HIBERFILE_BUCKET_SIZE;
-pub const PHIBERFILE_BUCKET_SIZE = ?&enum__HIBERFILE_BUCKET_SIZE;
+pub const PHIBERFILE_BUCKET_SIZE = ?[*]enum__HIBERFILE_BUCKET_SIZE;
 pub const struct__HIBERFILE_BUCKET = extern struct {
     MaxPhysicalMemory: DWORD64,
     PhysicalMemoryPercent: [3]DWORD,
 };
 pub const HIBERFILE_BUCKET = struct__HIBERFILE_BUCKET;
-pub const PHIBERFILE_BUCKET = ?&struct__HIBERFILE_BUCKET;
+pub const PHIBERFILE_BUCKET = ?*struct__HIBERFILE_BUCKET;
 pub const SYSTEM_POWER_CAPABILITIES = extern struct {
     PowerButtonPresent: BOOLEAN,
     SleepButtonPresent: BOOLEAN,
@@ -4347,7 +4813,7 @@ pub const SYSTEM_POWER_CAPABILITIES = extern struct {
     MinDeviceWakeState: SYSTEM_POWER_STATE,
     DefaultLowLatencyWake: SYSTEM_POWER_STATE,
 };
-pub const PSYSTEM_POWER_CAPABILITIES = ?&extern struct {
+pub const PSYSTEM_POWER_CAPABILITIES = ?[*]extern struct {
     PowerButtonPresent: BOOLEAN,
     SleepButtonPresent: BOOLEAN,
     LidPresent: BOOLEAN,
@@ -4396,7 +4862,7 @@ pub const SYSTEM_BATTERY_STATE = extern struct {
     DefaultAlert1: DWORD,
     DefaultAlert2: DWORD,
 };
-pub const PSYSTEM_BATTERY_STATE = ?&extern struct {
+pub const PSYSTEM_BATTERY_STATE = ?[*]extern struct {
     AcOnLine: BOOLEAN,
     BatteryPresent: BOOLEAN,
     Charging: BOOLEAN,
@@ -4432,7 +4898,7 @@ pub const struct__IMAGE_DOS_HEADER = extern struct {
     e_lfanew: LONG,
 };
 pub const IMAGE_DOS_HEADER = struct__IMAGE_DOS_HEADER;
-pub const PIMAGE_DOS_HEADER = ?&struct__IMAGE_DOS_HEADER;
+pub const PIMAGE_DOS_HEADER = ?*struct__IMAGE_DOS_HEADER;
 pub const struct__IMAGE_OS2_HEADER = extern struct {
     ne_magic: WORD,
     ne_ver: CHAR,
@@ -4466,7 +4932,7 @@ pub const struct__IMAGE_OS2_HEADER = extern struct {
     ne_expver: WORD,
 };
 pub const IMAGE_OS2_HEADER = struct__IMAGE_OS2_HEADER;
-pub const PIMAGE_OS2_HEADER = ?&struct__IMAGE_OS2_HEADER;
+pub const PIMAGE_OS2_HEADER = ?*struct__IMAGE_OS2_HEADER;
 pub const struct__IMAGE_VXD_HEADER = extern struct {
     e32_magic: WORD,
     e32_border: BYTE,
@@ -4521,7 +4987,7 @@ pub const struct__IMAGE_VXD_HEADER = extern struct {
     e32_ddkver: WORD,
 };
 pub const IMAGE_VXD_HEADER = struct__IMAGE_VXD_HEADER;
-pub const PIMAGE_VXD_HEADER = ?&struct__IMAGE_VXD_HEADER;
+pub const PIMAGE_VXD_HEADER = ?*struct__IMAGE_VXD_HEADER;
 pub const struct__IMAGE_FILE_HEADER = extern struct {
     Machine: WORD,
     NumberOfSections: WORD,
@@ -4532,13 +4998,13 @@ pub const struct__IMAGE_FILE_HEADER = extern struct {
     Characteristics: WORD,
 };
 pub const IMAGE_FILE_HEADER = struct__IMAGE_FILE_HEADER;
-pub const PIMAGE_FILE_HEADER = ?&struct__IMAGE_FILE_HEADER;
+pub const PIMAGE_FILE_HEADER = ?*struct__IMAGE_FILE_HEADER;
 pub const struct__IMAGE_DATA_DIRECTORY = extern struct {
     VirtualAddress: DWORD,
     Size: DWORD,
 };
 pub const IMAGE_DATA_DIRECTORY = struct__IMAGE_DATA_DIRECTORY;
-pub const PIMAGE_DATA_DIRECTORY = ?&struct__IMAGE_DATA_DIRECTORY;
+pub const PIMAGE_DATA_DIRECTORY = ?*struct__IMAGE_DATA_DIRECTORY;
 pub const struct__IMAGE_OPTIONAL_HEADER = extern struct {
     Magic: WORD,
     MajorLinkerVersion: BYTE,
@@ -4573,7 +5039,7 @@ pub const struct__IMAGE_OPTIONAL_HEADER = extern struct {
     DataDirectory: [16]IMAGE_DATA_DIRECTORY,
 };
 pub const IMAGE_OPTIONAL_HEADER32 = struct__IMAGE_OPTIONAL_HEADER;
-pub const PIMAGE_OPTIONAL_HEADER32 = ?&struct__IMAGE_OPTIONAL_HEADER;
+pub const PIMAGE_OPTIONAL_HEADER32 = ?*struct__IMAGE_OPTIONAL_HEADER;
 pub const struct__IMAGE_ROM_OPTIONAL_HEADER = extern struct {
     Magic: WORD,
     MajorLinkerVersion: BYTE,
@@ -4590,7 +5056,7 @@ pub const struct__IMAGE_ROM_OPTIONAL_HEADER = extern struct {
     GpValue: DWORD,
 };
 pub const IMAGE_ROM_OPTIONAL_HEADER = struct__IMAGE_ROM_OPTIONAL_HEADER;
-pub const PIMAGE_ROM_OPTIONAL_HEADER = ?&struct__IMAGE_ROM_OPTIONAL_HEADER;
+pub const PIMAGE_ROM_OPTIONAL_HEADER = ?*struct__IMAGE_ROM_OPTIONAL_HEADER;
 pub const struct__IMAGE_OPTIONAL_HEADER64 = extern struct {
     Magic: WORD,
     MajorLinkerVersion: BYTE,
@@ -4624,7 +5090,7 @@ pub const struct__IMAGE_OPTIONAL_HEADER64 = extern struct {
     DataDirectory: [16]IMAGE_DATA_DIRECTORY,
 };
 pub const IMAGE_OPTIONAL_HEADER64 = struct__IMAGE_OPTIONAL_HEADER64;
-pub const PIMAGE_OPTIONAL_HEADER64 = ?&struct__IMAGE_OPTIONAL_HEADER64;
+pub const PIMAGE_OPTIONAL_HEADER64 = ?*struct__IMAGE_OPTIONAL_HEADER64;
 pub const IMAGE_OPTIONAL_HEADER = IMAGE_OPTIONAL_HEADER64;
 pub const PIMAGE_OPTIONAL_HEADER = PIMAGE_OPTIONAL_HEADER64;
 pub const struct__IMAGE_NT_HEADERS64 = extern struct {
@@ -4633,20 +5099,20 @@ pub const struct__IMAGE_NT_HEADERS64 = extern struct {
     OptionalHeader: IMAGE_OPTIONAL_HEADER64,
 };
 pub const IMAGE_NT_HEADERS64 = struct__IMAGE_NT_HEADERS64;
-pub const PIMAGE_NT_HEADERS64 = ?&struct__IMAGE_NT_HEADERS64;
+pub const PIMAGE_NT_HEADERS64 = ?*struct__IMAGE_NT_HEADERS64;
 pub const struct__IMAGE_NT_HEADERS = extern struct {
     Signature: DWORD,
     FileHeader: IMAGE_FILE_HEADER,
     OptionalHeader: IMAGE_OPTIONAL_HEADER32,
 };
 pub const IMAGE_NT_HEADERS32 = struct__IMAGE_NT_HEADERS;
-pub const PIMAGE_NT_HEADERS32 = ?&struct__IMAGE_NT_HEADERS;
+pub const PIMAGE_NT_HEADERS32 = ?*struct__IMAGE_NT_HEADERS;
 pub const struct__IMAGE_ROM_HEADERS = extern struct {
     FileHeader: IMAGE_FILE_HEADER,
     OptionalHeader: IMAGE_ROM_OPTIONAL_HEADER,
 };
 pub const IMAGE_ROM_HEADERS = struct__IMAGE_ROM_HEADERS;
-pub const PIMAGE_ROM_HEADERS = ?&struct__IMAGE_ROM_HEADERS;
+pub const PIMAGE_ROM_HEADERS = ?*struct__IMAGE_ROM_HEADERS;
 pub const IMAGE_NT_HEADERS = IMAGE_NT_HEADERS64;
 pub const PIMAGE_NT_HEADERS = PIMAGE_NT_HEADERS64;
 pub const struct_ANON_OBJECT_HEADER = extern struct {
@@ -4704,7 +5170,7 @@ pub const struct__IMAGE_SECTION_HEADER = extern struct {
     Characteristics: DWORD,
 };
 pub const IMAGE_SECTION_HEADER = struct__IMAGE_SECTION_HEADER;
-pub const PIMAGE_SECTION_HEADER = ?&struct__IMAGE_SECTION_HEADER;
+pub const PIMAGE_SECTION_HEADER = ?*struct__IMAGE_SECTION_HEADER;
 pub const struct__IMAGE_SYMBOL = extern struct {
     N: extern union {
         ShortName: [8]BYTE,
@@ -4721,7 +5187,7 @@ pub const struct__IMAGE_SYMBOL = extern struct {
     NumberOfAuxSymbols: BYTE,
 };
 pub const IMAGE_SYMBOL = struct__IMAGE_SYMBOL;
-pub const PIMAGE_SYMBOL = ?&IMAGE_SYMBOL;
+pub const PIMAGE_SYMBOL = ?[*]IMAGE_SYMBOL;
 pub const struct__IMAGE_SYMBOL_EX = extern struct {
     N: extern union {
         ShortName: [8]BYTE,
@@ -4738,7 +5204,7 @@ pub const struct__IMAGE_SYMBOL_EX = extern struct {
     NumberOfAuxSymbols: BYTE,
 };
 pub const IMAGE_SYMBOL_EX = struct__IMAGE_SYMBOL_EX;
-pub const PIMAGE_SYMBOL_EX = ?&IMAGE_SYMBOL_EX;
+pub const PIMAGE_SYMBOL_EX = ?[*]IMAGE_SYMBOL_EX;
 pub const struct_IMAGE_AUX_SYMBOL_TOKEN_DEF = extern struct {
     bAuxType: BYTE,
     bReserved: BYTE,
@@ -4746,7 +5212,7 @@ pub const struct_IMAGE_AUX_SYMBOL_TOKEN_DEF = extern struct {
     rgbReserved: [12]BYTE,
 };
 pub const IMAGE_AUX_SYMBOL_TOKEN_DEF = struct_IMAGE_AUX_SYMBOL_TOKEN_DEF;
-pub const PIMAGE_AUX_SYMBOL_TOKEN_DEF = ?&IMAGE_AUX_SYMBOL_TOKEN_DEF;
+pub const PIMAGE_AUX_SYMBOL_TOKEN_DEF = ?[*]IMAGE_AUX_SYMBOL_TOKEN_DEF;
 pub const union__IMAGE_AUX_SYMBOL = extern union {
     Sym: extern struct {
         TagIndex: DWORD,
@@ -4788,7 +5254,7 @@ pub const union__IMAGE_AUX_SYMBOL = extern union {
     },
 };
 pub const IMAGE_AUX_SYMBOL = union__IMAGE_AUX_SYMBOL;
-pub const PIMAGE_AUX_SYMBOL = ?&IMAGE_AUX_SYMBOL;
+pub const PIMAGE_AUX_SYMBOL = ?[*]IMAGE_AUX_SYMBOL;
 pub const union__IMAGE_AUX_SYMBOL_EX = extern union {
     Sym: extern struct {
         WeakDefaultSymIndex: DWORD,
@@ -4819,9 +5285,11 @@ pub const union__IMAGE_AUX_SYMBOL_EX = extern union {
     },
 };
 pub const IMAGE_AUX_SYMBOL_EX = union__IMAGE_AUX_SYMBOL_EX;
-pub const PIMAGE_AUX_SYMBOL_EX = ?&IMAGE_AUX_SYMBOL_EX;
-pub const IMAGE_AUX_SYMBOL_TYPE_TOKEN_DEF: c_int = 1;
-pub const enum_IMAGE_AUX_SYMBOL_TYPE = c_int;
+pub const PIMAGE_AUX_SYMBOL_EX = ?[*]IMAGE_AUX_SYMBOL_EX;
+pub const IMAGE_AUX_SYMBOL_TYPE_TOKEN_DEF = enum_IMAGE_AUX_SYMBOL_TYPE._TOKEN_DEF;
+pub const enum_IMAGE_AUX_SYMBOL_TYPE = extern enum {
+    _TOKEN_DEF = 1,
+};
 pub const IMAGE_AUX_SYMBOL_TYPE = enum_IMAGE_AUX_SYMBOL_TYPE;
 pub const struct__IMAGE_RELOCATION = extern struct {
     @"": extern union {
@@ -4832,7 +5300,7 @@ pub const struct__IMAGE_RELOCATION = extern struct {
     Type: WORD,
 };
 pub const IMAGE_RELOCATION = struct__IMAGE_RELOCATION;
-pub const PIMAGE_RELOCATION = ?&IMAGE_RELOCATION;
+pub const PIMAGE_RELOCATION = ?[*]IMAGE_RELOCATION;
 pub const struct__IMAGE_LINENUMBER = extern struct {
     Type: extern union {
         SymbolTableIndex: DWORD,
@@ -4841,13 +5309,13 @@ pub const struct__IMAGE_LINENUMBER = extern struct {
     Linenumber: WORD,
 };
 pub const IMAGE_LINENUMBER = struct__IMAGE_LINENUMBER;
-pub const PIMAGE_LINENUMBER = ?&IMAGE_LINENUMBER;
+pub const PIMAGE_LINENUMBER = ?[*]IMAGE_LINENUMBER;
 pub const struct__IMAGE_BASE_RELOCATION = extern struct {
     VirtualAddress: DWORD,
     SizeOfBlock: DWORD,
 };
 pub const IMAGE_BASE_RELOCATION = struct__IMAGE_BASE_RELOCATION;
-pub const PIMAGE_BASE_RELOCATION = ?&IMAGE_BASE_RELOCATION;
+pub const PIMAGE_BASE_RELOCATION = ?[*]IMAGE_BASE_RELOCATION;
 pub const struct__IMAGE_ARCHIVE_MEMBER_HEADER = extern struct {
     Name: [16]BYTE,
     Date: [12]BYTE,
@@ -4858,7 +5326,7 @@ pub const struct__IMAGE_ARCHIVE_MEMBER_HEADER = extern struct {
     EndHeader: [2]BYTE,
 };
 pub const IMAGE_ARCHIVE_MEMBER_HEADER = struct__IMAGE_ARCHIVE_MEMBER_HEADER;
-pub const PIMAGE_ARCHIVE_MEMBER_HEADER = ?&struct__IMAGE_ARCHIVE_MEMBER_HEADER;
+pub const PIMAGE_ARCHIVE_MEMBER_HEADER = ?*struct__IMAGE_ARCHIVE_MEMBER_HEADER;
 pub const struct__IMAGE_EXPORT_DIRECTORY = extern struct {
     Characteristics: DWORD,
     TimeDateStamp: DWORD,
@@ -4873,13 +5341,13 @@ pub const struct__IMAGE_EXPORT_DIRECTORY = extern struct {
     AddressOfNameOrdinals: DWORD,
 };
 pub const IMAGE_EXPORT_DIRECTORY = struct__IMAGE_EXPORT_DIRECTORY;
-pub const PIMAGE_EXPORT_DIRECTORY = ?&struct__IMAGE_EXPORT_DIRECTORY;
+pub const PIMAGE_EXPORT_DIRECTORY = ?*struct__IMAGE_EXPORT_DIRECTORY;
 pub const struct__IMAGE_IMPORT_BY_NAME = extern struct {
     Hint: WORD,
     Name: [1]CHAR,
 };
 pub const IMAGE_IMPORT_BY_NAME = struct__IMAGE_IMPORT_BY_NAME;
-pub const PIMAGE_IMPORT_BY_NAME = ?&struct__IMAGE_IMPORT_BY_NAME;
+pub const PIMAGE_IMPORT_BY_NAME = ?*struct__IMAGE_IMPORT_BY_NAME;
 pub const struct__IMAGE_THUNK_DATA64 = extern struct {
     u1: extern union {
         ForwarderString: ULONGLONG,
@@ -4889,7 +5357,7 @@ pub const struct__IMAGE_THUNK_DATA64 = extern struct {
     },
 };
 pub const IMAGE_THUNK_DATA64 = struct__IMAGE_THUNK_DATA64;
-pub const PIMAGE_THUNK_DATA64 = ?&IMAGE_THUNK_DATA64;
+pub const PIMAGE_THUNK_DATA64 = ?[*]IMAGE_THUNK_DATA64;
 pub const struct__IMAGE_THUNK_DATA32 = extern struct {
     u1: extern union {
         ForwarderString: DWORD,
@@ -4899,7 +5367,7 @@ pub const struct__IMAGE_THUNK_DATA32 = extern struct {
     },
 };
 pub const IMAGE_THUNK_DATA32 = struct__IMAGE_THUNK_DATA32;
-pub const PIMAGE_THUNK_DATA32 = ?&IMAGE_THUNK_DATA32;
+pub const PIMAGE_THUNK_DATA32 = ?[*]IMAGE_THUNK_DATA32;
 pub const PIMAGE_TLS_CALLBACK = ?extern fn(PVOID, DWORD, PVOID) void;
 pub const struct__IMAGE_TLS_DIRECTORY64 = extern struct {
     StartAddressOfRawData: ULONGLONG,
@@ -4913,7 +5381,7 @@ pub const struct__IMAGE_TLS_DIRECTORY64 = extern struct {
     },
 };
 pub const IMAGE_TLS_DIRECTORY64 = struct__IMAGE_TLS_DIRECTORY64;
-pub const PIMAGE_TLS_DIRECTORY64 = ?&IMAGE_TLS_DIRECTORY64;
+pub const PIMAGE_TLS_DIRECTORY64 = ?[*]IMAGE_TLS_DIRECTORY64;
 pub const struct__IMAGE_TLS_DIRECTORY32 = extern struct {
     StartAddressOfRawData: DWORD,
     EndAddressOfRawData: DWORD,
@@ -4926,7 +5394,7 @@ pub const struct__IMAGE_TLS_DIRECTORY32 = extern struct {
     },
 };
 pub const IMAGE_TLS_DIRECTORY32 = struct__IMAGE_TLS_DIRECTORY32;
-pub const PIMAGE_TLS_DIRECTORY32 = ?&IMAGE_TLS_DIRECTORY32;
+pub const PIMAGE_TLS_DIRECTORY32 = ?[*]IMAGE_TLS_DIRECTORY32;
 pub const IMAGE_THUNK_DATA = IMAGE_THUNK_DATA64;
 pub const PIMAGE_THUNK_DATA = PIMAGE_THUNK_DATA64;
 pub const IMAGE_TLS_DIRECTORY = IMAGE_TLS_DIRECTORY64;
@@ -4942,21 +5410,21 @@ pub const struct__IMAGE_IMPORT_DESCRIPTOR = extern struct {
     FirstThunk: DWORD,
 };
 pub const IMAGE_IMPORT_DESCRIPTOR = struct__IMAGE_IMPORT_DESCRIPTOR;
-pub const PIMAGE_IMPORT_DESCRIPTOR = ?&IMAGE_IMPORT_DESCRIPTOR;
+pub const PIMAGE_IMPORT_DESCRIPTOR = ?[*]IMAGE_IMPORT_DESCRIPTOR;
 pub const struct__IMAGE_BOUND_IMPORT_DESCRIPTOR = extern struct {
     TimeDateStamp: DWORD,
     OffsetModuleName: WORD,
     NumberOfModuleForwarderRefs: WORD,
 };
 pub const IMAGE_BOUND_IMPORT_DESCRIPTOR = struct__IMAGE_BOUND_IMPORT_DESCRIPTOR;
-pub const PIMAGE_BOUND_IMPORT_DESCRIPTOR = ?&struct__IMAGE_BOUND_IMPORT_DESCRIPTOR;
+pub const PIMAGE_BOUND_IMPORT_DESCRIPTOR = ?*struct__IMAGE_BOUND_IMPORT_DESCRIPTOR;
 pub const struct__IMAGE_BOUND_FORWARDER_REF = extern struct {
     TimeDateStamp: DWORD,
     OffsetModuleName: WORD,
     Reserved: WORD,
 };
 pub const IMAGE_BOUND_FORWARDER_REF = struct__IMAGE_BOUND_FORWARDER_REF;
-pub const PIMAGE_BOUND_FORWARDER_REF = ?&struct__IMAGE_BOUND_FORWARDER_REF;
+pub const PIMAGE_BOUND_FORWARDER_REF = ?*struct__IMAGE_BOUND_FORWARDER_REF;
 pub const struct__IMAGE_DELAYLOAD_DESCRIPTOR = extern struct {
     Attributes: extern union {
         AllAttributes: DWORD,
@@ -4971,8 +5439,8 @@ pub const struct__IMAGE_DELAYLOAD_DESCRIPTOR = extern struct {
     TimeDateStamp: DWORD,
 };
 pub const IMAGE_DELAYLOAD_DESCRIPTOR = struct__IMAGE_DELAYLOAD_DESCRIPTOR;
-pub const PIMAGE_DELAYLOAD_DESCRIPTOR = ?&struct__IMAGE_DELAYLOAD_DESCRIPTOR;
-pub const PCIMAGE_DELAYLOAD_DESCRIPTOR = ?&const IMAGE_DELAYLOAD_DESCRIPTOR;
+pub const PIMAGE_DELAYLOAD_DESCRIPTOR = ?*struct__IMAGE_DELAYLOAD_DESCRIPTOR;
+pub const PCIMAGE_DELAYLOAD_DESCRIPTOR = ?[*]const IMAGE_DELAYLOAD_DESCRIPTOR;
 pub const struct__IMAGE_RESOURCE_DIRECTORY = extern struct {
     Characteristics: DWORD,
     TimeDateStamp: DWORD,
@@ -4982,7 +5450,7 @@ pub const struct__IMAGE_RESOURCE_DIRECTORY = extern struct {
     NumberOfIdEntries: WORD,
 };
 pub const IMAGE_RESOURCE_DIRECTORY = struct__IMAGE_RESOURCE_DIRECTORY;
-pub const PIMAGE_RESOURCE_DIRECTORY = ?&struct__IMAGE_RESOURCE_DIRECTORY;
+pub const PIMAGE_RESOURCE_DIRECTORY = ?*struct__IMAGE_RESOURCE_DIRECTORY;
 pub const struct__IMAGE_RESOURCE_DIRECTORY_ENTRY = extern struct {
     @"": extern union {
         @"": @OpaqueType(),
@@ -4995,19 +5463,19 @@ pub const struct__IMAGE_RESOURCE_DIRECTORY_ENTRY = extern struct {
     },
 };
 pub const IMAGE_RESOURCE_DIRECTORY_ENTRY = struct__IMAGE_RESOURCE_DIRECTORY_ENTRY;
-pub const PIMAGE_RESOURCE_DIRECTORY_ENTRY = ?&struct__IMAGE_RESOURCE_DIRECTORY_ENTRY;
+pub const PIMAGE_RESOURCE_DIRECTORY_ENTRY = ?*struct__IMAGE_RESOURCE_DIRECTORY_ENTRY;
 pub const struct__IMAGE_RESOURCE_DIRECTORY_STRING = extern struct {
     Length: WORD,
     NameString: [1]CHAR,
 };
 pub const IMAGE_RESOURCE_DIRECTORY_STRING = struct__IMAGE_RESOURCE_DIRECTORY_STRING;
-pub const PIMAGE_RESOURCE_DIRECTORY_STRING = ?&struct__IMAGE_RESOURCE_DIRECTORY_STRING;
+pub const PIMAGE_RESOURCE_DIRECTORY_STRING = ?*struct__IMAGE_RESOURCE_DIRECTORY_STRING;
 pub const struct__IMAGE_RESOURCE_DIR_STRING_U = extern struct {
     Length: WORD,
     NameString: [1]WCHAR,
 };
 pub const IMAGE_RESOURCE_DIR_STRING_U = struct__IMAGE_RESOURCE_DIR_STRING_U;
-pub const PIMAGE_RESOURCE_DIR_STRING_U = ?&struct__IMAGE_RESOURCE_DIR_STRING_U;
+pub const PIMAGE_RESOURCE_DIR_STRING_U = ?*struct__IMAGE_RESOURCE_DIR_STRING_U;
 pub const struct__IMAGE_RESOURCE_DATA_ENTRY = extern struct {
     OffsetToData: DWORD,
     Size: DWORD,
@@ -5015,7 +5483,7 @@ pub const struct__IMAGE_RESOURCE_DATA_ENTRY = extern struct {
     Reserved: DWORD,
 };
 pub const IMAGE_RESOURCE_DATA_ENTRY = struct__IMAGE_RESOURCE_DATA_ENTRY;
-pub const PIMAGE_RESOURCE_DATA_ENTRY = ?&struct__IMAGE_RESOURCE_DATA_ENTRY;
+pub const PIMAGE_RESOURCE_DATA_ENTRY = ?*struct__IMAGE_RESOURCE_DATA_ENTRY;
 pub const struct__IMAGE_LOAD_CONFIG_CODE_INTEGRITY = extern struct {
     Flags: WORD,
     Catalog: WORD,
@@ -5023,25 +5491,25 @@ pub const struct__IMAGE_LOAD_CONFIG_CODE_INTEGRITY = extern struct {
     Reserved: DWORD,
 };
 pub const IMAGE_LOAD_CONFIG_CODE_INTEGRITY = struct__IMAGE_LOAD_CONFIG_CODE_INTEGRITY;
-pub const PIMAGE_LOAD_CONFIG_CODE_INTEGRITY = ?&struct__IMAGE_LOAD_CONFIG_CODE_INTEGRITY;
+pub const PIMAGE_LOAD_CONFIG_CODE_INTEGRITY = ?*struct__IMAGE_LOAD_CONFIG_CODE_INTEGRITY;
 pub const struct__IMAGE_DYNAMIC_RELOCATION_TABLE = extern struct {
     Version: DWORD,
     Size: DWORD,
 };
 pub const IMAGE_DYNAMIC_RELOCATION_TABLE = struct__IMAGE_DYNAMIC_RELOCATION_TABLE;
-pub const PIMAGE_DYNAMIC_RELOCATION_TABLE = ?&struct__IMAGE_DYNAMIC_RELOCATION_TABLE;
+pub const PIMAGE_DYNAMIC_RELOCATION_TABLE = ?*struct__IMAGE_DYNAMIC_RELOCATION_TABLE;
 pub const struct__IMAGE_DYNAMIC_RELOCATION32 = extern struct {
     Symbol: DWORD,
     BaseRelocSize: DWORD,
 };
 pub const IMAGE_DYNAMIC_RELOCATION32 = struct__IMAGE_DYNAMIC_RELOCATION32;
-pub const PIMAGE_DYNAMIC_RELOCATION32 = ?&struct__IMAGE_DYNAMIC_RELOCATION32;
+pub const PIMAGE_DYNAMIC_RELOCATION32 = ?*struct__IMAGE_DYNAMIC_RELOCATION32;
 pub const struct__IMAGE_DYNAMIC_RELOCATION64 = extern struct {
     Symbol: ULONGLONG,
     BaseRelocSize: DWORD,
 };
 pub const IMAGE_DYNAMIC_RELOCATION64 = struct__IMAGE_DYNAMIC_RELOCATION64;
-pub const PIMAGE_DYNAMIC_RELOCATION64 = ?&struct__IMAGE_DYNAMIC_RELOCATION64;
+pub const PIMAGE_DYNAMIC_RELOCATION64 = ?*struct__IMAGE_DYNAMIC_RELOCATION64;
 pub const struct__IMAGE_DYNAMIC_RELOCATION32_V2 = extern struct {
     HeaderSize: DWORD,
     FixupInfoSize: DWORD,
@@ -5050,7 +5518,7 @@ pub const struct__IMAGE_DYNAMIC_RELOCATION32_V2 = extern struct {
     Flags: DWORD,
 };
 pub const IMAGE_DYNAMIC_RELOCATION32_V2 = struct__IMAGE_DYNAMIC_RELOCATION32_V2;
-pub const PIMAGE_DYNAMIC_RELOCATION32_V2 = ?&struct__IMAGE_DYNAMIC_RELOCATION32_V2;
+pub const PIMAGE_DYNAMIC_RELOCATION32_V2 = ?*struct__IMAGE_DYNAMIC_RELOCATION32_V2;
 pub const struct__IMAGE_DYNAMIC_RELOCATION64_V2 = extern struct {
     HeaderSize: DWORD,
     FixupInfoSize: DWORD,
@@ -5059,7 +5527,7 @@ pub const struct__IMAGE_DYNAMIC_RELOCATION64_V2 = extern struct {
     Flags: DWORD,
 };
 pub const IMAGE_DYNAMIC_RELOCATION64_V2 = struct__IMAGE_DYNAMIC_RELOCATION64_V2;
-pub const PIMAGE_DYNAMIC_RELOCATION64_V2 = ?&struct__IMAGE_DYNAMIC_RELOCATION64_V2;
+pub const PIMAGE_DYNAMIC_RELOCATION64_V2 = ?*struct__IMAGE_DYNAMIC_RELOCATION64_V2;
 pub const IMAGE_DYNAMIC_RELOCATION = IMAGE_DYNAMIC_RELOCATION64;
 pub const PIMAGE_DYNAMIC_RELOCATION = PIMAGE_DYNAMIC_RELOCATION64;
 pub const IMAGE_DYNAMIC_RELOCATION_V2 = IMAGE_DYNAMIC_RELOCATION64_V2;
@@ -5068,7 +5536,7 @@ pub const struct__IMAGE_PROLOGUE_DYNAMIC_RELOCATION_HEADER = extern struct {
     PrologueByteCount: BYTE,
 };
 pub const IMAGE_PROLOGUE_DYNAMIC_RELOCATION_HEADER = struct__IMAGE_PROLOGUE_DYNAMIC_RELOCATION_HEADER;
-pub const PIMAGE_PROLOGUE_DYNAMIC_RELOCATION_HEADER = ?&IMAGE_PROLOGUE_DYNAMIC_RELOCATION_HEADER;
+pub const PIMAGE_PROLOGUE_DYNAMIC_RELOCATION_HEADER = ?[*]IMAGE_PROLOGUE_DYNAMIC_RELOCATION_HEADER;
 pub const struct__IMAGE_EPILOGUE_DYNAMIC_RELOCATION_HEADER = extern struct {
     EpilogueCount: DWORD,
     EpilogueByteCount: BYTE,
@@ -5076,7 +5544,7 @@ pub const struct__IMAGE_EPILOGUE_DYNAMIC_RELOCATION_HEADER = extern struct {
     BranchDescriptorCount: WORD,
 };
 pub const IMAGE_EPILOGUE_DYNAMIC_RELOCATION_HEADER = struct__IMAGE_EPILOGUE_DYNAMIC_RELOCATION_HEADER;
-pub const PIMAGE_EPILOGUE_DYNAMIC_RELOCATION_HEADER = ?&IMAGE_EPILOGUE_DYNAMIC_RELOCATION_HEADER;
+pub const PIMAGE_EPILOGUE_DYNAMIC_RELOCATION_HEADER = ?[*]IMAGE_EPILOGUE_DYNAMIC_RELOCATION_HEADER;
 pub const struct__IMAGE_LOAD_CONFIG_DIRECTORY32 = extern struct {
     Size: DWORD,
     TimeDateStamp: DWORD,
@@ -5121,7 +5589,7 @@ pub const struct__IMAGE_LOAD_CONFIG_DIRECTORY32 = extern struct {
     EnclaveConfigurationPointer: DWORD,
 };
 pub const IMAGE_LOAD_CONFIG_DIRECTORY32 = struct__IMAGE_LOAD_CONFIG_DIRECTORY32;
-pub const PIMAGE_LOAD_CONFIG_DIRECTORY32 = ?&struct__IMAGE_LOAD_CONFIG_DIRECTORY32;
+pub const PIMAGE_LOAD_CONFIG_DIRECTORY32 = ?*struct__IMAGE_LOAD_CONFIG_DIRECTORY32;
 pub const struct__IMAGE_LOAD_CONFIG_DIRECTORY64 = extern struct {
     Size: DWORD,
     TimeDateStamp: DWORD,
@@ -5166,7 +5634,7 @@ pub const struct__IMAGE_LOAD_CONFIG_DIRECTORY64 = extern struct {
     EnclaveConfigurationPointer: ULONGLONG,
 };
 pub const IMAGE_LOAD_CONFIG_DIRECTORY64 = struct__IMAGE_LOAD_CONFIG_DIRECTORY64;
-pub const PIMAGE_LOAD_CONFIG_DIRECTORY64 = ?&struct__IMAGE_LOAD_CONFIG_DIRECTORY64;
+pub const PIMAGE_LOAD_CONFIG_DIRECTORY64 = ?*struct__IMAGE_LOAD_CONFIG_DIRECTORY64;
 pub const IMAGE_LOAD_CONFIG_DIRECTORY = IMAGE_LOAD_CONFIG_DIRECTORY64;
 pub const PIMAGE_LOAD_CONFIG_DIRECTORY = PIMAGE_LOAD_CONFIG_DIRECTORY64;
 pub const struct__IMAGE_HOT_PATCH_INFO = extern struct {
@@ -5178,7 +5646,7 @@ pub const struct__IMAGE_HOT_PATCH_INFO = extern struct {
     BufferOffset: DWORD,
 };
 pub const IMAGE_HOT_PATCH_INFO = struct__IMAGE_HOT_PATCH_INFO;
-pub const PIMAGE_HOT_PATCH_INFO = ?&struct__IMAGE_HOT_PATCH_INFO;
+pub const PIMAGE_HOT_PATCH_INFO = ?*struct__IMAGE_HOT_PATCH_INFO;
 pub const struct__IMAGE_HOT_PATCH_BASE = extern struct {
     SequenceNumber: DWORD,
     Flags: DWORD,
@@ -5190,16 +5658,16 @@ pub const struct__IMAGE_HOT_PATCH_BASE = extern struct {
     BufferOffset: DWORD,
 };
 pub const IMAGE_HOT_PATCH_BASE = struct__IMAGE_HOT_PATCH_BASE;
-pub const PIMAGE_HOT_PATCH_BASE = ?&struct__IMAGE_HOT_PATCH_BASE;
+pub const PIMAGE_HOT_PATCH_BASE = ?*struct__IMAGE_HOT_PATCH_BASE;
 pub const struct__IMAGE_HOT_PATCH_HASHES = extern struct {
     SHA256: [32]BYTE,
     SHA1: [20]BYTE,
 };
 pub const IMAGE_HOT_PATCH_HASHES = struct__IMAGE_HOT_PATCH_HASHES;
-pub const PIMAGE_HOT_PATCH_HASHES = ?&struct__IMAGE_HOT_PATCH_HASHES;
+pub const PIMAGE_HOT_PATCH_HASHES = ?*struct__IMAGE_HOT_PATCH_HASHES;
 pub const struct__IMAGE_CE_RUNTIME_FUNCTION_ENTRY = @OpaqueType();
 pub const IMAGE_CE_RUNTIME_FUNCTION_ENTRY = struct__IMAGE_CE_RUNTIME_FUNCTION_ENTRY;
-pub const PIMAGE_CE_RUNTIME_FUNCTION_ENTRY = ?&struct__IMAGE_CE_RUNTIME_FUNCTION_ENTRY;
+pub const PIMAGE_CE_RUNTIME_FUNCTION_ENTRY = ?*struct__IMAGE_CE_RUNTIME_FUNCTION_ENTRY;
 pub const struct__IMAGE_ARM_RUNTIME_FUNCTION_ENTRY = extern struct {
     BeginAddress: DWORD,
     @"": extern union {
@@ -5208,7 +5676,7 @@ pub const struct__IMAGE_ARM_RUNTIME_FUNCTION_ENTRY = extern struct {
     },
 };
 pub const IMAGE_ARM_RUNTIME_FUNCTION_ENTRY = struct__IMAGE_ARM_RUNTIME_FUNCTION_ENTRY;
-pub const PIMAGE_ARM_RUNTIME_FUNCTION_ENTRY = ?&struct__IMAGE_ARM_RUNTIME_FUNCTION_ENTRY;
+pub const PIMAGE_ARM_RUNTIME_FUNCTION_ENTRY = ?*struct__IMAGE_ARM_RUNTIME_FUNCTION_ENTRY;
 pub const struct__IMAGE_ARM64_RUNTIME_FUNCTION_ENTRY = extern struct {
     BeginAddress: DWORD,
     @"": extern union {
@@ -5217,7 +5685,7 @@ pub const struct__IMAGE_ARM64_RUNTIME_FUNCTION_ENTRY = extern struct {
     },
 };
 pub const IMAGE_ARM64_RUNTIME_FUNCTION_ENTRY = struct__IMAGE_ARM64_RUNTIME_FUNCTION_ENTRY;
-pub const PIMAGE_ARM64_RUNTIME_FUNCTION_ENTRY = ?&struct__IMAGE_ARM64_RUNTIME_FUNCTION_ENTRY;
+pub const PIMAGE_ARM64_RUNTIME_FUNCTION_ENTRY = ?*struct__IMAGE_ARM64_RUNTIME_FUNCTION_ENTRY;
 pub const struct__IMAGE_ALPHA64_RUNTIME_FUNCTION_ENTRY = extern struct {
     BeginAddress: ULONGLONG,
     EndAddress: ULONGLONG,
@@ -5226,7 +5694,7 @@ pub const struct__IMAGE_ALPHA64_RUNTIME_FUNCTION_ENTRY = extern struct {
     PrologEndAddress: ULONGLONG,
 };
 pub const IMAGE_ALPHA64_RUNTIME_FUNCTION_ENTRY = struct__IMAGE_ALPHA64_RUNTIME_FUNCTION_ENTRY;
-pub const PIMAGE_ALPHA64_RUNTIME_FUNCTION_ENTRY = ?&struct__IMAGE_ALPHA64_RUNTIME_FUNCTION_ENTRY;
+pub const PIMAGE_ALPHA64_RUNTIME_FUNCTION_ENTRY = ?*struct__IMAGE_ALPHA64_RUNTIME_FUNCTION_ENTRY;
 pub const struct__IMAGE_ALPHA_RUNTIME_FUNCTION_ENTRY = extern struct {
     BeginAddress: DWORD,
     EndAddress: DWORD,
@@ -5235,9 +5703,9 @@ pub const struct__IMAGE_ALPHA_RUNTIME_FUNCTION_ENTRY = extern struct {
     PrologEndAddress: DWORD,
 };
 pub const IMAGE_ALPHA_RUNTIME_FUNCTION_ENTRY = struct__IMAGE_ALPHA_RUNTIME_FUNCTION_ENTRY;
-pub const PIMAGE_ALPHA_RUNTIME_FUNCTION_ENTRY = ?&struct__IMAGE_ALPHA_RUNTIME_FUNCTION_ENTRY;
+pub const PIMAGE_ALPHA_RUNTIME_FUNCTION_ENTRY = ?*struct__IMAGE_ALPHA_RUNTIME_FUNCTION_ENTRY;
 pub const _IMAGE_RUNTIME_FUNCTION_ENTRY = struct__IMAGE_RUNTIME_FUNCTION_ENTRY;
-pub const _PIMAGE_RUNTIME_FUNCTION_ENTRY = ?&struct__IMAGE_RUNTIME_FUNCTION_ENTRY;
+pub const _PIMAGE_RUNTIME_FUNCTION_ENTRY = ?*struct__IMAGE_RUNTIME_FUNCTION_ENTRY;
 pub const IMAGE_IA64_RUNTIME_FUNCTION_ENTRY = _IMAGE_RUNTIME_FUNCTION_ENTRY;
 pub const PIMAGE_IA64_RUNTIME_FUNCTION_ENTRY = _PIMAGE_RUNTIME_FUNCTION_ENTRY;
 pub const IMAGE_RUNTIME_FUNCTION_ENTRY = _IMAGE_RUNTIME_FUNCTION_ENTRY;
@@ -5258,7 +5726,7 @@ pub const struct__IMAGE_ENCLAVE_CONFIG32 = extern struct {
     EnclaveFlags: DWORD,
 };
 pub const IMAGE_ENCLAVE_CONFIG32 = struct__IMAGE_ENCLAVE_CONFIG32;
-pub const PIMAGE_ENCLAVE_CONFIG32 = ?&struct__IMAGE_ENCLAVE_CONFIG32;
+pub const PIMAGE_ENCLAVE_CONFIG32 = ?*struct__IMAGE_ENCLAVE_CONFIG32;
 pub const struct__IMAGE_ENCLAVE_CONFIG64 = extern struct {
     Size: DWORD,
     MinimumRequiredConfigSize: DWORD,
@@ -5275,7 +5743,7 @@ pub const struct__IMAGE_ENCLAVE_CONFIG64 = extern struct {
     EnclaveFlags: DWORD,
 };
 pub const IMAGE_ENCLAVE_CONFIG64 = struct__IMAGE_ENCLAVE_CONFIG64;
-pub const PIMAGE_ENCLAVE_CONFIG64 = ?&struct__IMAGE_ENCLAVE_CONFIG64;
+pub const PIMAGE_ENCLAVE_CONFIG64 = ?*struct__IMAGE_ENCLAVE_CONFIG64;
 pub const IMAGE_ENCLAVE_CONFIG = IMAGE_ENCLAVE_CONFIG64;
 pub const PIMAGE_ENCLAVE_CONFIG = PIMAGE_ENCLAVE_CONFIG64;
 pub const struct__IMAGE_ENCLAVE_IMPORT = extern struct {
@@ -5288,7 +5756,7 @@ pub const struct__IMAGE_ENCLAVE_IMPORT = extern struct {
     Reserved: DWORD,
 };
 pub const IMAGE_ENCLAVE_IMPORT = struct__IMAGE_ENCLAVE_IMPORT;
-pub const PIMAGE_ENCLAVE_IMPORT = ?&struct__IMAGE_ENCLAVE_IMPORT;
+pub const PIMAGE_ENCLAVE_IMPORT = ?*struct__IMAGE_ENCLAVE_IMPORT;
 pub const struct__IMAGE_DEBUG_DIRECTORY = extern struct {
     Characteristics: DWORD,
     TimeDateStamp: DWORD,
@@ -5300,7 +5768,7 @@ pub const struct__IMAGE_DEBUG_DIRECTORY = extern struct {
     PointerToRawData: DWORD,
 };
 pub const IMAGE_DEBUG_DIRECTORY = struct__IMAGE_DEBUG_DIRECTORY;
-pub const PIMAGE_DEBUG_DIRECTORY = ?&struct__IMAGE_DEBUG_DIRECTORY;
+pub const PIMAGE_DEBUG_DIRECTORY = ?*struct__IMAGE_DEBUG_DIRECTORY;
 pub const struct__IMAGE_COFF_SYMBOLS_HEADER = extern struct {
     NumberOfSymbols: DWORD,
     LvaToFirstSymbol: DWORD,
@@ -5312,10 +5780,10 @@ pub const struct__IMAGE_COFF_SYMBOLS_HEADER = extern struct {
     RvaToLastByteOfData: DWORD,
 };
 pub const IMAGE_COFF_SYMBOLS_HEADER = struct__IMAGE_COFF_SYMBOLS_HEADER;
-pub const PIMAGE_COFF_SYMBOLS_HEADER = ?&struct__IMAGE_COFF_SYMBOLS_HEADER;
+pub const PIMAGE_COFF_SYMBOLS_HEADER = ?*struct__IMAGE_COFF_SYMBOLS_HEADER;
 pub const struct__FPO_DATA = @OpaqueType();
 pub const FPO_DATA = struct__FPO_DATA;
-pub const PFPO_DATA = ?&struct__FPO_DATA;
+pub const PFPO_DATA = ?*struct__FPO_DATA;
 pub const struct__IMAGE_DEBUG_MISC = extern struct {
     DataType: DWORD,
     Length: DWORD,
@@ -5324,14 +5792,14 @@ pub const struct__IMAGE_DEBUG_MISC = extern struct {
     Data: [1]BYTE,
 };
 pub const IMAGE_DEBUG_MISC = struct__IMAGE_DEBUG_MISC;
-pub const PIMAGE_DEBUG_MISC = ?&struct__IMAGE_DEBUG_MISC;
+pub const PIMAGE_DEBUG_MISC = ?*struct__IMAGE_DEBUG_MISC;
 pub const struct__IMAGE_FUNCTION_ENTRY = extern struct {
     StartingAddress: DWORD,
     EndingAddress: DWORD,
     EndOfPrologue: DWORD,
 };
 pub const IMAGE_FUNCTION_ENTRY = struct__IMAGE_FUNCTION_ENTRY;
-pub const PIMAGE_FUNCTION_ENTRY = ?&struct__IMAGE_FUNCTION_ENTRY;
+pub const PIMAGE_FUNCTION_ENTRY = ?*struct__IMAGE_FUNCTION_ENTRY;
 pub const struct__IMAGE_FUNCTION_ENTRY64 = extern struct {
     StartingAddress: ULONGLONG,
     EndingAddress: ULONGLONG,
@@ -5341,7 +5809,7 @@ pub const struct__IMAGE_FUNCTION_ENTRY64 = extern struct {
     },
 };
 pub const IMAGE_FUNCTION_ENTRY64 = struct__IMAGE_FUNCTION_ENTRY64;
-pub const PIMAGE_FUNCTION_ENTRY64 = ?&struct__IMAGE_FUNCTION_ENTRY64;
+pub const PIMAGE_FUNCTION_ENTRY64 = ?*struct__IMAGE_FUNCTION_ENTRY64;
 pub const struct__IMAGE_SEPARATE_DEBUG_HEADER = extern struct {
     Signature: WORD,
     Flags: WORD,
@@ -5358,7 +5826,7 @@ pub const struct__IMAGE_SEPARATE_DEBUG_HEADER = extern struct {
     Reserved: [2]DWORD,
 };
 pub const IMAGE_SEPARATE_DEBUG_HEADER = struct__IMAGE_SEPARATE_DEBUG_HEADER;
-pub const PIMAGE_SEPARATE_DEBUG_HEADER = ?&struct__IMAGE_SEPARATE_DEBUG_HEADER;
+pub const PIMAGE_SEPARATE_DEBUG_HEADER = ?*struct__IMAGE_SEPARATE_DEBUG_HEADER;
 pub const struct__NON_PAGED_DEBUG_INFO = extern struct {
     Signature: WORD,
     Flags: WORD,
@@ -5371,56 +5839,92 @@ pub const struct__NON_PAGED_DEBUG_INFO = extern struct {
     ImageBase: ULONGLONG,
 };
 pub const NON_PAGED_DEBUG_INFO = struct__NON_PAGED_DEBUG_INFO;
-pub const PNON_PAGED_DEBUG_INFO = ?&struct__NON_PAGED_DEBUG_INFO;
+pub const PNON_PAGED_DEBUG_INFO = ?*struct__NON_PAGED_DEBUG_INFO;
 pub const struct__ImageArchitectureHeader = @OpaqueType();
 pub const IMAGE_ARCHITECTURE_HEADER = struct__ImageArchitectureHeader;
-pub const PIMAGE_ARCHITECTURE_HEADER = ?&struct__ImageArchitectureHeader;
+pub const PIMAGE_ARCHITECTURE_HEADER = ?*struct__ImageArchitectureHeader;
 pub const struct__ImageArchitectureEntry = extern struct {
     FixupInstRVA: DWORD,
     NewInst: DWORD,
 };
 pub const IMAGE_ARCHITECTURE_ENTRY = struct__ImageArchitectureEntry;
-pub const PIMAGE_ARCHITECTURE_ENTRY = ?&struct__ImageArchitectureEntry;
+pub const PIMAGE_ARCHITECTURE_ENTRY = ?*struct__ImageArchitectureEntry;
 pub const struct_IMPORT_OBJECT_HEADER = @OpaqueType();
 pub const IMPORT_OBJECT_HEADER = struct_IMPORT_OBJECT_HEADER;
-pub const IMPORT_OBJECT_CODE: c_int = 0;
-pub const IMPORT_OBJECT_DATA: c_int = 1;
-pub const IMPORT_OBJECT_CONST: c_int = 2;
-pub const enum_IMPORT_OBJECT_TYPE = c_int;
+pub const IMPORT_OBJECT_CODE = enum_IMPORT_OBJECT_TYPE.IMPORT_OBJECT_CODE;
+pub const IMPORT_OBJECT_DATA = enum_IMPORT_OBJECT_TYPE.IMPORT_OBJECT_DATA;
+pub const IMPORT_OBJECT_CONST = enum_IMPORT_OBJECT_TYPE.IMPORT_OBJECT_CONST;
+pub const enum_IMPORT_OBJECT_TYPE = extern enum {
+    IMPORT_OBJECT_CODE = 0,
+    IMPORT_OBJECT_DATA = 1,
+    IMPORT_OBJECT_CONST = 2,
+};
 pub const IMPORT_OBJECT_TYPE = enum_IMPORT_OBJECT_TYPE;
-pub const IMPORT_OBJECT_ORDINAL: c_int = 0;
-pub const IMPORT_OBJECT_NAME: c_int = 1;
-pub const IMPORT_OBJECT_NAME_NO_PREFIX: c_int = 2;
-pub const IMPORT_OBJECT_NAME_UNDECORATE: c_int = 3;
-pub const IMPORT_OBJECT_NAME_EXPORTAS: c_int = 4;
-pub const enum_IMPORT_OBJECT_NAME_TYPE = c_int;
+pub const IMPORT_OBJECT_ORDINAL = enum_IMPORT_OBJECT_NAME_TYPE.IMPORT_OBJECT_ORDINAL;
+pub const IMPORT_OBJECT_NAME = enum_IMPORT_OBJECT_NAME_TYPE.IMPORT_OBJECT_NAME;
+pub const IMPORT_OBJECT_NAME_NO_PREFIX = enum_IMPORT_OBJECT_NAME_TYPE.IMPORT_OBJECT_NAME_NO_PREFIX;
+pub const IMPORT_OBJECT_NAME_UNDECORATE = enum_IMPORT_OBJECT_NAME_TYPE.IMPORT_OBJECT_NAME_UNDECORATE;
+pub const IMPORT_OBJECT_NAME_EXPORTAS = enum_IMPORT_OBJECT_NAME_TYPE.IMPORT_OBJECT_NAME_EXPORTAS;
+pub const enum_IMPORT_OBJECT_NAME_TYPE = extern enum {
+    IMPORT_OBJECT_ORDINAL = 0,
+    IMPORT_OBJECT_NAME = 1,
+    IMPORT_OBJECT_NAME_NO_PREFIX = 2,
+    IMPORT_OBJECT_NAME_UNDECORATE = 3,
+    IMPORT_OBJECT_NAME_EXPORTAS = 4,
+};
 pub const IMPORT_OBJECT_NAME_TYPE = enum_IMPORT_OBJECT_NAME_TYPE;
-pub const COMIMAGE_FLAGS_ILONLY: c_int = 1;
-pub const COMIMAGE_FLAGS_32BITREQUIRED: c_int = 2;
-pub const COMIMAGE_FLAGS_IL_LIBRARY: c_int = 4;
-pub const COMIMAGE_FLAGS_STRONGNAMESIGNED: c_int = 8;
-pub const COMIMAGE_FLAGS_NATIVE_ENTRYPOINT: c_int = 16;
-pub const COMIMAGE_FLAGS_TRACKDEBUGDATA: c_int = 65536;
-pub const COMIMAGE_FLAGS_32BITPREFERRED: c_int = 131072;
-pub const COR_VERSION_MAJOR_V2: c_int = 2;
-pub const COR_VERSION_MAJOR: c_int = 2;
-pub const COR_VERSION_MINOR: c_int = 5;
-pub const COR_DELETED_NAME_LENGTH: c_int = 8;
-pub const COR_VTABLEGAP_NAME_LENGTH: c_int = 8;
-pub const NATIVE_TYPE_MAX_CB: c_int = 1;
-pub const COR_ILMETHOD_SECT_SMALL_MAX_DATASIZE: c_int = 255;
-pub const IMAGE_COR_MIH_METHODRVA: c_int = 1;
-pub const IMAGE_COR_MIH_EHRVA: c_int = 2;
-pub const IMAGE_COR_MIH_BASICBLOCK: c_int = 8;
-pub const COR_VTABLE_32BIT: c_int = 1;
-pub const COR_VTABLE_64BIT: c_int = 2;
-pub const COR_VTABLE_FROM_UNMANAGED: c_int = 4;
-pub const COR_VTABLE_FROM_UNMANAGED_RETAIN_APPDOMAIN: c_int = 8;
-pub const COR_VTABLE_CALL_MOST_DERIVED: c_int = 16;
-pub const IMAGE_COR_EATJ_THUNK_SIZE: c_int = 32;
-pub const MAX_CLASS_NAME: c_int = 1024;
-pub const MAX_PACKAGE_NAME: c_int = 1024;
-pub const enum_ReplacesCorHdrNumericDefines = c_int;
+pub const COMIMAGE_FLAGS_ILONLY = enum_ReplacesCorHdrNumericDefines.COMIMAGE_FLAGS_ILONLY;
+pub const COMIMAGE_FLAGS_32BITREQUIRED = enum_ReplacesCorHdrNumericDefines.COMIMAGE_FLAGS_32BITREQUIRED;
+pub const COMIMAGE_FLAGS_IL_LIBRARY = enum_ReplacesCorHdrNumericDefines.COMIMAGE_FLAGS_IL_LIBRARY;
+pub const COMIMAGE_FLAGS_STRONGNAMESIGNED = enum_ReplacesCorHdrNumericDefines.COMIMAGE_FLAGS_STRONGNAMESIGNED;
+pub const COMIMAGE_FLAGS_NATIVE_ENTRYPOINT = enum_ReplacesCorHdrNumericDefines.COMIMAGE_FLAGS_NATIVE_ENTRYPOINT;
+pub const COMIMAGE_FLAGS_TRACKDEBUGDATA = enum_ReplacesCorHdrNumericDefines.COMIMAGE_FLAGS_TRACKDEBUGDATA;
+pub const COMIMAGE_FLAGS_32BITPREFERRED = enum_ReplacesCorHdrNumericDefines.COMIMAGE_FLAGS_32BITPREFERRED;
+pub const COR_VERSION_MAJOR_V2 = enum_ReplacesCorHdrNumericDefines.COR_VERSION_MAJOR_V2;
+pub const COR_VERSION_MAJOR = enum_ReplacesCorHdrNumericDefines.COR_VERSION_MAJOR;
+pub const COR_VERSION_MINOR = enum_ReplacesCorHdrNumericDefines.COR_VERSION_MINOR;
+pub const COR_DELETED_NAME_LENGTH = enum_ReplacesCorHdrNumericDefines.COR_DELETED_NAME_LENGTH;
+pub const COR_VTABLEGAP_NAME_LENGTH = enum_ReplacesCorHdrNumericDefines.COR_VTABLEGAP_NAME_LENGTH;
+pub const NATIVE_TYPE_MAX_CB = enum_ReplacesCorHdrNumericDefines.NATIVE_TYPE_MAX_CB;
+pub const COR_ILMETHOD_SECT_SMALL_MAX_DATASIZE = enum_ReplacesCorHdrNumericDefines.COR_ILMETHOD_SECT_SMALL_MAX_DATASIZE;
+pub const IMAGE_COR_MIH_METHODRVA = enum_ReplacesCorHdrNumericDefines.IMAGE_COR_MIH_METHODRVA;
+pub const IMAGE_COR_MIH_EHRVA = enum_ReplacesCorHdrNumericDefines.IMAGE_COR_MIH_EHRVA;
+pub const IMAGE_COR_MIH_BASICBLOCK = enum_ReplacesCorHdrNumericDefines.IMAGE_COR_MIH_BASICBLOCK;
+pub const COR_VTABLE_32BIT = enum_ReplacesCorHdrNumericDefines.COR_VTABLE_32BIT;
+pub const COR_VTABLE_64BIT = enum_ReplacesCorHdrNumericDefines.COR_VTABLE_64BIT;
+pub const COR_VTABLE_FROM_UNMANAGED = enum_ReplacesCorHdrNumericDefines.COR_VTABLE_FROM_UNMANAGED;
+pub const COR_VTABLE_FROM_UNMANAGED_RETAIN_APPDOMAIN = enum_ReplacesCorHdrNumericDefines.COR_VTABLE_FROM_UNMANAGED_RETAIN_APPDOMAIN;
+pub const COR_VTABLE_CALL_MOST_DERIVED = enum_ReplacesCorHdrNumericDefines.COR_VTABLE_CALL_MOST_DERIVED;
+pub const IMAGE_COR_EATJ_THUNK_SIZE = enum_ReplacesCorHdrNumericDefines.IMAGE_COR_EATJ_THUNK_SIZE;
+pub const MAX_CLASS_NAME = enum_ReplacesCorHdrNumericDefines.MAX_CLASS_NAME;
+pub const MAX_PACKAGE_NAME = enum_ReplacesCorHdrNumericDefines.MAX_PACKAGE_NAME;
+pub const enum_ReplacesCorHdrNumericDefines = extern enum {
+    COMIMAGE_FLAGS_ILONLY = 1,
+    COMIMAGE_FLAGS_32BITREQUIRED = 2,
+    COMIMAGE_FLAGS_IL_LIBRARY = 4,
+    COMIMAGE_FLAGS_STRONGNAMESIGNED = 8,
+    COMIMAGE_FLAGS_NATIVE_ENTRYPOINT = 16,
+    COMIMAGE_FLAGS_TRACKDEBUGDATA = 65536,
+    COMIMAGE_FLAGS_32BITPREFERRED = 131072,
+    COR_VERSION_MAJOR_V2 = 2,
+    COR_VERSION_MAJOR = 2,
+    COR_VERSION_MINOR = 5,
+    COR_DELETED_NAME_LENGTH = 8,
+    COR_VTABLEGAP_NAME_LENGTH = 8,
+    NATIVE_TYPE_MAX_CB = 1,
+    COR_ILMETHOD_SECT_SMALL_MAX_DATASIZE = 255,
+    IMAGE_COR_MIH_METHODRVA = 1,
+    IMAGE_COR_MIH_EHRVA = 2,
+    IMAGE_COR_MIH_BASICBLOCK = 8,
+    COR_VTABLE_32BIT = 1,
+    COR_VTABLE_64BIT = 2,
+    COR_VTABLE_FROM_UNMANAGED = 4,
+    COR_VTABLE_FROM_UNMANAGED_RETAIN_APPDOMAIN = 8,
+    COR_VTABLE_CALL_MOST_DERIVED = 16,
+    IMAGE_COR_EATJ_THUNK_SIZE = 32,
+    MAX_CLASS_NAME = 1024,
+    MAX_PACKAGE_NAME = 1024,
+};
 pub const ReplacesCorHdrNumericDefines = enum_ReplacesCorHdrNumericDefines;
 pub const struct_IMAGE_COR20_HEADER = extern struct {
     cb: DWORD,
@@ -5440,27 +5944,27 @@ pub const struct_IMAGE_COR20_HEADER = extern struct {
     ManagedNativeHeader: IMAGE_DATA_DIRECTORY,
 };
 pub const IMAGE_COR20_HEADER = struct_IMAGE_COR20_HEADER;
-pub const PIMAGE_COR20_HEADER = ?&struct_IMAGE_COR20_HEADER;
-//pub extern fn RtlCaptureStackBackTrace(FramesToSkip: DWORD, FramesToCapture: DWORD, BackTrace: ?&PVOID, BackTraceHash: PDWORD) WORD;
+pub const PIMAGE_COR20_HEADER = ?*struct_IMAGE_COR20_HEADER;
+//pub extern fn RtlCaptureStackBackTrace(FramesToSkip: DWORD, FramesToCapture: DWORD, BackTrace: ?[*]PVOID, BackTraceHash: PDWORD) WORD;
 //pub extern fn RtlCaptureContext(ContextRecord: PCONTEXT) void;
 //pub extern fn RtlUnwind(TargetFrame: PVOID, TargetIp: PVOID, ExceptionRecord: PEXCEPTION_RECORD, ReturnValue: PVOID) void;
 //pub extern fn RtlAddFunctionTable(FunctionTable: PRUNTIME_FUNCTION, EntryCount: DWORD, BaseAddress: DWORD64) BOOLEAN;
 //pub extern fn RtlDeleteFunctionTable(FunctionTable: PRUNTIME_FUNCTION) BOOLEAN;
 //pub extern fn RtlInstallFunctionTableCallback(TableIdentifier: DWORD64, BaseAddress: DWORD64, Length: DWORD, Callback: PGET_RUNTIME_FUNCTION_CALLBACK, Context: PVOID, OutOfProcessCallbackDll: PCWSTR) BOOLEAN;
-//pub extern fn RtlAddGrowableFunctionTable(DynamicTable: ?&PVOID, FunctionTable: PRUNTIME_FUNCTION, EntryCount: DWORD, MaximumEntryCount: DWORD, RangeBase: ULONG_PTR, RangeEnd: ULONG_PTR) DWORD;
+//pub extern fn RtlAddGrowableFunctionTable(DynamicTable: ?[*]PVOID, FunctionTable: PRUNTIME_FUNCTION, EntryCount: DWORD, MaximumEntryCount: DWORD, RangeBase: ULONG_PTR, RangeEnd: ULONG_PTR) DWORD;
 //pub extern fn RtlGrowFunctionTable(DynamicTable: PVOID, NewEntryCount: DWORD) void;
 //pub extern fn RtlDeleteGrowableFunctionTable(DynamicTable: PVOID) void;
 //pub extern fn RtlLookupFunctionEntry(ControlPc: DWORD64, ImageBase: PDWORD64, HistoryTable: PUNWIND_HISTORY_TABLE) PRUNTIME_FUNCTION;
-//pub extern fn RtlRestoreContext(ContextRecord: PCONTEXT, ExceptionRecord: ?&struct__EXCEPTION_RECORD) void;
+//pub extern fn RtlRestoreContext(ContextRecord: PCONTEXT, ExceptionRecord: ?*struct__EXCEPTION_RECORD) void;
 //pub extern fn RtlUnwindEx(TargetFrame: PVOID, TargetIp: PVOID, ExceptionRecord: PEXCEPTION_RECORD, ReturnValue: PVOID, ContextRecord: PCONTEXT, HistoryTable: PUNWIND_HISTORY_TABLE) void;
-//pub extern fn RtlVirtualUnwind(HandlerType: DWORD, ImageBase: DWORD64, ControlPc: DWORD64, FunctionEntry: PRUNTIME_FUNCTION, ContextRecord: PCONTEXT, HandlerData: ?&PVOID, EstablisherFrame: PDWORD64, ContextPointers: PKNONVOLATILE_CONTEXT_POINTERS) PEXCEPTION_ROUTINE;
-//pub extern fn RtlPcToFileHeader(PcValue: PVOID, BaseOfImage: ?&PVOID) PVOID;
-//pub extern fn RtlCompareMemory(Source1: ?&const c_void, Source2: ?&const c_void, Length: SIZE_T) SIZE_T;
+//pub extern fn RtlVirtualUnwind(HandlerType: DWORD, ImageBase: DWORD64, ControlPc: DWORD64, FunctionEntry: PRUNTIME_FUNCTION, ContextRecord: PCONTEXT, HandlerData: ?[*]PVOID, EstablisherFrame: PDWORD64, ContextPointers: PKNONVOLATILE_CONTEXT_POINTERS) PEXCEPTION_ROUTINE;
+//pub extern fn RtlPcToFileHeader(PcValue: PVOID, BaseOfImage: ?[*]PVOID) PVOID;
+//pub extern fn RtlCompareMemory(Source1: ?*const c_void, Source2: ?*const c_void, Length: SIZE_T) SIZE_T;
 pub const struct__SLIST_ENTRY = extern struct {
-    Next: ?&struct__SLIST_ENTRY,
+    Next: ?*struct__SLIST_ENTRY,
 };
 pub const SLIST_ENTRY = struct__SLIST_ENTRY;
-pub const PSLIST_ENTRY = ?&struct__SLIST_ENTRY;
+pub const PSLIST_ENTRY = ?*struct__SLIST_ENTRY;
 pub const union__SLIST_HEADER = extern union {
     @"": extern struct {
         Alignment: ULONGLONG,
@@ -5469,9 +5973,9 @@ pub const union__SLIST_HEADER = extern union {
     HeaderX64: @OpaqueType(),
 };
 pub const SLIST_HEADER = union__SLIST_HEADER;
-pub const PSLIST_HEADER = ?&union__SLIST_HEADER;
+pub const PSLIST_HEADER = ?[*]union__SLIST_HEADER;
 //pub extern fn RtlInitializeSListHead(ListHead: PSLIST_HEADER) void;
-//pub extern fn RtlFirstEntrySList(ListHead: ?&const SLIST_HEADER) PSLIST_ENTRY;
+//pub extern fn RtlFirstEntrySList(ListHead: ?[*]const SLIST_HEADER) PSLIST_ENTRY;
 //pub extern fn RtlInterlockedPopEntrySList(ListHead: PSLIST_HEADER) PSLIST_ENTRY;
 //pub extern fn RtlInterlockedPushEntrySList(ListHead: PSLIST_HEADER, ListEntry: PSLIST_ENTRY) PSLIST_ENTRY;
 //pub extern fn RtlInterlockedPushListSListEx(ListHead: PSLIST_HEADER, List: PSLIST_ENTRY, ListEnd: PSLIST_ENTRY, Count: DWORD) PSLIST_ENTRY;
@@ -5481,7 +5985,7 @@ pub const union__RTL_RUN_ONCE = extern union {
     Ptr: PVOID,
 };
 pub const RTL_RUN_ONCE = union__RTL_RUN_ONCE;
-pub const PRTL_RUN_ONCE = ?&union__RTL_RUN_ONCE;
+pub const PRTL_RUN_ONCE = ?[*]union__RTL_RUN_ONCE;
 pub const struct__RTL_BARRIER = extern struct {
     Reserved1: DWORD,
     Reserved2: DWORD,
@@ -5490,7 +5994,7 @@ pub const struct__RTL_BARRIER = extern struct {
     Reserved5: DWORD,
 };
 pub const RTL_BARRIER = struct__RTL_BARRIER;
-pub const PRTL_BARRIER = ?&struct__RTL_BARRIER;
+pub const PRTL_BARRIER = ?*struct__RTL_BARRIER;
 //pub extern fn __fastfail(Code: c_uint) noreturn;
 pub fn HEAP_MAKE_TAG_FLAGS(TagBase: DWORD, Tag: DWORD) DWORD {
     return DWORD(TagBase +% (Tag << @import("std").math.Log2Int(DWORD)(18)));
@@ -5501,20 +6005,20 @@ pub const struct__MESSAGE_RESOURCE_ENTRY = extern struct {
     Text: [1]BYTE,
 };
 pub const MESSAGE_RESOURCE_ENTRY = struct__MESSAGE_RESOURCE_ENTRY;
-pub const PMESSAGE_RESOURCE_ENTRY = ?&struct__MESSAGE_RESOURCE_ENTRY;
+pub const PMESSAGE_RESOURCE_ENTRY = ?*struct__MESSAGE_RESOURCE_ENTRY;
 pub const struct__MESSAGE_RESOURCE_BLOCK = extern struct {
     LowId: DWORD,
     HighId: DWORD,
     OffsetToEntries: DWORD,
 };
 pub const MESSAGE_RESOURCE_BLOCK = struct__MESSAGE_RESOURCE_BLOCK;
-pub const PMESSAGE_RESOURCE_BLOCK = ?&struct__MESSAGE_RESOURCE_BLOCK;
+pub const PMESSAGE_RESOURCE_BLOCK = ?*struct__MESSAGE_RESOURCE_BLOCK;
 pub const struct__MESSAGE_RESOURCE_DATA = extern struct {
     NumberOfBlocks: DWORD,
     Blocks: [1]MESSAGE_RESOURCE_BLOCK,
 };
 pub const MESSAGE_RESOURCE_DATA = struct__MESSAGE_RESOURCE_DATA;
-pub const PMESSAGE_RESOURCE_DATA = ?&struct__MESSAGE_RESOURCE_DATA;
+pub const PMESSAGE_RESOURCE_DATA = ?*struct__MESSAGE_RESOURCE_DATA;
 pub const struct__OSVERSIONINFOA = extern struct {
     dwOSVersionInfoSize: DWORD,
     dwMajorVersion: DWORD,
@@ -5524,8 +6028,8 @@ pub const struct__OSVERSIONINFOA = extern struct {
     szCSDVersion: [128]CHAR,
 };
 pub const OSVERSIONINFOA = struct__OSVERSIONINFOA;
-pub const POSVERSIONINFOA = ?&struct__OSVERSIONINFOA;
-pub const LPOSVERSIONINFOA = ?&struct__OSVERSIONINFOA;
+pub const POSVERSIONINFOA = ?*struct__OSVERSIONINFOA;
+pub const LPOSVERSIONINFOA = ?*struct__OSVERSIONINFOA;
 pub const struct__OSVERSIONINFOW = extern struct {
     dwOSVersionInfoSize: DWORD,
     dwMajorVersion: DWORD,
@@ -5535,10 +6039,10 @@ pub const struct__OSVERSIONINFOW = extern struct {
     szCSDVersion: [128]WCHAR,
 };
 pub const OSVERSIONINFOW = struct__OSVERSIONINFOW;
-pub const POSVERSIONINFOW = ?&struct__OSVERSIONINFOW;
-pub const LPOSVERSIONINFOW = ?&struct__OSVERSIONINFOW;
+pub const POSVERSIONINFOW = ?*struct__OSVERSIONINFOW;
+pub const LPOSVERSIONINFOW = ?*struct__OSVERSIONINFOW;
 pub const RTL_OSVERSIONINFOW = struct__OSVERSIONINFOW;
-pub const PRTL_OSVERSIONINFOW = ?&struct__OSVERSIONINFOW;
+pub const PRTL_OSVERSIONINFOW = ?*struct__OSVERSIONINFOW;
 pub const OSVERSIONINFO = OSVERSIONINFOA;
 pub const POSVERSIONINFO = POSVERSIONINFOA;
 pub const LPOSVERSIONINFO = LPOSVERSIONINFOA;
@@ -5556,8 +6060,8 @@ pub const struct__OSVERSIONINFOEXA = extern struct {
     wReserved: BYTE,
 };
 pub const OSVERSIONINFOEXA = struct__OSVERSIONINFOEXA;
-pub const POSVERSIONINFOEXA = ?&struct__OSVERSIONINFOEXA;
-pub const LPOSVERSIONINFOEXA = ?&struct__OSVERSIONINFOEXA;
+pub const POSVERSIONINFOEXA = ?*struct__OSVERSIONINFOEXA;
+pub const LPOSVERSIONINFOEXA = ?*struct__OSVERSIONINFOEXA;
 pub const struct__OSVERSIONINFOEXW = extern struct {
     dwOSVersionInfoSize: DWORD,
     dwMajorVersion: DWORD,
@@ -5572,98 +6076,142 @@ pub const struct__OSVERSIONINFOEXW = extern struct {
     wReserved: BYTE,
 };
 pub const OSVERSIONINFOEXW = struct__OSVERSIONINFOEXW;
-pub const POSVERSIONINFOEXW = ?&struct__OSVERSIONINFOEXW;
-pub const LPOSVERSIONINFOEXW = ?&struct__OSVERSIONINFOEXW;
+pub const POSVERSIONINFOEXW = ?*struct__OSVERSIONINFOEXW;
+pub const LPOSVERSIONINFOEXW = ?*struct__OSVERSIONINFOEXW;
 pub const RTL_OSVERSIONINFOEXW = struct__OSVERSIONINFOEXW;
-pub const PRTL_OSVERSIONINFOEXW = ?&struct__OSVERSIONINFOEXW;
+pub const PRTL_OSVERSIONINFOEXW = ?*struct__OSVERSIONINFOEXW;
 pub const OSVERSIONINFOEX = OSVERSIONINFOEXA;
 pub const POSVERSIONINFOEX = POSVERSIONINFOEXA;
 pub const LPOSVERSIONINFOEX = LPOSVERSIONINFOEXA;
 //pub extern fn VerSetConditionMask(ConditionMask: ULONGLONG, TypeMask: DWORD, Condition: BYTE) ULONGLONG;
 //pub extern fn RtlGetProductInfo(OSMajorVersion: DWORD, OSMinorVersion: DWORD, SpMajorVersion: DWORD, SpMinorVersion: DWORD, ReturnedProductType: PDWORD) BOOLEAN;
-pub const UmsThreadInvalidInfoClass: c_int = 0;
-pub const UmsThreadUserContext: c_int = 1;
-pub const UmsThreadPriority: c_int = 2;
-pub const UmsThreadAffinity: c_int = 3;
-pub const UmsThreadTeb: c_int = 4;
-pub const UmsThreadIsSuspended: c_int = 5;
-pub const UmsThreadIsTerminated: c_int = 6;
-pub const UmsThreadMaxInfoClass: c_int = 7;
-pub const enum__RTL_UMS_THREAD_INFO_CLASS = c_int;
+pub const UmsThreadInvalidInfoClass = enum__RTL_UMS_THREAD_INFO_CLASS.UmsThreadInvalidInfoClass;
+pub const UmsThreadUserContext = enum__RTL_UMS_THREAD_INFO_CLASS.UmsThreadUserContext;
+pub const UmsThreadPriority = enum__RTL_UMS_THREAD_INFO_CLASS.UmsThreadPriority;
+pub const UmsThreadAffinity = enum__RTL_UMS_THREAD_INFO_CLASS.UmsThreadAffinity;
+pub const UmsThreadTeb = enum__RTL_UMS_THREAD_INFO_CLASS.UmsThreadTeb;
+pub const UmsThreadIsSuspended = enum__RTL_UMS_THREAD_INFO_CLASS.UmsThreadIsSuspended;
+pub const UmsThreadIsTerminated = enum__RTL_UMS_THREAD_INFO_CLASS.UmsThreadIsTerminated;
+pub const UmsThreadMaxInfoClass = enum__RTL_UMS_THREAD_INFO_CLASS.UmsThreadMaxInfoClass;
+pub const enum__RTL_UMS_THREAD_INFO_CLASS = extern enum {
+    UmsThreadInvalidInfoClass = 0,
+    UmsThreadUserContext = 1,
+    UmsThreadPriority = 2,
+    UmsThreadAffinity = 3,
+    UmsThreadTeb = 4,
+    UmsThreadIsSuspended = 5,
+    UmsThreadIsTerminated = 6,
+    UmsThreadMaxInfoClass = 7,
+};
 pub const RTL_UMS_THREAD_INFO_CLASS = enum__RTL_UMS_THREAD_INFO_CLASS;
-pub const PRTL_UMS_THREAD_INFO_CLASS = ?&enum__RTL_UMS_THREAD_INFO_CLASS;
-pub const UmsSchedulerStartup: c_int = 0;
-pub const UmsSchedulerThreadBlocked: c_int = 1;
-pub const UmsSchedulerThreadYield: c_int = 2;
-pub const enum__RTL_UMS_SCHEDULER_REASON = c_int;
+pub const PRTL_UMS_THREAD_INFO_CLASS = ?[*]enum__RTL_UMS_THREAD_INFO_CLASS;
+pub const UmsSchedulerStartup = enum__RTL_UMS_SCHEDULER_REASON.UmsSchedulerStartup;
+pub const UmsSchedulerThreadBlocked = enum__RTL_UMS_SCHEDULER_REASON.UmsSchedulerThreadBlocked;
+pub const UmsSchedulerThreadYield = enum__RTL_UMS_SCHEDULER_REASON.UmsSchedulerThreadYield;
+pub const enum__RTL_UMS_SCHEDULER_REASON = extern enum {
+    UmsSchedulerStartup = 0,
+    UmsSchedulerThreadBlocked = 1,
+    UmsSchedulerThreadYield = 2,
+};
 pub const RTL_UMS_SCHEDULER_REASON = enum__RTL_UMS_SCHEDULER_REASON;
-pub const PRTL_UMS_SCHEDULER_REASON = ?&enum__RTL_UMS_SCHEDULER_REASON;
+pub const PRTL_UMS_SCHEDULER_REASON = ?[*]enum__RTL_UMS_SCHEDULER_REASON;
 pub const RTL_UMS_SCHEDULER_ENTRY_POINT = extern fn(RTL_UMS_SCHEDULER_REASON, ULONG_PTR, PVOID) void;
-pub const PRTL_UMS_SCHEDULER_ENTRY_POINT = ?&RTL_UMS_SCHEDULER_ENTRY_POINT;
-//pub extern fn RtlCrc32(Buffer: ?&const c_void, Size: usize, InitialCrc: DWORD) DWORD;
-//pub extern fn RtlCrc64(Buffer: ?&const c_void, Size: usize, InitialCrc: ULONGLONG) ULONGLONG;
-pub const OS_DEPLOYMENT_STANDARD: c_int = 1;
-pub const OS_DEPLOYMENT_COMPACT: c_int = 2;
-pub const enum__OS_DEPLOYEMENT_STATE_VALUES = c_int;
+pub const PRTL_UMS_SCHEDULER_ENTRY_POINT = ?[*]RTL_UMS_SCHEDULER_ENTRY_POINT;
+//pub extern fn RtlCrc32(Buffer: ?*const c_void, Size: usize, InitialCrc: DWORD) DWORD;
+//pub extern fn RtlCrc64(Buffer: ?*const c_void, Size: usize, InitialCrc: ULONGLONG) ULONGLONG;
+pub const OS_DEPLOYMENT_STANDARD = enum__OS_DEPLOYEMENT_STATE_VALUES.OS_DEPLOYMENT_STANDARD;
+pub const OS_DEPLOYMENT_COMPACT = enum__OS_DEPLOYEMENT_STATE_VALUES.OS_DEPLOYMENT_COMPACT;
+pub const enum__OS_DEPLOYEMENT_STATE_VALUES = extern enum {
+    OS_DEPLOYMENT_STANDARD = 1,
+    OS_DEPLOYMENT_COMPACT = 2,
+};
 pub const OS_DEPLOYEMENT_STATE_VALUES = enum__OS_DEPLOYEMENT_STATE_VALUES;
 //pub extern fn RtlOsDeploymentState(Flags: DWORD) OS_DEPLOYEMENT_STATE_VALUES;
 pub const struct__NV_MEMORY_RANGE = extern struct {
-    BaseAddress: ?&c_void,
+    BaseAddress: ?*c_void,
     Length: SIZE_T,
 };
 pub const NV_MEMORY_RANGE = struct__NV_MEMORY_RANGE;
-pub const PNV_MEMORY_RANGE = ?&struct__NV_MEMORY_RANGE;
-//pub extern fn RtlGetNonVolatileToken(NvBuffer: PVOID, Size: SIZE_T, NvToken: ?&PVOID) DWORD;
+pub const PNV_MEMORY_RANGE = ?*struct__NV_MEMORY_RANGE;
+//pub extern fn RtlGetNonVolatileToken(NvBuffer: PVOID, Size: SIZE_T, NvToken: ?[*]PVOID) DWORD;
 //pub extern fn RtlFreeNonVolatileToken(NvToken: PVOID) DWORD;
 //pub extern fn RtlFlushNonVolatileMemory(NvToken: PVOID, NvBuffer: PVOID, Size: SIZE_T, Flags: DWORD) DWORD;
 //pub extern fn RtlDrainNonVolatileFlush(NvToken: PVOID) DWORD;
-//pub extern fn RtlWriteNonVolatileMemory(NvToken: PVOID, NvDestination: ?&c_void, Source: ?&c_void, Size: SIZE_T, Flags: DWORD) DWORD;
+//pub extern fn RtlWriteNonVolatileMemory(NvToken: PVOID, NvDestination: ?*c_void, Source: ?*c_void, Size: SIZE_T, Flags: DWORD) DWORD;
 //pub extern fn RtlFlushNonVolatileMemoryRanges(NvToken: PVOID, NvRanges: PNV_MEMORY_RANGE, NumRanges: SIZE_T, Flags: DWORD) DWORD;
 pub const struct_CORRELATION_VECTOR = extern struct {
     Version: CHAR,
     Vector: [129]CHAR,
 };
 pub const CORRELATION_VECTOR = struct_CORRELATION_VECTOR;
-pub const PCORRELATION_VECTOR = ?&CORRELATION_VECTOR;
-//pub extern fn RtlInitializeCorrelationVector(CorrelationVector: PCORRELATION_VECTOR, Version: c_int, Guid: ?&const GUID) DWORD;
+pub const PCORRELATION_VECTOR = ?[*]CORRELATION_VECTOR;
+//pub extern fn RtlInitializeCorrelationVector(CorrelationVector: PCORRELATION_VECTOR, Version: c_int, Guid: ?[*]const GUID) DWORD;
 //pub extern fn RtlIncrementCorrelationVector(CorrelationVector: PCORRELATION_VECTOR) DWORD;
 //pub extern fn RtlExtendCorrelationVector(CorrelationVector: PCORRELATION_VECTOR) DWORD;
 //pub extern fn RtlValidateCorrelationVector(Vector: PCORRELATION_VECTOR) DWORD;
-pub const ImagePolicyEntryTypeNone: c_int = 0;
-pub const ImagePolicyEntryTypeBool: c_int = 1;
-pub const ImagePolicyEntryTypeInt8: c_int = 2;
-pub const ImagePolicyEntryTypeUInt8: c_int = 3;
-pub const ImagePolicyEntryTypeInt16: c_int = 4;
-pub const ImagePolicyEntryTypeUInt16: c_int = 5;
-pub const ImagePolicyEntryTypeInt32: c_int = 6;
-pub const ImagePolicyEntryTypeUInt32: c_int = 7;
-pub const ImagePolicyEntryTypeInt64: c_int = 8;
-pub const ImagePolicyEntryTypeUInt64: c_int = 9;
-pub const ImagePolicyEntryTypeAnsiString: c_int = 10;
-pub const ImagePolicyEntryTypeUnicodeString: c_int = 11;
-pub const ImagePolicyEntryTypeMaximum: c_int = 12;
-pub const enum__IMAGE_POLICY_ENTRY_TYPE = c_int;
+pub const ImagePolicyEntryTypeNone = enum__IMAGE_POLICY_ENTRY_TYPE.ImagePolicyEntryTypeNone;
+pub const ImagePolicyEntryTypeBool = enum__IMAGE_POLICY_ENTRY_TYPE.ImagePolicyEntryTypeBool;
+pub const ImagePolicyEntryTypeInt8 = enum__IMAGE_POLICY_ENTRY_TYPE.ImagePolicyEntryTypeInt8;
+pub const ImagePolicyEntryTypeUInt8 = enum__IMAGE_POLICY_ENTRY_TYPE.ImagePolicyEntryTypeUInt8;
+pub const ImagePolicyEntryTypeInt16 = enum__IMAGE_POLICY_ENTRY_TYPE.ImagePolicyEntryTypeInt16;
+pub const ImagePolicyEntryTypeUInt16 = enum__IMAGE_POLICY_ENTRY_TYPE.ImagePolicyEntryTypeUInt16;
+pub const ImagePolicyEntryTypeInt32 = enum__IMAGE_POLICY_ENTRY_TYPE.ImagePolicyEntryTypeInt32;
+pub const ImagePolicyEntryTypeUInt32 = enum__IMAGE_POLICY_ENTRY_TYPE.ImagePolicyEntryTypeUInt32;
+pub const ImagePolicyEntryTypeInt64 = enum__IMAGE_POLICY_ENTRY_TYPE.ImagePolicyEntryTypeInt64;
+pub const ImagePolicyEntryTypeUInt64 = enum__IMAGE_POLICY_ENTRY_TYPE.ImagePolicyEntryTypeUInt64;
+pub const ImagePolicyEntryTypeAnsiString = enum__IMAGE_POLICY_ENTRY_TYPE.ImagePolicyEntryTypeAnsiString;
+pub const ImagePolicyEntryTypeUnicodeString = enum__IMAGE_POLICY_ENTRY_TYPE.ImagePolicyEntryTypeUnicodeString;
+pub const ImagePolicyEntryTypeMaximum = enum__IMAGE_POLICY_ENTRY_TYPE.ImagePolicyEntryTypeMaximum;
+pub const enum__IMAGE_POLICY_ENTRY_TYPE = extern enum {
+    ImagePolicyEntryTypeNone = 0,
+    ImagePolicyEntryTypeBool = 1,
+    ImagePolicyEntryTypeInt8 = 2,
+    ImagePolicyEntryTypeUInt8 = 3,
+    ImagePolicyEntryTypeInt16 = 4,
+    ImagePolicyEntryTypeUInt16 = 5,
+    ImagePolicyEntryTypeInt32 = 6,
+    ImagePolicyEntryTypeUInt32 = 7,
+    ImagePolicyEntryTypeInt64 = 8,
+    ImagePolicyEntryTypeUInt64 = 9,
+    ImagePolicyEntryTypeAnsiString = 10,
+    ImagePolicyEntryTypeUnicodeString = 11,
+    ImagePolicyEntryTypeMaximum = 12,
+};
 pub const IMAGE_POLICY_ENTRY_TYPE = enum__IMAGE_POLICY_ENTRY_TYPE;
-pub const ImagePolicyIdNone: c_int = 0;
-pub const ImagePolicyIdEtw: c_int = 1;
-pub const ImagePolicyIdDebug: c_int = 2;
-pub const ImagePolicyIdCrashDump: c_int = 3;
-pub const ImagePolicyIdCrashDumpKey: c_int = 4;
-pub const ImagePolicyIdCrashDumpKeyGuid: c_int = 5;
-pub const ImagePolicyIdParentSd: c_int = 6;
-pub const ImagePolicyIdParentSdRev: c_int = 7;
-pub const ImagePolicyIdSvn: c_int = 8;
-pub const ImagePolicyIdDeviceId: c_int = 9;
-pub const ImagePolicyIdCapability: c_int = 10;
-pub const ImagePolicyIdScenarioId: c_int = 11;
-pub const ImagePolicyIdMaximum: c_int = 12;
-pub const enum__IMAGE_POLICY_ID = c_int;
+pub const ImagePolicyIdNone = enum__IMAGE_POLICY_ID.ImagePolicyIdNone;
+pub const ImagePolicyIdEtw = enum__IMAGE_POLICY_ID.ImagePolicyIdEtw;
+pub const ImagePolicyIdDebug = enum__IMAGE_POLICY_ID.ImagePolicyIdDebug;
+pub const ImagePolicyIdCrashDump = enum__IMAGE_POLICY_ID.ImagePolicyIdCrashDump;
+pub const ImagePolicyIdCrashDumpKey = enum__IMAGE_POLICY_ID.ImagePolicyIdCrashDumpKey;
+pub const ImagePolicyIdCrashDumpKeyGuid = enum__IMAGE_POLICY_ID.ImagePolicyIdCrashDumpKeyGuid;
+pub const ImagePolicyIdParentSd = enum__IMAGE_POLICY_ID.ImagePolicyIdParentSd;
+pub const ImagePolicyIdParentSdRev = enum__IMAGE_POLICY_ID.ImagePolicyIdParentSdRev;
+pub const ImagePolicyIdSvn = enum__IMAGE_POLICY_ID.ImagePolicyIdSvn;
+pub const ImagePolicyIdDeviceId = enum__IMAGE_POLICY_ID.ImagePolicyIdDeviceId;
+pub const ImagePolicyIdCapability = enum__IMAGE_POLICY_ID.ImagePolicyIdCapability;
+pub const ImagePolicyIdScenarioId = enum__IMAGE_POLICY_ID.ImagePolicyIdScenarioId;
+pub const ImagePolicyIdMaximum = enum__IMAGE_POLICY_ID.ImagePolicyIdMaximum;
+pub const enum__IMAGE_POLICY_ID = extern enum {
+    ImagePolicyIdNone = 0,
+    ImagePolicyIdEtw = 1,
+    ImagePolicyIdDebug = 2,
+    ImagePolicyIdCrashDump = 3,
+    ImagePolicyIdCrashDumpKey = 4,
+    ImagePolicyIdCrashDumpKeyGuid = 5,
+    ImagePolicyIdParentSd = 6,
+    ImagePolicyIdParentSdRev = 7,
+    ImagePolicyIdSvn = 8,
+    ImagePolicyIdDeviceId = 9,
+    ImagePolicyIdCapability = 10,
+    ImagePolicyIdScenarioId = 11,
+    ImagePolicyIdMaximum = 12,
+};
 pub const IMAGE_POLICY_ID = enum__IMAGE_POLICY_ID;
 pub const struct__IMAGE_POLICY_ENTRY = extern struct {
     Type: IMAGE_POLICY_ENTRY_TYPE,
     PolicyId: IMAGE_POLICY_ID,
     u: extern union {
-        None: ?&const c_void,
+        None: ?*const c_void,
         BoolValue: BOOLEAN,
         Int8Value: INT8,
         UInt8Value: UINT8,
@@ -5678,16 +6226,16 @@ pub const struct__IMAGE_POLICY_ENTRY = extern struct {
     },
 };
 pub const IMAGE_POLICY_ENTRY = struct__IMAGE_POLICY_ENTRY;
-pub const PCIMAGE_POLICY_ENTRY = ?&const IMAGE_POLICY_ENTRY;
+pub const PCIMAGE_POLICY_ENTRY = ?[*]const IMAGE_POLICY_ENTRY;
 pub const struct__IMAGE_POLICY_METADATA = extern struct {
     Version: BYTE,
     Reserved0: [7]BYTE,
     ApplicationId: ULONGLONG,
-    Policies: &IMAGE_POLICY_ENTRY,
+    Policies: [*]IMAGE_POLICY_ENTRY,
 };
 pub const IMAGE_POLICY_METADATA = struct__IMAGE_POLICY_METADATA;
-pub const PCIMAGE_POLICY_METADATA = ?&const IMAGE_POLICY_METADATA;
-pub const PRTL_CRITICAL_SECTION_DEBUG = ?&struct__RTL_CRITICAL_SECTION_DEBUG;
+pub const PCIMAGE_POLICY_METADATA = ?[*]const IMAGE_POLICY_METADATA;
+pub const PRTL_CRITICAL_SECTION_DEBUG = ?*struct__RTL_CRITICAL_SECTION_DEBUG;
 pub const struct__RTL_CRITICAL_SECTION = extern struct {
     DebugInfo: PRTL_CRITICAL_SECTION_DEBUG,
     LockCount: LONG,
@@ -5699,7 +6247,7 @@ pub const struct__RTL_CRITICAL_SECTION = extern struct {
 pub const struct__RTL_CRITICAL_SECTION_DEBUG = extern struct {
     Type: WORD,
     CreatorBackTraceIndex: WORD,
-    CriticalSection: ?&struct__RTL_CRITICAL_SECTION,
+    CriticalSection: ?*struct__RTL_CRITICAL_SECTION,
     ProcessLocksList: LIST_ENTRY,
     EntryCount: DWORD,
     ContentionCount: DWORD,
@@ -5709,57 +6257,72 @@ pub const struct__RTL_CRITICAL_SECTION_DEBUG = extern struct {
 };
 pub const RTL_CRITICAL_SECTION_DEBUG = struct__RTL_CRITICAL_SECTION_DEBUG;
 pub const RTL_RESOURCE_DEBUG = struct__RTL_CRITICAL_SECTION_DEBUG;
-pub const PRTL_RESOURCE_DEBUG = ?&struct__RTL_CRITICAL_SECTION_DEBUG;
+pub const PRTL_RESOURCE_DEBUG = ?*struct__RTL_CRITICAL_SECTION_DEBUG;
 pub const RTL_CRITICAL_SECTION = struct__RTL_CRITICAL_SECTION;
-pub const PRTL_CRITICAL_SECTION = ?&struct__RTL_CRITICAL_SECTION;
+pub const PRTL_CRITICAL_SECTION = ?*struct__RTL_CRITICAL_SECTION;
 pub const struct__RTL_SRWLOCK = extern struct {
     Ptr: PVOID,
 };
 pub const RTL_SRWLOCK = struct__RTL_SRWLOCK;
-pub const PRTL_SRWLOCK = ?&struct__RTL_SRWLOCK;
+pub const PRTL_SRWLOCK = ?*struct__RTL_SRWLOCK;
 pub const struct__RTL_CONDITION_VARIABLE = extern struct {
     Ptr: PVOID,
 };
 pub const RTL_CONDITION_VARIABLE = struct__RTL_CONDITION_VARIABLE;
-pub const PRTL_CONDITION_VARIABLE = ?&struct__RTL_CONDITION_VARIABLE;
+pub const PRTL_CONDITION_VARIABLE = ?*struct__RTL_CONDITION_VARIABLE;
 pub const PAPCFUNC = ?extern fn(ULONG_PTR) void;
-pub const PVECTORED_EXCEPTION_HANDLER = ?extern fn(?&struct__EXCEPTION_POINTERS) LONG;
-pub const HeapCompatibilityInformation: c_int = 0;
-pub const HeapEnableTerminationOnCorruption: c_int = 1;
-pub const HeapOptimizeResources: c_int = 3;
-pub const enum__HEAP_INFORMATION_CLASS = c_int;
+pub const PVECTORED_EXCEPTION_HANDLER = ?extern fn(?*struct__EXCEPTION_POINTERS) LONG;
+pub const HeapCompatibilityInformation = enum__HEAP_INFORMATION_CLASS.HeapCompatibilityInformation;
+pub const HeapEnableTerminationOnCorruption = enum__HEAP_INFORMATION_CLASS.HeapEnableTerminationOnCorruption;
+pub const HeapOptimizeResources = enum__HEAP_INFORMATION_CLASS.HeapOptimizeResources;
+pub const enum__HEAP_INFORMATION_CLASS = extern enum {
+    HeapCompatibilityInformation = 0,
+    HeapEnableTerminationOnCorruption = 1,
+    HeapOptimizeResources = 3,
+};
 pub const HEAP_INFORMATION_CLASS = enum__HEAP_INFORMATION_CLASS;
 pub const struct__HEAP_OPTIMIZE_RESOURCES_INFORMATION = extern struct {
     Version: DWORD,
     Flags: DWORD,
 };
 pub const HEAP_OPTIMIZE_RESOURCES_INFORMATION = struct__HEAP_OPTIMIZE_RESOURCES_INFORMATION;
-pub const PHEAP_OPTIMIZE_RESOURCES_INFORMATION = ?&struct__HEAP_OPTIMIZE_RESOURCES_INFORMATION;
+pub const PHEAP_OPTIMIZE_RESOURCES_INFORMATION = ?*struct__HEAP_OPTIMIZE_RESOURCES_INFORMATION;
 pub const WAITORTIMERCALLBACKFUNC = ?extern fn(PVOID, BOOLEAN) void;
 pub const WORKERCALLBACKFUNC = ?extern fn(PVOID) void;
 pub const APC_CALLBACK_FUNCTION = ?extern fn(DWORD, PVOID, PVOID) void;
 pub const WAITORTIMERCALLBACK = WAITORTIMERCALLBACKFUNC;
 pub const PFLS_CALLBACK_FUNCTION = ?extern fn(PVOID) void;
 pub const PSECURE_MEMORY_CACHE_CALLBACK = ?extern fn(PVOID, SIZE_T) BOOLEAN;
-pub const ActivationContextBasicInformation: c_int = 1;
-pub const ActivationContextDetailedInformation: c_int = 2;
-pub const AssemblyDetailedInformationInActivationContext: c_int = 3;
-pub const FileInformationInAssemblyOfAssemblyInActivationContext: c_int = 4;
-pub const RunlevelInformationInActivationContext: c_int = 5;
-pub const CompatibilityInformationInActivationContext: c_int = 6;
-pub const ActivationContextManifestResourceName: c_int = 7;
-pub const MaxActivationContextInfoClass: c_int = 8;
-pub const AssemblyDetailedInformationInActivationContxt: c_int = 3;
-pub const FileInformationInAssemblyOfAssemblyInActivationContxt: c_int = 4;
-pub const enum__ACTIVATION_CONTEXT_INFO_CLASS = c_int;
+pub const ActivationContextBasicInformation = enum__ACTIVATION_CONTEXT_INFO_CLASS.ActivationContextBasicInformation;
+pub const ActivationContextDetailedInformation = enum__ACTIVATION_CONTEXT_INFO_CLASS.ActivationContextDetailedInformation;
+pub const AssemblyDetailedInformationInActivationContext = enum__ACTIVATION_CONTEXT_INFO_CLASS.AssemblyDetailedInformationInActivationContext;
+pub const FileInformationInAssemblyOfAssemblyInActivationContext = enum__ACTIVATION_CONTEXT_INFO_CLASS.FileInformationInAssemblyOfAssemblyInActivationContext;
+pub const RunlevelInformationInActivationContext = enum__ACTIVATION_CONTEXT_INFO_CLASS.RunlevelInformationInActivationContext;
+pub const CompatibilityInformationInActivationContext = enum__ACTIVATION_CONTEXT_INFO_CLASS.CompatibilityInformationInActivationContext;
+pub const ActivationContextManifestResourceName = enum__ACTIVATION_CONTEXT_INFO_CLASS.ActivationContextManifestResourceName;
+pub const MaxActivationContextInfoClass = enum__ACTIVATION_CONTEXT_INFO_CLASS.MaxActivationContextInfoClass;
+pub const AssemblyDetailedInformationInActivationContxt = enum__ACTIVATION_CONTEXT_INFO_CLASS.AssemblyDetailedInformationInActivationContxt;
+pub const FileInformationInAssemblyOfAssemblyInActivationContxt = enum__ACTIVATION_CONTEXT_INFO_CLASS.FileInformationInAssemblyOfAssemblyInActivationContxt;
+pub const enum__ACTIVATION_CONTEXT_INFO_CLASS = extern enum {
+    ActivationContextBasicInformation = 1,
+    ActivationContextDetailedInformation = 2,
+    AssemblyDetailedInformationInActivationContext = 3,
+    FileInformationInAssemblyOfAssemblyInActivationContext = 4,
+    RunlevelInformationInActivationContext = 5,
+    CompatibilityInformationInActivationContext = 6,
+    ActivationContextManifestResourceName = 7,
+    MaxActivationContextInfoClass = 8,
+    AssemblyDetailedInformationInActivationContxt = 3,
+    FileInformationInAssemblyOfAssemblyInActivationContxt = 4,
+};
 pub const ACTIVATION_CONTEXT_INFO_CLASS = enum__ACTIVATION_CONTEXT_INFO_CLASS;
 pub const struct__ACTIVATION_CONTEXT_QUERY_INDEX = extern struct {
     ulAssemblyIndex: DWORD,
     ulFileIndexInAssembly: DWORD,
 };
 pub const ACTIVATION_CONTEXT_QUERY_INDEX = struct__ACTIVATION_CONTEXT_QUERY_INDEX;
-pub const PACTIVATION_CONTEXT_QUERY_INDEX = ?&struct__ACTIVATION_CONTEXT_QUERY_INDEX;
-pub const PCACTIVATION_CONTEXT_QUERY_INDEX = ?&const struct__ACTIVATION_CONTEXT_QUERY_INDEX;
+pub const PACTIVATION_CONTEXT_QUERY_INDEX = ?*struct__ACTIVATION_CONTEXT_QUERY_INDEX;
+pub const PCACTIVATION_CONTEXT_QUERY_INDEX = ?*const struct__ACTIVATION_CONTEXT_QUERY_INDEX;
 pub const struct__ASSEMBLY_FILE_DETAILED_INFORMATION = extern struct {
     ulFlags: DWORD,
     ulFilenameLength: DWORD,
@@ -5768,8 +6331,8 @@ pub const struct__ASSEMBLY_FILE_DETAILED_INFORMATION = extern struct {
     lpFilePath: PCWSTR,
 };
 pub const ASSEMBLY_FILE_DETAILED_INFORMATION = struct__ASSEMBLY_FILE_DETAILED_INFORMATION;
-pub const PASSEMBLY_FILE_DETAILED_INFORMATION = ?&struct__ASSEMBLY_FILE_DETAILED_INFORMATION;
-pub const PCASSEMBLY_FILE_DETAILED_INFORMATION = ?&const ASSEMBLY_FILE_DETAILED_INFORMATION;
+pub const PASSEMBLY_FILE_DETAILED_INFORMATION = ?*struct__ASSEMBLY_FILE_DETAILED_INFORMATION;
+pub const PCASSEMBLY_FILE_DETAILED_INFORMATION = ?[*]const ASSEMBLY_FILE_DETAILED_INFORMATION;
 pub const struct__ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION = extern struct {
     ulFlags: DWORD,
     ulEncodedAssemblyIdentityLength: DWORD,
@@ -5792,46 +6355,56 @@ pub const struct__ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION = extern stru
     ulFileCount: DWORD,
 };
 pub const ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION = struct__ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION;
-pub const PACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION = ?&struct__ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION;
-pub const PCACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION = ?&const struct__ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION;
-pub const ACTCTX_RUN_LEVEL_UNSPECIFIED: c_int = 0;
-pub const ACTCTX_RUN_LEVEL_AS_INVOKER: c_int = 1;
-pub const ACTCTX_RUN_LEVEL_HIGHEST_AVAILABLE: c_int = 2;
-pub const ACTCTX_RUN_LEVEL_REQUIRE_ADMIN: c_int = 3;
-pub const ACTCTX_RUN_LEVEL_NUMBERS: c_int = 4;
-pub const ACTCTX_REQUESTED_RUN_LEVEL = c_int;
+pub const PACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION = ?*struct__ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION;
+pub const PCACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION = ?*const struct__ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION;
+pub const ACTCTX_RUN_LEVEL_UNSPECIFIED = 0;
+pub const ACTCTX_RUN_LEVEL_AS_INVOKER = 1;
+pub const ACTCTX_RUN_LEVEL_HIGHEST_AVAILABLE = 2;
+pub const ACTCTX_RUN_LEVEL_REQUIRE_ADMIN = 3;
+pub const ACTCTX_RUN_LEVEL_NUMBERS = 4;
+pub const ACTCTX_REQUESTED_RUN_LEVEL = extern enum {
+    ACTCTX_RUN_LEVEL_UNSPECIFIED = 0,
+    ACTCTX_RUN_LEVEL_AS_INVOKER = 1,
+    ACTCTX_RUN_LEVEL_HIGHEST_AVAILABLE = 2,
+    ACTCTX_RUN_LEVEL_REQUIRE_ADMIN = 3,
+    ACTCTX_RUN_LEVEL_NUMBERS = 4,
+};
 pub const struct__ACTIVATION_CONTEXT_RUN_LEVEL_INFORMATION = extern struct {
     ulFlags: DWORD,
     RunLevel: ACTCTX_REQUESTED_RUN_LEVEL,
     UiAccess: DWORD,
 };
 pub const ACTIVATION_CONTEXT_RUN_LEVEL_INFORMATION = struct__ACTIVATION_CONTEXT_RUN_LEVEL_INFORMATION;
-pub const PACTIVATION_CONTEXT_RUN_LEVEL_INFORMATION = ?&struct__ACTIVATION_CONTEXT_RUN_LEVEL_INFORMATION;
-pub const PCACTIVATION_CONTEXT_RUN_LEVEL_INFORMATION = ?&const struct__ACTIVATION_CONTEXT_RUN_LEVEL_INFORMATION;
-pub const ACTCTX_COMPATIBILITY_ELEMENT_TYPE_UNKNOWN: c_int = 0;
-pub const ACTCTX_COMPATIBILITY_ELEMENT_TYPE_OS: c_int = 1;
-pub const ACTCTX_COMPATIBILITY_ELEMENT_TYPE_MITIGATION: c_int = 2;
-pub const ACTCTX_COMPATIBILITY_ELEMENT_TYPE = c_int;
+pub const PACTIVATION_CONTEXT_RUN_LEVEL_INFORMATION = ?*struct__ACTIVATION_CONTEXT_RUN_LEVEL_INFORMATION;
+pub const PCACTIVATION_CONTEXT_RUN_LEVEL_INFORMATION = ?*const struct__ACTIVATION_CONTEXT_RUN_LEVEL_INFORMATION;
+pub const ACTCTX_COMPATIBILITY_ELEMENT_TYPE_UNKNOWN = 0;
+pub const ACTCTX_COMPATIBILITY_ELEMENT_TYPE_OS = 1;
+pub const ACTCTX_COMPATIBILITY_ELEMENT_TYPE_MITIGATION = 2;
+pub const ACTCTX_COMPATIBILITY_ELEMENT_TYPE = extern enum {
+    ACTCTX_COMPATIBILITY_ELEMENT_TYPE_UNKNOWN = 0,
+    ACTCTX_COMPATIBILITY_ELEMENT_TYPE_OS = 1,
+    ACTCTX_COMPATIBILITY_ELEMENT_TYPE_MITIGATION = 2,
+};
 pub const struct__COMPATIBILITY_CONTEXT_ELEMENT = extern struct {
     Id: GUID,
     Type: ACTCTX_COMPATIBILITY_ELEMENT_TYPE,
 };
 pub const COMPATIBILITY_CONTEXT_ELEMENT = struct__COMPATIBILITY_CONTEXT_ELEMENT;
-pub const PCOMPATIBILITY_CONTEXT_ELEMENT = ?&struct__COMPATIBILITY_CONTEXT_ELEMENT;
-pub const PCCOMPATIBILITY_CONTEXT_ELEMENT = ?&const struct__COMPATIBILITY_CONTEXT_ELEMENT;
+pub const PCOMPATIBILITY_CONTEXT_ELEMENT = ?*struct__COMPATIBILITY_CONTEXT_ELEMENT;
+pub const PCCOMPATIBILITY_CONTEXT_ELEMENT = ?*const struct__COMPATIBILITY_CONTEXT_ELEMENT;
 pub const struct__ACTIVATION_CONTEXT_COMPATIBILITY_INFORMATION = extern struct {
     ElementCount: DWORD,
-    Elements: &COMPATIBILITY_CONTEXT_ELEMENT,
+    Elements: [*]COMPATIBILITY_CONTEXT_ELEMENT,
 };
 pub const ACTIVATION_CONTEXT_COMPATIBILITY_INFORMATION = struct__ACTIVATION_CONTEXT_COMPATIBILITY_INFORMATION;
-pub const PACTIVATION_CONTEXT_COMPATIBILITY_INFORMATION = ?&struct__ACTIVATION_CONTEXT_COMPATIBILITY_INFORMATION;
-pub const PCACTIVATION_CONTEXT_COMPATIBILITY_INFORMATION = ?&const struct__ACTIVATION_CONTEXT_COMPATIBILITY_INFORMATION;
+pub const PACTIVATION_CONTEXT_COMPATIBILITY_INFORMATION = ?*struct__ACTIVATION_CONTEXT_COMPATIBILITY_INFORMATION;
+pub const PCACTIVATION_CONTEXT_COMPATIBILITY_INFORMATION = ?*const struct__ACTIVATION_CONTEXT_COMPATIBILITY_INFORMATION;
 pub const struct__SUPPORTED_OS_INFO = extern struct {
     MajorVersion: WORD,
     MinorVersion: WORD,
 };
 pub const SUPPORTED_OS_INFO = struct__SUPPORTED_OS_INFO;
-pub const PSUPPORTED_OS_INFO = ?&struct__SUPPORTED_OS_INFO;
+pub const PSUPPORTED_OS_INFO = ?*struct__SUPPORTED_OS_INFO;
 pub const struct__ACTIVATION_CONTEXT_DETAILED_INFORMATION = extern struct {
     dwFlags: DWORD,
     ulFormatVersion: DWORD,
@@ -5847,15 +6420,15 @@ pub const struct__ACTIVATION_CONTEXT_DETAILED_INFORMATION = extern struct {
     lpAppDirPath: PCWSTR,
 };
 pub const ACTIVATION_CONTEXT_DETAILED_INFORMATION = struct__ACTIVATION_CONTEXT_DETAILED_INFORMATION;
-pub const PACTIVATION_CONTEXT_DETAILED_INFORMATION = ?&struct__ACTIVATION_CONTEXT_DETAILED_INFORMATION;
-pub const PCACTIVATION_CONTEXT_DETAILED_INFORMATION = ?&const struct__ACTIVATION_CONTEXT_DETAILED_INFORMATION;
+pub const PACTIVATION_CONTEXT_DETAILED_INFORMATION = ?*struct__ACTIVATION_CONTEXT_DETAILED_INFORMATION;
+pub const PCACTIVATION_CONTEXT_DETAILED_INFORMATION = ?*const struct__ACTIVATION_CONTEXT_DETAILED_INFORMATION;
 pub const struct__HARDWARE_COUNTER_DATA = extern struct {
     Type: HARDWARE_COUNTER_TYPE,
     Reserved: DWORD,
     Value: DWORD64,
 };
 pub const HARDWARE_COUNTER_DATA = struct__HARDWARE_COUNTER_DATA;
-pub const PHARDWARE_COUNTER_DATA = ?&struct__HARDWARE_COUNTER_DATA;
+pub const PHARDWARE_COUNTER_DATA = ?*struct__HARDWARE_COUNTER_DATA;
 pub const struct__PERFORMANCE_DATA = extern struct {
     Size: WORD,
     Version: BYTE,
@@ -5868,8 +6441,8 @@ pub const struct__PERFORMANCE_DATA = extern struct {
     HwCounters: [16]HARDWARE_COUNTER_DATA,
 };
 pub const PERFORMANCE_DATA = struct__PERFORMANCE_DATA;
-pub const PPERFORMANCE_DATA = ?&struct__PERFORMANCE_DATA;
-//pub extern fn RtlGetDeviceFamilyInfoEnum(pullUAPInfo: ?&ULONGLONG, pulDeviceFamily: ?&DWORD, pulDeviceForm: ?&DWORD) void;
+pub const PPERFORMANCE_DATA = ?*struct__PERFORMANCE_DATA;
+//pub extern fn RtlGetDeviceFamilyInfoEnum(pullUAPInfo: ?[*]ULONGLONG, pulDeviceFamily: ?[*]DWORD, pulDeviceForm: ?[*]DWORD) void;
 //pub extern fn RtlConvertDeviceFamilyInfoToString(pulDeviceFamilyBufferSize: PDWORD, pulDeviceFormBufferSize: PDWORD, DeviceFamily: PWSTR, DeviceForm: PWSTR) DWORD;
 //pub extern fn RtlSwitchedVVI(VersionInfo: PRTL_OSVERSIONINFOEXW, TypeMask: DWORD, ConditionMask: ULONGLONG) DWORD;
 pub const struct__EVENTLOGRECORD = extern struct {
@@ -5891,69 +6464,87 @@ pub const struct__EVENTLOGRECORD = extern struct {
     DataOffset: DWORD,
 };
 pub const EVENTLOGRECORD = struct__EVENTLOGRECORD;
-pub const PEVENTLOGRECORD = ?&struct__EVENTLOGRECORD;
+pub const PEVENTLOGRECORD = ?*struct__EVENTLOGRECORD;
 pub const struct__EVENTSFORLOGFILE = extern struct {
     ulSize: DWORD,
     szLogicalLogFile: [256]WCHAR,
     ulNumRecords: DWORD,
-    pEventLogRecords: &EVENTLOGRECORD,
+    pEventLogRecords: [*]EVENTLOGRECORD,
 };
 pub const EVENTSFORLOGFILE = struct__EVENTSFORLOGFILE;
-pub const PEVENTSFORLOGFILE = ?&struct__EVENTSFORLOGFILE;
+pub const PEVENTSFORLOGFILE = ?*struct__EVENTSFORLOGFILE;
 pub const struct__PACKEDEVENTINFO = extern struct {
     ulSize: DWORD,
     ulNumEventsForLogFile: DWORD,
-    ulOffsets: &DWORD,
+    ulOffsets: [*]DWORD,
 };
 pub const PACKEDEVENTINFO = struct__PACKEDEVENTINFO;
-pub const PPACKEDEVENTINFO = ?&struct__PACKEDEVENTINFO;
-pub const DriverType: c_int = 1;
-pub const FileSystemType: c_int = 2;
-pub const Win32ServiceOwnProcess: c_int = 16;
-pub const Win32ServiceShareProcess: c_int = 32;
-pub const AdapterType: c_int = 4;
-pub const RecognizerType: c_int = 8;
-pub const enum__CM_SERVICE_NODE_TYPE = c_int;
+pub const PPACKEDEVENTINFO = ?*struct__PACKEDEVENTINFO;
+pub const DriverType = enum__CM_SERVICE_NODE_TYPE.DriverType;
+pub const FileSystemType = enum__CM_SERVICE_NODE_TYPE.FileSystemType;
+pub const Win32ServiceOwnProcess = enum__CM_SERVICE_NODE_TYPE.Win32ServiceOwnProcess;
+pub const Win32ServiceShareProcess = enum__CM_SERVICE_NODE_TYPE.Win32ServiceShareProcess;
+pub const AdapterType = enum__CM_SERVICE_NODE_TYPE.AdapterType;
+pub const RecognizerType = enum__CM_SERVICE_NODE_TYPE.RecognizerType;
+pub const enum__CM_SERVICE_NODE_TYPE = extern enum {
+    DriverType = 1,
+    FileSystemType = 2,
+    Win32ServiceOwnProcess = 16,
+    Win32ServiceShareProcess = 32,
+    AdapterType = 4,
+    RecognizerType = 8,
+};
 pub const SERVICE_NODE_TYPE = enum__CM_SERVICE_NODE_TYPE;
-pub const BootLoad: c_int = 0;
-pub const SystemLoad: c_int = 1;
-pub const AutoLoad: c_int = 2;
-pub const DemandLoad: c_int = 3;
-pub const DisableLoad: c_int = 4;
-pub const enum__CM_SERVICE_LOAD_TYPE = c_int;
+pub const BootLoad = enum__CM_SERVICE_LOAD_TYPE.BootLoad;
+pub const SystemLoad = enum__CM_SERVICE_LOAD_TYPE.SystemLoad;
+pub const AutoLoad = enum__CM_SERVICE_LOAD_TYPE.AutoLoad;
+pub const DemandLoad = enum__CM_SERVICE_LOAD_TYPE.DemandLoad;
+pub const DisableLoad = enum__CM_SERVICE_LOAD_TYPE.DisableLoad;
+pub const enum__CM_SERVICE_LOAD_TYPE = extern enum {
+    BootLoad = 0,
+    SystemLoad = 1,
+    AutoLoad = 2,
+    DemandLoad = 3,
+    DisableLoad = 4,
+};
 pub const SERVICE_LOAD_TYPE = enum__CM_SERVICE_LOAD_TYPE;
-pub const IgnoreError: c_int = 0;
-pub const NormalError: c_int = 1;
-pub const SevereError: c_int = 2;
-pub const CriticalError: c_int = 3;
-pub const enum__CM_ERROR_CONTROL_TYPE = c_int;
+pub const IgnoreError = enum__CM_ERROR_CONTROL_TYPE.IgnoreError;
+pub const NormalError = enum__CM_ERROR_CONTROL_TYPE.NormalError;
+pub const SevereError = enum__CM_ERROR_CONTROL_TYPE.SevereError;
+pub const CriticalError = enum__CM_ERROR_CONTROL_TYPE.CriticalError;
+pub const enum__CM_ERROR_CONTROL_TYPE = extern enum {
+    IgnoreError = 0,
+    NormalError = 1,
+    SevereError = 2,
+    CriticalError = 3,
+};
 pub const SERVICE_ERROR_TYPE = enum__CM_ERROR_CONTROL_TYPE;
 pub const struct__TAPE_ERASE = extern struct {
     Type: DWORD,
     Immediate: BOOLEAN,
 };
 pub const TAPE_ERASE = struct__TAPE_ERASE;
-pub const PTAPE_ERASE = ?&struct__TAPE_ERASE;
+pub const PTAPE_ERASE = ?*struct__TAPE_ERASE;
 pub const struct__TAPE_PREPARE = extern struct {
     Operation: DWORD,
     Immediate: BOOLEAN,
 };
 pub const TAPE_PREPARE = struct__TAPE_PREPARE;
-pub const PTAPE_PREPARE = ?&struct__TAPE_PREPARE;
+pub const PTAPE_PREPARE = ?*struct__TAPE_PREPARE;
 pub const struct__TAPE_WRITE_MARKS = extern struct {
     Type: DWORD,
     Count: DWORD,
     Immediate: BOOLEAN,
 };
 pub const TAPE_WRITE_MARKS = struct__TAPE_WRITE_MARKS;
-pub const PTAPE_WRITE_MARKS = ?&struct__TAPE_WRITE_MARKS;
+pub const PTAPE_WRITE_MARKS = ?*struct__TAPE_WRITE_MARKS;
 pub const struct__TAPE_GET_POSITION = extern struct {
     Type: DWORD,
     Partition: DWORD,
     Offset: LARGE_INTEGER,
 };
 pub const TAPE_GET_POSITION = struct__TAPE_GET_POSITION;
-pub const PTAPE_GET_POSITION = ?&struct__TAPE_GET_POSITION;
+pub const PTAPE_GET_POSITION = ?*struct__TAPE_GET_POSITION;
 pub const struct__TAPE_SET_POSITION = extern struct {
     Method: DWORD,
     Partition: DWORD,
@@ -5961,7 +6552,7 @@ pub const struct__TAPE_SET_POSITION = extern struct {
     Immediate: BOOLEAN,
 };
 pub const TAPE_SET_POSITION = struct__TAPE_SET_POSITION;
-pub const PTAPE_SET_POSITION = ?&struct__TAPE_SET_POSITION;
+pub const PTAPE_SET_POSITION = ?*struct__TAPE_SET_POSITION;
 pub const struct__TAPE_GET_DRIVE_PARAMETERS = extern struct {
     ECC: BOOLEAN,
     Compression: BOOLEAN,
@@ -5976,7 +6567,7 @@ pub const struct__TAPE_GET_DRIVE_PARAMETERS = extern struct {
     EOTWarningZoneSize: DWORD,
 };
 pub const TAPE_GET_DRIVE_PARAMETERS = struct__TAPE_GET_DRIVE_PARAMETERS;
-pub const PTAPE_GET_DRIVE_PARAMETERS = ?&struct__TAPE_GET_DRIVE_PARAMETERS;
+pub const PTAPE_GET_DRIVE_PARAMETERS = ?*struct__TAPE_GET_DRIVE_PARAMETERS;
 pub const struct__TAPE_SET_DRIVE_PARAMETERS = extern struct {
     ECC: BOOLEAN,
     Compression: BOOLEAN,
@@ -5985,7 +6576,7 @@ pub const struct__TAPE_SET_DRIVE_PARAMETERS = extern struct {
     EOTWarningZoneSize: DWORD,
 };
 pub const TAPE_SET_DRIVE_PARAMETERS = struct__TAPE_SET_DRIVE_PARAMETERS;
-pub const PTAPE_SET_DRIVE_PARAMETERS = ?&struct__TAPE_SET_DRIVE_PARAMETERS;
+pub const PTAPE_SET_DRIVE_PARAMETERS = ?*struct__TAPE_SET_DRIVE_PARAMETERS;
 pub const struct__TAPE_GET_MEDIA_PARAMETERS = extern struct {
     Capacity: LARGE_INTEGER,
     Remaining: LARGE_INTEGER,
@@ -5994,26 +6585,26 @@ pub const struct__TAPE_GET_MEDIA_PARAMETERS = extern struct {
     WriteProtected: BOOLEAN,
 };
 pub const TAPE_GET_MEDIA_PARAMETERS = struct__TAPE_GET_MEDIA_PARAMETERS;
-pub const PTAPE_GET_MEDIA_PARAMETERS = ?&struct__TAPE_GET_MEDIA_PARAMETERS;
+pub const PTAPE_GET_MEDIA_PARAMETERS = ?*struct__TAPE_GET_MEDIA_PARAMETERS;
 pub const struct__TAPE_SET_MEDIA_PARAMETERS = extern struct {
     BlockSize: DWORD,
 };
 pub const TAPE_SET_MEDIA_PARAMETERS = struct__TAPE_SET_MEDIA_PARAMETERS;
-pub const PTAPE_SET_MEDIA_PARAMETERS = ?&struct__TAPE_SET_MEDIA_PARAMETERS;
+pub const PTAPE_SET_MEDIA_PARAMETERS = ?*struct__TAPE_SET_MEDIA_PARAMETERS;
 pub const struct__TAPE_CREATE_PARTITION = extern struct {
     Method: DWORD,
     Count: DWORD,
     Size: DWORD,
 };
 pub const TAPE_CREATE_PARTITION = struct__TAPE_CREATE_PARTITION;
-pub const PTAPE_CREATE_PARTITION = ?&struct__TAPE_CREATE_PARTITION;
+pub const PTAPE_CREATE_PARTITION = ?*struct__TAPE_CREATE_PARTITION;
 pub const struct__TAPE_WMI_OPERATIONS = extern struct {
     Method: DWORD,
     DataBufferSize: DWORD,
     DataBuffer: PVOID,
 };
 pub const TAPE_WMI_OPERATIONS = struct__TAPE_WMI_OPERATIONS;
-pub const PTAPE_WMI_OPERATIONS = ?&struct__TAPE_WMI_OPERATIONS;
+pub const PTAPE_WMI_OPERATIONS = ?*struct__TAPE_WMI_OPERATIONS;
 pub const TapeDriveProblemNone = enum__TAPE_DRIVE_PROBLEM_TYPE.TapeDriveProblemNone;
 pub const TapeDriveReadWriteWarning = enum__TAPE_DRIVE_PROBLEM_TYPE.TapeDriveReadWriteWarning;
 pub const TapeDriveReadWriteError = enum__TAPE_DRIVE_PROBLEM_TYPE.TapeDriveReadWriteError;
@@ -6046,9 +6637,9 @@ pub const enum__TAPE_DRIVE_PROBLEM_TYPE = extern enum {
 };
 pub const TAPE_DRIVE_PROBLEM_TYPE = enum__TAPE_DRIVE_PROBLEM_TYPE;
 pub const UOW = GUID;
-pub const PUOW = ?&GUID;
+pub const PUOW = ?[*]GUID;
 pub const CRM_PROTOCOL_ID = GUID;
-pub const PCRM_PROTOCOL_ID = ?&GUID;
+pub const PCRM_PROTOCOL_ID = ?[*]GUID;
 pub const NOTIFICATION_MASK = ULONG;
 pub const struct__TRANSACTION_NOTIFICATION = extern struct {
     TransactionKey: PVOID,
@@ -6057,26 +6648,26 @@ pub const struct__TRANSACTION_NOTIFICATION = extern struct {
     ArgumentLength: ULONG,
 };
 pub const TRANSACTION_NOTIFICATION = struct__TRANSACTION_NOTIFICATION;
-pub const PTRANSACTION_NOTIFICATION = ?&struct__TRANSACTION_NOTIFICATION;
+pub const PTRANSACTION_NOTIFICATION = ?*struct__TRANSACTION_NOTIFICATION;
 pub const struct__TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT = extern struct {
     EnlistmentId: GUID,
     UOW: UOW,
 };
 pub const TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT = struct__TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT;
-pub const PTRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT = ?&struct__TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT;
+pub const PTRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT = ?*struct__TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT;
 pub const struct__TRANSACTION_NOTIFICATION_TM_ONLINE_ARGUMENT = extern struct {
     TmIdentity: GUID,
     Flags: ULONG,
 };
 pub const TRANSACTION_NOTIFICATION_TM_ONLINE_ARGUMENT = struct__TRANSACTION_NOTIFICATION_TM_ONLINE_ARGUMENT;
-pub const PTRANSACTION_NOTIFICATION_TM_ONLINE_ARGUMENT = ?&struct__TRANSACTION_NOTIFICATION_TM_ONLINE_ARGUMENT;
+pub const PTRANSACTION_NOTIFICATION_TM_ONLINE_ARGUMENT = ?*struct__TRANSACTION_NOTIFICATION_TM_ONLINE_ARGUMENT;
 pub const SAVEPOINT_ID = ULONG;
-pub const PSAVEPOINT_ID = ?&ULONG;
+pub const PSAVEPOINT_ID = ?[*]ULONG;
 pub const struct__TRANSACTION_NOTIFICATION_SAVEPOINT_ARGUMENT = extern struct {
     SavepointId: SAVEPOINT_ID,
 };
 pub const TRANSACTION_NOTIFICATION_SAVEPOINT_ARGUMENT = struct__TRANSACTION_NOTIFICATION_SAVEPOINT_ARGUMENT;
-pub const PTRANSACTION_NOTIFICATION_SAVEPOINT_ARGUMENT = ?&struct__TRANSACTION_NOTIFICATION_SAVEPOINT_ARGUMENT;
+pub const PTRANSACTION_NOTIFICATION_SAVEPOINT_ARGUMENT = ?*struct__TRANSACTION_NOTIFICATION_SAVEPOINT_ARGUMENT;
 pub const struct__TRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT = extern struct {
     PropagationCookie: ULONG,
     UOW: GUID,
@@ -6084,15 +6675,15 @@ pub const struct__TRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT = extern struct {
     BufferLength: ULONG,
 };
 pub const TRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT = struct__TRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT;
-pub const PTRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT = ?&struct__TRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT;
+pub const PTRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT = ?*struct__TRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT;
 pub const struct__TRANSACTION_NOTIFICATION_MARSHAL_ARGUMENT = extern struct {
     MarshalCookie: ULONG,
     UOW: GUID,
 };
 pub const TRANSACTION_NOTIFICATION_MARSHAL_ARGUMENT = struct__TRANSACTION_NOTIFICATION_MARSHAL_ARGUMENT;
-pub const PTRANSACTION_NOTIFICATION_MARSHAL_ARGUMENT = ?&struct__TRANSACTION_NOTIFICATION_MARSHAL_ARGUMENT;
+pub const PTRANSACTION_NOTIFICATION_MARSHAL_ARGUMENT = ?*struct__TRANSACTION_NOTIFICATION_MARSHAL_ARGUMENT;
 pub const TRANSACTION_NOTIFICATION_PROMOTE_ARGUMENT = TRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT;
-pub const PTRANSACTION_NOTIFICATION_PROMOTE_ARGUMENT = ?&TRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT;
+pub const PTRANSACTION_NOTIFICATION_PROMOTE_ARGUMENT = ?[*]TRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT;
 pub const struct__KCRM_MARSHAL_HEADER = extern struct {
     VersionMajor: ULONG,
     VersionMinor: ULONG,
@@ -6100,8 +6691,8 @@ pub const struct__KCRM_MARSHAL_HEADER = extern struct {
     Unused: ULONG,
 };
 pub const KCRM_MARSHAL_HEADER = struct__KCRM_MARSHAL_HEADER;
-pub const PKCRM_MARSHAL_HEADER = ?&struct__KCRM_MARSHAL_HEADER;
-pub const PRKCRM_MARSHAL_HEADER = ?&struct__KCRM_MARSHAL_HEADER;
+pub const PKCRM_MARSHAL_HEADER = ?*struct__KCRM_MARSHAL_HEADER;
+pub const PRKCRM_MARSHAL_HEADER = ?*struct__KCRM_MARSHAL_HEADER;
 pub const struct__KCRM_TRANSACTION_BLOB = extern struct {
     UOW: UOW,
     TmIdentity: GUID,
@@ -6111,8 +6702,8 @@ pub const struct__KCRM_TRANSACTION_BLOB = extern struct {
     Description: [64]WCHAR,
 };
 pub const KCRM_TRANSACTION_BLOB = struct__KCRM_TRANSACTION_BLOB;
-pub const PKCRM_TRANSACTION_BLOB = ?&struct__KCRM_TRANSACTION_BLOB;
-pub const PRKCRM_TRANSACTION_BLOB = ?&struct__KCRM_TRANSACTION_BLOB;
+pub const PKCRM_TRANSACTION_BLOB = ?*struct__KCRM_TRANSACTION_BLOB;
+pub const PRKCRM_TRANSACTION_BLOB = ?*struct__KCRM_TRANSACTION_BLOB;
 pub const struct__KCRM_PROTOCOL_BLOB = extern struct {
     ProtocolId: CRM_PROTOCOL_ID,
     StaticInfoLength: ULONG,
@@ -6121,17 +6712,25 @@ pub const struct__KCRM_PROTOCOL_BLOB = extern struct {
     Unused2: ULONG,
 };
 pub const KCRM_PROTOCOL_BLOB = struct__KCRM_PROTOCOL_BLOB;
-pub const PKCRM_PROTOCOL_BLOB = ?&struct__KCRM_PROTOCOL_BLOB;
-pub const PRKCRM_PROTOCOL_BLOB = ?&struct__KCRM_PROTOCOL_BLOB;
-pub const TransactionOutcomeUndetermined: c_int = 1;
-pub const TransactionOutcomeCommitted: c_int = 2;
-pub const TransactionOutcomeAborted: c_int = 3;
-pub const enum__TRANSACTION_OUTCOME = c_int;
+pub const PKCRM_PROTOCOL_BLOB = ?*struct__KCRM_PROTOCOL_BLOB;
+pub const PRKCRM_PROTOCOL_BLOB = ?*struct__KCRM_PROTOCOL_BLOB;
+pub const TransactionOutcomeUndetermined = enum__TRANSACTION_OUTCOME.TransactionOutcomeUndetermined;
+pub const TransactionOutcomeCommitted = enum__TRANSACTION_OUTCOME.TransactionOutcomeCommitted;
+pub const TransactionOutcomeAborted = enum__TRANSACTION_OUTCOME.TransactionOutcomeAborted;
+pub const enum__TRANSACTION_OUTCOME = extern enum {
+    TransactionOutcomeUndetermined = 1,
+    TransactionOutcomeCommitted = 2,
+    TransactionOutcomeAborted = 3,
+};
 pub const TRANSACTION_OUTCOME = enum__TRANSACTION_OUTCOME;
-pub const TransactionStateNormal: c_int = 1;
-pub const TransactionStateIndoubt: c_int = 2;
-pub const TransactionStateCommittedNotify: c_int = 3;
-pub const enum__TRANSACTION_STATE = c_int;
+pub const TransactionStateNormal = enum__TRANSACTION_STATE.TransactionStateNormal;
+pub const TransactionStateIndoubt = enum__TRANSACTION_STATE.TransactionStateIndoubt;
+pub const TransactionStateCommittedNotify = enum__TRANSACTION_STATE.TransactionStateCommittedNotify;
+pub const enum__TRANSACTION_STATE = extern enum {
+    TransactionStateNormal = 1,
+    TransactionStateIndoubt = 2,
+    TransactionStateCommittedNotify = 3,
+};
 pub const TRANSACTION_STATE = enum__TRANSACTION_STATE;
 pub const struct__TRANSACTION_BASIC_INFORMATION = extern struct {
     TransactionId: GUID,
@@ -6139,34 +6738,34 @@ pub const struct__TRANSACTION_BASIC_INFORMATION = extern struct {
     Outcome: DWORD,
 };
 pub const TRANSACTION_BASIC_INFORMATION = struct__TRANSACTION_BASIC_INFORMATION;
-pub const PTRANSACTION_BASIC_INFORMATION = ?&struct__TRANSACTION_BASIC_INFORMATION;
+pub const PTRANSACTION_BASIC_INFORMATION = ?*struct__TRANSACTION_BASIC_INFORMATION;
 pub const struct__TRANSACTIONMANAGER_BASIC_INFORMATION = extern struct {
     TmIdentity: GUID,
     VirtualClock: LARGE_INTEGER,
 };
 pub const TRANSACTIONMANAGER_BASIC_INFORMATION = struct__TRANSACTIONMANAGER_BASIC_INFORMATION;
-pub const PTRANSACTIONMANAGER_BASIC_INFORMATION = ?&struct__TRANSACTIONMANAGER_BASIC_INFORMATION;
+pub const PTRANSACTIONMANAGER_BASIC_INFORMATION = ?*struct__TRANSACTIONMANAGER_BASIC_INFORMATION;
 pub const struct__TRANSACTIONMANAGER_LOG_INFORMATION = extern struct {
     LogIdentity: GUID,
 };
 pub const TRANSACTIONMANAGER_LOG_INFORMATION = struct__TRANSACTIONMANAGER_LOG_INFORMATION;
-pub const PTRANSACTIONMANAGER_LOG_INFORMATION = ?&struct__TRANSACTIONMANAGER_LOG_INFORMATION;
+pub const PTRANSACTIONMANAGER_LOG_INFORMATION = ?*struct__TRANSACTIONMANAGER_LOG_INFORMATION;
 pub const struct__TRANSACTIONMANAGER_LOGPATH_INFORMATION = extern struct {
     LogPathLength: DWORD,
     LogPath: [1]WCHAR,
 };
 pub const TRANSACTIONMANAGER_LOGPATH_INFORMATION = struct__TRANSACTIONMANAGER_LOGPATH_INFORMATION;
-pub const PTRANSACTIONMANAGER_LOGPATH_INFORMATION = ?&struct__TRANSACTIONMANAGER_LOGPATH_INFORMATION;
+pub const PTRANSACTIONMANAGER_LOGPATH_INFORMATION = ?*struct__TRANSACTIONMANAGER_LOGPATH_INFORMATION;
 pub const struct__TRANSACTIONMANAGER_RECOVERY_INFORMATION = extern struct {
     LastRecoveredLsn: ULONGLONG,
 };
 pub const TRANSACTIONMANAGER_RECOVERY_INFORMATION = struct__TRANSACTIONMANAGER_RECOVERY_INFORMATION;
-pub const PTRANSACTIONMANAGER_RECOVERY_INFORMATION = ?&struct__TRANSACTIONMANAGER_RECOVERY_INFORMATION;
+pub const PTRANSACTIONMANAGER_RECOVERY_INFORMATION = ?*struct__TRANSACTIONMANAGER_RECOVERY_INFORMATION;
 pub const struct__TRANSACTIONMANAGER_OLDEST_INFORMATION = extern struct {
     OldestTransactionGuid: GUID,
 };
 pub const TRANSACTIONMANAGER_OLDEST_INFORMATION = struct__TRANSACTIONMANAGER_OLDEST_INFORMATION;
-pub const PTRANSACTIONMANAGER_OLDEST_INFORMATION = ?&struct__TRANSACTIONMANAGER_OLDEST_INFORMATION;
+pub const PTRANSACTIONMANAGER_OLDEST_INFORMATION = ?*struct__TRANSACTIONMANAGER_OLDEST_INFORMATION;
 pub const struct__TRANSACTION_PROPERTIES_INFORMATION = extern struct {
     IsolationLevel: DWORD,
     IsolationFlags: DWORD,
@@ -6176,42 +6775,42 @@ pub const struct__TRANSACTION_PROPERTIES_INFORMATION = extern struct {
     Description: [1]WCHAR,
 };
 pub const TRANSACTION_PROPERTIES_INFORMATION = struct__TRANSACTION_PROPERTIES_INFORMATION;
-pub const PTRANSACTION_PROPERTIES_INFORMATION = ?&struct__TRANSACTION_PROPERTIES_INFORMATION;
+pub const PTRANSACTION_PROPERTIES_INFORMATION = ?*struct__TRANSACTION_PROPERTIES_INFORMATION;
 pub const struct__TRANSACTION_BIND_INFORMATION = extern struct {
     TmHandle: HANDLE,
 };
 pub const TRANSACTION_BIND_INFORMATION = struct__TRANSACTION_BIND_INFORMATION;
-pub const PTRANSACTION_BIND_INFORMATION = ?&struct__TRANSACTION_BIND_INFORMATION;
+pub const PTRANSACTION_BIND_INFORMATION = ?*struct__TRANSACTION_BIND_INFORMATION;
 pub const struct__TRANSACTION_ENLISTMENT_PAIR = extern struct {
     EnlistmentId: GUID,
     ResourceManagerId: GUID,
 };
 pub const TRANSACTION_ENLISTMENT_PAIR = struct__TRANSACTION_ENLISTMENT_PAIR;
-pub const PTRANSACTION_ENLISTMENT_PAIR = ?&struct__TRANSACTION_ENLISTMENT_PAIR;
+pub const PTRANSACTION_ENLISTMENT_PAIR = ?*struct__TRANSACTION_ENLISTMENT_PAIR;
 pub const struct__TRANSACTION_ENLISTMENTS_INFORMATION = extern struct {
     NumberOfEnlistments: DWORD,
     EnlistmentPair: [1]TRANSACTION_ENLISTMENT_PAIR,
 };
 pub const TRANSACTION_ENLISTMENTS_INFORMATION = struct__TRANSACTION_ENLISTMENTS_INFORMATION;
-pub const PTRANSACTION_ENLISTMENTS_INFORMATION = ?&struct__TRANSACTION_ENLISTMENTS_INFORMATION;
+pub const PTRANSACTION_ENLISTMENTS_INFORMATION = ?*struct__TRANSACTION_ENLISTMENTS_INFORMATION;
 pub const struct__TRANSACTION_SUPERIOR_ENLISTMENT_INFORMATION = extern struct {
     SuperiorEnlistmentPair: TRANSACTION_ENLISTMENT_PAIR,
 };
 pub const TRANSACTION_SUPERIOR_ENLISTMENT_INFORMATION = struct__TRANSACTION_SUPERIOR_ENLISTMENT_INFORMATION;
-pub const PTRANSACTION_SUPERIOR_ENLISTMENT_INFORMATION = ?&struct__TRANSACTION_SUPERIOR_ENLISTMENT_INFORMATION;
+pub const PTRANSACTION_SUPERIOR_ENLISTMENT_INFORMATION = ?*struct__TRANSACTION_SUPERIOR_ENLISTMENT_INFORMATION;
 pub const struct__RESOURCEMANAGER_BASIC_INFORMATION = extern struct {
     ResourceManagerId: GUID,
     DescriptionLength: DWORD,
     Description: [1]WCHAR,
 };
 pub const RESOURCEMANAGER_BASIC_INFORMATION = struct__RESOURCEMANAGER_BASIC_INFORMATION;
-pub const PRESOURCEMANAGER_BASIC_INFORMATION = ?&struct__RESOURCEMANAGER_BASIC_INFORMATION;
+pub const PRESOURCEMANAGER_BASIC_INFORMATION = ?*struct__RESOURCEMANAGER_BASIC_INFORMATION;
 pub const struct__RESOURCEMANAGER_COMPLETION_INFORMATION = extern struct {
     IoCompletionPortHandle: HANDLE,
     CompletionKey: ULONG_PTR,
 };
 pub const RESOURCEMANAGER_COMPLETION_INFORMATION = struct__RESOURCEMANAGER_COMPLETION_INFORMATION;
-pub const PRESOURCEMANAGER_COMPLETION_INFORMATION = ?&struct__RESOURCEMANAGER_COMPLETION_INFORMATION;
+pub const PRESOURCEMANAGER_COMPLETION_INFORMATION = ?*struct__RESOURCEMANAGER_COMPLETION_INFORMATION;
 pub const TransactionBasicInformation = enum__TRANSACTION_INFORMATION_CLASS.TransactionBasicInformation;
 pub const TransactionPropertiesInformation = enum__TRANSACTION_INFORMATION_CLASS.TransactionPropertiesInformation;
 pub const TransactionEnlistmentInformation = enum__TRANSACTION_INFORMATION_CLASS.TransactionEnlistmentInformation;
@@ -6227,13 +6826,20 @@ pub const enum__TRANSACTION_INFORMATION_CLASS = extern enum {
     TransactionDTCPrivateInformation,
 };
 pub const TRANSACTION_INFORMATION_CLASS = enum__TRANSACTION_INFORMATION_CLASS;
-pub const TransactionManagerBasicInformation: c_int = 0;
-pub const TransactionManagerLogInformation: c_int = 1;
-pub const TransactionManagerLogPathInformation: c_int = 2;
-pub const TransactionManagerRecoveryInformation: c_int = 4;
-pub const TransactionManagerOnlineProbeInformation: c_int = 3;
-pub const TransactionManagerOldestTransactionInformation: c_int = 5;
-pub const enum__TRANSACTIONMANAGER_INFORMATION_CLASS = c_int;
+pub const TransactionManagerBasicInformation = enum__TRANSACTIONMANAGER_INFORMATION_CLASS.TransactionManagerBasicInformation;
+pub const TransactionManagerLogInformation = enum__TRANSACTIONMANAGER_INFORMATION_CLASS.TransactionManagerLogInformation;
+pub const TransactionManagerLogPathInformation = enum__TRANSACTIONMANAGER_INFORMATION_CLASS.TransactionManagerLogPathInformation;
+pub const TransactionManagerRecoveryInformation = enum__TRANSACTIONMANAGER_INFORMATION_CLASS.TransactionManagerRecoveryInformation;
+pub const TransactionManagerOnlineProbeInformation = enum__TRANSACTIONMANAGER_INFORMATION_CLASS.TransactionManagerOnlineProbeInformation;
+pub const TransactionManagerOldestTransactionInformation = enum__TRANSACTIONMANAGER_INFORMATION_CLASS.TransactionManagerOldestTransactionInformation;
+pub const enum__TRANSACTIONMANAGER_INFORMATION_CLASS = extern enum {
+    TransactionManagerBasicInformation = 0,
+    TransactionManagerLogInformation = 1,
+    TransactionManagerLogPathInformation = 2,
+    TransactionManagerRecoveryInformation = 4,
+    TransactionManagerOnlineProbeInformation = 3,
+    TransactionManagerOldestTransactionInformation = 5,
+};
 pub const TRANSACTIONMANAGER_INFORMATION_CLASS = enum__TRANSACTIONMANAGER_INFORMATION_CLASS;
 pub const ResourceManagerBasicInformation = enum__RESOURCEMANAGER_INFORMATION_CLASS.ResourceManagerBasicInformation;
 pub const ResourceManagerCompletionInformation = enum__RESOURCEMANAGER_INFORMATION_CLASS.ResourceManagerCompletionInformation;
@@ -6248,14 +6854,14 @@ pub const struct__ENLISTMENT_BASIC_INFORMATION = extern struct {
     ResourceManagerId: GUID,
 };
 pub const ENLISTMENT_BASIC_INFORMATION = struct__ENLISTMENT_BASIC_INFORMATION;
-pub const PENLISTMENT_BASIC_INFORMATION = ?&struct__ENLISTMENT_BASIC_INFORMATION;
+pub const PENLISTMENT_BASIC_INFORMATION = ?*struct__ENLISTMENT_BASIC_INFORMATION;
 pub const struct__ENLISTMENT_CRM_INFORMATION = extern struct {
     CrmTransactionManagerId: GUID,
     CrmResourceManagerId: GUID,
     CrmEnlistmentId: GUID,
 };
 pub const ENLISTMENT_CRM_INFORMATION = struct__ENLISTMENT_CRM_INFORMATION;
-pub const PENLISTMENT_CRM_INFORMATION = ?&struct__ENLISTMENT_CRM_INFORMATION;
+pub const PENLISTMENT_CRM_INFORMATION = ?*struct__ENLISTMENT_CRM_INFORMATION;
 pub const EnlistmentBasicInformation = enum__ENLISTMENT_INFORMATION_CLASS.EnlistmentBasicInformation;
 pub const EnlistmentRecoveryInformation = enum__ENLISTMENT_INFORMATION_CLASS.EnlistmentRecoveryInformation;
 pub const EnlistmentCrmInformation = enum__ENLISTMENT_INFORMATION_CLASS.EnlistmentCrmInformation;
@@ -6269,13 +6875,13 @@ pub const struct__TRANSACTION_LIST_ENTRY = extern struct {
     UOW: UOW,
 };
 pub const TRANSACTION_LIST_ENTRY = struct__TRANSACTION_LIST_ENTRY;
-pub const PTRANSACTION_LIST_ENTRY = ?&struct__TRANSACTION_LIST_ENTRY;
+pub const PTRANSACTION_LIST_ENTRY = ?*struct__TRANSACTION_LIST_ENTRY;
 pub const struct__TRANSACTION_LIST_INFORMATION = extern struct {
     NumberOfTransactions: DWORD,
     TransactionInformation: [1]TRANSACTION_LIST_ENTRY,
 };
 pub const TRANSACTION_LIST_INFORMATION = struct__TRANSACTION_LIST_INFORMATION;
-pub const PTRANSACTION_LIST_INFORMATION = ?&struct__TRANSACTION_LIST_INFORMATION;
+pub const PTRANSACTION_LIST_INFORMATION = ?*struct__TRANSACTION_LIST_INFORMATION;
 pub const KTMOBJECT_TRANSACTION = enum__KTMOBJECT_TYPE.KTMOBJECT_TRANSACTION;
 pub const KTMOBJECT_TRANSACTION_MANAGER = enum__KTMOBJECT_TYPE.KTMOBJECT_TRANSACTION_MANAGER;
 pub const KTMOBJECT_RESOURCE_MANAGER = enum__KTMOBJECT_TYPE.KTMOBJECT_RESOURCE_MANAGER;
@@ -6289,39 +6895,45 @@ pub const enum__KTMOBJECT_TYPE = extern enum {
     KTMOBJECT_INVALID,
 };
 pub const KTMOBJECT_TYPE = enum__KTMOBJECT_TYPE;
-pub const PKTMOBJECT_TYPE = ?&enum__KTMOBJECT_TYPE;
+pub const PKTMOBJECT_TYPE = ?[*]enum__KTMOBJECT_TYPE;
 pub const struct__KTMOBJECT_CURSOR = extern struct {
     LastQuery: GUID,
     ObjectIdCount: DWORD,
     ObjectIds: [1]GUID,
 };
 pub const KTMOBJECT_CURSOR = struct__KTMOBJECT_CURSOR;
-pub const PKTMOBJECT_CURSOR = ?&struct__KTMOBJECT_CURSOR;
+pub const PKTMOBJECT_CURSOR = ?*struct__KTMOBJECT_CURSOR;
 pub const TP_VERSION = DWORD;
-pub const PTP_VERSION = ?&DWORD;
+pub const PTP_VERSION = ?[*]DWORD;
 pub const struct__TP_CALLBACK_INSTANCE = @OpaqueType();
 pub const TP_CALLBACK_INSTANCE = struct__TP_CALLBACK_INSTANCE;
-pub const PTP_CALLBACK_INSTANCE = ?&struct__TP_CALLBACK_INSTANCE;
+pub const PTP_CALLBACK_INSTANCE = ?*struct__TP_CALLBACK_INSTANCE;
 pub const PTP_SIMPLE_CALLBACK = ?extern fn(PTP_CALLBACK_INSTANCE, PVOID) void;
 pub const struct__TP_POOL = @OpaqueType();
 pub const TP_POOL = struct__TP_POOL;
-pub const PTP_POOL = ?&struct__TP_POOL;
-pub const TP_CALLBACK_PRIORITY_HIGH: c_int = 0;
-pub const TP_CALLBACK_PRIORITY_NORMAL: c_int = 1;
-pub const TP_CALLBACK_PRIORITY_LOW: c_int = 2;
-pub const TP_CALLBACK_PRIORITY_INVALID: c_int = 3;
-pub const TP_CALLBACK_PRIORITY_COUNT: c_int = 3;
-pub const enum__TP_CALLBACK_PRIORITY = c_int;
+pub const PTP_POOL = ?*struct__TP_POOL;
+pub const TP_CALLBACK_PRIORITY_HIGH = enum__TP_CALLBACK_PRIORITY.TP_CALLBACK_PRIORITY_HIGH;
+pub const TP_CALLBACK_PRIORITY_NORMAL = enum__TP_CALLBACK_PRIORITY.TP_CALLBACK_PRIORITY_NORMAL;
+pub const TP_CALLBACK_PRIORITY_LOW = enum__TP_CALLBACK_PRIORITY.TP_CALLBACK_PRIORITY_LOW;
+pub const TP_CALLBACK_PRIORITY_INVALID = enum__TP_CALLBACK_PRIORITY.TP_CALLBACK_PRIORITY_INVALID;
+pub const TP_CALLBACK_PRIORITY_COUNT = enum__TP_CALLBACK_PRIORITY.TP_CALLBACK_PRIORITY_COUNT;
+pub const enum__TP_CALLBACK_PRIORITY = extern enum {
+    TP_CALLBACK_PRIORITY_HIGH = 0,
+    TP_CALLBACK_PRIORITY_NORMAL = 1,
+    TP_CALLBACK_PRIORITY_LOW = 2,
+    TP_CALLBACK_PRIORITY_INVALID = 3,
+    TP_CALLBACK_PRIORITY_COUNT = 3,
+};
 pub const TP_CALLBACK_PRIORITY = enum__TP_CALLBACK_PRIORITY;
 pub const struct__TP_POOL_STACK_INFORMATION = extern struct {
     StackReserve: SIZE_T,
     StackCommit: SIZE_T,
 };
 pub const TP_POOL_STACK_INFORMATION = struct__TP_POOL_STACK_INFORMATION;
-pub const PTP_POOL_STACK_INFORMATION = ?&struct__TP_POOL_STACK_INFORMATION;
+pub const PTP_POOL_STACK_INFORMATION = ?*struct__TP_POOL_STACK_INFORMATION;
 pub const struct__TP_CLEANUP_GROUP = @OpaqueType();
 pub const TP_CLEANUP_GROUP = struct__TP_CLEANUP_GROUP;
-pub const PTP_CLEANUP_GROUP = ?&struct__TP_CLEANUP_GROUP;
+pub const PTP_CLEANUP_GROUP = ?*struct__TP_CLEANUP_GROUP;
 pub const PTP_CLEANUP_GROUP_CANCEL_CALLBACK = ?extern fn(PVOID, PVOID) void;
 pub const struct__ACTIVATION_CONTEXT = @OpaqueType();
 pub const struct__TP_CALLBACK_ENVIRON_V3 = extern struct {
@@ -6330,7 +6942,7 @@ pub const struct__TP_CALLBACK_ENVIRON_V3 = extern struct {
     CleanupGroup: PTP_CLEANUP_GROUP,
     CleanupGroupCancelCallback: PTP_CLEANUP_GROUP_CANCEL_CALLBACK,
     RaceDll: PVOID,
-    ActivationContext: ?&struct__ACTIVATION_CONTEXT,
+    ActivationContext: ?*struct__ACTIVATION_CONTEXT,
     FinalizationCallback: PTP_SIMPLE_CALLBACK,
     u: extern union {
         Flags: DWORD,
@@ -6341,13 +6953,13 @@ pub const struct__TP_CALLBACK_ENVIRON_V3 = extern struct {
 };
 pub const TP_CALLBACK_ENVIRON_V3 = struct__TP_CALLBACK_ENVIRON_V3;
 pub const TP_CALLBACK_ENVIRON = TP_CALLBACK_ENVIRON_V3;
-pub const PTP_CALLBACK_ENVIRON = ?&TP_CALLBACK_ENVIRON_V3;
+pub const PTP_CALLBACK_ENVIRON = ?[*]TP_CALLBACK_ENVIRON_V3;
 pub fn TpInitializeCallbackEnviron(CallbackEnviron: PTP_CALLBACK_ENVIRON) void {
     (??CallbackEnviron).Version = TP_VERSION(3);
     (??CallbackEnviron).Pool = null;
     (??CallbackEnviron).CleanupGroup = null;
     (??CallbackEnviron).CleanupGroupCancelCallback = null;
-    (??CallbackEnviron).RaceDll = (?&c_void)(0);
+    (??CallbackEnviron).RaceDll = (?*c_void)(0);
     (??CallbackEnviron).ActivationContext = null;
     (??CallbackEnviron).FinalizationCallback = null;
     (??CallbackEnviron).u.Flags = DWORD(0);
@@ -6361,11 +6973,11 @@ pub fn TpSetCallbackCleanupGroup(CallbackEnviron: PTP_CALLBACK_ENVIRON, CleanupG
     (??CallbackEnviron).CleanupGroup = CleanupGroup;
     (??CallbackEnviron).CleanupGroupCancelCallback = CleanupGroupCancelCallback;
 }
-pub fn TpSetCallbackActivationContext(CallbackEnviron: PTP_CALLBACK_ENVIRON, ActivationContext: ?&struct__ACTIVATION_CONTEXT) void {
+pub fn TpSetCallbackActivationContext(CallbackEnviron: PTP_CALLBACK_ENVIRON, ActivationContext: ?*struct__ACTIVATION_CONTEXT) void {
     (??CallbackEnviron).ActivationContext = ActivationContext;
 }
 pub fn TpSetCallbackNoActivationContext(CallbackEnviron: PTP_CALLBACK_ENVIRON) void {
-    (??CallbackEnviron).ActivationContext = (?&struct__ACTIVATION_CONTEXT)(LONG_PTR(-1));
+    (??CallbackEnviron).ActivationContext = (?*struct__ACTIVATION_CONTEXT)(LONG_PTR(-1));
 }
 pub fn TpSetCallbackLongFunction(CallbackEnviron: PTP_CALLBACK_ENVIRON) void {
     (??CallbackEnviron).u.s.LongFunction = DWORD(1);
@@ -6387,29 +6999,29 @@ pub fn TpDestroyCallbackEnviron(CallbackEnviron: PTP_CALLBACK_ENVIRON) void {
 }
 pub const struct__TP_WORK = @OpaqueType();
 pub const TP_WORK = struct__TP_WORK;
-pub const PTP_WORK = ?&struct__TP_WORK;
+pub const PTP_WORK = ?*struct__TP_WORK;
 pub const PTP_WORK_CALLBACK = ?extern fn(PTP_CALLBACK_INSTANCE, PVOID, PTP_WORK) void;
 pub const struct__TP_TIMER = @OpaqueType();
 pub const TP_TIMER = struct__TP_TIMER;
-pub const PTP_TIMER = ?&struct__TP_TIMER;
+pub const PTP_TIMER = ?*struct__TP_TIMER;
 pub const PTP_TIMER_CALLBACK = ?extern fn(PTP_CALLBACK_INSTANCE, PVOID, PTP_TIMER) void;
 pub const TP_WAIT_RESULT = DWORD;
 pub const struct__TP_WAIT = @OpaqueType();
 pub const TP_WAIT = struct__TP_WAIT;
-pub const PTP_WAIT = ?&struct__TP_WAIT;
+pub const PTP_WAIT = ?*struct__TP_WAIT;
 pub const PTP_WAIT_CALLBACK = ?extern fn(PTP_CALLBACK_INSTANCE, PVOID, PTP_WAIT, TP_WAIT_RESULT) void;
 pub const struct__TP_IO = @OpaqueType();
 pub const TP_IO = struct__TP_IO;
-pub const PTP_IO = ?&struct__TP_IO;
+pub const PTP_IO = ?*struct__TP_IO;
 pub const struct__TEB = @OpaqueType();
 pub fn GetFiberData() PVOID {
-    return *??@ptrCast(?&PVOID, GetCurrentFiber());
+    return (??@ptrCast(?[*]PVOID, GetCurrentFiber())).*;
 }
 pub const WPARAM = UINT_PTR;
 pub const LPARAM = LONG_PTR;
 pub const LRESULT = LONG_PTR;
-pub const SPHANDLE = ?&HANDLE;
-pub const LPHANDLE = ?&HANDLE;
+pub const SPHANDLE = ?[*]HANDLE;
+pub const LPHANDLE = ?[*]HANDLE;
 pub const HGLOBAL = HANDLE;
 pub const HLOCAL = HANDLE;
 pub const GLOBALHANDLE = HANDLE;
@@ -6418,133 +7030,133 @@ pub const ATOM = WORD;
 pub const struct_HKEY__ = extern struct {
     unused: c_int,
 };
-pub const HKEY = ?&struct_HKEY__;
-pub const PHKEY = ?&HKEY;
+pub const HKEY = ?*struct_HKEY__;
+pub const PHKEY = ?[*]HKEY;
 pub const struct_HMETAFILE__ = extern struct {
     unused: c_int,
 };
-pub const HMETAFILE = ?&struct_HMETAFILE__;
+pub const HMETAFILE = ?*struct_HMETAFILE__;
 pub const struct_HINSTANCE__ = extern struct {
     unused: c_int,
 };
-pub const HINSTANCE = ?&struct_HINSTANCE__;
+pub const HINSTANCE = ?*struct_HINSTANCE__;
 pub const HMODULE = HINSTANCE;
 pub const struct_HRGN__ = extern struct {
     unused: c_int,
 };
-pub const HRGN = ?&struct_HRGN__;
+pub const HRGN = ?*struct_HRGN__;
 pub const struct_HRSRC__ = extern struct {
     unused: c_int,
 };
-pub const HRSRC = ?&struct_HRSRC__;
+pub const HRSRC = ?*struct_HRSRC__;
 pub const struct_HSPRITE__ = extern struct {
     unused: c_int,
 };
-pub const HSPRITE = ?&struct_HSPRITE__;
+pub const HSPRITE = ?*struct_HSPRITE__;
 pub const struct_HLSURF__ = extern struct {
     unused: c_int,
 };
-pub const HLSURF = ?&struct_HLSURF__;
+pub const HLSURF = ?*struct_HLSURF__;
 pub const struct_HSTR__ = extern struct {
     unused: c_int,
 };
-pub const HSTR = ?&struct_HSTR__;
+pub const HSTR = ?*struct_HSTR__;
 pub const struct_HTASK__ = extern struct {
     unused: c_int,
 };
-pub const HTASK = ?&struct_HTASK__;
+pub const HTASK = ?*struct_HTASK__;
 pub const struct_HWINSTA__ = extern struct {
     unused: c_int,
 };
-pub const HWINSTA = ?&struct_HWINSTA__;
+pub const HWINSTA = ?*struct_HWINSTA__;
 pub const struct_HKL__ = extern struct {
     unused: c_int,
 };
-pub const HKL = ?&struct_HKL__;
+pub const HKL = ?*struct_HKL__;
 pub const HFILE = c_int;
 pub const struct__FILETIME = extern struct {
     dwLowDateTime: DWORD,
     dwHighDateTime: DWORD,
 };
 pub const FILETIME = struct__FILETIME;
-pub const PFILETIME = ?&struct__FILETIME;
-pub const LPFILETIME = ?&struct__FILETIME;
+pub const PFILETIME = ?*struct__FILETIME;
+pub const LPFILETIME = ?*struct__FILETIME;
 pub const struct_HWND__ = extern struct {
     unused: c_int,
 };
-pub const HWND = ?&struct_HWND__;
+pub const HWND = ?*struct_HWND__;
 pub const struct_HHOOK__ = extern struct {
     unused: c_int,
 };
-pub const HHOOK = ?&struct_HHOOK__;
-pub const HGDIOBJ = ?&c_void;
+pub const HHOOK = ?*struct_HHOOK__;
+pub const HGDIOBJ = ?*c_void;
 pub const struct_HACCEL__ = extern struct {
     unused: c_int,
 };
-pub const HACCEL = ?&struct_HACCEL__;
+pub const HACCEL = ?*struct_HACCEL__;
 pub const struct_HBITMAP__ = extern struct {
     unused: c_int,
 };
-pub const HBITMAP = ?&struct_HBITMAP__;
+pub const HBITMAP = ?*struct_HBITMAP__;
 pub const struct_HBRUSH__ = extern struct {
     unused: c_int,
 };
-pub const HBRUSH = ?&struct_HBRUSH__;
+pub const HBRUSH = ?*struct_HBRUSH__;
 pub const struct_HCOLORSPACE__ = extern struct {
     unused: c_int,
 };
-pub const HCOLORSPACE = ?&struct_HCOLORSPACE__;
+pub const HCOLORSPACE = ?*struct_HCOLORSPACE__;
 pub const struct_HDC__ = extern struct {
     unused: c_int,
 };
-pub const HDC = ?&struct_HDC__;
+pub const HDC = ?*struct_HDC__;
 pub const struct_HGLRC__ = extern struct {
     unused: c_int,
 };
-pub const HGLRC = ?&struct_HGLRC__;
+pub const HGLRC = ?*struct_HGLRC__;
 pub const struct_HDESK__ = extern struct {
     unused: c_int,
 };
-pub const HDESK = ?&struct_HDESK__;
+pub const HDESK = ?*struct_HDESK__;
 pub const struct_HENHMETAFILE__ = extern struct {
     unused: c_int,
 };
-pub const HENHMETAFILE = ?&struct_HENHMETAFILE__;
+pub const HENHMETAFILE = ?*struct_HENHMETAFILE__;
 pub const struct_HFONT__ = extern struct {
     unused: c_int,
 };
-pub const HFONT = ?&struct_HFONT__;
+pub const HFONT = ?*struct_HFONT__;
 pub const struct_HICON__ = extern struct {
     unused: c_int,
 };
-pub const HICON = ?&struct_HICON__;
+pub const HICON = ?*struct_HICON__;
 pub const struct_HMENU__ = extern struct {
     unused: c_int,
 };
-pub const HMENU = ?&struct_HMENU__;
+pub const HMENU = ?*struct_HMENU__;
 pub const struct_HPALETTE__ = extern struct {
     unused: c_int,
 };
-pub const HPALETTE = ?&struct_HPALETTE__;
+pub const HPALETTE = ?*struct_HPALETTE__;
 pub const struct_HPEN__ = extern struct {
     unused: c_int,
 };
-pub const HPEN = ?&struct_HPEN__;
+pub const HPEN = ?*struct_HPEN__;
 pub const struct_HWINEVENTHOOK__ = extern struct {
     unused: c_int,
 };
-pub const HWINEVENTHOOK = ?&struct_HWINEVENTHOOK__;
+pub const HWINEVENTHOOK = ?*struct_HWINEVENTHOOK__;
 pub const struct_HMONITOR__ = extern struct {
     unused: c_int,
 };
-pub const HMONITOR = ?&struct_HMONITOR__;
+pub const HMONITOR = ?*struct_HMONITOR__;
 pub const struct_HUMPD__ = extern struct {
     unused: c_int,
 };
-pub const HUMPD = ?&struct_HUMPD__;
+pub const HUMPD = ?*struct_HUMPD__;
 pub const HCURSOR = HICON;
 pub const COLORREF = DWORD;
-pub const LPCOLORREF = ?&DWORD;
+pub const LPCOLORREF = ?[*]DWORD;
 pub const struct_tagRECT = extern struct {
     left: LONG,
     top: LONG,
@@ -6552,10 +7164,10 @@ pub const struct_tagRECT = extern struct {
     bottom: LONG,
 };
 pub const RECT = struct_tagRECT;
-pub const PRECT = ?&struct_tagRECT;
-pub const NPRECT = ?&struct_tagRECT;
-pub const LPRECT = ?&struct_tagRECT;
-pub const LPCRECT = ?&const RECT;
+pub const PRECT = ?*struct_tagRECT;
+pub const NPRECT = ?*struct_tagRECT;
+pub const LPRECT = ?*struct_tagRECT;
+pub const LPCRECT = ?[*]const RECT;
 pub const struct__RECTL = extern struct {
     left: LONG,
     top: LONG,
@@ -6563,49 +7175,54 @@ pub const struct__RECTL = extern struct {
     bottom: LONG,
 };
 pub const RECTL = struct__RECTL;
-pub const PRECTL = ?&struct__RECTL;
-pub const LPRECTL = ?&struct__RECTL;
-pub const LPCRECTL = ?&const RECTL;
+pub const PRECTL = ?*struct__RECTL;
+pub const LPRECTL = ?*struct__RECTL;
+pub const LPCRECTL = ?[*]const RECTL;
 pub const struct_tagPOINT = extern struct {
     x: LONG,
     y: LONG,
 };
 pub const POINT = struct_tagPOINT;
-pub const PPOINT = ?&struct_tagPOINT;
-pub const NPPOINT = ?&struct_tagPOINT;
-pub const LPPOINT = ?&struct_tagPOINT;
+pub const PPOINT = ?*struct_tagPOINT;
+pub const NPPOINT = ?*struct_tagPOINT;
+pub const LPPOINT = ?*struct_tagPOINT;
 pub const struct__POINTL = extern struct {
     x: LONG,
     y: LONG,
 };
 pub const POINTL = struct__POINTL;
-pub const PPOINTL = ?&struct__POINTL;
+pub const PPOINTL = ?*struct__POINTL;
 pub const struct_tagSIZE = extern struct {
     cx: LONG,
     cy: LONG,
 };
 pub const SIZE = struct_tagSIZE;
-pub const PSIZE = ?&struct_tagSIZE;
-pub const LPSIZE = ?&struct_tagSIZE;
+pub const PSIZE = ?*struct_tagSIZE;
+pub const LPSIZE = ?*struct_tagSIZE;
 pub const SIZEL = SIZE;
-pub const PSIZEL = ?&SIZE;
-pub const LPSIZEL = ?&SIZE;
+pub const PSIZEL = ?[*]SIZE;
+pub const LPSIZEL = ?[*]SIZE;
 pub const struct_tagPOINTS = extern struct {
     x: SHORT,
     y: SHORT,
 };
 pub const POINTS = struct_tagPOINTS;
-pub const PPOINTS = ?&struct_tagPOINTS;
-pub const LPPOINTS = ?&struct_tagPOINTS;
+pub const PPOINTS = ?*struct_tagPOINTS;
+pub const LPPOINTS = ?*struct_tagPOINTS;
 pub const struct_DPI_AWARENESS_CONTEXT__ = extern struct {
     unused: c_int,
 };
-pub const DPI_AWARENESS_CONTEXT = ?&struct_DPI_AWARENESS_CONTEXT__;
-pub const DPI_AWARENESS_INVALID: c_int = -4294967295;
-pub const DPI_AWARENESS_UNAWARE: c_int = 0;
-pub const DPI_AWARENESS_SYSTEM_AWARE: c_int = 1;
-pub const DPI_AWARENESS_PER_MONITOR_AWARE: c_int = 2;
-pub const enum_DPI_AWARENESS = c_int;
+pub const DPI_AWARENESS_CONTEXT = ?*struct_DPI_AWARENESS_CONTEXT__;
+pub const DPI_AWARENESS_INVALID = enum_DPI_AWARENESS._INVALID;
+pub const DPI_AWARENESS_UNAWARE = enum_DPI_AWARENESS._UNAWARE;
+pub const DPI_AWARENESS_SYSTEM_AWARE = enum_DPI_AWARENESS._SYSTEM_AWARE;
+pub const DPI_AWARENESS_PER_MONITOR_AWARE = enum_DPI_AWARENESS._PER_MONITOR_AWARE;
+pub const enum_DPI_AWARENESS = extern enum {
+    _INVALID = -4294967295,
+    _UNAWARE = 0,
+    _SYSTEM_AWARE = 1,
+    _PER_MONITOR_AWARE = 2,
+};
 pub const DPI_AWARENESS = enum_DPI_AWARENESS;
 pub const struct__SECURITY_ATTRIBUTES = extern struct {
     nLength: DWORD,
@@ -6613,8 +7230,8 @@ pub const struct__SECURITY_ATTRIBUTES = extern struct {
     bInheritHandle: BOOL,
 };
 pub const SECURITY_ATTRIBUTES = struct__SECURITY_ATTRIBUTES;
-pub const PSECURITY_ATTRIBUTES = ?&struct__SECURITY_ATTRIBUTES;
-pub const LPSECURITY_ATTRIBUTES = ?&struct__SECURITY_ATTRIBUTES;
+pub const PSECURITY_ATTRIBUTES = ?*struct__SECURITY_ATTRIBUTES;
+pub const LPSECURITY_ATTRIBUTES = ?*struct__SECURITY_ATTRIBUTES;
 pub const struct__OVERLAPPED = extern struct {
     Internal: ULONG_PTR,
     InternalHigh: ULONG_PTR,
@@ -6628,7 +7245,7 @@ pub const struct__OVERLAPPED = extern struct {
     hEvent: HANDLE,
 };
 pub const OVERLAPPED = struct__OVERLAPPED;
-pub const LPOVERLAPPED = ?&struct__OVERLAPPED;
+pub const LPOVERLAPPED = ?*struct__OVERLAPPED;
 pub const struct__OVERLAPPED_ENTRY = extern struct {
     lpCompletionKey: ULONG_PTR,
     lpOverlapped: LPOVERLAPPED,
@@ -6636,7 +7253,7 @@ pub const struct__OVERLAPPED_ENTRY = extern struct {
     dwNumberOfBytesTransferred: DWORD,
 };
 pub const OVERLAPPED_ENTRY = struct__OVERLAPPED_ENTRY;
-pub const LPOVERLAPPED_ENTRY = ?&struct__OVERLAPPED_ENTRY;
+pub const LPOVERLAPPED_ENTRY = ?*struct__OVERLAPPED_ENTRY;
 pub const struct__SYSTEMTIME = extern struct {
     wYear: WORD,
     wMonth: WORD,
@@ -6648,8 +7265,8 @@ pub const struct__SYSTEMTIME = extern struct {
     wMilliseconds: WORD,
 };
 pub const SYSTEMTIME = struct__SYSTEMTIME;
-pub const PSYSTEMTIME = ?&struct__SYSTEMTIME;
-pub const LPSYSTEMTIME = ?&struct__SYSTEMTIME;
+pub const PSYSTEMTIME = ?*struct__SYSTEMTIME;
+pub const LPSYSTEMTIME = ?*struct__SYSTEMTIME;
 pub const struct__WIN32_FIND_DATAA = extern struct {
     dwFileAttributes: DWORD,
     ftCreationTime: FILETIME,
@@ -6663,8 +7280,8 @@ pub const struct__WIN32_FIND_DATAA = extern struct {
     cAlternateFileName: [14]CHAR,
 };
 pub const WIN32_FIND_DATAA = struct__WIN32_FIND_DATAA;
-pub const PWIN32_FIND_DATAA = ?&struct__WIN32_FIND_DATAA;
-pub const LPWIN32_FIND_DATAA = ?&struct__WIN32_FIND_DATAA;
+pub const PWIN32_FIND_DATAA = ?*struct__WIN32_FIND_DATAA;
+pub const LPWIN32_FIND_DATAA = ?*struct__WIN32_FIND_DATAA;
 pub const struct__WIN32_FIND_DATAW = extern struct {
     dwFileAttributes: DWORD,
     ftCreationTime: FILETIME,
@@ -6678,8 +7295,8 @@ pub const struct__WIN32_FIND_DATAW = extern struct {
     cAlternateFileName: [14]WCHAR,
 };
 pub const WIN32_FIND_DATAW = struct__WIN32_FIND_DATAW;
-pub const PWIN32_FIND_DATAW = ?&struct__WIN32_FIND_DATAW;
-pub const LPWIN32_FIND_DATAW = ?&struct__WIN32_FIND_DATAW;
+pub const PWIN32_FIND_DATAW = ?*struct__WIN32_FIND_DATAW;
+pub const LPWIN32_FIND_DATAW = ?*struct__WIN32_FIND_DATAW;
 pub const WIN32_FIND_DATA = WIN32_FIND_DATAA;
 pub const PWIN32_FIND_DATA = PWIN32_FIND_DATAA;
 pub const LPWIN32_FIND_DATA = LPWIN32_FIND_DATAA;
@@ -6703,11 +7320,14 @@ pub const enum__FINDEX_SEARCH_OPS = extern enum {
     FindExSearchMaxSearchOp,
 };
 pub const FINDEX_SEARCH_OPS = enum__FINDEX_SEARCH_OPS;
-pub const ReadDirectoryNotifyInformation: c_int = 1;
-pub const ReadDirectoryNotifyExtendedInformation: c_int = 2;
-pub const enum__READ_DIRECTORY_NOTIFY_INFORMATION_CLASS = c_int;
+pub const ReadDirectoryNotifyInformation = enum__READ_DIRECTORY_NOTIFY_INFORMATION_CLASS.ReadDirectoryNotifyInformation;
+pub const ReadDirectoryNotifyExtendedInformation = enum__READ_DIRECTORY_NOTIFY_INFORMATION_CLASS.ReadDirectoryNotifyExtendedInformation;
+pub const enum__READ_DIRECTORY_NOTIFY_INFORMATION_CLASS = extern enum {
+    ReadDirectoryNotifyInformation = 1,
+    ReadDirectoryNotifyExtendedInformation = 2,
+};
 pub const READ_DIRECTORY_NOTIFY_INFORMATION_CLASS = enum__READ_DIRECTORY_NOTIFY_INFORMATION_CLASS;
-pub const PREAD_DIRECTORY_NOTIFY_INFORMATION_CLASS = ?&enum__READ_DIRECTORY_NOTIFY_INFORMATION_CLASS;
+pub const PREAD_DIRECTORY_NOTIFY_INFORMATION_CLASS = ?[*]enum__READ_DIRECTORY_NOTIFY_INFORMATION_CLASS;
 pub const GetFileExInfoStandard = enum__GET_FILEEX_INFO_LEVELS.GetFileExInfoStandard;
 pub const GetFileExMaxInfoLevel = enum__GET_FILEEX_INFO_LEVELS.GetFileExMaxInfoLevel;
 pub const enum__GET_FILEEX_INFO_LEVELS = extern enum {
@@ -6766,7 +7386,7 @@ pub const enum__FILE_INFO_BY_HANDLE_CLASS = extern enum {
     MaximumFileInfoByHandleClass,
 };
 pub const FILE_INFO_BY_HANDLE_CLASS = enum__FILE_INFO_BY_HANDLE_CLASS;
-pub const PFILE_INFO_BY_HANDLE_CLASS = ?&enum__FILE_INFO_BY_HANDLE_CLASS;
+pub const PFILE_INFO_BY_HANDLE_CLASS = ?[*]enum__FILE_INFO_BY_HANDLE_CLASS;
 pub const CRITICAL_SECTION = RTL_CRITICAL_SECTION;
 pub const PCRITICAL_SECTION = PRTL_CRITICAL_SECTION;
 pub const LPCRITICAL_SECTION = PRTL_CRITICAL_SECTION;
@@ -6794,8 +7414,8 @@ pub const struct__PROCESS_HEAP_ENTRY = extern struct {
     },
 };
 pub const PROCESS_HEAP_ENTRY = struct__PROCESS_HEAP_ENTRY;
-pub const LPPROCESS_HEAP_ENTRY = ?&struct__PROCESS_HEAP_ENTRY;
-pub const PPROCESS_HEAP_ENTRY = ?&struct__PROCESS_HEAP_ENTRY;
+pub const LPPROCESS_HEAP_ENTRY = ?*struct__PROCESS_HEAP_ENTRY;
+pub const PPROCESS_HEAP_ENTRY = ?*struct__PROCESS_HEAP_ENTRY;
 pub const struct__REASON_CONTEXT = extern struct {
     Version: ULONG,
     Flags: DWORD,
@@ -6804,13 +7424,13 @@ pub const struct__REASON_CONTEXT = extern struct {
             LocalizedReasonModule: HMODULE,
             LocalizedReasonId: ULONG,
             ReasonStringCount: ULONG,
-            ReasonStrings: ?&LPWSTR,
+            ReasonStrings: ?[*]LPWSTR,
         },
         SimpleReasonString: LPWSTR,
     },
 };
 pub const REASON_CONTEXT = struct__REASON_CONTEXT;
-pub const PREASON_CONTEXT = ?&struct__REASON_CONTEXT;
+pub const PREASON_CONTEXT = ?*struct__REASON_CONTEXT;
 pub const PTHREAD_START_ROUTINE = ?extern fn(LPVOID) DWORD;
 pub const LPTHREAD_START_ROUTINE = PTHREAD_START_ROUTINE;
 pub const PENCLAVE_ROUTINE = ?extern fn(LPVOID) LPVOID;
@@ -6820,14 +7440,14 @@ pub const struct__EXCEPTION_DEBUG_INFO = extern struct {
     dwFirstChance: DWORD,
 };
 pub const EXCEPTION_DEBUG_INFO = struct__EXCEPTION_DEBUG_INFO;
-pub const LPEXCEPTION_DEBUG_INFO = ?&struct__EXCEPTION_DEBUG_INFO;
+pub const LPEXCEPTION_DEBUG_INFO = ?*struct__EXCEPTION_DEBUG_INFO;
 pub const struct__CREATE_THREAD_DEBUG_INFO = extern struct {
     hThread: HANDLE,
     lpThreadLocalBase: LPVOID,
     lpStartAddress: LPTHREAD_START_ROUTINE,
 };
 pub const CREATE_THREAD_DEBUG_INFO = struct__CREATE_THREAD_DEBUG_INFO;
-pub const LPCREATE_THREAD_DEBUG_INFO = ?&struct__CREATE_THREAD_DEBUG_INFO;
+pub const LPCREATE_THREAD_DEBUG_INFO = ?*struct__CREATE_THREAD_DEBUG_INFO;
 pub const struct__CREATE_PROCESS_DEBUG_INFO = extern struct {
     hFile: HANDLE,
     hProcess: HANDLE,
@@ -6841,17 +7461,17 @@ pub const struct__CREATE_PROCESS_DEBUG_INFO = extern struct {
     fUnicode: WORD,
 };
 pub const CREATE_PROCESS_DEBUG_INFO = struct__CREATE_PROCESS_DEBUG_INFO;
-pub const LPCREATE_PROCESS_DEBUG_INFO = ?&struct__CREATE_PROCESS_DEBUG_INFO;
+pub const LPCREATE_PROCESS_DEBUG_INFO = ?*struct__CREATE_PROCESS_DEBUG_INFO;
 pub const struct__EXIT_THREAD_DEBUG_INFO = extern struct {
     dwExitCode: DWORD,
 };
 pub const EXIT_THREAD_DEBUG_INFO = struct__EXIT_THREAD_DEBUG_INFO;
-pub const LPEXIT_THREAD_DEBUG_INFO = ?&struct__EXIT_THREAD_DEBUG_INFO;
+pub const LPEXIT_THREAD_DEBUG_INFO = ?*struct__EXIT_THREAD_DEBUG_INFO;
 pub const struct__EXIT_PROCESS_DEBUG_INFO = extern struct {
     dwExitCode: DWORD,
 };
 pub const EXIT_PROCESS_DEBUG_INFO = struct__EXIT_PROCESS_DEBUG_INFO;
-pub const LPEXIT_PROCESS_DEBUG_INFO = ?&struct__EXIT_PROCESS_DEBUG_INFO;
+pub const LPEXIT_PROCESS_DEBUG_INFO = ?*struct__EXIT_PROCESS_DEBUG_INFO;
 pub const struct__LOAD_DLL_DEBUG_INFO = extern struct {
     hFile: HANDLE,
     lpBaseOfDll: LPVOID,
@@ -6861,25 +7481,25 @@ pub const struct__LOAD_DLL_DEBUG_INFO = extern struct {
     fUnicode: WORD,
 };
 pub const LOAD_DLL_DEBUG_INFO = struct__LOAD_DLL_DEBUG_INFO;
-pub const LPLOAD_DLL_DEBUG_INFO = ?&struct__LOAD_DLL_DEBUG_INFO;
+pub const LPLOAD_DLL_DEBUG_INFO = ?*struct__LOAD_DLL_DEBUG_INFO;
 pub const struct__UNLOAD_DLL_DEBUG_INFO = extern struct {
     lpBaseOfDll: LPVOID,
 };
 pub const UNLOAD_DLL_DEBUG_INFO = struct__UNLOAD_DLL_DEBUG_INFO;
-pub const LPUNLOAD_DLL_DEBUG_INFO = ?&struct__UNLOAD_DLL_DEBUG_INFO;
+pub const LPUNLOAD_DLL_DEBUG_INFO = ?*struct__UNLOAD_DLL_DEBUG_INFO;
 pub const struct__OUTPUT_DEBUG_STRING_INFO = extern struct {
     lpDebugStringData: LPSTR,
     fUnicode: WORD,
     nDebugStringLength: WORD,
 };
 pub const OUTPUT_DEBUG_STRING_INFO = struct__OUTPUT_DEBUG_STRING_INFO;
-pub const LPOUTPUT_DEBUG_STRING_INFO = ?&struct__OUTPUT_DEBUG_STRING_INFO;
+pub const LPOUTPUT_DEBUG_STRING_INFO = ?*struct__OUTPUT_DEBUG_STRING_INFO;
 pub const struct__RIP_INFO = extern struct {
     dwError: DWORD,
     dwType: DWORD,
 };
 pub const RIP_INFO = struct__RIP_INFO;
-pub const LPRIP_INFO = ?&struct__RIP_INFO;
+pub const LPRIP_INFO = ?*struct__RIP_INFO;
 pub const struct__DEBUG_EVENT = extern struct {
     dwDebugEventCode: DWORD,
     dwProcessId: DWORD,
@@ -6897,7 +7517,7 @@ pub const struct__DEBUG_EVENT = extern struct {
     },
 };
 pub const DEBUG_EVENT = struct__DEBUG_EVENT;
-pub const LPDEBUG_EVENT = ?&struct__DEBUG_EVENT;
+pub const LPDEBUG_EVENT = ?*struct__DEBUG_EVENT;
 pub const LPCONTEXT = PCONTEXT;
 //pub extern fn SetEnvironmentStringsW(NewEnvironment: LPWCH) BOOL;
 //pub extern fn GetStdHandle(nStdHandle: DWORD) HANDLE;
@@ -6919,11 +7539,11 @@ pub const LPCONTEXT = PCONTEXT;
 //pub extern fn SetCurrentDirectoryW(lpPathName: LPCWSTR) BOOL;
 //pub extern fn GetCurrentDirectoryA(nBufferLength: DWORD, lpBuffer: LPSTR) DWORD;
 //pub extern fn GetCurrentDirectoryW(nBufferLength: DWORD, lpBuffer: LPWSTR) DWORD;
-//pub extern fn SearchPathW(lpPath: LPCWSTR, lpFileName: LPCWSTR, lpExtension: LPCWSTR, nBufferLength: DWORD, lpBuffer: LPWSTR, lpFilePart: ?&LPWSTR) DWORD;
-//pub extern fn SearchPathA(lpPath: LPCSTR, lpFileName: LPCSTR, lpExtension: LPCSTR, nBufferLength: DWORD, lpBuffer: LPSTR, lpFilePart: ?&LPSTR) DWORD;
+//pub extern fn SearchPathW(lpPath: LPCWSTR, lpFileName: LPCWSTR, lpExtension: LPCWSTR, nBufferLength: DWORD, lpBuffer: LPWSTR, lpFilePart: ?[*]LPWSTR) DWORD;
+//pub extern fn SearchPathA(lpPath: LPCSTR, lpFileName: LPCSTR, lpExtension: LPCSTR, nBufferLength: DWORD, lpBuffer: LPSTR, lpFilePart: ?[*]LPSTR) DWORD;
 //pub extern fn NeedCurrentDirectoryForExePathA(ExeName: LPCSTR) BOOL;
 //pub extern fn NeedCurrentDirectoryForExePathW(ExeName: LPCWSTR) BOOL;
-//pub extern fn CompareFileTime(lpFileTime1: ?&const FILETIME, lpFileTime2: ?&const FILETIME) LONG;
+//pub extern fn CompareFileTime(lpFileTime1: ?[*]const FILETIME, lpFileTime2: ?[*]const FILETIME) LONG;
 //pub extern fn CreateDirectoryA(lpPathName: LPCSTR, lpSecurityAttributes: LPSECURITY_ATTRIBUTES) BOOL;
 //pub extern fn CreateDirectoryW(lpPathName: LPCWSTR, lpSecurityAttributes: LPSECURITY_ATTRIBUTES) BOOL;
 //pub extern fn CreateFileA(lpFileName: LPCSTR, dwDesiredAccess: DWORD, dwShareMode: DWORD, lpSecurityAttributes: LPSECURITY_ATTRIBUTES, dwCreationDisposition: DWORD, dwFlagsAndAttributes: DWORD, hTemplateFile: HANDLE) HANDLE;
@@ -6932,7 +7552,7 @@ pub const LPCONTEXT = PCONTEXT;
 //pub extern fn DeleteFileA(lpFileName: LPCSTR) BOOL;
 //pub extern fn DeleteFileW(lpFileName: LPCWSTR) BOOL;
 //pub extern fn DeleteVolumeMountPointW(lpszVolumeMountPoint: LPCWSTR) BOOL;
-//pub extern fn FileTimeToLocalFileTime(lpFileTime: ?&const FILETIME, lpLocalFileTime: LPFILETIME) BOOL;
+//pub extern fn FileTimeToLocalFileTime(lpFileTime: ?[*]const FILETIME, lpLocalFileTime: LPFILETIME) BOOL;
 //pub extern fn FindClose(hFindFile: HANDLE) BOOL;
 //pub extern fn FindCloseChangeNotification(hChangeHandle: HANDLE) BOOL;
 //pub extern fn FindFirstChangeNotificationA(lpPathName: LPCSTR, bWatchSubtree: BOOL, dwNotifyFilter: DWORD) HANDLE;
@@ -6963,7 +7583,7 @@ pub const struct__WIN32_FILE_ATTRIBUTE_DATA = extern struct {
     nFileSizeLow: DWORD,
 };
 pub const WIN32_FILE_ATTRIBUTE_DATA = struct__WIN32_FILE_ATTRIBUTE_DATA;
-pub const LPWIN32_FILE_ATTRIBUTE_DATA = ?&struct__WIN32_FILE_ATTRIBUTE_DATA;
+pub const LPWIN32_FILE_ATTRIBUTE_DATA = ?*struct__WIN32_FILE_ATTRIBUTE_DATA;
 //pub extern fn GetFileAttributesA(lpFileName: LPCSTR) DWORD;
 //pub extern fn GetFileAttributesW(lpFileName: LPCWSTR) DWORD;
 //pub extern fn GetFileAttributesExA(lpFileName: LPCSTR, fInfoLevelId: GET_FILEEX_INFO_LEVELS, lpFileInformation: LPVOID) BOOL;
@@ -6981,8 +7601,8 @@ pub const struct__BY_HANDLE_FILE_INFORMATION = extern struct {
     nFileIndexLow: DWORD,
 };
 pub const BY_HANDLE_FILE_INFORMATION = struct__BY_HANDLE_FILE_INFORMATION;
-pub const PBY_HANDLE_FILE_INFORMATION = ?&struct__BY_HANDLE_FILE_INFORMATION;
-pub const LPBY_HANDLE_FILE_INFORMATION = ?&struct__BY_HANDLE_FILE_INFORMATION;
+pub const PBY_HANDLE_FILE_INFORMATION = ?*struct__BY_HANDLE_FILE_INFORMATION;
+pub const LPBY_HANDLE_FILE_INFORMATION = ?*struct__BY_HANDLE_FILE_INFORMATION;
 //pub extern fn GetFileInformationByHandle(hFile: HANDLE, lpFileInformation: LPBY_HANDLE_FILE_INFORMATION) BOOL;
 //pub extern fn GetFileSize(hFile: HANDLE, lpFileSizeHigh: LPDWORD) DWORD;
 //pub extern fn GetFileSizeEx(hFile: HANDLE, lpFileSize: PLARGE_INTEGER) BOOL;
@@ -6990,8 +7610,8 @@ pub const LPBY_HANDLE_FILE_INFORMATION = ?&struct__BY_HANDLE_FILE_INFORMATION;
 //pub extern fn GetFinalPathNameByHandleA(hFile: HANDLE, lpszFilePath: LPSTR, cchFilePath: DWORD, dwFlags: DWORD) DWORD;
 //pub extern fn GetFinalPathNameByHandleW(hFile: HANDLE, lpszFilePath: LPWSTR, cchFilePath: DWORD, dwFlags: DWORD) DWORD;
 //pub extern fn GetFileTime(hFile: HANDLE, lpCreationTime: LPFILETIME, lpLastAccessTime: LPFILETIME, lpLastWriteTime: LPFILETIME) BOOL;
-//pub extern fn GetFullPathNameW(lpFileName: LPCWSTR, nBufferLength: DWORD, lpBuffer: LPWSTR, lpFilePart: ?&LPWSTR) DWORD;
-//pub extern fn GetFullPathNameA(lpFileName: LPCSTR, nBufferLength: DWORD, lpBuffer: LPSTR, lpFilePart: ?&LPSTR) DWORD;
+//pub extern fn GetFullPathNameW(lpFileName: LPCWSTR, nBufferLength: DWORD, lpBuffer: LPWSTR, lpFilePart: ?[*]LPWSTR) DWORD;
+//pub extern fn GetFullPathNameA(lpFileName: LPCSTR, nBufferLength: DWORD, lpBuffer: LPSTR, lpFilePart: ?[*]LPSTR) DWORD;
 //pub extern fn GetLogicalDrives() DWORD;
 //pub extern fn GetLogicalDriveStringsW(nBufferLength: DWORD, lpBuffer: LPWSTR) DWORD;
 //pub extern fn GetLongPathNameA(lpszShortPath: LPCSTR, lpszLongPath: LPSTR, cchBuffer: DWORD) DWORD;
@@ -7001,13 +7621,13 @@ pub const LPBY_HANDLE_FILE_INFORMATION = ?&struct__BY_HANDLE_FILE_INFORMATION;
 //pub extern fn GetVolumeInformationByHandleW(hFile: HANDLE, lpVolumeNameBuffer: LPWSTR, nVolumeNameSize: DWORD, lpVolumeSerialNumber: LPDWORD, lpMaximumComponentLength: LPDWORD, lpFileSystemFlags: LPDWORD, lpFileSystemNameBuffer: LPWSTR, nFileSystemNameSize: DWORD) BOOL;
 //pub extern fn GetVolumeInformationW(lpRootPathName: LPCWSTR, lpVolumeNameBuffer: LPWSTR, nVolumeNameSize: DWORD, lpVolumeSerialNumber: LPDWORD, lpMaximumComponentLength: LPDWORD, lpFileSystemFlags: LPDWORD, lpFileSystemNameBuffer: LPWSTR, nFileSystemNameSize: DWORD) BOOL;
 //pub extern fn GetVolumePathNameW(lpszFileName: LPCWSTR, lpszVolumePathName: LPWSTR, cchBufferLength: DWORD) BOOL;
-//pub extern fn LocalFileTimeToFileTime(lpLocalFileTime: ?&const FILETIME, lpFileTime: LPFILETIME) BOOL;
+//pub extern fn LocalFileTimeToFileTime(lpLocalFileTime: ?[*]const FILETIME, lpFileTime: LPFILETIME) BOOL;
 //pub extern fn LockFile(hFile: HANDLE, dwFileOffsetLow: DWORD, dwFileOffsetHigh: DWORD, nNumberOfBytesToLockLow: DWORD, nNumberOfBytesToLockHigh: DWORD) BOOL;
 //pub extern fn LockFileEx(hFile: HANDLE, dwFlags: DWORD, dwReserved: DWORD, nNumberOfBytesToLockLow: DWORD, nNumberOfBytesToLockHigh: DWORD, lpOverlapped: LPOVERLAPPED) BOOL;
 //pub extern fn QueryDosDeviceW(lpDeviceName: LPCWSTR, lpTargetPath: LPWSTR, ucchMax: DWORD) DWORD;
 //pub extern fn ReadFile(hFile: HANDLE, lpBuffer: LPVOID, nNumberOfBytesToRead: DWORD, lpNumberOfBytesRead: LPDWORD, lpOverlapped: LPOVERLAPPED) BOOL;
 //pub extern fn ReadFileEx(hFile: HANDLE, lpBuffer: LPVOID, nNumberOfBytesToRead: DWORD, lpOverlapped: LPOVERLAPPED, lpCompletionRoutine: LPOVERLAPPED_COMPLETION_ROUTINE) BOOL;
-//pub extern fn ReadFileScatter(hFile: HANDLE, aSegmentArray: ?&FILE_SEGMENT_ELEMENT, nNumberOfBytesToRead: DWORD, lpReserved: LPDWORD, lpOverlapped: LPOVERLAPPED) BOOL;
+//pub extern fn ReadFileScatter(hFile: HANDLE, aSegmentArray: ?[*]FILE_SEGMENT_ELEMENT, nNumberOfBytesToRead: DWORD, lpReserved: LPDWORD, lpOverlapped: LPOVERLAPPED) BOOL;
 //pub extern fn RemoveDirectoryA(lpPathName: LPCSTR) BOOL;
 //pub extern fn RemoveDirectoryW(lpPathName: LPCWSTR) BOOL;
 //pub extern fn SetEndOfFile(hFile: HANDLE) BOOL;
@@ -7016,13 +7636,13 @@ pub const LPBY_HANDLE_FILE_INFORMATION = ?&struct__BY_HANDLE_FILE_INFORMATION;
 //pub extern fn SetFileInformationByHandle(hFile: HANDLE, FileInformationClass: FILE_INFO_BY_HANDLE_CLASS, lpFileInformation: LPVOID, dwBufferSize: DWORD) BOOL;
 //pub extern fn SetFilePointer(hFile: HANDLE, lDistanceToMove: LONG, lpDistanceToMoveHigh: PLONG, dwMoveMethod: DWORD) DWORD;
 //pub extern fn SetFilePointerEx(hFile: HANDLE, liDistanceToMove: LARGE_INTEGER, lpNewFilePointer: PLARGE_INTEGER, dwMoveMethod: DWORD) BOOL;
-//pub extern fn SetFileTime(hFile: HANDLE, lpCreationTime: ?&const FILETIME, lpLastAccessTime: ?&const FILETIME, lpLastWriteTime: ?&const FILETIME) BOOL;
+//pub extern fn SetFileTime(hFile: HANDLE, lpCreationTime: ?[*]const FILETIME, lpLastAccessTime: ?[*]const FILETIME, lpLastWriteTime: ?[*]const FILETIME) BOOL;
 //pub extern fn SetFileValidData(hFile: HANDLE, ValidDataLength: LONGLONG) BOOL;
 //pub extern fn UnlockFile(hFile: HANDLE, dwFileOffsetLow: DWORD, dwFileOffsetHigh: DWORD, nNumberOfBytesToUnlockLow: DWORD, nNumberOfBytesToUnlockHigh: DWORD) BOOL;
 //pub extern fn UnlockFileEx(hFile: HANDLE, dwReserved: DWORD, nNumberOfBytesToUnlockLow: DWORD, nNumberOfBytesToUnlockHigh: DWORD, lpOverlapped: LPOVERLAPPED) BOOL;
 //pub extern fn WriteFile(hFile: HANDLE, lpBuffer: LPCVOID, nNumberOfBytesToWrite: DWORD, lpNumberOfBytesWritten: LPDWORD, lpOverlapped: LPOVERLAPPED) BOOL;
 //pub extern fn WriteFileEx(hFile: HANDLE, lpBuffer: LPCVOID, nNumberOfBytesToWrite: DWORD, lpOverlapped: LPOVERLAPPED, lpCompletionRoutine: LPOVERLAPPED_COMPLETION_ROUTINE) BOOL;
-//pub extern fn WriteFileGather(hFile: HANDLE, aSegmentArray: ?&FILE_SEGMENT_ELEMENT, nNumberOfBytesToWrite: DWORD, lpReserved: LPDWORD, lpOverlapped: LPOVERLAPPED) BOOL;
+//pub extern fn WriteFileGather(hFile: HANDLE, aSegmentArray: ?[*]FILE_SEGMENT_ELEMENT, nNumberOfBytesToWrite: DWORD, lpReserved: LPDWORD, lpOverlapped: LPOVERLAPPED) BOOL;
 //pub extern fn GetTempPathW(nBufferLength: DWORD, lpBuffer: LPWSTR) DWORD;
 //pub extern fn GetVolumeNameForVolumeMountPointW(lpszVolumeMountPoint: LPCWSTR, lpszVolumeName: LPWSTR, cchBufferLength: DWORD) BOOL;
 //pub extern fn GetVolumePathNamesForVolumeNameW(lpszVolumeName: LPCWSTR, lpszVolumePathNames: LPWCH, cchBufferLength: DWORD, lpcchReturnLength: PDWORD) BOOL;
@@ -7035,8 +7655,8 @@ pub const struct__CREATEFILE2_EXTENDED_PARAMETERS = extern struct {
     hTemplateFile: HANDLE,
 };
 pub const CREATEFILE2_EXTENDED_PARAMETERS = struct__CREATEFILE2_EXTENDED_PARAMETERS;
-pub const PCREATEFILE2_EXTENDED_PARAMETERS = ?&struct__CREATEFILE2_EXTENDED_PARAMETERS;
-pub const LPCREATEFILE2_EXTENDED_PARAMETERS = ?&struct__CREATEFILE2_EXTENDED_PARAMETERS;
+pub const PCREATEFILE2_EXTENDED_PARAMETERS = ?*struct__CREATEFILE2_EXTENDED_PARAMETERS;
+pub const LPCREATEFILE2_EXTENDED_PARAMETERS = ?*struct__CREATEFILE2_EXTENDED_PARAMETERS;
 //pub extern fn CreateFile2(lpFileName: LPCWSTR, dwDesiredAccess: DWORD, dwShareMode: DWORD, dwCreationDisposition: DWORD, pCreateExParams: LPCREATEFILE2_EXTENDED_PARAMETERS) HANDLE;
 //pub extern fn SetFileIoOverlappedRange(FileHandle: HANDLE, OverlappedRangeStart: PUCHAR, Length: ULONG) BOOL;
 //pub extern fn GetCompressedFileSizeA(lpFileName: LPCSTR, lpFileSizeHigh: LPDWORD) DWORD;
@@ -7053,7 +7673,7 @@ pub const struct__WIN32_FIND_STREAM_DATA = extern struct {
     cStreamName: [296]WCHAR,
 };
 pub const WIN32_FIND_STREAM_DATA = struct__WIN32_FIND_STREAM_DATA;
-pub const PWIN32_FIND_STREAM_DATA = ?&struct__WIN32_FIND_STREAM_DATA;
+pub const PWIN32_FIND_STREAM_DATA = ?*struct__WIN32_FIND_STREAM_DATA;
 //pub extern fn FindFirstStreamW(lpFileName: LPCWSTR, InfoLevel: STREAM_INFO_LEVELS, lpFindStreamData: LPVOID, dwFlags: DWORD) HANDLE;
 //pub extern fn FindNextStreamW(hFindStream: HANDLE, lpFindStreamData: LPVOID) BOOL;
 //pub extern fn AreFileApisANSI() BOOL;
@@ -7078,18 +7698,18 @@ pub const PWIN32_FIND_STREAM_DATA = ?&struct__WIN32_FIND_STREAM_DATA;
 //pub extern fn DecodePointer(Ptr: PVOID) PVOID;
 //pub extern fn EncodeSystemPointer(Ptr: PVOID) PVOID;
 //pub extern fn DecodeSystemPointer(Ptr: PVOID) PVOID;
-//pub extern fn EncodeRemotePointer(ProcessHandle: HANDLE, Ptr: PVOID, EncodedPtr: ?&PVOID) HRESULT;
-//pub extern fn DecodeRemotePointer(ProcessHandle: HANDLE, Ptr: PVOID, DecodedPtr: ?&PVOID) HRESULT;
+//pub extern fn EncodeRemotePointer(ProcessHandle: HANDLE, Ptr: PVOID, EncodedPtr: ?[*]PVOID) HRESULT;
+//pub extern fn DecodeRemotePointer(ProcessHandle: HANDLE, Ptr: PVOID, DecodedPtr: ?[*]PVOID) HRESULT;
 //pub extern fn Beep(dwFreq: DWORD, dwDuration: DWORD) BOOL;
 //pub extern fn CloseHandle(hObject: HANDLE) BOOL;
 //pub extern fn DuplicateHandle(hSourceProcessHandle: HANDLE, hSourceHandle: HANDLE, hTargetProcessHandle: HANDLE, lpTargetHandle: LPHANDLE, dwDesiredAccess: DWORD, bInheritHandle: BOOL, dwOptions: DWORD) BOOL;
 //pub extern fn CompareObjectHandles(hFirstObjectHandle: HANDLE, hSecondObjectHandle: HANDLE) BOOL;
 //pub extern fn GetHandleInformation(hObject: HANDLE, lpdwFlags: LPDWORD) BOOL;
 //pub extern fn SetHandleInformation(hObject: HANDLE, dwMask: DWORD, dwFlags: DWORD) BOOL;
-pub const PTOP_LEVEL_EXCEPTION_FILTER = ?extern fn(?&struct__EXCEPTION_POINTERS) LONG;
+pub const PTOP_LEVEL_EXCEPTION_FILTER = ?extern fn(?*struct__EXCEPTION_POINTERS) LONG;
 pub const LPTOP_LEVEL_EXCEPTION_FILTER = PTOP_LEVEL_EXCEPTION_FILTER;
-//pub extern fn RaiseException(dwExceptionCode: DWORD, dwExceptionFlags: DWORD, nNumberOfArguments: DWORD, lpArguments: ?&const ULONG_PTR) void;
-//pub extern fn UnhandledExceptionFilter(ExceptionInfo: ?&struct__EXCEPTION_POINTERS) LONG;
+//pub extern fn RaiseException(dwExceptionCode: DWORD, dwExceptionFlags: DWORD, nNumberOfArguments: DWORD, lpArguments: ?[*]const ULONG_PTR) void;
+//pub extern fn UnhandledExceptionFilter(ExceptionInfo: ?*struct__EXCEPTION_POINTERS) LONG;
 //pub extern fn SetUnhandledExceptionFilter(lpTopLevelExceptionFilter: LPTOP_LEVEL_EXCEPTION_FILTER) LPTOP_LEVEL_EXCEPTION_FILTER;
 //pub extern fn GetLastError() DWORD;
 //pub extern fn SetLastError(dwErrCode: DWORD) void;
@@ -7123,8 +7743,8 @@ pub const LPTOP_LEVEL_EXCEPTION_FILTER = PTOP_LEVEL_EXCEPTION_FILTER;
 //pub extern fn GetNamedPipeInfo(hNamedPipe: HANDLE, lpFlags: LPDWORD, lpOutBufferSize: LPDWORD, lpInBufferSize: LPDWORD, lpMaxInstances: LPDWORD) BOOL;
 //pub extern fn GetNamedPipeHandleStateW(hNamedPipe: HANDLE, lpState: LPDWORD, lpCurInstances: LPDWORD, lpMaxCollectionCount: LPDWORD, lpCollectDataTimeout: LPDWORD, lpUserName: LPWSTR, nMaxUserNameSize: DWORD) BOOL;
 //pub extern fn CallNamedPipeW(lpNamedPipeName: LPCWSTR, lpInBuffer: LPVOID, nInBufferSize: DWORD, lpOutBuffer: LPVOID, nOutBufferSize: DWORD, lpBytesRead: LPDWORD, nTimeOut: DWORD) BOOL;
-//pub extern fn QueryPerformanceCounter(lpPerformanceCount: ?&LARGE_INTEGER) BOOL;
-//pub extern fn QueryPerformanceFrequency(lpFrequency: ?&LARGE_INTEGER) BOOL;
+//pub extern fn QueryPerformanceCounter(lpPerformanceCount: ?[*]LARGE_INTEGER) BOOL;
+//pub extern fn QueryPerformanceFrequency(lpFrequency: ?[*]LARGE_INTEGER) BOOL;
 pub const struct__HEAP_SUMMARY = extern struct {
     cb: DWORD,
     cbAllocated: SIZE_T,
@@ -7133,7 +7753,7 @@ pub const struct__HEAP_SUMMARY = extern struct {
     cbMaxReserve: SIZE_T,
 };
 pub const HEAP_SUMMARY = struct__HEAP_SUMMARY;
-pub const PHEAP_SUMMARY = ?&struct__HEAP_SUMMARY;
+pub const PHEAP_SUMMARY = ?*struct__HEAP_SUMMARY;
 pub const LPHEAP_SUMMARY = PHEAP_SUMMARY;
 //pub extern fn HeapCreate(flOptions: DWORD, dwInitialSize: SIZE_T, dwMaximumSize: SIZE_T) HANDLE;
 //pub extern fn HeapDestroy(hHeap: HANDLE) BOOL;
@@ -7152,7 +7772,7 @@ pub const LPHEAP_SUMMARY = PHEAP_SUMMARY;
 //pub extern fn HeapWalk(hHeap: HANDLE, lpEntry: LPPROCESS_HEAP_ENTRY) BOOL;
 //pub extern fn HeapQueryInformation(HeapHandle: HANDLE, HeapInformationClass: HEAP_INFORMATION_CLASS, HeapInformation: PVOID, HeapInformationLength: SIZE_T, ReturnLength: PSIZE_T) BOOL;
 //pub extern fn CreateIoCompletionPort(FileHandle: HANDLE, ExistingCompletionPort: HANDLE, CompletionKey: ULONG_PTR, NumberOfConcurrentThreads: DWORD) HANDLE;
-//pub extern fn GetQueuedCompletionStatus(CompletionPort: HANDLE, lpNumberOfBytesTransferred: LPDWORD, lpCompletionKey: PULONG_PTR, lpOverlapped: ?&LPOVERLAPPED, dwMilliseconds: DWORD) BOOL;
+//pub extern fn GetQueuedCompletionStatus(CompletionPort: HANDLE, lpNumberOfBytesTransferred: LPDWORD, lpCompletionKey: PULONG_PTR, lpOverlapped: ?[*]LPOVERLAPPED, dwMilliseconds: DWORD) BOOL;
 //pub extern fn GetQueuedCompletionStatusEx(CompletionPort: HANDLE, lpCompletionPortEntries: LPOVERLAPPED_ENTRY, ulCount: ULONG, ulNumEntriesRemoved: PULONG, dwMilliseconds: DWORD, fAlertable: BOOL) BOOL;
 //pub extern fn PostQueuedCompletionStatus(CompletionPort: HANDLE, dwNumberOfBytesTransferred: DWORD, dwCompletionKey: ULONG_PTR, lpOverlapped: LPOVERLAPPED) BOOL;
 //pub extern fn DeviceIoControl(hDevice: HANDLE, dwIoControlCode: DWORD, lpInBuffer: LPVOID, nInBufferSize: DWORD, lpOutBuffer: LPVOID, nOutBufferSize: DWORD, lpBytesReturned: LPDWORD, lpOverlapped: LPOVERLAPPED) BOOL;
@@ -7162,7 +7782,7 @@ pub const LPHEAP_SUMMARY = PHEAP_SUMMARY;
 //pub extern fn GetOverlappedResultEx(hFile: HANDLE, lpOverlapped: LPOVERLAPPED, lpNumberOfBytesTransferred: LPDWORD, dwMilliseconds: DWORD, bAlertable: BOOL) BOOL;
 //pub extern fn CancelSynchronousIo(hThread: HANDLE) BOOL;
 pub const SRWLOCK = RTL_SRWLOCK;
-pub const PSRWLOCK = ?&RTL_SRWLOCK;
+pub const PSRWLOCK = ?[*]RTL_SRWLOCK;
 //pub extern fn InitializeSRWLock(SRWLock: PSRWLOCK) void;
 //pub extern fn ReleaseSRWLockExclusive(SRWLock: PSRWLOCK) void;
 //pub extern fn ReleaseSRWLockShared(SRWLock: PSRWLOCK) void;
@@ -7181,13 +7801,13 @@ pub const PSRWLOCK = ?&RTL_SRWLOCK;
 pub const INIT_ONCE = RTL_RUN_ONCE;
 pub const PINIT_ONCE = PRTL_RUN_ONCE;
 pub const LPINIT_ONCE = PRTL_RUN_ONCE;
-pub const PINIT_ONCE_FN = ?extern fn(PINIT_ONCE, PVOID, ?&PVOID) BOOL;
+pub const PINIT_ONCE_FN = ?extern fn(PINIT_ONCE, PVOID, ?[*]PVOID) BOOL;
 //pub extern fn InitOnceInitialize(InitOnce: PINIT_ONCE) void;
-//pub extern fn InitOnceExecuteOnce(InitOnce: PINIT_ONCE, InitFn: PINIT_ONCE_FN, Parameter: PVOID, Context: ?&LPVOID) BOOL;
-//pub extern fn InitOnceBeginInitialize(lpInitOnce: LPINIT_ONCE, dwFlags: DWORD, fPending: PBOOL, lpContext: ?&LPVOID) BOOL;
+//pub extern fn InitOnceExecuteOnce(InitOnce: PINIT_ONCE, InitFn: PINIT_ONCE_FN, Parameter: PVOID, Context: ?[*]LPVOID) BOOL;
+//pub extern fn InitOnceBeginInitialize(lpInitOnce: LPINIT_ONCE, dwFlags: DWORD, fPending: PBOOL, lpContext: ?[*]LPVOID) BOOL;
 //pub extern fn InitOnceComplete(lpInitOnce: LPINIT_ONCE, dwFlags: DWORD, lpContext: LPVOID) BOOL;
 pub const CONDITION_VARIABLE = RTL_CONDITION_VARIABLE;
-pub const PCONDITION_VARIABLE = ?&RTL_CONDITION_VARIABLE;
+pub const PCONDITION_VARIABLE = ?[*]RTL_CONDITION_VARIABLE;
 //pub extern fn InitializeConditionVariable(ConditionVariable: PCONDITION_VARIABLE) void;
 //pub extern fn WakeConditionVariable(ConditionVariable: PCONDITION_VARIABLE) void;
 //pub extern fn WakeAllConditionVariable(ConditionVariable: PCONDITION_VARIABLE) void;
@@ -7200,7 +7820,7 @@ pub const PCONDITION_VARIABLE = ?&RTL_CONDITION_VARIABLE;
 //pub extern fn WaitForSingleObject(hHandle: HANDLE, dwMilliseconds: DWORD) DWORD;
 //pub extern fn SleepEx(dwMilliseconds: DWORD, bAlertable: BOOL) DWORD;
 //pub extern fn WaitForSingleObjectEx(hHandle: HANDLE, dwMilliseconds: DWORD, bAlertable: BOOL) DWORD;
-//pub extern fn WaitForMultipleObjectsEx(nCount: DWORD, lpHandles: ?&const HANDLE, bWaitAll: BOOL, dwMilliseconds: DWORD, bAlertable: BOOL) DWORD;
+//pub extern fn WaitForMultipleObjectsEx(nCount: DWORD, lpHandles: ?[*]const HANDLE, bWaitAll: BOOL, dwMilliseconds: DWORD, bAlertable: BOOL) DWORD;
 //pub extern fn CreateMutexA(lpMutexAttributes: LPSECURITY_ATTRIBUTES, bInitialOwner: BOOL, lpName: LPCSTR) HANDLE;
 //pub extern fn CreateMutexW(lpMutexAttributes: LPSECURITY_ATTRIBUTES, bInitialOwner: BOOL, lpName: LPCWSTR) HANDLE;
 //pub extern fn OpenMutexW(dwDesiredAccess: DWORD, bInheritHandle: BOOL, lpName: LPCWSTR) HANDLE;
@@ -7211,8 +7831,8 @@ pub const PCONDITION_VARIABLE = ?&RTL_CONDITION_VARIABLE;
 //pub extern fn OpenSemaphoreW(dwDesiredAccess: DWORD, bInheritHandle: BOOL, lpName: LPCWSTR) HANDLE;
 pub const PTIMERAPCROUTINE = ?extern fn(LPVOID, DWORD, DWORD) void;
 //pub extern fn OpenWaitableTimerW(dwDesiredAccess: DWORD, bInheritHandle: BOOL, lpTimerName: LPCWSTR) HANDLE;
-//pub extern fn SetWaitableTimerEx(hTimer: HANDLE, lpDueTime: ?&const LARGE_INTEGER, lPeriod: LONG, pfnCompletionRoutine: PTIMERAPCROUTINE, lpArgToCompletionRoutine: LPVOID, WakeContext: PREASON_CONTEXT, TolerableDelay: ULONG) BOOL;
-//pub extern fn SetWaitableTimer(hTimer: HANDLE, lpDueTime: ?&const LARGE_INTEGER, lPeriod: LONG, pfnCompletionRoutine: PTIMERAPCROUTINE, lpArgToCompletionRoutine: LPVOID, fResume: BOOL) BOOL;
+//pub extern fn SetWaitableTimerEx(hTimer: HANDLE, lpDueTime: ?[*]const LARGE_INTEGER, lPeriod: LONG, pfnCompletionRoutine: PTIMERAPCROUTINE, lpArgToCompletionRoutine: LPVOID, WakeContext: PREASON_CONTEXT, TolerableDelay: ULONG) BOOL;
+//pub extern fn SetWaitableTimer(hTimer: HANDLE, lpDueTime: ?[*]const LARGE_INTEGER, lPeriod: LONG, pfnCompletionRoutine: PTIMERAPCROUTINE, lpArgToCompletionRoutine: LPVOID, fResume: BOOL) BOOL;
 //pub extern fn CancelWaitableTimer(hTimer: HANDLE) BOOL;
 //pub extern fn CreateMutexExA(lpMutexAttributes: LPSECURITY_ATTRIBUTES, lpName: LPCSTR, dwFlags: DWORD, dwDesiredAccess: DWORD) HANDLE;
 //pub extern fn CreateMutexExW(lpMutexAttributes: LPSECURITY_ATTRIBUTES, lpName: LPCWSTR, dwFlags: DWORD, dwDesiredAccess: DWORD) HANDLE;
@@ -7227,11 +7847,11 @@ pub const LPSYNCHRONIZATION_BARRIER = PRTL_BARRIER;
 //pub extern fn InitializeSynchronizationBarrier(lpBarrier: LPSYNCHRONIZATION_BARRIER, lTotalThreads: LONG, lSpinCount: LONG) BOOL;
 //pub extern fn DeleteSynchronizationBarrier(lpBarrier: LPSYNCHRONIZATION_BARRIER) BOOL;
 //pub extern fn Sleep(dwMilliseconds: DWORD) void;
-//pub extern fn WaitOnAddress(Address: ?&volatile c_void, CompareAddress: PVOID, AddressSize: SIZE_T, dwMilliseconds: DWORD) BOOL;
+//pub extern fn WaitOnAddress(Address: ?*volatile c_void, CompareAddress: PVOID, AddressSize: SIZE_T, dwMilliseconds: DWORD) BOOL;
 //pub extern fn WakeByAddressSingle(Address: PVOID) void;
 //pub extern fn WakeByAddressAll(Address: PVOID) void;
 //pub extern fn SignalObjectAndWait(hObjectToSignal: HANDLE, hObjectToWaitOn: HANDLE, dwMilliseconds: DWORD, bAlertable: BOOL) DWORD;
-//pub extern fn WaitForMultipleObjects(nCount: DWORD, lpHandles: ?&const HANDLE, bWaitAll: BOOL, dwMilliseconds: DWORD) DWORD;
+//pub extern fn WaitForMultipleObjects(nCount: DWORD, lpHandles: ?[*]const HANDLE, bWaitAll: BOOL, dwMilliseconds: DWORD) DWORD;
 //pub extern fn CreateSemaphoreW(lpSemaphoreAttributes: LPSECURITY_ATTRIBUTES, lInitialCount: LONG, lMaximumCount: LONG, lpName: LPCWSTR) HANDLE;
 //pub extern fn CreateWaitableTimerW(lpTimerAttributes: LPSECURITY_ATTRIBUTES, bManualReset: BOOL, lpTimerName: LPCWSTR) HANDLE;
 //pub extern fn InitializeSListHead(ListHead: PSLIST_HEADER) void;
@@ -7247,8 +7867,8 @@ pub const struct__PROCESS_INFORMATION = extern struct {
     dwThreadId: DWORD,
 };
 pub const PROCESS_INFORMATION = struct__PROCESS_INFORMATION;
-pub const PPROCESS_INFORMATION = ?&struct__PROCESS_INFORMATION;
-pub const LPPROCESS_INFORMATION = ?&struct__PROCESS_INFORMATION;
+pub const PPROCESS_INFORMATION = ?*struct__PROCESS_INFORMATION;
+pub const LPPROCESS_INFORMATION = ?*struct__PROCESS_INFORMATION;
 pub const struct__STARTUPINFOA = extern struct {
     cb: DWORD,
     lpReserved: LPSTR,
@@ -7270,7 +7890,7 @@ pub const struct__STARTUPINFOA = extern struct {
     hStdError: HANDLE,
 };
 pub const STARTUPINFOA = struct__STARTUPINFOA;
-pub const LPSTARTUPINFOA = ?&struct__STARTUPINFOA;
+pub const LPSTARTUPINFOA = ?*struct__STARTUPINFOA;
 pub const struct__STARTUPINFOW = extern struct {
     cb: DWORD,
     lpReserved: LPWSTR,
@@ -7292,7 +7912,7 @@ pub const struct__STARTUPINFOW = extern struct {
     hStdError: HANDLE,
 };
 pub const STARTUPINFOW = struct__STARTUPINFOW;
-pub const LPSTARTUPINFOW = ?&struct__STARTUPINFOW;
+pub const LPSTARTUPINFOW = ?*struct__STARTUPINFOW;
 pub const STARTUPINFO = STARTUPINFOA;
 pub const LPSTARTUPINFO = LPSTARTUPINFOA;
 //pub extern fn QueueUserAPC(pfnAPC: PAPCFUNC, hThread: HANDLE, dwData: ULONG_PTR) DWORD;
@@ -7342,10 +7962,10 @@ pub fn GetCurrentThreadEffectiveToken() HANDLE {
 //pub extern fn SetPriorityClass(hProcess: HANDLE, dwPriorityClass: DWORD) BOOL;
 //pub extern fn GetPriorityClass(hProcess: HANDLE) DWORD;
 //pub extern fn SetThreadStackGuarantee(StackSizeInBytes: PULONG) BOOL;
-//pub extern fn ProcessIdToSessionId(dwProcessId: DWORD, pSessionId: ?&DWORD) BOOL;
+//pub extern fn ProcessIdToSessionId(dwProcessId: DWORD, pSessionId: ?[*]DWORD) BOOL;
 pub const struct__PROC_THREAD_ATTRIBUTE_LIST = @OpaqueType();
-pub const PPROC_THREAD_ATTRIBUTE_LIST = ?&struct__PROC_THREAD_ATTRIBUTE_LIST;
-pub const LPPROC_THREAD_ATTRIBUTE_LIST = ?&struct__PROC_THREAD_ATTRIBUTE_LIST;
+pub const PPROC_THREAD_ATTRIBUTE_LIST = ?*struct__PROC_THREAD_ATTRIBUTE_LIST;
+pub const LPPROC_THREAD_ATTRIBUTE_LIST = ?*struct__PROC_THREAD_ATTRIBUTE_LIST;
 //pub extern fn GetProcessId(Process: HANDLE) DWORD;
 //pub extern fn GetThreadId(Thread: HANDLE) DWORD;
 //pub extern fn FlushProcessWriteBuffers() void;
@@ -7359,7 +7979,7 @@ pub const LPPROC_THREAD_ATTRIBUTE_LIST = ?&struct__PROC_THREAD_ATTRIBUTE_LIST;
 //pub extern fn GetCurrentThreadStackLimits(LowLimit: PULONG_PTR, HighLimit: PULONG_PTR) void;
 //pub extern fn GetThreadContext(hThread: HANDLE, lpContext: LPCONTEXT) BOOL;
 //pub extern fn GetProcessMitigationPolicy(hProcess: HANDLE, MitigationPolicy: PROCESS_MITIGATION_POLICY, lpBuffer: PVOID, dwLength: SIZE_T) BOOL;
-//pub extern fn SetThreadContext(hThread: HANDLE, lpContext: ?&const CONTEXT) BOOL;
+//pub extern fn SetThreadContext(hThread: HANDLE, lpContext: ?[*]const CONTEXT) BOOL;
 //pub extern fn SetProcessMitigationPolicy(MitigationPolicy: PROCESS_MITIGATION_POLICY, lpBuffer: PVOID, dwLength: SIZE_T) BOOL;
 //pub extern fn FlushInstructionCache(hProcess: HANDLE, lpBaseAddress: LPCVOID, dwSize: SIZE_T) BOOL;
 //pub extern fn GetThreadTimes(hThread: HANDLE, lpCreationTime: LPFILETIME, lpExitTime: LPFILETIME, lpKernelTime: LPFILETIME, lpUserTime: LPFILETIME) BOOL;
@@ -7391,7 +8011,7 @@ pub const struct__MEMORY_PRIORITY_INFORMATION = extern struct {
     MemoryPriority: ULONG,
 };
 pub const MEMORY_PRIORITY_INFORMATION = struct__MEMORY_PRIORITY_INFORMATION;
-pub const PMEMORY_PRIORITY_INFORMATION = ?&struct__MEMORY_PRIORITY_INFORMATION;
+pub const PMEMORY_PRIORITY_INFORMATION = ?*struct__MEMORY_PRIORITY_INFORMATION;
 //pub extern fn GetThreadInformation(hThread: HANDLE, ThreadInformationClass: THREAD_INFORMATION_CLASS, ThreadInformation: LPVOID, ThreadInformationSize: DWORD) BOOL;
 //pub extern fn SetThreadInformation(hThread: HANDLE, ThreadInformationClass: THREAD_INFORMATION_CLASS, ThreadInformation: LPVOID, ThreadInformationSize: DWORD) BOOL;
 pub const struct__THREAD_POWER_THROTTLING_STATE = extern struct {
@@ -7432,7 +8052,7 @@ pub const struct__APP_MEMORY_INFORMATION = extern struct {
     TotalCommitUsage: ULONG64,
 };
 pub const APP_MEMORY_INFORMATION = struct__APP_MEMORY_INFORMATION;
-pub const PAPP_MEMORY_INFORMATION = ?&struct__APP_MEMORY_INFORMATION;
+pub const PAPP_MEMORY_INFORMATION = ?*struct__APP_MEMORY_INFORMATION;
 pub const PMETypeFailFastOnCommitFailure = enum__PROCESS_MEMORY_EXHAUSTION_TYPE.PMETypeFailFastOnCommitFailure;
 pub const PMETypeMax = enum__PROCESS_MEMORY_EXHAUSTION_TYPE.PMETypeMax;
 pub const enum__PROCESS_MEMORY_EXHAUSTION_TYPE = extern enum {
@@ -7440,7 +8060,7 @@ pub const enum__PROCESS_MEMORY_EXHAUSTION_TYPE = extern enum {
     PMETypeMax,
 };
 pub const PROCESS_MEMORY_EXHAUSTION_TYPE = enum__PROCESS_MEMORY_EXHAUSTION_TYPE;
-pub const PPROCESS_MEMORY_EXHAUSTION_TYPE = ?&enum__PROCESS_MEMORY_EXHAUSTION_TYPE;
+pub const PPROCESS_MEMORY_EXHAUSTION_TYPE = ?[*]enum__PROCESS_MEMORY_EXHAUSTION_TYPE;
 pub const struct__PROCESS_MEMORY_EXHAUSTION_INFO = extern struct {
     Version: USHORT,
     Reserved: USHORT,
@@ -7448,14 +8068,14 @@ pub const struct__PROCESS_MEMORY_EXHAUSTION_INFO = extern struct {
     Value: ULONG_PTR,
 };
 pub const PROCESS_MEMORY_EXHAUSTION_INFO = struct__PROCESS_MEMORY_EXHAUSTION_INFO;
-pub const PPROCESS_MEMORY_EXHAUSTION_INFO = ?&struct__PROCESS_MEMORY_EXHAUSTION_INFO;
+pub const PPROCESS_MEMORY_EXHAUSTION_INFO = ?*struct__PROCESS_MEMORY_EXHAUSTION_INFO;
 pub const struct__PROCESS_POWER_THROTTLING_STATE = extern struct {
     Version: ULONG,
     ControlMask: ULONG,
     StateMask: ULONG,
 };
 pub const PROCESS_POWER_THROTTLING_STATE = struct__PROCESS_POWER_THROTTLING_STATE;
-pub const PPROCESS_POWER_THROTTLING_STATE = ?&struct__PROCESS_POWER_THROTTLING_STATE;
+pub const PPROCESS_POWER_THROTTLING_STATE = ?*struct__PROCESS_POWER_THROTTLING_STATE;
 pub const struct_PROCESS_PROTECTION_LEVEL_INFORMATION = extern struct {
     ProtectionLevel: DWORD,
 };
@@ -7464,13 +8084,13 @@ pub const PROCESS_PROTECTION_LEVEL_INFORMATION = struct_PROCESS_PROTECTION_LEVEL
 //pub extern fn GetProcessInformation(hProcess: HANDLE, ProcessInformationClass: PROCESS_INFORMATION_CLASS, ProcessInformation: LPVOID, ProcessInformationSize: DWORD) BOOL;
 //pub extern fn GetSystemCpuSetInformation(Information: PSYSTEM_CPU_SET_INFORMATION, BufferLength: ULONG, ReturnedLength: PULONG, Process: HANDLE, Flags: ULONG) BOOL;
 //pub extern fn GetProcessDefaultCpuSets(Process: HANDLE, CpuSetIds: PULONG, CpuSetIdCount: ULONG, RequiredIdCount: PULONG) BOOL;
-//pub extern fn SetProcessDefaultCpuSets(Process: HANDLE, CpuSetIds: ?&const ULONG, CpuSetIdCount: ULONG) BOOL;
+//pub extern fn SetProcessDefaultCpuSets(Process: HANDLE, CpuSetIds: ?[*]const ULONG, CpuSetIdCount: ULONG) BOOL;
 //pub extern fn GetThreadSelectedCpuSets(Thread: HANDLE, CpuSetIds: PULONG, CpuSetIdCount: ULONG, RequiredIdCount: PULONG) BOOL;
-//pub extern fn SetThreadSelectedCpuSets(Thread: HANDLE, CpuSetIds: ?&const ULONG, CpuSetIdCount: ULONG) BOOL;
+//pub extern fn SetThreadSelectedCpuSets(Thread: HANDLE, CpuSetIds: ?[*]const ULONG, CpuSetIdCount: ULONG) BOOL;
 //pub extern fn CreateProcessAsUserA(hToken: HANDLE, lpApplicationName: LPCSTR, lpCommandLine: LPSTR, lpProcessAttributes: LPSECURITY_ATTRIBUTES, lpThreadAttributes: LPSECURITY_ATTRIBUTES, bInheritHandles: BOOL, dwCreationFlags: DWORD, lpEnvironment: LPVOID, lpCurrentDirectory: LPCSTR, lpStartupInfo: LPSTARTUPINFOA, lpProcessInformation: LPPROCESS_INFORMATION) BOOL;
 //pub extern fn GetProcessShutdownParameters(lpdwLevel: LPDWORD, lpdwFlags: LPDWORD) BOOL;
 //pub extern fn SetThreadDescription(hThread: HANDLE, lpThreadDescription: PCWSTR) HRESULT;
-//pub extern fn GetThreadDescription(hThread: HANDLE, ppszThreadDescription: ?&PWSTR) HRESULT;
+//pub extern fn GetThreadDescription(hThread: HANDLE, ppszThreadDescription: ?[*]PWSTR) HRESULT;
 pub const struct__SYSTEM_INFO = extern struct {
     @"": extern union {
         dwOemId: DWORD,
@@ -7490,7 +8110,7 @@ pub const struct__SYSTEM_INFO = extern struct {
     wProcessorRevision: WORD,
 };
 pub const SYSTEM_INFO = struct__SYSTEM_INFO;
-pub const LPSYSTEM_INFO = ?&struct__SYSTEM_INFO;
+pub const LPSYSTEM_INFO = ?*struct__SYSTEM_INFO;
 pub const struct__MEMORYSTATUSEX = extern struct {
     dwLength: DWORD,
     dwMemoryLoad: DWORD,
@@ -7503,14 +8123,14 @@ pub const struct__MEMORYSTATUSEX = extern struct {
     ullAvailExtendedVirtual: DWORDLONG,
 };
 pub const MEMORYSTATUSEX = struct__MEMORYSTATUSEX;
-pub const LPMEMORYSTATUSEX = ?&struct__MEMORYSTATUSEX;
+pub const LPMEMORYSTATUSEX = ?*struct__MEMORYSTATUSEX;
 //pub extern fn GlobalMemoryStatusEx(lpBuffer: LPMEMORYSTATUSEX) BOOL;
 //pub extern fn GetSystemInfo(lpSystemInfo: LPSYSTEM_INFO) void;
 //pub extern fn GetSystemTime(lpSystemTime: LPSYSTEMTIME) void;
 //pub extern fn GetSystemTimeAsFileTime(lpSystemTimeAsFileTime: LPFILETIME) void;
 //pub extern fn GetLocalTime(lpSystemTime: LPSYSTEMTIME) void;
 //pub extern fn GetVersion() DWORD;
-//pub extern fn SetLocalTime(lpSystemTime: ?&const SYSTEMTIME) BOOL;
+//pub extern fn SetLocalTime(lpSystemTime: ?[*]const SYSTEMTIME) BOOL;
 //pub extern fn GetTickCount() DWORD;
 //pub extern fn GetTickCount64() ULONGLONG;
 //pub extern fn GetSystemTimeAdjustment(lpTimeAdjustment: PDWORD, lpTimeIncrement: PDWORD, lpTimeAdjustmentDisabled: PBOOL) BOOL;
@@ -7544,7 +8164,7 @@ pub const COMPUTER_NAME_FORMAT = enum__COMPUTER_NAME_FORMAT;
 //pub extern fn GetComputerNameExA(NameType: COMPUTER_NAME_FORMAT, lpBuffer: LPSTR, nSize: LPDWORD) BOOL;
 //pub extern fn GetComputerNameExW(NameType: COMPUTER_NAME_FORMAT, lpBuffer: LPWSTR, nSize: LPDWORD) BOOL;
 //pub extern fn SetComputerNameExW(NameType: COMPUTER_NAME_FORMAT, lpBuffer: LPCWSTR) BOOL;
-//pub extern fn SetSystemTime(lpSystemTime: ?&const SYSTEMTIME) BOOL;
+//pub extern fn SetSystemTime(lpSystemTime: ?[*]const SYSTEMTIME) BOOL;
 //pub extern fn GetVersionExA(lpVersionInformation: LPOSVERSIONINFOA) BOOL;
 //pub extern fn GetVersionExW(lpVersionInformation: LPOSVERSIONINFOW) BOOL;
 //pub extern fn GetLogicalProcessorInformation(Buffer: PSYSTEM_LOGICAL_PROCESSOR_INFORMATION, ReturnedLength: PDWORD) BOOL;
@@ -7562,7 +8182,7 @@ pub const COMPUTER_NAME_FORMAT = enum__COMPUTER_NAME_FORMAT;
 //pub extern fn InstallELAMCertificateInfo(ELAMFile: HANDLE) BOOL;
 //pub extern fn GetProcessorSystemCycleTime(Group: USHORT, Buffer: PSYSTEM_PROCESSOR_CYCLE_TIME_INFORMATION, ReturnedLength: PDWORD) BOOL;
 //pub extern fn GetOsManufacturingMode(pbEnabled: PBOOL) BOOL;
-//pub extern fn GetIntegratedDisplaySize(sizeInInches: ?&f64) HRESULT;
+//pub extern fn GetIntegratedDisplaySize(sizeInInches: ?[*]f64) HRESULT;
 //pub extern fn SetComputerNameA(lpComputerName: LPCSTR) BOOL;
 //pub extern fn SetComputerNameW(lpComputerName: LPCWSTR) BOOL;
 //pub extern fn SetComputerNameExA(NameType: COMPUTER_NAME_FORMAT, lpBuffer: LPCSTR) BOOL;
@@ -7574,8 +8194,8 @@ pub const COMPUTER_NAME_FORMAT = enum__COMPUTER_NAME_FORMAT;
 //pub extern fn VirtualFreeEx(hProcess: HANDLE, lpAddress: LPVOID, dwSize: SIZE_T, dwFreeType: DWORD) BOOL;
 //pub extern fn VirtualProtectEx(hProcess: HANDLE, lpAddress: LPVOID, dwSize: SIZE_T, flNewProtect: DWORD, lpflOldProtect: PDWORD) BOOL;
 //pub extern fn VirtualQueryEx(hProcess: HANDLE, lpAddress: LPCVOID, lpBuffer: PMEMORY_BASIC_INFORMATION, dwLength: SIZE_T) SIZE_T;
-//pub extern fn ReadProcessMemory(hProcess: HANDLE, lpBaseAddress: LPCVOID, lpBuffer: LPVOID, nSize: SIZE_T, lpNumberOfBytesRead: ?&SIZE_T) BOOL;
-//pub extern fn WriteProcessMemory(hProcess: HANDLE, lpBaseAddress: LPVOID, lpBuffer: LPCVOID, nSize: SIZE_T, lpNumberOfBytesWritten: ?&SIZE_T) BOOL;
+//pub extern fn ReadProcessMemory(hProcess: HANDLE, lpBaseAddress: LPCVOID, lpBuffer: LPVOID, nSize: SIZE_T, lpNumberOfBytesRead: ?[*]SIZE_T) BOOL;
+//pub extern fn WriteProcessMemory(hProcess: HANDLE, lpBaseAddress: LPVOID, lpBuffer: LPCVOID, nSize: SIZE_T, lpNumberOfBytesWritten: ?[*]SIZE_T) BOOL;
 //pub extern fn CreateFileMappingW(hFile: HANDLE, lpFileMappingAttributes: LPSECURITY_ATTRIBUTES, flProtect: DWORD, dwMaximumSizeHigh: DWORD, dwMaximumSizeLow: DWORD, lpName: LPCWSTR) HANDLE;
 //pub extern fn OpenFileMappingW(dwDesiredAccess: DWORD, bInheritHandle: BOOL, lpName: LPCWSTR) HANDLE;
 //pub extern fn MapViewOfFile(hFileMappingObject: HANDLE, dwDesiredAccess: DWORD, dwFileOffsetHigh: DWORD, dwFileOffsetLow: DWORD, dwNumberOfBytesToMap: SIZE_T) LPVOID;
@@ -7587,7 +8207,7 @@ pub const COMPUTER_NAME_FORMAT = enum__COMPUTER_NAME_FORMAT;
 //pub extern fn SetProcessWorkingSetSizeEx(hProcess: HANDLE, dwMinimumWorkingSetSize: SIZE_T, dwMaximumWorkingSetSize: SIZE_T, Flags: DWORD) BOOL;
 //pub extern fn VirtualLock(lpAddress: LPVOID, dwSize: SIZE_T) BOOL;
 //pub extern fn VirtualUnlock(lpAddress: LPVOID, dwSize: SIZE_T) BOOL;
-//pub extern fn GetWriteWatch(dwFlags: DWORD, lpBaseAddress: PVOID, dwRegionSize: SIZE_T, lpAddresses: ?&PVOID, lpdwCount: ?&ULONG_PTR, lpdwGranularity: LPDWORD) UINT;
+//pub extern fn GetWriteWatch(dwFlags: DWORD, lpBaseAddress: PVOID, dwRegionSize: SIZE_T, lpAddresses: ?[*]PVOID, lpdwCount: ?[*]ULONG_PTR, lpdwGranularity: LPDWORD) UINT;
 //pub extern fn ResetWriteWatch(lpBaseAddress: LPVOID, dwRegionSize: SIZE_T) UINT;
 pub const LowMemoryResourceNotification = enum__MEMORY_RESOURCE_NOTIFICATION_TYPE.LowMemoryResourceNotification;
 pub const HighMemoryResourceNotification = enum__MEMORY_RESOURCE_NOTIFICATION_TYPE.HighMemoryResourceNotification;
@@ -7606,7 +8226,7 @@ pub const struct__WIN32_MEMORY_RANGE_ENTRY = extern struct {
     NumberOfBytes: SIZE_T,
 };
 pub const WIN32_MEMORY_RANGE_ENTRY = struct__WIN32_MEMORY_RANGE_ENTRY;
-pub const PWIN32_MEMORY_RANGE_ENTRY = ?&struct__WIN32_MEMORY_RANGE_ENTRY;
+pub const PWIN32_MEMORY_RANGE_ENTRY = ?*struct__WIN32_MEMORY_RANGE_ENTRY;
 //pub extern fn PrefetchVirtualMemory(hProcess: HANDLE, NumberOfEntries: ULONG_PTR, VirtualAddresses: PWIN32_MEMORY_RANGE_ENTRY, Flags: ULONG) BOOL;
 //pub extern fn CreateFileMappingFromApp(hFile: HANDLE, SecurityAttributes: PSECURITY_ATTRIBUTES, PageProtection: ULONG, MaximumSize: ULONG64, Name: PCWSTR) HANDLE;
 //pub extern fn MapViewOfFileFromApp(hFileMappingObject: HANDLE, DesiredAccess: ULONG, FileOffset: ULONG64, NumberOfBytesToMap: SIZE_T) PVOID;
@@ -7618,17 +8238,22 @@ pub const PWIN32_MEMORY_RANGE_ENTRY = ?&struct__WIN32_MEMORY_RANGE_ENTRY;
 //pub extern fn VirtualAllocExNuma(hProcess: HANDLE, lpAddress: LPVOID, dwSize: SIZE_T, flAllocationType: DWORD, flProtect: DWORD, nndPreferred: DWORD) LPVOID;
 //pub extern fn GetMemoryErrorHandlingCapabilities(Capabilities: PULONG) BOOL;
 pub const BAD_MEMORY_CALLBACK_ROUTINE = extern fn() void;
-pub const PBAD_MEMORY_CALLBACK_ROUTINE = ?&BAD_MEMORY_CALLBACK_ROUTINE;
+pub const PBAD_MEMORY_CALLBACK_ROUTINE = ?[*]BAD_MEMORY_CALLBACK_ROUTINE;
 //pub extern fn RegisterBadMemoryNotification(Callback: PBAD_MEMORY_CALLBACK_ROUTINE) PVOID;
 //pub extern fn UnregisterBadMemoryNotification(RegistrationHandle: PVOID) BOOL;
-pub const VmOfferPriorityVeryLow: c_int = 1;
-pub const VmOfferPriorityLow: c_int = 2;
-pub const VmOfferPriorityBelowNormal: c_int = 3;
-pub const VmOfferPriorityNormal: c_int = 4;
-pub const enum_OFFER_PRIORITY = c_int;
+pub const VmOfferPriorityVeryLow = enum_OFFER_PRIORITY.VmOfferPriorityVeryLow;
+pub const VmOfferPriorityLow = enum_OFFER_PRIORITY.VmOfferPriorityLow;
+pub const VmOfferPriorityBelowNormal = enum_OFFER_PRIORITY.VmOfferPriorityBelowNormal;
+pub const VmOfferPriorityNormal = enum_OFFER_PRIORITY.VmOfferPriorityNormal;
+pub const enum_OFFER_PRIORITY = extern enum {
+    VmOfferPriorityVeryLow = 1,
+    VmOfferPriorityLow = 2,
+    VmOfferPriorityBelowNormal = 3,
+    VmOfferPriorityNormal = 4,
+};
 pub const OFFER_PRIORITY = enum_OFFER_PRIORITY;
 //pub extern fn OfferVirtualMemory(VirtualAddress: PVOID, Size: SIZE_T, Priority: OFFER_PRIORITY) DWORD;
-//pub extern fn ReclaimVirtualMemory(VirtualAddress: ?&const c_void, Size: SIZE_T) DWORD;
+//pub extern fn ReclaimVirtualMemory(VirtualAddress: ?*const c_void, Size: SIZE_T) DWORD;
 //pub extern fn DiscardVirtualMemory(VirtualAddress: PVOID, Size: SIZE_T) DWORD;
 //pub extern fn SetProcessValidCallTargets(hProcess: HANDLE, VirtualAddress: PVOID, RegionSize: SIZE_T, NumberOfOffsets: ULONG, OffsetInformation: PCFG_CALL_TARGET_INFO) BOOL;
 //pub extern fn VirtualAllocFromApp(BaseAddress: PVOID, Size: SIZE_T, AllocationType: ULONG, Protection: ULONG) PVOID;
@@ -7650,7 +8275,7 @@ pub const struct_WIN32_MEMORY_REGION_INFORMATION = extern struct {
     CommitSize: SIZE_T,
 };
 pub const WIN32_MEMORY_REGION_INFORMATION = struct_WIN32_MEMORY_REGION_INFORMATION;
-//pub extern fn QueryVirtualMemoryInformation(Process: HANDLE, VirtualAddress: ?&const c_void, MemoryInformationClass: WIN32_MEMORY_INFORMATION_CLASS, MemoryInformation: PVOID, MemoryInformationSize: SIZE_T, ReturnSize: PSIZE_T) BOOL;
+//pub extern fn QueryVirtualMemoryInformation(Process: HANDLE, VirtualAddress: ?*const c_void, MemoryInformationClass: WIN32_MEMORY_INFORMATION_CLASS, MemoryInformation: PVOID, MemoryInformationSize: SIZE_T, ReturnSize: PSIZE_T) BOOL;
 //pub extern fn MapViewOfFileNuma2(FileMappingHandle: HANDLE, ProcessHandle: HANDLE, Offset: ULONG64, BaseAddress: PVOID, ViewSize: SIZE_T, AllocationType: ULONG, PageProtection: ULONG, PreferredNode: ULONG) PVOID;
 pub fn MapViewOfFile2(FileMappingHandle: HANDLE, ProcessHandle: HANDLE, Offset: ULONG64, BaseAddress: PVOID, ViewSize: SIZE_T, AllocationType: ULONG, PageProtection: ULONG) PVOID {
     return MapViewOfFileNuma2(FileMappingHandle, ProcessHandle, Offset, BaseAddress, ViewSize, AllocationType, PageProtection, DWORD(-1));
@@ -7662,7 +8287,7 @@ pub fn MapViewOfFile2(FileMappingHandle: HANDLE, ProcessHandle: HANDLE, Offset: 
 //pub extern fn InitializeEnclave(hProcess: HANDLE, lpAddress: LPVOID, lpEnclaveInformation: LPCVOID, dwInfoLength: DWORD, lpEnclaveError: LPDWORD) BOOL;
 //pub extern fn LoadEnclaveImageA(lpEnclaveAddress: LPVOID, lpImageName: LPCSTR) BOOL;
 //pub extern fn LoadEnclaveImageW(lpEnclaveAddress: LPVOID, lpImageName: LPCWSTR) BOOL;
-//pub extern fn CallEnclave(lpRoutine: LPENCLAVE_ROUTINE, lpParameter: LPVOID, fWaitForThread: BOOL, lpReturnValue: ?&LPVOID) BOOL;
+//pub extern fn CallEnclave(lpRoutine: LPENCLAVE_ROUTINE, lpParameter: LPVOID, fWaitForThread: BOOL, lpReturnValue: ?[*]LPVOID) BOOL;
 //pub extern fn TerminateEnclave(lpAddress: LPVOID, fWait: BOOL) BOOL;
 //pub extern fn DeleteEnclave(lpAddress: LPVOID) BOOL;
 //pub extern fn QueueUserWorkItem(Function: LPTHREAD_START_ROUTINE, Context: PVOID, Flags: ULONG) BOOL;
@@ -7721,31 +8346,31 @@ pub const struct_JOBOBJECT_IO_RATE_CONTROL_INFORMATION = extern struct {
 };
 pub const JOBOBJECT_IO_RATE_CONTROL_INFORMATION = struct_JOBOBJECT_IO_RATE_CONTROL_INFORMATION;
 //pub extern fn CreateJobObjectW(lpJobAttributes: LPSECURITY_ATTRIBUTES, lpName: LPCWSTR) HANDLE;
-//pub extern fn FreeMemoryJobObject(Buffer: ?&c_void) void;
+//pub extern fn FreeMemoryJobObject(Buffer: ?*c_void) void;
 //pub extern fn OpenJobObjectW(dwDesiredAccess: DWORD, bInheritHandle: BOOL, lpName: LPCWSTR) HANDLE;
 //pub extern fn AssignProcessToJobObject(hJob: HANDLE, hProcess: HANDLE) BOOL;
 //pub extern fn TerminateJobObject(hJob: HANDLE, uExitCode: UINT) BOOL;
 //pub extern fn SetInformationJobObject(hJob: HANDLE, JobObjectInformationClass: JOBOBJECTINFOCLASS, lpJobObjectInformation: LPVOID, cbJobObjectInformationLength: DWORD) BOOL;
-//pub extern fn SetIoRateControlInformationJobObject(hJob: HANDLE, IoRateControlInfo: ?&JOBOBJECT_IO_RATE_CONTROL_INFORMATION) DWORD;
+//pub extern fn SetIoRateControlInformationJobObject(hJob: HANDLE, IoRateControlInfo: ?[*]JOBOBJECT_IO_RATE_CONTROL_INFORMATION) DWORD;
 //pub extern fn QueryInformationJobObject(hJob: HANDLE, JobObjectInformationClass: JOBOBJECTINFOCLASS, lpJobObjectInformation: LPVOID, cbJobObjectInformationLength: DWORD, lpReturnLength: LPDWORD) BOOL;
-//pub extern fn QueryIoRateControlInformationJobObject(hJob: HANDLE, VolumeName: PCWSTR, InfoBlocks: ?&(?&JOBOBJECT_IO_RATE_CONTROL_INFORMATION), InfoBlockCount: ?&ULONG) DWORD;
-//pub extern fn Wow64DisableWow64FsRedirection(OldValue: ?&PVOID) BOOL;
+//pub extern fn QueryIoRateControlInformationJobObject(hJob: HANDLE, VolumeName: PCWSTR, InfoBlocks: ?[*](?[*]JOBOBJECT_IO_RATE_CONTROL_INFORMATION), InfoBlockCount: ?[*]ULONG) DWORD;
+//pub extern fn Wow64DisableWow64FsRedirection(OldValue: ?[*]PVOID) BOOL;
 //pub extern fn Wow64RevertWow64FsRedirection(OlValue: PVOID) BOOL;
 //pub extern fn IsWow64Process(hProcess: HANDLE, Wow64Process: PBOOL) BOOL;
 //pub extern fn GetSystemWow64DirectoryA(lpBuffer: LPSTR, uSize: UINT) UINT;
 //pub extern fn GetSystemWow64DirectoryW(lpBuffer: LPWSTR, uSize: UINT) UINT;
 //pub extern fn Wow64SetThreadDefaultGuestMachine(Machine: USHORT) USHORT;
-//pub extern fn IsWow64Process2(hProcess: HANDLE, pProcessMachine: ?&USHORT, pNativeMachine: ?&USHORT) BOOL;
+//pub extern fn IsWow64Process2(hProcess: HANDLE, pProcessMachine: ?[*]USHORT, pNativeMachine: ?[*]USHORT) BOOL;
 //pub extern fn GetSystemWow64Directory2A(lpBuffer: LPSTR, uSize: UINT, ImageFileMachineType: WORD) UINT;
 //pub extern fn GetSystemWow64Directory2W(lpBuffer: LPWSTR, uSize: UINT, ImageFileMachineType: WORD) UINT;
-//pub extern fn IsWow64GuestMachineSupported(WowGuestMachine: USHORT, MachineIsSupported: ?&BOOL) HRESULT;
+//pub extern fn IsWow64GuestMachineSupported(WowGuestMachine: USHORT, MachineIsSupported: ?[*]BOOL) HRESULT;
 pub const struct_tagENUMUILANG = extern struct {
     NumOfEnumUILang: ULONG,
     SizeOfEnumUIBuffer: ULONG,
-    pEnumUIBuffer: ?&LANGID,
+    pEnumUIBuffer: ?[*]LANGID,
 };
 pub const ENUMUILANG = struct_tagENUMUILANG;
-pub const PENUMUILANG = ?&struct_tagENUMUILANG;
+pub const PENUMUILANG = ?*struct_tagENUMUILANG;
 pub const ENUMRESLANGPROCA = ?extern fn(HMODULE, LPCSTR, LPCSTR, WORD, LONG_PTR) BOOL;
 pub const ENUMRESLANGPROCW = ?extern fn(HMODULE, LPCWSTR, LPCWSTR, WORD, LONG_PTR) BOOL;
 pub const ENUMRESNAMEPROCA = ?extern fn(HMODULE, LPCSTR, LPSTR, LONG_PTR) BOOL;
@@ -7762,10 +8387,10 @@ pub const ENUMRESTYPEPROCW = ?extern fn(HMODULE, LPWSTR, LONG_PTR) BOOL;
 //pub extern fn GetModuleFileNameW(hModule: HMODULE, lpFilename: LPWSTR, nSize: DWORD) DWORD;
 //pub extern fn GetModuleHandleA(lpModuleName: LPCSTR) HMODULE;
 //pub extern fn GetModuleHandleW(lpModuleName: LPCWSTR) HMODULE;
-pub const PGET_MODULE_HANDLE_EXA = ?extern fn(DWORD, LPCSTR, ?&HMODULE) BOOL;
-pub const PGET_MODULE_HANDLE_EXW = ?extern fn(DWORD, LPCWSTR, ?&HMODULE) BOOL;
-//pub extern fn GetModuleHandleExA(dwFlags: DWORD, lpModuleName: LPCSTR, phModule: ?&HMODULE) BOOL;
-//pub extern fn GetModuleHandleExW(dwFlags: DWORD, lpModuleName: LPCWSTR, phModule: ?&HMODULE) BOOL;
+pub const PGET_MODULE_HANDLE_EXA = ?extern fn(DWORD, LPCSTR, ?[*]HMODULE) BOOL;
+pub const PGET_MODULE_HANDLE_EXW = ?extern fn(DWORD, LPCWSTR, ?[*]HMODULE) BOOL;
+//pub extern fn GetModuleHandleExA(dwFlags: DWORD, lpModuleName: LPCSTR, phModule: ?[*]HMODULE) BOOL;
+//pub extern fn GetModuleHandleExW(dwFlags: DWORD, lpModuleName: LPCWSTR, phModule: ?[*]HMODULE) BOOL;
 //pub extern fn LoadLibraryExA(lpLibFileName: LPCSTR, hFile: HANDLE, dwFlags: DWORD) HMODULE;
 //pub extern fn LoadLibraryExW(lpLibFileName: LPCWSTR, hFile: HANDLE, dwFlags: DWORD) HMODULE;
 //pub extern fn LoadResource(hModule: HMODULE, hResInfo: HRSRC) HGLOBAL;
@@ -7774,7 +8399,7 @@ pub const PGET_MODULE_HANDLE_EXW = ?extern fn(DWORD, LPCWSTR, ?&HMODULE) BOOL;
 //pub extern fn LockResource(hResData: HGLOBAL) LPVOID;
 //pub extern fn SizeofResource(hModule: HMODULE, hResInfo: HRSRC) DWORD;
 pub const DLL_DIRECTORY_COOKIE = PVOID;
-pub const PDLL_DIRECTORY_COOKIE = ?&PVOID;
+pub const PDLL_DIRECTORY_COOKIE = ?[*]PVOID;
 //pub extern fn AddDllDirectory(NewDirectory: PCWSTR) DLL_DIRECTORY_COOKIE;
 //pub extern fn RemoveDllDirectory(Cookie: DLL_DIRECTORY_COOKIE) BOOL;
 //pub extern fn SetDefaultDllDirectories(DirectoryFlags: DWORD) BOOL;
@@ -7797,62 +8422,62 @@ pub const PDLL_DIRECTORY_COOKIE = ?&PVOID;
 //pub extern fn AccessCheckByTypeResultListAndAuditAlarmByHandleW(SubsystemName: LPCWSTR, HandleId: LPVOID, ClientToken: HANDLE, ObjectTypeName: LPCWSTR, ObjectName: LPCWSTR, SecurityDescriptor: PSECURITY_DESCRIPTOR, PrincipalSelfSid: PSID, DesiredAccess: DWORD, AuditType: AUDIT_EVENT_TYPE, Flags: DWORD, ObjectTypeList: POBJECT_TYPE_LIST, ObjectTypeListLength: DWORD, GenericMapping: PGENERIC_MAPPING, ObjectCreation: BOOL, GrantedAccessList: LPDWORD, AccessStatusList: LPDWORD, pfGenerateOnClose: LPBOOL) BOOL;
 //pub extern fn AddAccessAllowedAce(pAcl: PACL, dwAceRevision: DWORD, AccessMask: DWORD, pSid: PSID) BOOL;
 //pub extern fn AddAccessAllowedAceEx(pAcl: PACL, dwAceRevision: DWORD, AceFlags: DWORD, AccessMask: DWORD, pSid: PSID) BOOL;
-//pub extern fn AddAccessAllowedObjectAce(pAcl: PACL, dwAceRevision: DWORD, AceFlags: DWORD, AccessMask: DWORD, ObjectTypeGuid: ?&GUID, InheritedObjectTypeGuid: ?&GUID, pSid: PSID) BOOL;
+//pub extern fn AddAccessAllowedObjectAce(pAcl: PACL, dwAceRevision: DWORD, AceFlags: DWORD, AccessMask: DWORD, ObjectTypeGuid: ?[*]GUID, InheritedObjectTypeGuid: ?[*]GUID, pSid: PSID) BOOL;
 //pub extern fn AddAccessDeniedAce(pAcl: PACL, dwAceRevision: DWORD, AccessMask: DWORD, pSid: PSID) BOOL;
 //pub extern fn AddAccessDeniedAceEx(pAcl: PACL, dwAceRevision: DWORD, AceFlags: DWORD, AccessMask: DWORD, pSid: PSID) BOOL;
-//pub extern fn AddAccessDeniedObjectAce(pAcl: PACL, dwAceRevision: DWORD, AceFlags: DWORD, AccessMask: DWORD, ObjectTypeGuid: ?&GUID, InheritedObjectTypeGuid: ?&GUID, pSid: PSID) BOOL;
+//pub extern fn AddAccessDeniedObjectAce(pAcl: PACL, dwAceRevision: DWORD, AceFlags: DWORD, AccessMask: DWORD, ObjectTypeGuid: ?[*]GUID, InheritedObjectTypeGuid: ?[*]GUID, pSid: PSID) BOOL;
 //pub extern fn AddAce(pAcl: PACL, dwAceRevision: DWORD, dwStartingAceIndex: DWORD, pAceList: LPVOID, nAceListLength: DWORD) BOOL;
 //pub extern fn AddAuditAccessAce(pAcl: PACL, dwAceRevision: DWORD, dwAccessMask: DWORD, pSid: PSID, bAuditSuccess: BOOL, bAuditFailure: BOOL) BOOL;
 //pub extern fn AddAuditAccessAceEx(pAcl: PACL, dwAceRevision: DWORD, AceFlags: DWORD, dwAccessMask: DWORD, pSid: PSID, bAuditSuccess: BOOL, bAuditFailure: BOOL) BOOL;
-//pub extern fn AddAuditAccessObjectAce(pAcl: PACL, dwAceRevision: DWORD, AceFlags: DWORD, AccessMask: DWORD, ObjectTypeGuid: ?&GUID, InheritedObjectTypeGuid: ?&GUID, pSid: PSID, bAuditSuccess: BOOL, bAuditFailure: BOOL) BOOL;
+//pub extern fn AddAuditAccessObjectAce(pAcl: PACL, dwAceRevision: DWORD, AceFlags: DWORD, AccessMask: DWORD, ObjectTypeGuid: ?[*]GUID, InheritedObjectTypeGuid: ?[*]GUID, pSid: PSID, bAuditSuccess: BOOL, bAuditFailure: BOOL) BOOL;
 //pub extern fn AddMandatoryAce(pAcl: PACL, dwAceRevision: DWORD, AceFlags: DWORD, MandatoryPolicy: DWORD, pLabelSid: PSID) BOOL;
 //pub extern fn AddResourceAttributeAce(pAcl: PACL, dwAceRevision: DWORD, AceFlags: DWORD, AccessMask: DWORD, pSid: PSID, pAttributeInfo: PCLAIM_SECURITY_ATTRIBUTES_INFORMATION, pReturnLength: PDWORD) BOOL;
 //pub extern fn AddScopedPolicyIDAce(pAcl: PACL, dwAceRevision: DWORD, AceFlags: DWORD, AccessMask: DWORD, pSid: PSID) BOOL;
 //pub extern fn AdjustTokenGroups(TokenHandle: HANDLE, ResetToDefault: BOOL, NewState: PTOKEN_GROUPS, BufferLength: DWORD, PreviousState: PTOKEN_GROUPS, ReturnLength: PDWORD) BOOL;
 //pub extern fn AdjustTokenPrivileges(TokenHandle: HANDLE, DisableAllPrivileges: BOOL, NewState: PTOKEN_PRIVILEGES, BufferLength: DWORD, PreviousState: PTOKEN_PRIVILEGES, ReturnLength: PDWORD) BOOL;
-//pub extern fn AllocateAndInitializeSid(pIdentifierAuthority: PSID_IDENTIFIER_AUTHORITY, nSubAuthorityCount: BYTE, nSubAuthority0: DWORD, nSubAuthority1: DWORD, nSubAuthority2: DWORD, nSubAuthority3: DWORD, nSubAuthority4: DWORD, nSubAuthority5: DWORD, nSubAuthority6: DWORD, nSubAuthority7: DWORD, pSid: ?&PSID) BOOL;
+//pub extern fn AllocateAndInitializeSid(pIdentifierAuthority: PSID_IDENTIFIER_AUTHORITY, nSubAuthorityCount: BYTE, nSubAuthority0: DWORD, nSubAuthority1: DWORD, nSubAuthority2: DWORD, nSubAuthority3: DWORD, nSubAuthority4: DWORD, nSubAuthority5: DWORD, nSubAuthority6: DWORD, nSubAuthority7: DWORD, pSid: ?[*]PSID) BOOL;
 //pub extern fn AllocateLocallyUniqueId(Luid: PLUID) BOOL;
 //pub extern fn AreAllAccessesGranted(GrantedAccess: DWORD, DesiredAccess: DWORD) BOOL;
 //pub extern fn AreAnyAccessesGranted(GrantedAccess: DWORD, DesiredAccess: DWORD) BOOL;
 //pub extern fn CheckTokenMembership(TokenHandle: HANDLE, SidToCheck: PSID, IsMember: PBOOL) BOOL;
 //pub extern fn CheckTokenCapability(TokenHandle: HANDLE, CapabilitySidToCheck: PSID, HasCapability: PBOOL) BOOL;
-//pub extern fn GetAppContainerAce(Acl: PACL, StartingAceIndex: DWORD, AppContainerAce: ?&PVOID, AppContainerAceIndex: ?&DWORD) BOOL;
+//pub extern fn GetAppContainerAce(Acl: PACL, StartingAceIndex: DWORD, AppContainerAce: ?[*]PVOID, AppContainerAceIndex: ?[*]DWORD) BOOL;
 //pub extern fn CheckTokenMembershipEx(TokenHandle: HANDLE, SidToCheck: PSID, Flags: DWORD, IsMember: PBOOL) BOOL;
-//pub extern fn ConvertToAutoInheritPrivateObjectSecurity(ParentDescriptor: PSECURITY_DESCRIPTOR, CurrentSecurityDescriptor: PSECURITY_DESCRIPTOR, NewSecurityDescriptor: ?&PSECURITY_DESCRIPTOR, ObjectType: ?&GUID, IsDirectoryObject: BOOLEAN, GenericMapping: PGENERIC_MAPPING) BOOL;
+//pub extern fn ConvertToAutoInheritPrivateObjectSecurity(ParentDescriptor: PSECURITY_DESCRIPTOR, CurrentSecurityDescriptor: PSECURITY_DESCRIPTOR, NewSecurityDescriptor: ?[*]PSECURITY_DESCRIPTOR, ObjectType: ?[*]GUID, IsDirectoryObject: BOOLEAN, GenericMapping: PGENERIC_MAPPING) BOOL;
 //pub extern fn CopySid(nDestinationSidLength: DWORD, pDestinationSid: PSID, pSourceSid: PSID) BOOL;
-//pub extern fn CreatePrivateObjectSecurity(ParentDescriptor: PSECURITY_DESCRIPTOR, CreatorDescriptor: PSECURITY_DESCRIPTOR, NewDescriptor: ?&PSECURITY_DESCRIPTOR, IsDirectoryObject: BOOL, Token: HANDLE, GenericMapping: PGENERIC_MAPPING) BOOL;
-//pub extern fn CreatePrivateObjectSecurityEx(ParentDescriptor: PSECURITY_DESCRIPTOR, CreatorDescriptor: PSECURITY_DESCRIPTOR, NewDescriptor: ?&PSECURITY_DESCRIPTOR, ObjectType: ?&GUID, IsContainerObject: BOOL, AutoInheritFlags: ULONG, Token: HANDLE, GenericMapping: PGENERIC_MAPPING) BOOL;
-//pub extern fn CreatePrivateObjectSecurityWithMultipleInheritance(ParentDescriptor: PSECURITY_DESCRIPTOR, CreatorDescriptor: PSECURITY_DESCRIPTOR, NewDescriptor: ?&PSECURITY_DESCRIPTOR, ObjectTypes: ?&(?&GUID), GuidCount: ULONG, IsContainerObject: BOOL, AutoInheritFlags: ULONG, Token: HANDLE, GenericMapping: PGENERIC_MAPPING) BOOL;
+//pub extern fn CreatePrivateObjectSecurity(ParentDescriptor: PSECURITY_DESCRIPTOR, CreatorDescriptor: PSECURITY_DESCRIPTOR, NewDescriptor: ?[*]PSECURITY_DESCRIPTOR, IsDirectoryObject: BOOL, Token: HANDLE, GenericMapping: PGENERIC_MAPPING) BOOL;
+//pub extern fn CreatePrivateObjectSecurityEx(ParentDescriptor: PSECURITY_DESCRIPTOR, CreatorDescriptor: PSECURITY_DESCRIPTOR, NewDescriptor: ?[*]PSECURITY_DESCRIPTOR, ObjectType: ?[*]GUID, IsContainerObject: BOOL, AutoInheritFlags: ULONG, Token: HANDLE, GenericMapping: PGENERIC_MAPPING) BOOL;
+//pub extern fn CreatePrivateObjectSecurityWithMultipleInheritance(ParentDescriptor: PSECURITY_DESCRIPTOR, CreatorDescriptor: PSECURITY_DESCRIPTOR, NewDescriptor: ?[*]PSECURITY_DESCRIPTOR, ObjectTypes: ?[*](?[*]GUID), GuidCount: ULONG, IsContainerObject: BOOL, AutoInheritFlags: ULONG, Token: HANDLE, GenericMapping: PGENERIC_MAPPING) BOOL;
 //pub extern fn CreateRestrictedToken(ExistingTokenHandle: HANDLE, Flags: DWORD, DisableSidCount: DWORD, SidsToDisable: PSID_AND_ATTRIBUTES, DeletePrivilegeCount: DWORD, PrivilegesToDelete: PLUID_AND_ATTRIBUTES, RestrictedSidCount: DWORD, SidsToRestrict: PSID_AND_ATTRIBUTES, NewTokenHandle: PHANDLE) BOOL;
-//pub extern fn CreateWellKnownSid(WellKnownSidType: WELL_KNOWN_SID_TYPE, DomainSid: PSID, pSid: PSID, cbSid: ?&DWORD) BOOL;
-//pub extern fn EqualDomainSid(pSid1: PSID, pSid2: PSID, pfEqual: ?&BOOL) BOOL;
+//pub extern fn CreateWellKnownSid(WellKnownSidType: WELL_KNOWN_SID_TYPE, DomainSid: PSID, pSid: PSID, cbSid: ?[*]DWORD) BOOL;
+//pub extern fn EqualDomainSid(pSid1: PSID, pSid2: PSID, pfEqual: ?[*]BOOL) BOOL;
 //pub extern fn DeleteAce(pAcl: PACL, dwAceIndex: DWORD) BOOL;
-//pub extern fn DestroyPrivateObjectSecurity(ObjectDescriptor: ?&PSECURITY_DESCRIPTOR) BOOL;
+//pub extern fn DestroyPrivateObjectSecurity(ObjectDescriptor: ?[*]PSECURITY_DESCRIPTOR) BOOL;
 //pub extern fn DuplicateToken(ExistingTokenHandle: HANDLE, ImpersonationLevel: SECURITY_IMPERSONATION_LEVEL, DuplicateTokenHandle: PHANDLE) BOOL;
 //pub extern fn DuplicateTokenEx(hExistingToken: HANDLE, dwDesiredAccess: DWORD, lpTokenAttributes: LPSECURITY_ATTRIBUTES, ImpersonationLevel: SECURITY_IMPERSONATION_LEVEL, TokenType_0: TOKEN_TYPE, phNewToken: PHANDLE) BOOL;
 //pub extern fn EqualPrefixSid(pSid1: PSID, pSid2: PSID) BOOL;
 //pub extern fn EqualSid(pSid1: PSID, pSid2: PSID) BOOL;
-//pub extern fn FindFirstFreeAce(pAcl: PACL, pAce: ?&LPVOID) BOOL;
+//pub extern fn FindFirstFreeAce(pAcl: PACL, pAce: ?[*]LPVOID) BOOL;
 //pub extern fn FreeSid(pSid: PSID) PVOID;
-//pub extern fn GetAce(pAcl: PACL, dwAceIndex: DWORD, pAce: ?&LPVOID) BOOL;
+//pub extern fn GetAce(pAcl: PACL, dwAceIndex: DWORD, pAce: ?[*]LPVOID) BOOL;
 //pub extern fn GetAclInformation(pAcl: PACL, pAclInformation: LPVOID, nAclInformationLength: DWORD, dwAclInformationClass: ACL_INFORMATION_CLASS) BOOL;
 //pub extern fn GetFileSecurityW(lpFileName: LPCWSTR, RequestedInformation: SECURITY_INFORMATION, pSecurityDescriptor: PSECURITY_DESCRIPTOR, nLength: DWORD, lpnLengthNeeded: LPDWORD) BOOL;
 //pub extern fn GetKernelObjectSecurity(Handle: HANDLE, RequestedInformation: SECURITY_INFORMATION, pSecurityDescriptor: PSECURITY_DESCRIPTOR, nLength: DWORD, lpnLengthNeeded: LPDWORD) BOOL;
 //pub extern fn GetLengthSid(pSid: PSID) DWORD;
 //pub extern fn GetPrivateObjectSecurity(ObjectDescriptor: PSECURITY_DESCRIPTOR, SecurityInformation: SECURITY_INFORMATION, ResultantDescriptor: PSECURITY_DESCRIPTOR, DescriptorLength: DWORD, ReturnLength: PDWORD) BOOL;
 //pub extern fn GetSecurityDescriptorControl(pSecurityDescriptor: PSECURITY_DESCRIPTOR, pControl: PSECURITY_DESCRIPTOR_CONTROL, lpdwRevision: LPDWORD) BOOL;
-//pub extern fn GetSecurityDescriptorDacl(pSecurityDescriptor: PSECURITY_DESCRIPTOR, lpbDaclPresent: LPBOOL, pDacl: ?&PACL, lpbDaclDefaulted: LPBOOL) BOOL;
-//pub extern fn GetSecurityDescriptorGroup(pSecurityDescriptor: PSECURITY_DESCRIPTOR, pGroup: ?&PSID, lpbGroupDefaulted: LPBOOL) BOOL;
+//pub extern fn GetSecurityDescriptorDacl(pSecurityDescriptor: PSECURITY_DESCRIPTOR, lpbDaclPresent: LPBOOL, pDacl: ?[*]PACL, lpbDaclDefaulted: LPBOOL) BOOL;
+//pub extern fn GetSecurityDescriptorGroup(pSecurityDescriptor: PSECURITY_DESCRIPTOR, pGroup: ?[*]PSID, lpbGroupDefaulted: LPBOOL) BOOL;
 //pub extern fn GetSecurityDescriptorLength(pSecurityDescriptor: PSECURITY_DESCRIPTOR) DWORD;
-//pub extern fn GetSecurityDescriptorOwner(pSecurityDescriptor: PSECURITY_DESCRIPTOR, pOwner: ?&PSID, lpbOwnerDefaulted: LPBOOL) BOOL;
+//pub extern fn GetSecurityDescriptorOwner(pSecurityDescriptor: PSECURITY_DESCRIPTOR, pOwner: ?[*]PSID, lpbOwnerDefaulted: LPBOOL) BOOL;
 //pub extern fn GetSecurityDescriptorRMControl(SecurityDescriptor: PSECURITY_DESCRIPTOR, RMControl: PUCHAR) DWORD;
-//pub extern fn GetSecurityDescriptorSacl(pSecurityDescriptor: PSECURITY_DESCRIPTOR, lpbSaclPresent: LPBOOL, pSacl: ?&PACL, lpbSaclDefaulted: LPBOOL) BOOL;
+//pub extern fn GetSecurityDescriptorSacl(pSecurityDescriptor: PSECURITY_DESCRIPTOR, lpbSaclPresent: LPBOOL, pSacl: ?[*]PACL, lpbSaclDefaulted: LPBOOL) BOOL;
 //pub extern fn GetSidIdentifierAuthority(pSid: PSID) PSID_IDENTIFIER_AUTHORITY;
 //pub extern fn GetSidLengthRequired(nSubAuthorityCount: UCHAR) DWORD;
 //pub extern fn GetSidSubAuthority(pSid: PSID, nSubAuthority: DWORD) PDWORD;
 //pub extern fn GetSidSubAuthorityCount(pSid: PSID) PUCHAR;
 //pub extern fn GetTokenInformation(TokenHandle: HANDLE, TokenInformationClass: TOKEN_INFORMATION_CLASS, TokenInformation: LPVOID, TokenInformationLength: DWORD, ReturnLength: PDWORD) BOOL;
-//pub extern fn GetWindowsAccountDomainSid(pSid: PSID, pDomainSid: PSID, cbDomainSid: ?&DWORD) BOOL;
+//pub extern fn GetWindowsAccountDomainSid(pSid: PSID, pDomainSid: PSID, cbDomainSid: ?[*]DWORD) BOOL;
 //pub extern fn ImpersonateAnonymousToken(ThreadHandle: HANDLE) BOOL;
 //pub extern fn ImpersonateLoggedOnUser(hToken: HANDLE) BOOL;
 //pub extern fn ImpersonateSelf(ImpersonationLevel: SECURITY_IMPERSONATION_LEVEL) BOOL;
@@ -7878,8 +8503,8 @@ pub const PDLL_DIRECTORY_COOKIE = ?&PVOID;
 //pub extern fn SetAclInformation(pAcl: PACL, pAclInformation: LPVOID, nAclInformationLength: DWORD, dwAclInformationClass: ACL_INFORMATION_CLASS) BOOL;
 //pub extern fn SetFileSecurityW(lpFileName: LPCWSTR, SecurityInformation: SECURITY_INFORMATION, pSecurityDescriptor: PSECURITY_DESCRIPTOR) BOOL;
 //pub extern fn SetKernelObjectSecurity(Handle: HANDLE, SecurityInformation: SECURITY_INFORMATION, SecurityDescriptor: PSECURITY_DESCRIPTOR) BOOL;
-//pub extern fn SetPrivateObjectSecurity(SecurityInformation: SECURITY_INFORMATION, ModificationDescriptor: PSECURITY_DESCRIPTOR, ObjectsSecurityDescriptor: ?&PSECURITY_DESCRIPTOR, GenericMapping: PGENERIC_MAPPING, Token: HANDLE) BOOL;
-//pub extern fn SetPrivateObjectSecurityEx(SecurityInformation: SECURITY_INFORMATION, ModificationDescriptor: PSECURITY_DESCRIPTOR, ObjectsSecurityDescriptor: ?&PSECURITY_DESCRIPTOR, AutoInheritFlags: ULONG, GenericMapping: PGENERIC_MAPPING, Token: HANDLE) BOOL;
+//pub extern fn SetPrivateObjectSecurity(SecurityInformation: SECURITY_INFORMATION, ModificationDescriptor: PSECURITY_DESCRIPTOR, ObjectsSecurityDescriptor: ?[*]PSECURITY_DESCRIPTOR, GenericMapping: PGENERIC_MAPPING, Token: HANDLE) BOOL;
+//pub extern fn SetPrivateObjectSecurityEx(SecurityInformation: SECURITY_INFORMATION, ModificationDescriptor: PSECURITY_DESCRIPTOR, ObjectsSecurityDescriptor: ?[*]PSECURITY_DESCRIPTOR, AutoInheritFlags: ULONG, GenericMapping: PGENERIC_MAPPING, Token: HANDLE) BOOL;
 //pub extern fn SetSecurityAccessMask(SecurityInformation: SECURITY_INFORMATION, DesiredAccess: LPDWORD) void;
 //pub extern fn SetSecurityDescriptorControl(pSecurityDescriptor: PSECURITY_DESCRIPTOR, ControlBitsOfInterest: SECURITY_DESCRIPTOR_CONTROL, ControlBitsToSet: SECURITY_DESCRIPTOR_CONTROL) BOOL;
 //pub extern fn SetSecurityDescriptorDacl(pSecurityDescriptor: PSECURITY_DESCRIPTOR, bDaclPresent: BOOL, pDacl: PACL, bDaclDefaulted: BOOL) BOOL;
@@ -7891,19 +8516,19 @@ pub const PDLL_DIRECTORY_COOKIE = ?&PVOID;
 //pub extern fn SetCachedSigningLevel(SourceFiles: PHANDLE, SourceFileCount: ULONG, Flags: ULONG, TargetFile: HANDLE) BOOL;
 //pub extern fn GetCachedSigningLevel(File: HANDLE, Flags: PULONG, SigningLevel: PULONG, Thumbprint: PUCHAR, ThumbprintSize: PULONG, ThumbprintAlgorithm: PULONG) BOOL;
 //pub extern fn CveEventWrite(CveId: PCWSTR, AdditionalDetails: PCWSTR) LONG;
-//pub extern fn DeriveCapabilitySidsFromName(CapName: LPCWSTR, CapabilityGroupSids: ?&(?&PSID), CapabilityGroupSidCount: ?&DWORD, CapabilitySids: ?&(?&PSID), CapabilitySidCount: ?&DWORD) BOOL;
+//pub extern fn DeriveCapabilitySidsFromName(CapName: LPCWSTR, CapabilityGroupSids: ?[*](?[*]PSID), CapabilityGroupSidCount: ?[*]DWORD, CapabilitySids: ?[*](?[*]PSID), CapabilitySidCount: ?[*]DWORD) BOOL;
 //pub extern fn CreatePrivateNamespaceW(lpPrivateNamespaceAttributes: LPSECURITY_ATTRIBUTES, lpBoundaryDescriptor: LPVOID, lpAliasPrefix: LPCWSTR) HANDLE;
 //pub extern fn OpenPrivateNamespaceW(lpBoundaryDescriptor: LPVOID, lpAliasPrefix: LPCWSTR) HANDLE;
 //pub extern fn ClosePrivateNamespace(Handle: HANDLE, Flags: ULONG) BOOLEAN;
 //pub extern fn CreateBoundaryDescriptorW(Name: LPCWSTR, Flags: ULONG) HANDLE;
-//pub extern fn AddSIDToBoundaryDescriptor(BoundaryDescriptor: ?&HANDLE, RequiredSid: PSID) BOOL;
+//pub extern fn AddSIDToBoundaryDescriptor(BoundaryDescriptor: ?[*]HANDLE, RequiredSid: PSID) BOOL;
 //pub extern fn DeleteBoundaryDescriptor(BoundaryDescriptor: HANDLE) void;
 //pub extern fn GetNumaHighestNodeNumber(HighestNodeNumber: PULONG) BOOL;
 //pub extern fn GetNumaNodeProcessorMaskEx(Node: USHORT, ProcessorMask: PGROUP_AFFINITY) BOOL;
 //pub extern fn GetNumaProximityNodeEx(ProximityId: ULONG, NodeNumber: PUSHORT) BOOL;
 //pub extern fn GetProcessGroupAffinity(hProcess: HANDLE, GroupCount: PUSHORT, GroupArray: PUSHORT) BOOL;
 //pub extern fn GetThreadGroupAffinity(hThread: HANDLE, GroupAffinity: PGROUP_AFFINITY) BOOL;
-//pub extern fn SetThreadGroupAffinity(hThread: HANDLE, GroupAffinity: ?&const GROUP_AFFINITY, PreviousGroupAffinity: PGROUP_AFFINITY) BOOL;
+//pub extern fn SetThreadGroupAffinity(hThread: HANDLE, GroupAffinity: ?[*]const GROUP_AFFINITY, PreviousGroupAffinity: PGROUP_AFFINITY) BOOL;
 //pub extern fn GetAppContainerNamedObjectPath(Token: HANDLE, AppContainerSid: PSID, ObjectPathLength: ULONG, ObjectPath: LPWSTR, ReturnLength: PULONG) BOOL;
 //pub extern fn QueryThreadCycleTime(ThreadHandle: HANDLE, CycleTime: PULONG64) BOOL;
 //pub extern fn QueryProcessCycleTime(ProcessHandle: HANDLE, CycleTime: PULONG64) BOOL;
@@ -7941,13 +8566,13 @@ pub const struct__COMMPROP = extern struct {
     wcProvChar: [1]WCHAR,
 };
 pub const COMMPROP = struct__COMMPROP;
-pub const LPCOMMPROP = ?&struct__COMMPROP;
+pub const LPCOMMPROP = ?*struct__COMMPROP;
 pub const struct__COMSTAT = @OpaqueType();
 pub const COMSTAT = struct__COMSTAT;
-pub const LPCOMSTAT = ?&struct__COMSTAT;
+pub const LPCOMSTAT = ?*struct__COMSTAT;
 pub const struct__DCB = @OpaqueType();
 pub const DCB = struct__DCB;
-pub const LPDCB = ?&struct__DCB;
+pub const LPDCB = ?*struct__DCB;
 pub const struct__COMMTIMEOUTS = extern struct {
     ReadIntervalTimeout: DWORD,
     ReadTotalTimeoutMultiplier: DWORD,
@@ -7956,7 +8581,7 @@ pub const struct__COMMTIMEOUTS = extern struct {
     WriteTotalTimeoutConstant: DWORD,
 };
 pub const COMMTIMEOUTS = struct__COMMTIMEOUTS;
-pub const LPCOMMTIMEOUTS = ?&struct__COMMTIMEOUTS;
+pub const LPCOMMTIMEOUTS = ?*struct__COMMTIMEOUTS;
 pub const struct__COMMCONFIG = extern struct {
     dwSize: DWORD,
     wVersion: WORD,
@@ -7968,7 +8593,7 @@ pub const struct__COMMCONFIG = extern struct {
     wcProviderData: [1]WCHAR,
 };
 pub const COMMCONFIG = struct__COMMCONFIG;
-pub const LPCOMMCONFIG = ?&struct__COMMCONFIG;
+pub const LPCOMMCONFIG = ?*struct__COMMCONFIG;
 pub const struct__MEMORYSTATUS = extern struct {
     dwLength: DWORD,
     dwMemoryLoad: DWORD,
@@ -7980,7 +8605,7 @@ pub const struct__MEMORYSTATUS = extern struct {
     dwAvailVirtual: SIZE_T,
 };
 pub const MEMORYSTATUS = struct__MEMORYSTATUS;
-pub const LPMEMORYSTATUS = ?&struct__MEMORYSTATUS;
+pub const LPMEMORYSTATUS = ?*struct__MEMORYSTATUS;
 pub const struct__JIT_DEBUG_INFO = extern struct {
     dwSize: DWORD,
     dwProcessorArchitecture: DWORD,
@@ -7991,11 +8616,11 @@ pub const struct__JIT_DEBUG_INFO = extern struct {
     lpContextRecord: ULONG64,
 };
 pub const JIT_DEBUG_INFO = struct__JIT_DEBUG_INFO;
-pub const LPJIT_DEBUG_INFO = ?&struct__JIT_DEBUG_INFO;
+pub const LPJIT_DEBUG_INFO = ?*struct__JIT_DEBUG_INFO;
 pub const JIT_DEBUG_INFO32 = JIT_DEBUG_INFO;
-pub const LPJIT_DEBUG_INFO32 = ?&JIT_DEBUG_INFO;
+pub const LPJIT_DEBUG_INFO32 = ?[*]JIT_DEBUG_INFO;
 pub const JIT_DEBUG_INFO64 = JIT_DEBUG_INFO;
-pub const LPJIT_DEBUG_INFO64 = ?&JIT_DEBUG_INFO;
+pub const LPJIT_DEBUG_INFO64 = ?[*]JIT_DEBUG_INFO;
 pub const LPEXCEPTION_RECORD = PEXCEPTION_RECORD;
 pub const LPEXCEPTION_POINTERS = PEXCEPTION_POINTERS;
 pub const struct__OFSTRUCT = extern struct {
@@ -8007,8 +8632,8 @@ pub const struct__OFSTRUCT = extern struct {
     szPathName: [128]CHAR,
 };
 pub const OFSTRUCT = struct__OFSTRUCT;
-pub const LPOFSTRUCT = ?&struct__OFSTRUCT;
-pub const POFSTRUCT = ?&struct__OFSTRUCT;
+pub const LPOFSTRUCT = ?*struct__OFSTRUCT;
+pub const POFSTRUCT = ?*struct__OFSTRUCT;
 //pub extern fn WinMain(hInstance: HINSTANCE, hPrevInstance: HINSTANCE, lpCmdLine: LPSTR, nShowCmd: c_int) c_int;
 //pub extern fn wWinMain(hInstance: HINSTANCE, hPrevInstance: HINSTANCE, lpCmdLine: LPWSTR, nShowCmd: c_int) c_int;
 //pub extern fn GlobalAlloc(uFlags: UINT, dwBytes: SIZE_T) HGLOBAL;
@@ -8054,10 +8679,10 @@ pub const POFSTRUCT = ?&struct__OFSTRUCT;
 //pub extern fn ConvertThreadToFiberEx(lpParameter: LPVOID, dwFlags: DWORD) LPVOID;
 //pub extern fn CreateFiber(dwStackSize: SIZE_T, lpStartAddress: LPFIBER_START_ROUTINE, lpParameter: LPVOID) LPVOID;
 //pub extern fn ConvertThreadToFiber(lpParameter: LPVOID) LPVOID;
-pub const PUMS_CONTEXT = ?&c_void;
-pub const PUMS_COMPLETION_LIST = ?&c_void;
+pub const PUMS_CONTEXT = ?*c_void;
+pub const PUMS_COMPLETION_LIST = ?*c_void;
 pub const UMS_THREAD_INFO_CLASS = enum__RTL_UMS_THREAD_INFO_CLASS;
-pub const PUMS_THREAD_INFO_CLASS = ?&enum__RTL_UMS_THREAD_INFO_CLASS;
+pub const PUMS_THREAD_INFO_CLASS = ?[*]enum__RTL_UMS_THREAD_INFO_CLASS;
 pub const UMS_SCHEDULER_REASON = enum__RTL_UMS_SCHEDULER_REASON;
 pub const PUMS_SCHEDULER_ENTRY_POINT = PRTL_UMS_SCHEDULER_ENTRY_POINT;
 pub const struct__UMS_SCHEDULER_STARTUP_INFO = extern struct {
@@ -8067,7 +8692,7 @@ pub const struct__UMS_SCHEDULER_STARTUP_INFO = extern struct {
     SchedulerParam: PVOID,
 };
 pub const UMS_SCHEDULER_STARTUP_INFO = struct__UMS_SCHEDULER_STARTUP_INFO;
-pub const PUMS_SCHEDULER_STARTUP_INFO = ?&struct__UMS_SCHEDULER_STARTUP_INFO;
+pub const PUMS_SCHEDULER_STARTUP_INFO = ?*struct__UMS_SCHEDULER_STARTUP_INFO;
 pub const struct__UMS_SYSTEM_THREAD_INFORMATION = extern struct {
     UmsVersion: ULONG,
     @"": extern union {
@@ -8076,9 +8701,9 @@ pub const struct__UMS_SYSTEM_THREAD_INFORMATION = extern struct {
     },
 };
 pub const UMS_SYSTEM_THREAD_INFORMATION = struct__UMS_SYSTEM_THREAD_INFORMATION;
-pub const PUMS_SYSTEM_THREAD_INFORMATION = ?&struct__UMS_SYSTEM_THREAD_INFORMATION;
-//pub extern fn CreateUmsCompletionList(UmsCompletionList: ?&PUMS_COMPLETION_LIST) BOOL;
-//pub extern fn DequeueUmsCompletionListItems(UmsCompletionList: PUMS_COMPLETION_LIST, WaitTimeOut: DWORD, UmsThreadList: ?&PUMS_CONTEXT) BOOL;
+pub const PUMS_SYSTEM_THREAD_INFORMATION = ?*struct__UMS_SYSTEM_THREAD_INFORMATION;
+//pub extern fn CreateUmsCompletionList(UmsCompletionList: ?[*]PUMS_COMPLETION_LIST) BOOL;
+//pub extern fn DequeueUmsCompletionListItems(UmsCompletionList: PUMS_COMPLETION_LIST, WaitTimeOut: DWORD, UmsThreadList: ?[*]PUMS_CONTEXT) BOOL;
 //pub extern fn GetUmsCompletionListEvent(UmsCompletionList: PUMS_COMPLETION_LIST, UmsCompletionEvent: PHANDLE) BOOL;
 //pub extern fn ExecuteUmsThread(UmsThread: PUMS_CONTEXT) BOOL;
 //pub extern fn UmsThreadYield(SchedulerParam: PVOID) BOOL;
@@ -8088,7 +8713,7 @@ pub const PUMS_SYSTEM_THREAD_INFORMATION = ?&struct__UMS_SYSTEM_THREAD_INFORMATI
 //pub extern fn QueryUmsThreadInformation(UmsThread: PUMS_CONTEXT, UmsThreadInfoClass: UMS_THREAD_INFO_CLASS, UmsThreadInformation: PVOID, UmsThreadInformationLength: ULONG, ReturnLength: PULONG) BOOL;
 //pub extern fn SetUmsThreadInformation(UmsThread: PUMS_CONTEXT, UmsThreadInfoClass: UMS_THREAD_INFO_CLASS, UmsThreadInformation: PVOID, UmsThreadInformationLength: ULONG) BOOL;
 //pub extern fn DeleteUmsThreadContext(UmsThread: PUMS_CONTEXT) BOOL;
-//pub extern fn CreateUmsThreadContext(lpUmsThread: ?&PUMS_CONTEXT) BOOL;
+//pub extern fn CreateUmsThreadContext(lpUmsThread: ?[*]PUMS_CONTEXT) BOOL;
 //pub extern fn EnterUmsSchedulingMode(SchedulerStartupInfo: PUMS_SCHEDULER_STARTUP_INFO) BOOL;
 //pub extern fn GetUmsSystemThreadInformation(ThreadHandle: HANDLE, SystemThreadInfo: PUMS_SYSTEM_THREAD_INFORMATION) BOOL;
 //pub extern fn SetThreadAffinityMask(hThread: HANDLE, dwThreadAffinityMask: DWORD_PTR) DWORD_PTR;
@@ -8099,14 +8724,14 @@ pub const PUMS_SYSTEM_THREAD_INFORMATION = ?&struct__UMS_SYSTEM_THREAD_INFORMATI
 //pub extern fn GetThreadSelectorEntry(hThread: HANDLE, dwSelector: DWORD, lpSelectorEntry: LPLDT_ENTRY) BOOL;
 //pub extern fn SetThreadExecutionState(esFlags: EXECUTION_STATE) EXECUTION_STATE;
 pub const POWER_REQUEST_CONTEXT = REASON_CONTEXT;
-pub const PPOWER_REQUEST_CONTEXT = ?&REASON_CONTEXT;
-pub const LPPOWER_REQUEST_CONTEXT = ?&REASON_CONTEXT;
+pub const PPOWER_REQUEST_CONTEXT = ?[*]REASON_CONTEXT;
+pub const LPPOWER_REQUEST_CONTEXT = ?[*]REASON_CONTEXT;
 //pub extern fn PowerCreateRequest(Context: PREASON_CONTEXT) HANDLE;
 //pub extern fn PowerSetRequest(PowerRequest: HANDLE, RequestType: POWER_REQUEST_TYPE) BOOL;
 //pub extern fn PowerClearRequest(PowerRequest: HANDLE, RequestType: POWER_REQUEST_TYPE) BOOL;
 //pub extern fn SetFileCompletionNotificationModes(FileHandle: HANDLE, Flags: UCHAR) BOOL;
 //pub extern fn Wow64GetThreadContext(hThread: HANDLE, lpContext: PWOW64_CONTEXT) BOOL;
-//pub extern fn Wow64SetThreadContext(hThread: HANDLE, lpContext: ?&const WOW64_CONTEXT) BOOL;
+//pub extern fn Wow64SetThreadContext(hThread: HANDLE, lpContext: ?[*]const WOW64_CONTEXT) BOOL;
 //pub extern fn Wow64GetThreadSelectorEntry(hThread: HANDLE, dwSelector: DWORD, lpSelectorEntry: PWOW64_LDT_ENTRY) BOOL;
 //pub extern fn Wow64SuspendThread(hThread: HANDLE) DWORD;
 //pub extern fn DebugSetProcessKillOnExit(KillOnExit: BOOL) BOOL;
@@ -8118,7 +8743,7 @@ pub const LPPOWER_REQUEST_CONTEXT = ?&REASON_CONTEXT;
 //pub extern fn SetHandleCount(uNumber: UINT) UINT;
 //pub extern fn RequestDeviceWakeup(hDevice: HANDLE) BOOL;
 //pub extern fn CancelDeviceWakeupRequest(hDevice: HANDLE) BOOL;
-//pub extern fn GetDevicePowerState(hDevice: HANDLE, pfOn: ?&BOOL) BOOL;
+//pub extern fn GetDevicePowerState(hDevice: HANDLE, pfOn: ?[*]BOOL) BOOL;
 //pub extern fn SetMessageWaitingIndicator(hMsgIndicator: HANDLE, ulMsgCount: ULONG) BOOL;
 //pub extern fn SetFileShortNameA(hFile: HANDLE, lpShortName: LPCSTR) BOOL;
 //pub extern fn SetFileShortNameW(hFile: HANDLE, lpShortName: LPCWSTR) BOOL;
@@ -8153,19 +8778,25 @@ pub const LPPOWER_REQUEST_CONTEXT = ?&REASON_CONTEXT;
 //pub extern fn GetTapeParameters(hDevice: HANDLE, dwOperation: DWORD, lpdwSize: LPDWORD, lpTapeInformation: LPVOID) DWORD;
 //pub extern fn SetTapeParameters(hDevice: HANDLE, dwOperation: DWORD, lpTapeInformation: LPVOID) DWORD;
 //pub extern fn MulDiv(nNumber: c_int, nNumerator: c_int, nDenominator: c_int) c_int;
-pub const DEPPolicyAlwaysOff: c_int = 0;
-pub const DEPPolicyAlwaysOn: c_int = 1;
-pub const DEPPolicyOptIn: c_int = 2;
-pub const DEPPolicyOptOut: c_int = 3;
-pub const DEPTotalPolicyCount: c_int = 4;
-pub const enum__DEP_SYSTEM_POLICY_TYPE = c_int;
+pub const DEPPolicyAlwaysOff = enum__DEP_SYSTEM_POLICY_TYPE.DEPPolicyAlwaysOff;
+pub const DEPPolicyAlwaysOn = enum__DEP_SYSTEM_POLICY_TYPE.DEPPolicyAlwaysOn;
+pub const DEPPolicyOptIn = enum__DEP_SYSTEM_POLICY_TYPE.DEPPolicyOptIn;
+pub const DEPPolicyOptOut = enum__DEP_SYSTEM_POLICY_TYPE.DEPPolicyOptOut;
+pub const DEPTotalPolicyCount = enum__DEP_SYSTEM_POLICY_TYPE.DEPTotalPolicyCount;
+pub const enum__DEP_SYSTEM_POLICY_TYPE = extern enum {
+    DEPPolicyAlwaysOff = 0,
+    DEPPolicyAlwaysOn = 1,
+    DEPPolicyOptIn = 2,
+    DEPPolicyOptOut = 3,
+    DEPTotalPolicyCount = 4,
+};
 pub const DEP_SYSTEM_POLICY_TYPE = enum__DEP_SYSTEM_POLICY_TYPE;
 //pub extern fn GetSystemDEPPolicy() DEP_SYSTEM_POLICY_TYPE;
 //pub extern fn GetSystemRegistryQuota(pdwQuotaAllowed: PDWORD, pdwQuotaUsed: PDWORD) BOOL;
-//pub extern fn FileTimeToDosDateTime(lpFileTime: ?&const FILETIME, lpFatDate: LPWORD, lpFatTime: LPWORD) BOOL;
+//pub extern fn FileTimeToDosDateTime(lpFileTime: ?[*]const FILETIME, lpFatDate: LPWORD, lpFatTime: LPWORD) BOOL;
 //pub extern fn DosDateTimeToFileTime(wFatDate: WORD, wFatTime: WORD, lpFileTime: LPFILETIME) BOOL;
-//pub extern fn FormatMessageA(dwFlags: DWORD, lpSource: LPCVOID, dwMessageId: DWORD, dwLanguageId: DWORD, lpBuffer: LPSTR, nSize: DWORD, Arguments: ?&va_list) DWORD;
-//pub extern fn FormatMessageW(dwFlags: DWORD, lpSource: LPCVOID, dwMessageId: DWORD, dwLanguageId: DWORD, lpBuffer: LPWSTR, nSize: DWORD, Arguments: ?&va_list) DWORD;
+//pub extern fn FormatMessageA(dwFlags: DWORD, lpSource: LPCVOID, dwMessageId: DWORD, dwLanguageId: DWORD, lpBuffer: LPSTR, nSize: DWORD, Arguments: ?[*]va_list) DWORD;
+//pub extern fn FormatMessageW(dwFlags: DWORD, lpSource: LPCVOID, dwMessageId: DWORD, dwLanguageId: DWORD, lpBuffer: LPWSTR, nSize: DWORD, Arguments: ?[*]va_list) DWORD;
 //pub extern fn CreateMailslotA(lpName: LPCSTR, nMaxMessageSize: DWORD, lReadTimeout: DWORD, lpSecurityAttributes: LPSECURITY_ATTRIBUTES) HANDLE;
 //pub extern fn CreateMailslotW(lpName: LPCWSTR, nMaxMessageSize: DWORD, lReadTimeout: DWORD, lpSecurityAttributes: LPSECURITY_ATTRIBUTES) HANDLE;
 //pub extern fn GetMailslotInfo(hMailslot: HANDLE, lpMaxMessageSize: LPDWORD, lpNextSize: LPDWORD, lpMessageCount: LPDWORD, lpReadTimeout: LPDWORD) BOOL;
@@ -8178,8 +8809,8 @@ pub const DEP_SYSTEM_POLICY_TYPE = enum__DEP_SYSTEM_POLICY_TYPE;
 //pub extern fn FileEncryptionStatusW(lpFileName: LPCWSTR, lpStatus: LPDWORD) BOOL;
 pub const PFE_EXPORT_FUNC = ?extern fn(PBYTE, PVOID, ULONG) DWORD;
 pub const PFE_IMPORT_FUNC = ?extern fn(PBYTE, PVOID, PULONG) DWORD;
-//pub extern fn OpenEncryptedFileRawA(lpFileName: LPCSTR, ulFlags: ULONG, pvContext: ?&PVOID) DWORD;
-//pub extern fn OpenEncryptedFileRawW(lpFileName: LPCWSTR, ulFlags: ULONG, pvContext: ?&PVOID) DWORD;
+//pub extern fn OpenEncryptedFileRawA(lpFileName: LPCSTR, ulFlags: ULONG, pvContext: ?[*]PVOID) DWORD;
+//pub extern fn OpenEncryptedFileRawW(lpFileName: LPCWSTR, ulFlags: ULONG, pvContext: ?[*]PVOID) DWORD;
 //pub extern fn ReadEncryptedFileRaw(pfExportCallback: PFE_EXPORT_FUNC, pvCallbackContext: PVOID, pvContext: PVOID) DWORD;
 //pub extern fn WriteEncryptedFileRaw(pfImportCallback: PFE_IMPORT_FUNC, pvCallbackContext: PVOID, pvContext: PVOID) DWORD;
 //pub extern fn CloseEncryptedFileRaw(pvContext: PVOID) void;
@@ -8204,10 +8835,10 @@ pub const PFE_IMPORT_FUNC = ?extern fn(PBYTE, PVOID, PULONG) DWORD;
 //pub extern fn _hwrite(hFile: HFILE, lpBuffer: LPCCH, lBytes: c_long) c_long;
 //pub extern fn _lclose(hFile: HFILE) HFILE;
 //pub extern fn _llseek(hFile: HFILE, lOffset: LONG, iOrigin: c_int) LONG;
-//pub extern fn IsTextUnicode(lpv: ?&const c_void, iSize: c_int, lpiResult: LPINT) BOOL;
-//pub extern fn BackupRead(hFile: HANDLE, lpBuffer: LPBYTE, nNumberOfBytesToRead: DWORD, lpNumberOfBytesRead: LPDWORD, bAbort: BOOL, bProcessSecurity: BOOL, lpContext: ?&LPVOID) BOOL;
-//pub extern fn BackupSeek(hFile: HANDLE, dwLowBytesToSeek: DWORD, dwHighBytesToSeek: DWORD, lpdwLowByteSeeked: LPDWORD, lpdwHighByteSeeked: LPDWORD, lpContext: ?&LPVOID) BOOL;
-//pub extern fn BackupWrite(hFile: HANDLE, lpBuffer: LPBYTE, nNumberOfBytesToWrite: DWORD, lpNumberOfBytesWritten: LPDWORD, bAbort: BOOL, bProcessSecurity: BOOL, lpContext: ?&LPVOID) BOOL;
+//pub extern fn IsTextUnicode(lpv: ?*const c_void, iSize: c_int, lpiResult: LPINT) BOOL;
+//pub extern fn BackupRead(hFile: HANDLE, lpBuffer: LPBYTE, nNumberOfBytesToRead: DWORD, lpNumberOfBytesRead: LPDWORD, bAbort: BOOL, bProcessSecurity: BOOL, lpContext: ?[*]LPVOID) BOOL;
+//pub extern fn BackupSeek(hFile: HANDLE, dwLowBytesToSeek: DWORD, dwHighBytesToSeek: DWORD, lpdwLowByteSeeked: LPDWORD, lpdwHighByteSeeked: LPDWORD, lpContext: ?[*]LPVOID) BOOL;
+//pub extern fn BackupWrite(hFile: HANDLE, lpBuffer: LPBYTE, nNumberOfBytesToWrite: DWORD, lpNumberOfBytesWritten: LPDWORD, bAbort: BOOL, bProcessSecurity: BOOL, lpContext: ?[*]LPVOID) BOOL;
 pub const struct__WIN32_STREAM_ID = extern struct {
     dwStreamId: DWORD,
     dwStreamAttributes: DWORD,
@@ -8216,19 +8847,19 @@ pub const struct__WIN32_STREAM_ID = extern struct {
     cStreamName: [1]WCHAR,
 };
 pub const WIN32_STREAM_ID = struct__WIN32_STREAM_ID;
-pub const LPWIN32_STREAM_ID = ?&struct__WIN32_STREAM_ID;
+pub const LPWIN32_STREAM_ID = ?*struct__WIN32_STREAM_ID;
 pub const struct__STARTUPINFOEXA = extern struct {
     StartupInfo: STARTUPINFOA,
     lpAttributeList: LPPROC_THREAD_ATTRIBUTE_LIST,
 };
 pub const STARTUPINFOEXA = struct__STARTUPINFOEXA;
-pub const LPSTARTUPINFOEXA = ?&struct__STARTUPINFOEXA;
+pub const LPSTARTUPINFOEXA = ?*struct__STARTUPINFOEXA;
 pub const struct__STARTUPINFOEXW = extern struct {
     StartupInfo: STARTUPINFOW,
     lpAttributeList: LPPROC_THREAD_ATTRIBUTE_LIST,
 };
 pub const STARTUPINFOEXW = struct__STARTUPINFOEXW;
-pub const LPSTARTUPINFOEXW = ?&struct__STARTUPINFOEXW;
+pub const LPSTARTUPINFOEXW = ?*struct__STARTUPINFOEXW;
 pub const STARTUPINFOEX = STARTUPINFOEXA;
 pub const LPSTARTUPINFOEX = LPSTARTUPINFOEXA;
 //pub extern fn OpenMutexA(dwDesiredAccess: DWORD, bInheritHandle: BOOL, lpName: LPCSTR) HANDLE;
@@ -8245,22 +8876,38 @@ pub const LPSTARTUPINFOEX = LPSTARTUPINFOEXA;
 //pub extern fn LoadPackagedLibrary(lpwLibFileName: LPCWSTR, Reserved: DWORD) HMODULE;
 //pub extern fn QueryFullProcessImageNameA(hProcess: HANDLE, dwFlags: DWORD, lpExeName: LPSTR, lpdwSize: PDWORD) BOOL;
 //pub extern fn QueryFullProcessImageNameW(hProcess: HANDLE, dwFlags: DWORD, lpExeName: LPWSTR, lpdwSize: PDWORD) BOOL;
-pub const ProcThreadAttributeParentProcess: c_int = 0;
-pub const ProcThreadAttributeHandleList: c_int = 2;
-pub const ProcThreadAttributeGroupAffinity: c_int = 3;
-pub const ProcThreadAttributePreferredNode: c_int = 4;
-pub const ProcThreadAttributeIdealProcessor: c_int = 5;
-pub const ProcThreadAttributeUmsThread: c_int = 6;
-pub const ProcThreadAttributeMitigationPolicy: c_int = 7;
-pub const ProcThreadAttributeSecurityCapabilities: c_int = 9;
-pub const ProcThreadAttributeProtectionLevel: c_int = 11;
-pub const ProcThreadAttributeJobList: c_int = 13;
-pub const ProcThreadAttributeChildProcessPolicy: c_int = 14;
-pub const ProcThreadAttributeAllApplicationPackagesPolicy: c_int = 15;
-pub const ProcThreadAttributeWin32kFilter: c_int = 16;
-pub const ProcThreadAttributeSafeOpenPromptOriginClaim: c_int = 17;
-pub const ProcThreadAttributeDesktopAppPolicy: c_int = 18;
-pub const enum__PROC_THREAD_ATTRIBUTE_NUM = c_int;
+pub const ProcThreadAttributeParentProcess = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributeParentProcess;
+pub const ProcThreadAttributeHandleList = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributeHandleList;
+pub const ProcThreadAttributeGroupAffinity = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributeGroupAffinity;
+pub const ProcThreadAttributePreferredNode = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributePreferredNode;
+pub const ProcThreadAttributeIdealProcessor = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributeIdealProcessor;
+pub const ProcThreadAttributeUmsThread = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributeUmsThread;
+pub const ProcThreadAttributeMitigationPolicy = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributeMitigationPolicy;
+pub const ProcThreadAttributeSecurityCapabilities = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributeSecurityCapabilities;
+pub const ProcThreadAttributeProtectionLevel = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributeProtectionLevel;
+pub const ProcThreadAttributeJobList = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributeJobList;
+pub const ProcThreadAttributeChildProcessPolicy = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributeChildProcessPolicy;
+pub const ProcThreadAttributeAllApplicationPackagesPolicy = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributeAllApplicationPackagesPolicy;
+pub const ProcThreadAttributeWin32kFilter = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributeWin32kFilter;
+pub const ProcThreadAttributeSafeOpenPromptOriginClaim = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributeSafeOpenPromptOriginClaim;
+pub const ProcThreadAttributeDesktopAppPolicy = enum__PROC_THREAD_ATTRIBUTE_NUM.ProcThreadAttributeDesktopAppPolicy;
+pub const enum__PROC_THREAD_ATTRIBUTE_NUM = extern enum {
+    ProcThreadAttributeParentProcess = 0,
+    ProcThreadAttributeHandleList = 2,
+    ProcThreadAttributeGroupAffinity = 3,
+    ProcThreadAttributePreferredNode = 4,
+    ProcThreadAttributeIdealProcessor = 5,
+    ProcThreadAttributeUmsThread = 6,
+    ProcThreadAttributeMitigationPolicy = 7,
+    ProcThreadAttributeSecurityCapabilities = 9,
+    ProcThreadAttributeProtectionLevel = 11,
+    ProcThreadAttributeJobList = 13,
+    ProcThreadAttributeChildProcessPolicy = 14,
+    ProcThreadAttributeAllApplicationPackagesPolicy = 15,
+    ProcThreadAttributeWin32kFilter = 16,
+    ProcThreadAttributeSafeOpenPromptOriginClaim = 17,
+    ProcThreadAttributeDesktopAppPolicy = 18,
+};
 pub const PROC_THREAD_ATTRIBUTE_NUM = enum__PROC_THREAD_ATTRIBUTE_NUM;
 //pub extern fn GetStartupInfoA(lpStartupInfo: LPSTARTUPINFOA) void;
 //pub extern fn GetFirmwareEnvironmentVariableA(lpName: LPCSTR, lpGuid: LPCSTR, pBuffer: PVOID, nSize: DWORD) DWORD;
@@ -8340,8 +8987,8 @@ pub const PGET_SYSTEM_WOW64_DIRECTORY_W = ?extern fn(LPWSTR, UINT) UINT;
 //pub extern fn CreateDirectoryTransactedW(lpTemplateDirectory: LPCWSTR, lpNewDirectory: LPCWSTR, lpSecurityAttributes: LPSECURITY_ATTRIBUTES, hTransaction: HANDLE) BOOL;
 //pub extern fn RemoveDirectoryTransactedA(lpPathName: LPCSTR, hTransaction: HANDLE) BOOL;
 //pub extern fn RemoveDirectoryTransactedW(lpPathName: LPCWSTR, hTransaction: HANDLE) BOOL;
-//pub extern fn GetFullPathNameTransactedA(lpFileName: LPCSTR, nBufferLength: DWORD, lpBuffer: LPSTR, lpFilePart: ?&LPSTR, hTransaction: HANDLE) DWORD;
-//pub extern fn GetFullPathNameTransactedW(lpFileName: LPCWSTR, nBufferLength: DWORD, lpBuffer: LPWSTR, lpFilePart: ?&LPWSTR, hTransaction: HANDLE) DWORD;
+//pub extern fn GetFullPathNameTransactedA(lpFileName: LPCSTR, nBufferLength: DWORD, lpBuffer: LPSTR, lpFilePart: ?[*]LPSTR, hTransaction: HANDLE) DWORD;
+//pub extern fn GetFullPathNameTransactedW(lpFileName: LPCWSTR, nBufferLength: DWORD, lpBuffer: LPWSTR, lpFilePart: ?[*]LPWSTR, hTransaction: HANDLE) DWORD;
 //pub extern fn DefineDosDeviceA(dwFlags: DWORD, lpDeviceName: LPCSTR, lpTargetPath: LPCSTR) BOOL;
 //pub extern fn QueryDosDeviceA(lpDeviceName: LPCSTR, lpTargetPath: LPSTR, ucchMax: DWORD) DWORD;
 //pub extern fn CreateFileTransactedA(lpFileName: LPCSTR, dwDesiredAccess: DWORD, dwShareMode: DWORD, lpSecurityAttributes: LPSECURITY_ATTRIBUTES, dwCreationDisposition: DWORD, dwFlagsAndAttributes: DWORD, hTemplateFile: HANDLE, hTransaction: HANDLE, pusMiniVersion: PUSHORT, lpExtendedParameter: PVOID) HANDLE;
@@ -8366,32 +9013,56 @@ pub const LPPROGRESS_ROUTINE = ?extern fn(LARGE_INTEGER, LARGE_INTEGER, LARGE_IN
 //pub extern fn CopyFileExW(lpExistingFileName: LPCWSTR, lpNewFileName: LPCWSTR, lpProgressRoutine: LPPROGRESS_ROUTINE, lpData: LPVOID, pbCancel: LPBOOL, dwCopyFlags: DWORD) BOOL;
 //pub extern fn CopyFileTransactedA(lpExistingFileName: LPCSTR, lpNewFileName: LPCSTR, lpProgressRoutine: LPPROGRESS_ROUTINE, lpData: LPVOID, pbCancel: LPBOOL, dwCopyFlags: DWORD, hTransaction: HANDLE) BOOL;
 //pub extern fn CopyFileTransactedW(lpExistingFileName: LPCWSTR, lpNewFileName: LPCWSTR, lpProgressRoutine: LPPROGRESS_ROUTINE, lpData: LPVOID, pbCancel: LPBOOL, dwCopyFlags: DWORD, hTransaction: HANDLE) BOOL;
-pub const COPYFILE2_CALLBACK_NONE: c_int = 0;
-pub const COPYFILE2_CALLBACK_CHUNK_STARTED: c_int = 1;
-pub const COPYFILE2_CALLBACK_CHUNK_FINISHED: c_int = 2;
-pub const COPYFILE2_CALLBACK_STREAM_STARTED: c_int = 3;
-pub const COPYFILE2_CALLBACK_STREAM_FINISHED: c_int = 4;
-pub const COPYFILE2_CALLBACK_POLL_CONTINUE: c_int = 5;
-pub const COPYFILE2_CALLBACK_ERROR: c_int = 6;
-pub const COPYFILE2_CALLBACK_MAX: c_int = 7;
-pub const enum__COPYFILE2_MESSAGE_TYPE = c_int;
+pub const COPYFILE2_CALLBACK_NONE = enum__COPYFILE2_MESSAGE_TYPE.COPYFILE2_CALLBACK_NONE;
+pub const COPYFILE2_CALLBACK_CHUNK_STARTED = enum__COPYFILE2_MESSAGE_TYPE.COPYFILE2_CALLBACK_CHUNK_STARTED;
+pub const COPYFILE2_CALLBACK_CHUNK_FINISHED = enum__COPYFILE2_MESSAGE_TYPE.COPYFILE2_CALLBACK_CHUNK_FINISHED;
+pub const COPYFILE2_CALLBACK_STREAM_STARTED = enum__COPYFILE2_MESSAGE_TYPE.COPYFILE2_CALLBACK_STREAM_STARTED;
+pub const COPYFILE2_CALLBACK_STREAM_FINISHED = enum__COPYFILE2_MESSAGE_TYPE.COPYFILE2_CALLBACK_STREAM_FINISHED;
+pub const COPYFILE2_CALLBACK_POLL_CONTINUE = enum__COPYFILE2_MESSAGE_TYPE.COPYFILE2_CALLBACK_POLL_CONTINUE;
+pub const COPYFILE2_CALLBACK_ERROR = enum__COPYFILE2_MESSAGE_TYPE.COPYFILE2_CALLBACK_ERROR;
+pub const COPYFILE2_CALLBACK_MAX = enum__COPYFILE2_MESSAGE_TYPE.COPYFILE2_CALLBACK_MAX;
+pub const enum__COPYFILE2_MESSAGE_TYPE = extern enum {
+    COPYFILE2_CALLBACK_NONE = 0,
+    COPYFILE2_CALLBACK_CHUNK_STARTED = 1,
+    COPYFILE2_CALLBACK_CHUNK_FINISHED = 2,
+    COPYFILE2_CALLBACK_STREAM_STARTED = 3,
+    COPYFILE2_CALLBACK_STREAM_FINISHED = 4,
+    COPYFILE2_CALLBACK_POLL_CONTINUE = 5,
+    COPYFILE2_CALLBACK_ERROR = 6,
+    COPYFILE2_CALLBACK_MAX = 7,
+};
 pub const COPYFILE2_MESSAGE_TYPE = enum__COPYFILE2_MESSAGE_TYPE;
-pub const COPYFILE2_PROGRESS_CONTINUE: c_int = 0;
-pub const COPYFILE2_PROGRESS_CANCEL: c_int = 1;
-pub const COPYFILE2_PROGRESS_STOP: c_int = 2;
-pub const COPYFILE2_PROGRESS_QUIET: c_int = 3;
-pub const COPYFILE2_PROGRESS_PAUSE: c_int = 4;
-pub const enum__COPYFILE2_MESSAGE_ACTION = c_int;
+pub const COPYFILE2_PROGRESS_CONTINUE = enum__COPYFILE2_MESSAGE_ACTION.COPYFILE2_PROGRESS_CONTINUE;
+pub const COPYFILE2_PROGRESS_CANCEL = enum__COPYFILE2_MESSAGE_ACTION.COPYFILE2_PROGRESS_CANCEL;
+pub const COPYFILE2_PROGRESS_STOP = enum__COPYFILE2_MESSAGE_ACTION.COPYFILE2_PROGRESS_STOP;
+pub const COPYFILE2_PROGRESS_QUIET = enum__COPYFILE2_MESSAGE_ACTION.COPYFILE2_PROGRESS_QUIET;
+pub const COPYFILE2_PROGRESS_PAUSE = enum__COPYFILE2_MESSAGE_ACTION.COPYFILE2_PROGRESS_PAUSE;
+pub const enum__COPYFILE2_MESSAGE_ACTION = extern enum {
+    COPYFILE2_PROGRESS_CONTINUE = 0,
+    COPYFILE2_PROGRESS_CANCEL = 1,
+    COPYFILE2_PROGRESS_STOP = 2,
+    COPYFILE2_PROGRESS_QUIET = 3,
+    COPYFILE2_PROGRESS_PAUSE = 4,
+};
 pub const COPYFILE2_MESSAGE_ACTION = enum__COPYFILE2_MESSAGE_ACTION;
-pub const COPYFILE2_PHASE_NONE: c_int = 0;
-pub const COPYFILE2_PHASE_PREPARE_SOURCE: c_int = 1;
-pub const COPYFILE2_PHASE_PREPARE_DEST: c_int = 2;
-pub const COPYFILE2_PHASE_READ_SOURCE: c_int = 3;
-pub const COPYFILE2_PHASE_WRITE_DESTINATION: c_int = 4;
-pub const COPYFILE2_PHASE_SERVER_COPY: c_int = 5;
-pub const COPYFILE2_PHASE_NAMEGRAFT_COPY: c_int = 6;
-pub const COPYFILE2_PHASE_MAX: c_int = 7;
-pub const enum__COPYFILE2_COPY_PHASE = c_int;
+pub const COPYFILE2_PHASE_NONE = enum__COPYFILE2_COPY_PHASE.COPYFILE2_PHASE_NONE;
+pub const COPYFILE2_PHASE_PREPARE_SOURCE = enum__COPYFILE2_COPY_PHASE.COPYFILE2_PHASE_PREPARE_SOURCE;
+pub const COPYFILE2_PHASE_PREPARE_DEST = enum__COPYFILE2_COPY_PHASE.COPYFILE2_PHASE_PREPARE_DEST;
+pub const COPYFILE2_PHASE_READ_SOURCE = enum__COPYFILE2_COPY_PHASE.COPYFILE2_PHASE_READ_SOURCE;
+pub const COPYFILE2_PHASE_WRITE_DESTINATION = enum__COPYFILE2_COPY_PHASE.COPYFILE2_PHASE_WRITE_DESTINATION;
+pub const COPYFILE2_PHASE_SERVER_COPY = enum__COPYFILE2_COPY_PHASE.COPYFILE2_PHASE_SERVER_COPY;
+pub const COPYFILE2_PHASE_NAMEGRAFT_COPY = enum__COPYFILE2_COPY_PHASE.COPYFILE2_PHASE_NAMEGRAFT_COPY;
+pub const COPYFILE2_PHASE_MAX = enum__COPYFILE2_COPY_PHASE.COPYFILE2_PHASE_MAX;
+pub const enum__COPYFILE2_COPY_PHASE = extern enum {
+    COPYFILE2_PHASE_NONE = 0,
+    COPYFILE2_PHASE_PREPARE_SOURCE = 1,
+    COPYFILE2_PHASE_PREPARE_DEST = 2,
+    COPYFILE2_PHASE_READ_SOURCE = 3,
+    COPYFILE2_PHASE_WRITE_DESTINATION = 4,
+    COPYFILE2_PHASE_SERVER_COPY = 5,
+    COPYFILE2_PHASE_NAMEGRAFT_COPY = 6,
+    COPYFILE2_PHASE_MAX = 7,
+};
 pub const COPYFILE2_COPY_PHASE = enum__COPYFILE2_COPY_PHASE;
 pub const struct_COPYFILE2_MESSAGE = extern struct {
     Type: COPYFILE2_MESSAGE_TYPE,
@@ -8454,16 +9125,16 @@ pub const struct_COPYFILE2_MESSAGE = extern struct {
     },
 };
 pub const COPYFILE2_MESSAGE = struct_COPYFILE2_MESSAGE;
-pub const PCOPYFILE2_PROGRESS_ROUTINE = ?extern fn(?&const COPYFILE2_MESSAGE, PVOID) COPYFILE2_MESSAGE_ACTION;
+pub const PCOPYFILE2_PROGRESS_ROUTINE = ?extern fn(?[*]const COPYFILE2_MESSAGE, PVOID) COPYFILE2_MESSAGE_ACTION;
 pub const struct_COPYFILE2_EXTENDED_PARAMETERS = extern struct {
     dwSize: DWORD,
     dwCopyFlags: DWORD,
-    pfCancel: ?&BOOL,
+    pfCancel: ?[*]BOOL,
     pProgressRoutine: PCOPYFILE2_PROGRESS_ROUTINE,
     pvCallbackContext: PVOID,
 };
 pub const COPYFILE2_EXTENDED_PARAMETERS = struct_COPYFILE2_EXTENDED_PARAMETERS;
-//pub extern fn CopyFile2(pwszExistingFileName: PCWSTR, pwszNewFileName: PCWSTR, pExtendedParameters: ?&COPYFILE2_EXTENDED_PARAMETERS) HRESULT;
+//pub extern fn CopyFile2(pwszExistingFileName: PCWSTR, pwszNewFileName: PCWSTR, pExtendedParameters: ?[*]COPYFILE2_EXTENDED_PARAMETERS) HRESULT;
 //pub extern fn MoveFileA(lpExistingFileName: LPCSTR, lpNewFileName: LPCSTR) BOOL;
 //pub extern fn MoveFileW(lpExistingFileName: LPCWSTR, lpNewFileName: LPCWSTR) BOOL;
 //pub extern fn MoveFileExA(lpExistingFileName: LPCSTR, lpNewFileName: LPCSTR, dwFlags: DWORD) BOOL;
@@ -8508,15 +9179,15 @@ pub const COPYFILE2_EXTENDED_PARAMETERS = struct_COPYFILE2_EXTENDED_PARAMETERS;
 //pub extern fn RegisterEventSourceW(lpUNCServerName: LPCWSTR, lpSourceName: LPCWSTR) HANDLE;
 //pub extern fn OpenBackupEventLogA(lpUNCServerName: LPCSTR, lpFileName: LPCSTR) HANDLE;
 //pub extern fn OpenBackupEventLogW(lpUNCServerName: LPCWSTR, lpFileName: LPCWSTR) HANDLE;
-//pub extern fn ReadEventLogA(hEventLog: HANDLE, dwReadFlags: DWORD, dwRecordOffset: DWORD, lpBuffer: LPVOID, nNumberOfBytesToRead: DWORD, pnBytesRead: ?&DWORD, pnMinNumberOfBytesNeeded: ?&DWORD) BOOL;
-//pub extern fn ReadEventLogW(hEventLog: HANDLE, dwReadFlags: DWORD, dwRecordOffset: DWORD, lpBuffer: LPVOID, nNumberOfBytesToRead: DWORD, pnBytesRead: ?&DWORD, pnMinNumberOfBytesNeeded: ?&DWORD) BOOL;
-//pub extern fn ReportEventA(hEventLog: HANDLE, wType: WORD, wCategory: WORD, dwEventID: DWORD, lpUserSid: PSID, wNumStrings: WORD, dwDataSize: DWORD, lpStrings: ?&LPCSTR, lpRawData: LPVOID) BOOL;
-//pub extern fn ReportEventW(hEventLog: HANDLE, wType: WORD, wCategory: WORD, dwEventID: DWORD, lpUserSid: PSID, wNumStrings: WORD, dwDataSize: DWORD, lpStrings: ?&LPCWSTR, lpRawData: LPVOID) BOOL;
+//pub extern fn ReadEventLogA(hEventLog: HANDLE, dwReadFlags: DWORD, dwRecordOffset: DWORD, lpBuffer: LPVOID, nNumberOfBytesToRead: DWORD, pnBytesRead: ?[*]DWORD, pnMinNumberOfBytesNeeded: ?[*]DWORD) BOOL;
+//pub extern fn ReadEventLogW(hEventLog: HANDLE, dwReadFlags: DWORD, dwRecordOffset: DWORD, lpBuffer: LPVOID, nNumberOfBytesToRead: DWORD, pnBytesRead: ?[*]DWORD, pnMinNumberOfBytesNeeded: ?[*]DWORD) BOOL;
+//pub extern fn ReportEventA(hEventLog: HANDLE, wType: WORD, wCategory: WORD, dwEventID: DWORD, lpUserSid: PSID, wNumStrings: WORD, dwDataSize: DWORD, lpStrings: ?[*]LPCSTR, lpRawData: LPVOID) BOOL;
+//pub extern fn ReportEventW(hEventLog: HANDLE, wType: WORD, wCategory: WORD, dwEventID: DWORD, lpUserSid: PSID, wNumStrings: WORD, dwDataSize: DWORD, lpStrings: ?[*]LPCWSTR, lpRawData: LPVOID) BOOL;
 pub const struct__EVENTLOG_FULL_INFORMATION = extern struct {
     dwFull: DWORD,
 };
 pub const EVENTLOG_FULL_INFORMATION = struct__EVENTLOG_FULL_INFORMATION;
-pub const LPEVENTLOG_FULL_INFORMATION = ?&struct__EVENTLOG_FULL_INFORMATION;
+pub const LPEVENTLOG_FULL_INFORMATION = ?*struct__EVENTLOG_FULL_INFORMATION;
 //pub extern fn GetEventLogInformation(hEventLog: HANDLE, dwInfoLevel: DWORD, lpBuffer: LPVOID, cbBufSize: DWORD, pcbBytesNeeded: LPDWORD) BOOL;
 pub const OPERATION_ID = ULONG;
 pub const struct__OPERATION_START_PARAMETERS = extern struct {
@@ -8525,16 +9196,16 @@ pub const struct__OPERATION_START_PARAMETERS = extern struct {
     Flags: ULONG,
 };
 pub const OPERATION_START_PARAMETERS = struct__OPERATION_START_PARAMETERS;
-pub const POPERATION_START_PARAMETERS = ?&struct__OPERATION_START_PARAMETERS;
+pub const POPERATION_START_PARAMETERS = ?*struct__OPERATION_START_PARAMETERS;
 pub const struct__OPERATION_END_PARAMETERS = extern struct {
     Version: ULONG,
     OperationId: OPERATION_ID,
     Flags: ULONG,
 };
 pub const OPERATION_END_PARAMETERS = struct__OPERATION_END_PARAMETERS;
-pub const POPERATION_END_PARAMETERS = ?&struct__OPERATION_END_PARAMETERS;
-//pub extern fn OperationStart(OperationStartParams: ?&OPERATION_START_PARAMETERS) BOOL;
-//pub extern fn OperationEnd(OperationEndParams: ?&OPERATION_END_PARAMETERS) BOOL;
+pub const POPERATION_END_PARAMETERS = ?*struct__OPERATION_END_PARAMETERS;
+//pub extern fn OperationStart(OperationStartParams: ?[*]OPERATION_START_PARAMETERS) BOOL;
+//pub extern fn OperationEnd(OperationEndParams: ?[*]OPERATION_END_PARAMETERS) BOOL;
 //pub extern fn AccessCheckAndAuditAlarmA(SubsystemName: LPCSTR, HandleId: LPVOID, ObjectTypeName: LPSTR, ObjectName: LPSTR, SecurityDescriptor: PSECURITY_DESCRIPTOR, DesiredAccess: DWORD, GenericMapping: PGENERIC_MAPPING, ObjectCreation: BOOL, GrantedAccess: LPDWORD, AccessStatus: LPBOOL, pfGenerateOnClose: LPBOOL) BOOL;
 //pub extern fn AccessCheckByTypeAndAuditAlarmA(SubsystemName: LPCSTR, HandleId: LPVOID, ObjectTypeName: LPCSTR, ObjectName: LPCSTR, SecurityDescriptor: PSECURITY_DESCRIPTOR, PrincipalSelfSid: PSID, DesiredAccess: DWORD, AuditType: AUDIT_EVENT_TYPE, Flags: DWORD, ObjectTypeList: POBJECT_TYPE_LIST, ObjectTypeListLength: DWORD, GenericMapping: PGENERIC_MAPPING, ObjectCreation: BOOL, GrantedAccess: LPDWORD, AccessStatus: LPBOOL, pfGenerateOnClose: LPBOOL) BOOL;
 //pub extern fn AccessCheckByTypeResultListAndAuditAlarmA(SubsystemName: LPCSTR, HandleId: LPVOID, ObjectTypeName: LPCSTR, ObjectName: LPCSTR, SecurityDescriptor: PSECURITY_DESCRIPTOR, PrincipalSelfSid: PSID, DesiredAccess: DWORD, AuditType: AUDIT_EVENT_TYPE, Flags: DWORD, ObjectTypeList: POBJECT_TYPE_LIST, ObjectTypeListLength: DWORD, GenericMapping: PGENERIC_MAPPING, ObjectCreation: BOOL, GrantedAccess: LPDWORD, AccessStatusList: LPDWORD, pfGenerateOnClose: LPBOOL) BOOL;
@@ -8544,15 +9215,15 @@ pub const POPERATION_END_PARAMETERS = ?&struct__OPERATION_END_PARAMETERS;
 //pub extern fn ObjectCloseAuditAlarmA(SubsystemName: LPCSTR, HandleId: LPVOID, GenerateOnClose: BOOL) BOOL;
 //pub extern fn ObjectDeleteAuditAlarmA(SubsystemName: LPCSTR, HandleId: LPVOID, GenerateOnClose: BOOL) BOOL;
 //pub extern fn PrivilegedServiceAuditAlarmA(SubsystemName: LPCSTR, ServiceName: LPCSTR, ClientToken: HANDLE, Privileges: PPRIVILEGE_SET, AccessGranted: BOOL) BOOL;
-//pub extern fn AddConditionalAce(pAcl: PACL, dwAceRevision: DWORD, AceFlags: DWORD, AceType: UCHAR, AccessMask: DWORD, pSid: PSID, ConditionStr: PWCHAR, ReturnLength: ?&DWORD) BOOL;
+//pub extern fn AddConditionalAce(pAcl: PACL, dwAceRevision: DWORD, AceFlags: DWORD, AceType: UCHAR, AccessMask: DWORD, pSid: PSID, ConditionStr: PWCHAR, ReturnLength: ?[*]DWORD) BOOL;
 //pub extern fn SetFileSecurityA(lpFileName: LPCSTR, SecurityInformation: SECURITY_INFORMATION, pSecurityDescriptor: PSECURITY_DESCRIPTOR) BOOL;
 //pub extern fn GetFileSecurityA(lpFileName: LPCSTR, RequestedInformation: SECURITY_INFORMATION, pSecurityDescriptor: PSECURITY_DESCRIPTOR, nLength: DWORD, lpnLengthNeeded: LPDWORD) BOOL;
 //pub extern fn ReadDirectoryChangesW(hDirectory: HANDLE, lpBuffer: LPVOID, nBufferLength: DWORD, bWatchSubtree: BOOL, dwNotifyFilter: DWORD, lpBytesReturned: LPDWORD, lpOverlapped: LPOVERLAPPED, lpCompletionRoutine: LPOVERLAPPED_COMPLETION_ROUTINE) BOOL;
 //pub extern fn ReadDirectoryChangesExW(hDirectory: HANDLE, lpBuffer: LPVOID, nBufferLength: DWORD, bWatchSubtree: BOOL, dwNotifyFilter: DWORD, lpBytesReturned: LPDWORD, lpOverlapped: LPOVERLAPPED, lpCompletionRoutine: LPOVERLAPPED_COMPLETION_ROUTINE, ReadDirectoryNotifyInformationClass: READ_DIRECTORY_NOTIFY_INFORMATION_CLASS) BOOL;
 //pub extern fn MapViewOfFileExNuma(hFileMappingObject: HANDLE, dwDesiredAccess: DWORD, dwFileOffsetHigh: DWORD, dwFileOffsetLow: DWORD, dwNumberOfBytesToMap: SIZE_T, lpBaseAddress: LPVOID, nndPreferred: DWORD) LPVOID;
-//pub extern fn IsBadReadPtr(lp: ?&const c_void, ucb: UINT_PTR) BOOL;
+//pub extern fn IsBadReadPtr(lp: ?*const c_void, ucb: UINT_PTR) BOOL;
 //pub extern fn IsBadWritePtr(lp: LPVOID, ucb: UINT_PTR) BOOL;
-//pub extern fn IsBadHugeReadPtr(lp: ?&const c_void, ucb: UINT_PTR) BOOL;
+//pub extern fn IsBadHugeReadPtr(lp: ?*const c_void, ucb: UINT_PTR) BOOL;
 //pub extern fn IsBadHugeWritePtr(lp: LPVOID, ucb: UINT_PTR) BOOL;
 //pub extern fn IsBadStringPtrA(lpsz: LPCSTR, ucchMax: UINT_PTR) BOOL;
 //pub extern fn IsBadStringPtrW(lpsz: LPCWSTR, ucchMax: UINT_PTR) BOOL;
@@ -8588,8 +9259,8 @@ pub const POPERATION_END_PARAMETERS = ?&struct__OPERATION_END_PARAMETERS;
 //pub extern fn GetUserNameW(lpBuffer: LPWSTR, pcbBuffer: LPDWORD) BOOL;
 //pub extern fn LogonUserA(lpszUsername: LPCSTR, lpszDomain: LPCSTR, lpszPassword: LPCSTR, dwLogonType: DWORD, dwLogonProvider: DWORD, phToken: PHANDLE) BOOL;
 //pub extern fn LogonUserW(lpszUsername: LPCWSTR, lpszDomain: LPCWSTR, lpszPassword: LPCWSTR, dwLogonType: DWORD, dwLogonProvider: DWORD, phToken: PHANDLE) BOOL;
-//pub extern fn LogonUserExA(lpszUsername: LPCSTR, lpszDomain: LPCSTR, lpszPassword: LPCSTR, dwLogonType: DWORD, dwLogonProvider: DWORD, phToken: PHANDLE, ppLogonSid: ?&PSID, ppProfileBuffer: ?&PVOID, pdwProfileLength: LPDWORD, pQuotaLimits: PQUOTA_LIMITS) BOOL;
-//pub extern fn LogonUserExW(lpszUsername: LPCWSTR, lpszDomain: LPCWSTR, lpszPassword: LPCWSTR, dwLogonType: DWORD, dwLogonProvider: DWORD, phToken: PHANDLE, ppLogonSid: ?&PSID, ppProfileBuffer: ?&PVOID, pdwProfileLength: LPDWORD, pQuotaLimits: PQUOTA_LIMITS) BOOL;
+//pub extern fn LogonUserExA(lpszUsername: LPCSTR, lpszDomain: LPCSTR, lpszPassword: LPCSTR, dwLogonType: DWORD, dwLogonProvider: DWORD, phToken: PHANDLE, ppLogonSid: ?[*]PSID, ppProfileBuffer: ?[*]PVOID, pdwProfileLength: LPDWORD, pQuotaLimits: PQUOTA_LIMITS) BOOL;
+//pub extern fn LogonUserExW(lpszUsername: LPCWSTR, lpszDomain: LPCWSTR, lpszPassword: LPCWSTR, dwLogonType: DWORD, dwLogonProvider: DWORD, phToken: PHANDLE, ppLogonSid: ?[*]PSID, ppProfileBuffer: ?[*]PVOID, pdwProfileLength: LPDWORD, pQuotaLimits: PQUOTA_LIMITS) BOOL;
 //pub extern fn CreateProcessWithLogonW(lpUsername: LPCWSTR, lpDomain: LPCWSTR, lpPassword: LPCWSTR, dwLogonFlags: DWORD, lpApplicationName: LPCWSTR, lpCommandLine: LPWSTR, dwCreationFlags: DWORD, lpEnvironment: LPVOID, lpCurrentDirectory: LPCWSTR, lpStartupInfo: LPSTARTUPINFOW, lpProcessInformation: LPPROCESS_INFORMATION) BOOL;
 //pub extern fn CreateProcessWithTokenW(hToken: HANDLE, dwLogonFlags: DWORD, lpApplicationName: LPCWSTR, lpCommandLine: LPWSTR, dwCreationFlags: DWORD, lpEnvironment: LPVOID, lpCurrentDirectory: LPCWSTR, lpStartupInfo: LPSTARTUPINFOW, lpProcessInformation: LPPROCESS_INFORMATION) BOOL;
 //pub extern fn IsTokenUntrusted(TokenHandle: HANDLE) BOOL;
@@ -8626,21 +9297,21 @@ pub fn SetThreadpoolCallbackPersistent(pcbe: PTP_CALLBACK_ENVIRON) void {
 //pub extern fn CreatePrivateNamespaceA(lpPrivateNamespaceAttributes: LPSECURITY_ATTRIBUTES, lpBoundaryDescriptor: LPVOID, lpAliasPrefix: LPCSTR) HANDLE;
 //pub extern fn OpenPrivateNamespaceA(lpBoundaryDescriptor: LPVOID, lpAliasPrefix: LPCSTR) HANDLE;
 //pub extern fn CreateBoundaryDescriptorA(Name: LPCSTR, Flags: ULONG) HANDLE;
-//pub extern fn AddIntegrityLabelToBoundaryDescriptor(BoundaryDescriptor: ?&HANDLE, IntegrityLabel: PSID) BOOL;
+//pub extern fn AddIntegrityLabelToBoundaryDescriptor(BoundaryDescriptor: ?[*]HANDLE, IntegrityLabel: PSID) BOOL;
 pub const struct_tagHW_PROFILE_INFOA = extern struct {
     dwDockInfo: DWORD,
     szHwProfileGuid: [39]CHAR,
     szHwProfileName: [80]CHAR,
 };
 pub const HW_PROFILE_INFOA = struct_tagHW_PROFILE_INFOA;
-pub const LPHW_PROFILE_INFOA = ?&struct_tagHW_PROFILE_INFOA;
+pub const LPHW_PROFILE_INFOA = ?*struct_tagHW_PROFILE_INFOA;
 pub const struct_tagHW_PROFILE_INFOW = extern struct {
     dwDockInfo: DWORD,
     szHwProfileGuid: [39]WCHAR,
     szHwProfileName: [80]WCHAR,
 };
 pub const HW_PROFILE_INFOW = struct_tagHW_PROFILE_INFOW;
-pub const LPHW_PROFILE_INFOW = ?&struct_tagHW_PROFILE_INFOW;
+pub const LPHW_PROFILE_INFOW = ?*struct_tagHW_PROFILE_INFOW;
 pub const HW_PROFILE_INFO = HW_PROFILE_INFOA;
 pub const LPHW_PROFILE_INFO = LPHW_PROFILE_INFOA;
 //pub extern fn GetCurrentHwProfileA(lpHwProfileInfo: LPHW_PROFILE_INFOA) BOOL;
@@ -8660,8 +9331,8 @@ pub const struct__TIME_ZONE_INFORMATION = extern struct {
     DaylightBias: LONG,
 };
 pub const TIME_ZONE_INFORMATION = struct__TIME_ZONE_INFORMATION;
-pub const PTIME_ZONE_INFORMATION = ?&struct__TIME_ZONE_INFORMATION;
-pub const LPTIME_ZONE_INFORMATION = ?&struct__TIME_ZONE_INFORMATION;
+pub const PTIME_ZONE_INFORMATION = ?*struct__TIME_ZONE_INFORMATION;
+pub const LPTIME_ZONE_INFORMATION = ?*struct__TIME_ZONE_INFORMATION;
 pub const struct__TIME_DYNAMIC_ZONE_INFORMATION = extern struct {
     Bias: LONG,
     StandardName: [32]WCHAR,
@@ -8674,20 +9345,20 @@ pub const struct__TIME_DYNAMIC_ZONE_INFORMATION = extern struct {
     DynamicDaylightTimeDisabled: BOOLEAN,
 };
 pub const DYNAMIC_TIME_ZONE_INFORMATION = struct__TIME_DYNAMIC_ZONE_INFORMATION;
-pub const PDYNAMIC_TIME_ZONE_INFORMATION = ?&struct__TIME_DYNAMIC_ZONE_INFORMATION;
-//pub extern fn SystemTimeToTzSpecificLocalTime(lpTimeZoneInformation: ?&const TIME_ZONE_INFORMATION, lpUniversalTime: ?&const SYSTEMTIME, lpLocalTime: LPSYSTEMTIME) BOOL;
-//pub extern fn TzSpecificLocalTimeToSystemTime(lpTimeZoneInformation: ?&const TIME_ZONE_INFORMATION, lpLocalTime: ?&const SYSTEMTIME, lpUniversalTime: LPSYSTEMTIME) BOOL;
-//pub extern fn FileTimeToSystemTime(lpFileTime: ?&const FILETIME, lpSystemTime: LPSYSTEMTIME) BOOL;
-//pub extern fn SystemTimeToFileTime(lpSystemTime: ?&const SYSTEMTIME, lpFileTime: LPFILETIME) BOOL;
+pub const PDYNAMIC_TIME_ZONE_INFORMATION = ?*struct__TIME_DYNAMIC_ZONE_INFORMATION;
+//pub extern fn SystemTimeToTzSpecificLocalTime(lpTimeZoneInformation: ?[*]const TIME_ZONE_INFORMATION, lpUniversalTime: ?[*]const SYSTEMTIME, lpLocalTime: LPSYSTEMTIME) BOOL;
+//pub extern fn TzSpecificLocalTimeToSystemTime(lpTimeZoneInformation: ?[*]const TIME_ZONE_INFORMATION, lpLocalTime: ?[*]const SYSTEMTIME, lpUniversalTime: LPSYSTEMTIME) BOOL;
+//pub extern fn FileTimeToSystemTime(lpFileTime: ?[*]const FILETIME, lpSystemTime: LPSYSTEMTIME) BOOL;
+//pub extern fn SystemTimeToFileTime(lpSystemTime: ?[*]const SYSTEMTIME, lpFileTime: LPFILETIME) BOOL;
 //pub extern fn GetTimeZoneInformation(lpTimeZoneInformation: LPTIME_ZONE_INFORMATION) DWORD;
-//pub extern fn SetTimeZoneInformation(lpTimeZoneInformation: ?&const TIME_ZONE_INFORMATION) BOOL;
-//pub extern fn SetDynamicTimeZoneInformation(lpTimeZoneInformation: ?&const DYNAMIC_TIME_ZONE_INFORMATION) BOOL;
+//pub extern fn SetTimeZoneInformation(lpTimeZoneInformation: ?[*]const TIME_ZONE_INFORMATION) BOOL;
+//pub extern fn SetDynamicTimeZoneInformation(lpTimeZoneInformation: ?[*]const DYNAMIC_TIME_ZONE_INFORMATION) BOOL;
 //pub extern fn GetDynamicTimeZoneInformation(pTimeZoneInformation: PDYNAMIC_TIME_ZONE_INFORMATION) DWORD;
 //pub extern fn GetTimeZoneInformationForYear(wYear: USHORT, pdtzi: PDYNAMIC_TIME_ZONE_INFORMATION, ptzi: LPTIME_ZONE_INFORMATION) BOOL;
 //pub extern fn EnumDynamicTimeZoneInformation(dwIndex: DWORD, lpTimeZoneInformation: PDYNAMIC_TIME_ZONE_INFORMATION) DWORD;
 //pub extern fn GetDynamicTimeZoneInformationEffectiveYears(lpTimeZoneInformation: PDYNAMIC_TIME_ZONE_INFORMATION, FirstYear: LPDWORD, LastYear: LPDWORD) DWORD;
-//pub extern fn SystemTimeToTzSpecificLocalTimeEx(lpTimeZoneInformation: ?&const DYNAMIC_TIME_ZONE_INFORMATION, lpUniversalTime: ?&const SYSTEMTIME, lpLocalTime: LPSYSTEMTIME) BOOL;
-//pub extern fn TzSpecificLocalTimeToSystemTimeEx(lpTimeZoneInformation: ?&const DYNAMIC_TIME_ZONE_INFORMATION, lpLocalTime: ?&const SYSTEMTIME, lpUniversalTime: LPSYSTEMTIME) BOOL;
+//pub extern fn SystemTimeToTzSpecificLocalTimeEx(lpTimeZoneInformation: ?[*]const DYNAMIC_TIME_ZONE_INFORMATION, lpUniversalTime: ?[*]const SYSTEMTIME, lpLocalTime: LPSYSTEMTIME) BOOL;
+//pub extern fn TzSpecificLocalTimeToSystemTimeEx(lpTimeZoneInformation: ?[*]const DYNAMIC_TIME_ZONE_INFORMATION, lpLocalTime: ?[*]const SYSTEMTIME, lpUniversalTime: LPSYSTEMTIME) BOOL;
 //pub extern fn SetSystemPowerState(fSuspend: BOOL, fForce: BOOL) BOOL;
 pub const struct__SYSTEM_POWER_STATUS = extern struct {
     ACLineStatus: BYTE,
@@ -8698,9 +9369,9 @@ pub const struct__SYSTEM_POWER_STATUS = extern struct {
     BatteryFullLifeTime: DWORD,
 };
 pub const SYSTEM_POWER_STATUS = struct__SYSTEM_POWER_STATUS;
-pub const LPSYSTEM_POWER_STATUS = ?&struct__SYSTEM_POWER_STATUS;
+pub const LPSYSTEM_POWER_STATUS = ?*struct__SYSTEM_POWER_STATUS;
 //pub extern fn GetSystemPowerStatus(lpSystemPowerStatus: LPSYSTEM_POWER_STATUS) BOOL;
-//pub extern fn MapUserPhysicalPagesScatter(VirtualAddresses: ?&PVOID, NumberOfPages: ULONG_PTR, PageArray: PULONG_PTR) BOOL;
+//pub extern fn MapUserPhysicalPagesScatter(VirtualAddresses: ?[*]PVOID, NumberOfPages: ULONG_PTR, PageArray: PULONG_PTR) BOOL;
 //pub extern fn CreateJobObjectA(lpJobAttributes: LPSECURITY_ATTRIBUTES, lpName: LPCSTR) HANDLE;
 //pub extern fn OpenJobObjectA(dwDesiredAccess: DWORD, bInheritHandle: BOOL, lpName: LPCSTR) HANDLE;
 //pub extern fn CreateJobSet(NumJob: ULONG, UserJobSet: PJOB_SET_ARRAY, Flags: ULONG) BOOL;
@@ -8729,7 +9400,7 @@ pub const struct_tagACTCTXA = extern struct {
     hModule: HMODULE,
 };
 pub const ACTCTXA = struct_tagACTCTXA;
-pub const PACTCTXA = ?&struct_tagACTCTXA;
+pub const PACTCTXA = ?*struct_tagACTCTXA;
 pub const struct_tagACTCTXW = extern struct {
     cbSize: ULONG,
     dwFlags: DWORD,
@@ -8742,20 +9413,20 @@ pub const struct_tagACTCTXW = extern struct {
     hModule: HMODULE,
 };
 pub const ACTCTXW = struct_tagACTCTXW;
-pub const PACTCTXW = ?&struct_tagACTCTXW;
+pub const PACTCTXW = ?*struct_tagACTCTXW;
 pub const ACTCTX = ACTCTXA;
 pub const PACTCTX = PACTCTXA;
-pub const PCACTCTXA = ?&const ACTCTXA;
-pub const PCACTCTXW = ?&const ACTCTXW;
+pub const PCACTCTXA = ?[*]const ACTCTXA;
+pub const PCACTCTXW = ?[*]const ACTCTXW;
 pub const PCACTCTX = PCACTCTXA;
 //pub extern fn CreateActCtxA(pActCtx: PCACTCTXA) HANDLE;
 //pub extern fn CreateActCtxW(pActCtx: PCACTCTXW) HANDLE;
 //pub extern fn AddRefActCtx(hActCtx: HANDLE) void;
 //pub extern fn ReleaseActCtx(hActCtx: HANDLE) void;
 //pub extern fn ZombifyActCtx(hActCtx: HANDLE) BOOL;
-//pub extern fn ActivateActCtx(hActCtx: HANDLE, lpCookie: ?&ULONG_PTR) BOOL;
+//pub extern fn ActivateActCtx(hActCtx: HANDLE, lpCookie: ?[*]ULONG_PTR) BOOL;
 //pub extern fn DeactivateActCtx(dwFlags: DWORD, ulCookie: ULONG_PTR) BOOL;
-//pub extern fn GetCurrentActCtx(lphActCtx: ?&HANDLE) BOOL;
+//pub extern fn GetCurrentActCtx(lphActCtx: ?[*]HANDLE) BOOL;
 pub const struct_tagACTCTX_SECTION_KEYED_DATA_2600 = extern struct {
     cbSize: ULONG,
     ulDataFormatVersion: ULONG,
@@ -8769,8 +9440,8 @@ pub const struct_tagACTCTX_SECTION_KEYED_DATA_2600 = extern struct {
     ulAssemblyRosterIndex: ULONG,
 };
 pub const ACTCTX_SECTION_KEYED_DATA_2600 = struct_tagACTCTX_SECTION_KEYED_DATA_2600;
-pub const PACTCTX_SECTION_KEYED_DATA_2600 = ?&struct_tagACTCTX_SECTION_KEYED_DATA_2600;
-pub const PCACTCTX_SECTION_KEYED_DATA_2600 = ?&const ACTCTX_SECTION_KEYED_DATA_2600;
+pub const PACTCTX_SECTION_KEYED_DATA_2600 = ?*struct_tagACTCTX_SECTION_KEYED_DATA_2600;
+pub const PCACTCTX_SECTION_KEYED_DATA_2600 = ?[*]const ACTCTX_SECTION_KEYED_DATA_2600;
 pub const struct_tagACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA = extern struct {
     lpInformation: PVOID,
     lpSectionBase: PVOID,
@@ -8779,8 +9450,8 @@ pub const struct_tagACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA = extern struct 
     ulSectionGlobalDataLength: ULONG,
 };
 pub const ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA = struct_tagACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA;
-pub const PACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA = ?&struct_tagACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA;
-pub const PCACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA = ?&const ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA;
+pub const PACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA = ?*struct_tagACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA;
+pub const PCACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA = ?[*]const ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA;
 pub const struct_tagACTCTX_SECTION_KEYED_DATA = extern struct {
     cbSize: ULONG,
     ulDataFormatVersion: ULONG,
@@ -8796,20 +9467,20 @@ pub const struct_tagACTCTX_SECTION_KEYED_DATA = extern struct {
     AssemblyMetadata: ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA,
 };
 pub const ACTCTX_SECTION_KEYED_DATA = struct_tagACTCTX_SECTION_KEYED_DATA;
-pub const PACTCTX_SECTION_KEYED_DATA = ?&struct_tagACTCTX_SECTION_KEYED_DATA;
-pub const PCACTCTX_SECTION_KEYED_DATA = ?&const ACTCTX_SECTION_KEYED_DATA;
-//pub extern fn FindActCtxSectionStringA(dwFlags: DWORD, lpExtensionGuid: ?&const GUID, ulSectionId: ULONG, lpStringToFind: LPCSTR, ReturnedData: PACTCTX_SECTION_KEYED_DATA) BOOL;
-//pub extern fn FindActCtxSectionStringW(dwFlags: DWORD, lpExtensionGuid: ?&const GUID, ulSectionId: ULONG, lpStringToFind: LPCWSTR, ReturnedData: PACTCTX_SECTION_KEYED_DATA) BOOL;
-//pub extern fn FindActCtxSectionGuid(dwFlags: DWORD, lpExtensionGuid: ?&const GUID, ulSectionId: ULONG, lpGuidToFind: ?&const GUID, ReturnedData: PACTCTX_SECTION_KEYED_DATA) BOOL;
+pub const PACTCTX_SECTION_KEYED_DATA = ?*struct_tagACTCTX_SECTION_KEYED_DATA;
+pub const PCACTCTX_SECTION_KEYED_DATA = ?[*]const ACTCTX_SECTION_KEYED_DATA;
+//pub extern fn FindActCtxSectionStringA(dwFlags: DWORD, lpExtensionGuid: ?[*]const GUID, ulSectionId: ULONG, lpStringToFind: LPCSTR, ReturnedData: PACTCTX_SECTION_KEYED_DATA) BOOL;
+//pub extern fn FindActCtxSectionStringW(dwFlags: DWORD, lpExtensionGuid: ?[*]const GUID, ulSectionId: ULONG, lpStringToFind: LPCWSTR, ReturnedData: PACTCTX_SECTION_KEYED_DATA) BOOL;
+//pub extern fn FindActCtxSectionGuid(dwFlags: DWORD, lpExtensionGuid: ?[*]const GUID, ulSectionId: ULONG, lpGuidToFind: ?[*]const GUID, ReturnedData: PACTCTX_SECTION_KEYED_DATA) BOOL;
 pub const struct__ACTIVATION_CONTEXT_BASIC_INFORMATION = extern struct {
     hActCtx: HANDLE,
     dwFlags: DWORD,
 };
 pub const ACTIVATION_CONTEXT_BASIC_INFORMATION = struct__ACTIVATION_CONTEXT_BASIC_INFORMATION;
-pub const PACTIVATION_CONTEXT_BASIC_INFORMATION = ?&struct__ACTIVATION_CONTEXT_BASIC_INFORMATION;
-pub const PCACTIVATION_CONTEXT_BASIC_INFORMATION = ?&const struct__ACTIVATION_CONTEXT_BASIC_INFORMATION;
-//pub extern fn QueryActCtxW(dwFlags: DWORD, hActCtx: HANDLE, pvSubInstance: PVOID, ulInfoClass: ULONG, pvBuffer: PVOID, cbBuffer: SIZE_T, pcbWrittenOrRequired: ?&SIZE_T) BOOL;
-pub const PQUERYACTCTXW_FUNC = ?extern fn(DWORD, HANDLE, PVOID, ULONG, PVOID, SIZE_T, ?&SIZE_T) BOOL;
+pub const PACTIVATION_CONTEXT_BASIC_INFORMATION = ?*struct__ACTIVATION_CONTEXT_BASIC_INFORMATION;
+pub const PCACTIVATION_CONTEXT_BASIC_INFORMATION = ?*const struct__ACTIVATION_CONTEXT_BASIC_INFORMATION;
+//pub extern fn QueryActCtxW(dwFlags: DWORD, hActCtx: HANDLE, pvSubInstance: PVOID, ulInfoClass: ULONG, pvBuffer: PVOID, cbBuffer: SIZE_T, pcbWrittenOrRequired: ?[*]SIZE_T) BOOL;
+pub const PQUERYACTCTXW_FUNC = ?extern fn(DWORD, HANDLE, PVOID, ULONG, PVOID, SIZE_T, ?[*]SIZE_T) BOOL;
 //pub extern fn WTSGetActiveConsoleSessionId() DWORD;
 //pub extern fn WTSGetServiceSessionId() DWORD;
 //pub extern fn WTSIsServerContainer() BOOLEAN;
@@ -8829,7 +9500,7 @@ pub const APPLICATION_RECOVERY_CALLBACK = ?extern fn(PVOID) DWORD;
 //pub extern fn UnregisterApplicationRecoveryCallback() HRESULT;
 //pub extern fn RegisterApplicationRestart(pwzCommandline: PCWSTR, dwFlags: DWORD) HRESULT;
 //pub extern fn UnregisterApplicationRestart() HRESULT;
-//pub extern fn GetApplicationRecoveryCallback(hProcess: HANDLE, pRecoveryCallback: ?&APPLICATION_RECOVERY_CALLBACK, ppvParameter: ?&PVOID, pdwPingInterval: PDWORD, pdwFlags: PDWORD) HRESULT;
+//pub extern fn GetApplicationRecoveryCallback(hProcess: HANDLE, pRecoveryCallback: ?[*]APPLICATION_RECOVERY_CALLBACK, ppvParameter: ?[*]PVOID, pdwPingInterval: PDWORD, pdwFlags: PDWORD) HRESULT;
 //pub extern fn GetApplicationRestartSettings(hProcess: HANDLE, pwzCommandline: PWSTR, pcchSize: PDWORD, pdwFlags: PDWORD) HRESULT;
 //pub extern fn ApplicationRecoveryInProgress(pbCancelled: PBOOL) HRESULT;
 //pub extern fn ApplicationRecoveryFinished(bSuccess: BOOL) void;
@@ -8841,7 +9512,7 @@ pub const struct__FILE_BASIC_INFO = extern struct {
     FileAttributes: DWORD,
 };
 pub const FILE_BASIC_INFO = struct__FILE_BASIC_INFO;
-pub const PFILE_BASIC_INFO = ?&struct__FILE_BASIC_INFO;
+pub const PFILE_BASIC_INFO = ?*struct__FILE_BASIC_INFO;
 pub const struct__FILE_STANDARD_INFO = extern struct {
     AllocationSize: LARGE_INTEGER,
     EndOfFile: LARGE_INTEGER,
@@ -8850,13 +9521,13 @@ pub const struct__FILE_STANDARD_INFO = extern struct {
     Directory: BOOLEAN,
 };
 pub const FILE_STANDARD_INFO = struct__FILE_STANDARD_INFO;
-pub const PFILE_STANDARD_INFO = ?&struct__FILE_STANDARD_INFO;
+pub const PFILE_STANDARD_INFO = ?*struct__FILE_STANDARD_INFO;
 pub const struct__FILE_NAME_INFO = extern struct {
     FileNameLength: DWORD,
     FileName: [1]WCHAR,
 };
 pub const FILE_NAME_INFO = struct__FILE_NAME_INFO;
-pub const PFILE_NAME_INFO = ?&struct__FILE_NAME_INFO;
+pub const PFILE_NAME_INFO = ?*struct__FILE_NAME_INFO;
 pub const struct__FILE_RENAME_INFO = extern struct {
     @"": extern union {
         ReplaceIfExists: BOOLEAN,
@@ -8867,17 +9538,17 @@ pub const struct__FILE_RENAME_INFO = extern struct {
     FileName: [1]WCHAR,
 };
 pub const FILE_RENAME_INFO = struct__FILE_RENAME_INFO;
-pub const PFILE_RENAME_INFO = ?&struct__FILE_RENAME_INFO;
+pub const PFILE_RENAME_INFO = ?*struct__FILE_RENAME_INFO;
 pub const struct__FILE_ALLOCATION_INFO = extern struct {
     AllocationSize: LARGE_INTEGER,
 };
 pub const FILE_ALLOCATION_INFO = struct__FILE_ALLOCATION_INFO;
-pub const PFILE_ALLOCATION_INFO = ?&struct__FILE_ALLOCATION_INFO;
+pub const PFILE_ALLOCATION_INFO = ?*struct__FILE_ALLOCATION_INFO;
 pub const struct__FILE_END_OF_FILE_INFO = extern struct {
     EndOfFile: LARGE_INTEGER,
 };
 pub const FILE_END_OF_FILE_INFO = struct__FILE_END_OF_FILE_INFO;
-pub const PFILE_END_OF_FILE_INFO = ?&struct__FILE_END_OF_FILE_INFO;
+pub const PFILE_END_OF_FILE_INFO = ?*struct__FILE_END_OF_FILE_INFO;
 pub const struct__FILE_STREAM_INFO = extern struct {
     NextEntryOffset: DWORD,
     StreamNameLength: DWORD,
@@ -8886,7 +9557,7 @@ pub const struct__FILE_STREAM_INFO = extern struct {
     StreamName: [1]WCHAR,
 };
 pub const FILE_STREAM_INFO = struct__FILE_STREAM_INFO;
-pub const PFILE_STREAM_INFO = ?&struct__FILE_STREAM_INFO;
+pub const PFILE_STREAM_INFO = ?*struct__FILE_STREAM_INFO;
 pub const struct__FILE_COMPRESSION_INFO = extern struct {
     CompressedFileSize: LARGE_INTEGER,
     CompressionFormat: WORD,
@@ -8896,23 +9567,23 @@ pub const struct__FILE_COMPRESSION_INFO = extern struct {
     Reserved: [3]UCHAR,
 };
 pub const FILE_COMPRESSION_INFO = struct__FILE_COMPRESSION_INFO;
-pub const PFILE_COMPRESSION_INFO = ?&struct__FILE_COMPRESSION_INFO;
+pub const PFILE_COMPRESSION_INFO = ?*struct__FILE_COMPRESSION_INFO;
 pub const struct__FILE_ATTRIBUTE_TAG_INFO = extern struct {
     FileAttributes: DWORD,
     ReparseTag: DWORD,
 };
 pub const FILE_ATTRIBUTE_TAG_INFO = struct__FILE_ATTRIBUTE_TAG_INFO;
-pub const PFILE_ATTRIBUTE_TAG_INFO = ?&struct__FILE_ATTRIBUTE_TAG_INFO;
+pub const PFILE_ATTRIBUTE_TAG_INFO = ?*struct__FILE_ATTRIBUTE_TAG_INFO;
 pub const struct__FILE_DISPOSITION_INFO = extern struct {
     DeleteFileA: BOOLEAN,
 };
 pub const FILE_DISPOSITION_INFO = struct__FILE_DISPOSITION_INFO;
-pub const PFILE_DISPOSITION_INFO = ?&struct__FILE_DISPOSITION_INFO;
+pub const PFILE_DISPOSITION_INFO = ?*struct__FILE_DISPOSITION_INFO;
 pub const struct__FILE_DISPOSITION_INFO_EX = extern struct {
     Flags: DWORD,
 };
 pub const FILE_DISPOSITION_INFO_EX = struct__FILE_DISPOSITION_INFO_EX;
-pub const PFILE_DISPOSITION_INFO_EX = ?&struct__FILE_DISPOSITION_INFO_EX;
+pub const PFILE_DISPOSITION_INFO_EX = ?*struct__FILE_DISPOSITION_INFO_EX;
 pub const struct__FILE_ID_BOTH_DIR_INFO = extern struct {
     NextEntryOffset: DWORD,
     FileIndex: DWORD,
@@ -8931,7 +9602,7 @@ pub const struct__FILE_ID_BOTH_DIR_INFO = extern struct {
     FileName: [1]WCHAR,
 };
 pub const FILE_ID_BOTH_DIR_INFO = struct__FILE_ID_BOTH_DIR_INFO;
-pub const PFILE_ID_BOTH_DIR_INFO = ?&struct__FILE_ID_BOTH_DIR_INFO;
+pub const PFILE_ID_BOTH_DIR_INFO = ?*struct__FILE_ID_BOTH_DIR_INFO;
 pub const struct__FILE_FULL_DIR_INFO = extern struct {
     NextEntryOffset: ULONG,
     FileIndex: ULONG,
@@ -8947,23 +9618,28 @@ pub const struct__FILE_FULL_DIR_INFO = extern struct {
     FileName: [1]WCHAR,
 };
 pub const FILE_FULL_DIR_INFO = struct__FILE_FULL_DIR_INFO;
-pub const PFILE_FULL_DIR_INFO = ?&struct__FILE_FULL_DIR_INFO;
-pub const IoPriorityHintVeryLow: c_int = 0;
-pub const IoPriorityHintLow: c_int = 1;
-pub const IoPriorityHintNormal: c_int = 2;
-pub const MaximumIoPriorityHintType: c_int = 3;
-pub const enum__PRIORITY_HINT = c_int;
+pub const PFILE_FULL_DIR_INFO = ?*struct__FILE_FULL_DIR_INFO;
+pub const IoPriorityHintVeryLow = enum__PRIORITY_HINT.IoPriorityHintVeryLow;
+pub const IoPriorityHintLow = enum__PRIORITY_HINT.IoPriorityHintLow;
+pub const IoPriorityHintNormal = enum__PRIORITY_HINT.IoPriorityHintNormal;
+pub const MaximumIoPriorityHintType = enum__PRIORITY_HINT.MaximumIoPriorityHintType;
+pub const enum__PRIORITY_HINT = extern enum {
+    IoPriorityHintVeryLow = 0,
+    IoPriorityHintLow = 1,
+    IoPriorityHintNormal = 2,
+    MaximumIoPriorityHintType = 3,
+};
 pub const PRIORITY_HINT = enum__PRIORITY_HINT;
 pub const struct__FILE_IO_PRIORITY_HINT_INFO = extern struct {
     PriorityHint: PRIORITY_HINT,
 };
 pub const FILE_IO_PRIORITY_HINT_INFO = struct__FILE_IO_PRIORITY_HINT_INFO;
-pub const PFILE_IO_PRIORITY_HINT_INFO = ?&struct__FILE_IO_PRIORITY_HINT_INFO;
+pub const PFILE_IO_PRIORITY_HINT_INFO = ?*struct__FILE_IO_PRIORITY_HINT_INFO;
 pub const struct__FILE_ALIGNMENT_INFO = extern struct {
     AlignmentRequirement: ULONG,
 };
 pub const FILE_ALIGNMENT_INFO = struct__FILE_ALIGNMENT_INFO;
-pub const PFILE_ALIGNMENT_INFO = ?&struct__FILE_ALIGNMENT_INFO;
+pub const PFILE_ALIGNMENT_INFO = ?*struct__FILE_ALIGNMENT_INFO;
 pub const struct__FILE_STORAGE_INFO = extern struct {
     LogicalBytesPerSector: ULONG,
     PhysicalBytesPerSectorForAtomicity: ULONG,
@@ -8974,13 +9650,13 @@ pub const struct__FILE_STORAGE_INFO = extern struct {
     ByteOffsetForPartitionAlignment: ULONG,
 };
 pub const FILE_STORAGE_INFO = struct__FILE_STORAGE_INFO;
-pub const PFILE_STORAGE_INFO = ?&struct__FILE_STORAGE_INFO;
+pub const PFILE_STORAGE_INFO = ?*struct__FILE_STORAGE_INFO;
 pub const struct__FILE_ID_INFO = extern struct {
     VolumeSerialNumber: ULONGLONG,
     FileId: FILE_ID_128,
 };
 pub const FILE_ID_INFO = struct__FILE_ID_INFO;
-pub const PFILE_ID_INFO = ?&struct__FILE_ID_INFO;
+pub const PFILE_ID_INFO = ?*struct__FILE_ID_INFO;
 pub const struct__FILE_ID_EXTD_DIR_INFO = extern struct {
     NextEntryOffset: ULONG,
     FileIndex: ULONG,
@@ -8998,7 +9674,7 @@ pub const struct__FILE_ID_EXTD_DIR_INFO = extern struct {
     FileName: [1]WCHAR,
 };
 pub const FILE_ID_EXTD_DIR_INFO = struct__FILE_ID_EXTD_DIR_INFO;
-pub const PFILE_ID_EXTD_DIR_INFO = ?&struct__FILE_ID_EXTD_DIR_INFO;
+pub const PFILE_ID_EXTD_DIR_INFO = ?*struct__FILE_ID_EXTD_DIR_INFO;
 pub const struct__FILE_REMOTE_PROTOCOL_INFO = extern struct {
     StructureVersion: USHORT,
     StructureSize: USHORT,
@@ -9025,7 +9701,7 @@ pub const struct__FILE_REMOTE_PROTOCOL_INFO = extern struct {
     },
 };
 pub const FILE_REMOTE_PROTOCOL_INFO = struct__FILE_REMOTE_PROTOCOL_INFO;
-pub const PFILE_REMOTE_PROTOCOL_INFO = ?&struct__FILE_REMOTE_PROTOCOL_INFO;
+pub const PFILE_REMOTE_PROTOCOL_INFO = ?*struct__FILE_REMOTE_PROTOCOL_INFO;
 //pub extern fn GetFileInformationByHandleEx(hFile: HANDLE, FileInformationClass: FILE_INFO_BY_HANDLE_CLASS, lpFileInformation: LPVOID, dwBufferSize: DWORD) BOOL;
 pub const FileIdType = enum__FILE_ID_TYPE.FileIdType;
 pub const ObjectIdType = enum__FILE_ID_TYPE.ObjectIdType;
@@ -9038,7 +9714,7 @@ pub const enum__FILE_ID_TYPE = extern enum {
     MaximumFileIdType,
 };
 pub const FILE_ID_TYPE = enum__FILE_ID_TYPE;
-pub const PFILE_ID_TYPE = ?&enum__FILE_ID_TYPE;
+pub const PFILE_ID_TYPE = ?[*]enum__FILE_ID_TYPE;
 pub const struct_FILE_ID_DESCRIPTOR = extern struct {
     dwSize: DWORD,
     Type: FILE_ID_TYPE,
@@ -9049,23 +9725,23 @@ pub const struct_FILE_ID_DESCRIPTOR = extern struct {
     },
 };
 pub const FILE_ID_DESCRIPTOR = struct_FILE_ID_DESCRIPTOR;
-pub const LPFILE_ID_DESCRIPTOR = ?&struct_FILE_ID_DESCRIPTOR;
+pub const LPFILE_ID_DESCRIPTOR = ?*struct_FILE_ID_DESCRIPTOR;
 //pub extern fn OpenFileById(hVolumeHint: HANDLE, lpFileId: LPFILE_ID_DESCRIPTOR, dwDesiredAccess: DWORD, dwShareMode: DWORD, lpSecurityAttributes: LPSECURITY_ATTRIBUTES, dwFlagsAndAttributes: DWORD) HANDLE;
 //pub extern fn CreateSymbolicLinkA(lpSymlinkFileName: LPCSTR, lpTargetFileName: LPCSTR, dwFlags: DWORD) BOOLEAN;
 //pub extern fn CreateSymbolicLinkW(lpSymlinkFileName: LPCWSTR, lpTargetFileName: LPCWSTR, dwFlags: DWORD) BOOLEAN;
-//pub extern fn QueryActCtxSettingsW(dwFlags: DWORD, hActCtx: HANDLE, settingsNameSpace: PCWSTR, settingName: PCWSTR, pvBuffer: PWSTR, dwBuffer: SIZE_T, pdwWrittenOrRequired: ?&SIZE_T) BOOL;
+//pub extern fn QueryActCtxSettingsW(dwFlags: DWORD, hActCtx: HANDLE, settingsNameSpace: PCWSTR, settingName: PCWSTR, pvBuffer: PWSTR, dwBuffer: SIZE_T, pdwWrittenOrRequired: ?[*]SIZE_T) BOOL;
 //pub extern fn CreateSymbolicLinkTransactedA(lpSymlinkFileName: LPCSTR, lpTargetFileName: LPCSTR, dwFlags: DWORD, hTransaction: HANDLE) BOOLEAN;
 //pub extern fn CreateSymbolicLinkTransactedW(lpSymlinkFileName: LPCWSTR, lpTargetFileName: LPCWSTR, dwFlags: DWORD, hTransaction: HANDLE) BOOLEAN;
 //pub extern fn ReplacePartitionUnit(TargetPartition: PWSTR, SparePartition: PWSTR, Flags: ULONG) BOOL;
 //pub extern fn AddSecureMemoryCacheCallback(pfnCallBack: PSECURE_MEMORY_CACHE_CALLBACK) BOOL;
 //pub extern fn RemoveSecureMemoryCacheCallback(pfnCallBack: PSECURE_MEMORY_CACHE_CALLBACK) BOOL;
 //pub extern fn CopyContext(Destination: PCONTEXT, ContextFlags: DWORD, Source: PCONTEXT) BOOL;
-//pub extern fn InitializeContext(Buffer: PVOID, ContextFlags: DWORD, Context: ?&PCONTEXT, ContextLength: PDWORD) BOOL;
+//pub extern fn InitializeContext(Buffer: PVOID, ContextFlags: DWORD, Context: ?[*]PCONTEXT, ContextLength: PDWORD) BOOL;
 //pub extern fn GetEnabledXStateFeatures() DWORD64;
 //pub extern fn GetXStateFeaturesMask(Context: PCONTEXT, FeatureMask: PDWORD64) BOOL;
 //pub extern fn LocateXStateFeature(Context: PCONTEXT, FeatureId: DWORD, Length: PDWORD) PVOID;
 //pub extern fn SetXStateFeaturesMask(Context: PCONTEXT, FeatureMask: DWORD64) BOOL;
-//pub extern fn EnableThreadProfiling(ThreadHandle: HANDLE, Flags: DWORD, HardwareCounters: DWORD64, PerformanceDataHandle: ?&HANDLE) DWORD;
+//pub extern fn EnableThreadProfiling(ThreadHandle: HANDLE, Flags: DWORD, HardwareCounters: DWORD64, PerformanceDataHandle: ?[*]HANDLE) DWORD;
 //pub extern fn DisableThreadProfiling(PerformanceDataHandle: HANDLE) DWORD;
 //pub extern fn QueryThreadProfiling(ThreadHandle: HANDLE, Enabled: PBOOLEAN) DWORD;
 //pub extern fn ReadThreadProfilingData(PerformanceDataHandle: HANDLE, Flags: DWORD, PerformanceData: PPERFORMANCE_DATA) DWORD;
@@ -9076,20 +9752,20 @@ pub const struct__DRAWPATRECT = extern struct {
     wPattern: WORD,
 };
 pub const DRAWPATRECT = struct__DRAWPATRECT;
-pub const PDRAWPATRECT = ?&struct__DRAWPATRECT;
+pub const PDRAWPATRECT = ?*struct__DRAWPATRECT;
 pub const struct__PSINJECTDATA = extern struct {
     DataBytes: DWORD,
     InjectionPoint: WORD,
     PageNumber: WORD,
 };
 pub const PSINJECTDATA = struct__PSINJECTDATA;
-pub const PPSINJECTDATA = ?&struct__PSINJECTDATA;
+pub const PPSINJECTDATA = ?*struct__PSINJECTDATA;
 pub const struct__PSFEATURE_OUTPUT = extern struct {
     bPageIndependent: BOOL,
     bSetPageDevice: BOOL,
 };
 pub const PSFEATURE_OUTPUT = struct__PSFEATURE_OUTPUT;
-pub const PPSFEATURE_OUTPUT = ?&struct__PSFEATURE_OUTPUT;
+pub const PPSFEATURE_OUTPUT = ?*struct__PSFEATURE_OUTPUT;
 pub const struct__PSFEATURE_CUSTPAPER = extern struct {
     lOrientation: LONG,
     lWidth: LONG,
@@ -9098,7 +9774,7 @@ pub const struct__PSFEATURE_CUSTPAPER = extern struct {
     lHeightOffset: LONG,
 };
 pub const PSFEATURE_CUSTPAPER = struct__PSFEATURE_CUSTPAPER;
-pub const PPSFEATURE_CUSTPAPER = ?&struct__PSFEATURE_CUSTPAPER;
+pub const PPSFEATURE_CUSTPAPER = ?*struct__PSFEATURE_CUSTPAPER;
 pub const struct_tagXFORM = extern struct {
     eM11: FLOAT,
     eM12: FLOAT,
@@ -9108,8 +9784,8 @@ pub const struct_tagXFORM = extern struct {
     eDy: FLOAT,
 };
 pub const XFORM = struct_tagXFORM;
-pub const PXFORM = ?&struct_tagXFORM;
-pub const LPXFORM = ?&struct_tagXFORM;
+pub const PXFORM = ?*struct_tagXFORM;
+pub const LPXFORM = ?*struct_tagXFORM;
 pub const struct_tagBITMAP = extern struct {
     bmType: LONG,
     bmWidth: LONG,
@@ -9120,18 +9796,18 @@ pub const struct_tagBITMAP = extern struct {
     bmBits: LPVOID,
 };
 pub const BITMAP = struct_tagBITMAP;
-pub const PBITMAP = ?&struct_tagBITMAP;
-pub const NPBITMAP = ?&struct_tagBITMAP;
-pub const LPBITMAP = ?&struct_tagBITMAP;
+pub const PBITMAP = ?*struct_tagBITMAP;
+pub const NPBITMAP = ?*struct_tagBITMAP;
+pub const LPBITMAP = ?*struct_tagBITMAP;
 pub const struct_tagRGBTRIPLE = extern struct {
     rgbtBlue: BYTE,
     rgbtGreen: BYTE,
     rgbtRed: BYTE,
 };
 pub const RGBTRIPLE = struct_tagRGBTRIPLE;
-pub const PRGBTRIPLE = ?&struct_tagRGBTRIPLE;
-pub const NPRGBTRIPLE = ?&struct_tagRGBTRIPLE;
-pub const LPRGBTRIPLE = ?&struct_tagRGBTRIPLE;
+pub const PRGBTRIPLE = ?*struct_tagRGBTRIPLE;
+pub const NPRGBTRIPLE = ?*struct_tagRGBTRIPLE;
+pub const LPRGBTRIPLE = ?*struct_tagRGBTRIPLE;
 pub const struct_tagRGBQUAD = extern struct {
     rgbBlue: BYTE,
     rgbGreen: BYTE,
@@ -9139,27 +9815,27 @@ pub const struct_tagRGBQUAD = extern struct {
     rgbReserved: BYTE,
 };
 pub const RGBQUAD = struct_tagRGBQUAD;
-pub const LPRGBQUAD = ?&RGBQUAD;
+pub const LPRGBQUAD = ?[*]RGBQUAD;
 pub const LCSCSTYPE = LONG;
 pub const LCSGAMUTMATCH = LONG;
 pub const FXPT16DOT16 = c_long;
-pub const LPFXPT16DOT16 = ?&c_long;
+pub const LPFXPT16DOT16 = ?[*]c_long;
 pub const FXPT2DOT30 = c_long;
-pub const LPFXPT2DOT30 = ?&c_long;
+pub const LPFXPT2DOT30 = ?[*]c_long;
 pub const struct_tagCIEXYZ = extern struct {
     ciexyzX: FXPT2DOT30,
     ciexyzY: FXPT2DOT30,
     ciexyzZ: FXPT2DOT30,
 };
 pub const CIEXYZ = struct_tagCIEXYZ;
-pub const LPCIEXYZ = ?&CIEXYZ;
+pub const LPCIEXYZ = ?[*]CIEXYZ;
 pub const struct_tagICEXYZTRIPLE = extern struct {
     ciexyzRed: CIEXYZ,
     ciexyzGreen: CIEXYZ,
     ciexyzBlue: CIEXYZ,
 };
 pub const CIEXYZTRIPLE = struct_tagICEXYZTRIPLE;
-pub const LPCIEXYZTRIPLE = ?&CIEXYZTRIPLE;
+pub const LPCIEXYZTRIPLE = ?[*]CIEXYZTRIPLE;
 pub const struct_tagLOGCOLORSPACEA = extern struct {
     lcsSignature: DWORD,
     lcsVersion: DWORD,
@@ -9173,7 +9849,7 @@ pub const struct_tagLOGCOLORSPACEA = extern struct {
     lcsFilename: [260]CHAR,
 };
 pub const LOGCOLORSPACEA = struct_tagLOGCOLORSPACEA;
-pub const LPLOGCOLORSPACEA = ?&struct_tagLOGCOLORSPACEA;
+pub const LPLOGCOLORSPACEA = ?*struct_tagLOGCOLORSPACEA;
 pub const struct_tagLOGCOLORSPACEW = extern struct {
     lcsSignature: DWORD,
     lcsVersion: DWORD,
@@ -9187,7 +9863,7 @@ pub const struct_tagLOGCOLORSPACEW = extern struct {
     lcsFilename: [260]WCHAR,
 };
 pub const LOGCOLORSPACEW = struct_tagLOGCOLORSPACEW;
-pub const LPLOGCOLORSPACEW = ?&struct_tagLOGCOLORSPACEW;
+pub const LPLOGCOLORSPACEW = ?*struct_tagLOGCOLORSPACEW;
 pub const LOGCOLORSPACE = LOGCOLORSPACEA;
 pub const LPLOGCOLORSPACE = LPLOGCOLORSPACEA;
 pub const struct_tagBITMAPCOREHEADER = extern struct {
@@ -9198,8 +9874,8 @@ pub const struct_tagBITMAPCOREHEADER = extern struct {
     bcBitCount: WORD,
 };
 pub const BITMAPCOREHEADER = struct_tagBITMAPCOREHEADER;
-pub const LPBITMAPCOREHEADER = ?&struct_tagBITMAPCOREHEADER;
-pub const PBITMAPCOREHEADER = ?&struct_tagBITMAPCOREHEADER;
+pub const LPBITMAPCOREHEADER = ?*struct_tagBITMAPCOREHEADER;
+pub const PBITMAPCOREHEADER = ?*struct_tagBITMAPCOREHEADER;
 pub const struct_tagBITMAPINFOHEADER = extern struct {
     biSize: DWORD,
     biWidth: LONG,
@@ -9214,8 +9890,8 @@ pub const struct_tagBITMAPINFOHEADER = extern struct {
     biClrImportant: DWORD,
 };
 pub const BITMAPINFOHEADER = struct_tagBITMAPINFOHEADER;
-pub const LPBITMAPINFOHEADER = ?&struct_tagBITMAPINFOHEADER;
-pub const PBITMAPINFOHEADER = ?&struct_tagBITMAPINFOHEADER;
+pub const LPBITMAPINFOHEADER = ?*struct_tagBITMAPINFOHEADER;
+pub const PBITMAPINFOHEADER = ?*struct_tagBITMAPINFOHEADER;
 pub const BITMAPV4HEADER = extern struct {
     bV4Size: DWORD,
     bV4Width: LONG,
@@ -9238,7 +9914,7 @@ pub const BITMAPV4HEADER = extern struct {
     bV4GammaGreen: DWORD,
     bV4GammaBlue: DWORD,
 };
-pub const LPBITMAPV4HEADER = ?&extern struct {
+pub const LPBITMAPV4HEADER = ?[*]extern struct {
     bV4Size: DWORD,
     bV4Width: LONG,
     bV4Height: LONG,
@@ -9260,7 +9936,7 @@ pub const LPBITMAPV4HEADER = ?&extern struct {
     bV4GammaGreen: DWORD,
     bV4GammaBlue: DWORD,
 };
-pub const PBITMAPV4HEADER = ?&extern struct {
+pub const PBITMAPV4HEADER = ?[*]extern struct {
     bV4Size: DWORD,
     bV4Width: LONG,
     bV4Height: LONG,
@@ -9308,7 +9984,7 @@ pub const BITMAPV5HEADER = extern struct {
     bV5ProfileSize: DWORD,
     bV5Reserved: DWORD,
 };
-pub const LPBITMAPV5HEADER = ?&extern struct {
+pub const LPBITMAPV5HEADER = ?[*]extern struct {
     bV5Size: DWORD,
     bV5Width: LONG,
     bV5Height: LONG,
@@ -9334,7 +10010,7 @@ pub const LPBITMAPV5HEADER = ?&extern struct {
     bV5ProfileSize: DWORD,
     bV5Reserved: DWORD,
 };
-pub const PBITMAPV5HEADER = ?&extern struct {
+pub const PBITMAPV5HEADER = ?[*]extern struct {
     bV5Size: DWORD,
     bV5Width: LONG,
     bV5Height: LONG,
@@ -9362,18 +10038,20 @@ pub const PBITMAPV5HEADER = ?&extern struct {
 };
 pub const struct_tagBITMAPINFO = extern struct {
     bmiHeader: BITMAPINFOHEADER,
-    bmiColors: [4]RGBQUAD,
+    // NOTE: Changed array to array-ptr
+    bmiColors: [*]RGBQUAD,
 };
 pub const BITMAPINFO = struct_tagBITMAPINFO;
-pub const LPBITMAPINFO = ?&struct_tagBITMAPINFO;
-pub const PBITMAPINFO = ?&struct_tagBITMAPINFO;
+pub const LPBITMAPINFO = ?*struct_tagBITMAPINFO;
+pub const PBITMAPINFO = ?*struct_tagBITMAPINFO;
 pub const struct_tagBITMAPCOREINFO = extern struct {
     bmciHeader: BITMAPCOREHEADER,
-    bmciColors: [3]RGBTRIPLE,
+    // NOTE: Changed array to array-ptr
+    bmciColors: [*]RGBTRIPLE,
 };
 pub const BITMAPCOREINFO = struct_tagBITMAPCOREINFO;
-pub const LPBITMAPCOREINFO = ?&struct_tagBITMAPCOREINFO;
-pub const PBITMAPCOREINFO = ?&struct_tagBITMAPCOREINFO;
+pub const LPBITMAPCOREINFO = ?*struct_tagBITMAPCOREINFO;
+pub const PBITMAPCOREINFO = ?*struct_tagBITMAPCOREINFO;
 pub const struct_tagBITMAPFILEHEADER = extern struct {
     bfType: WORD,
     bfSize: DWORD,
@@ -9382,46 +10060,46 @@ pub const struct_tagBITMAPFILEHEADER = extern struct {
     bfOffBits: DWORD,
 };
 pub const BITMAPFILEHEADER = struct_tagBITMAPFILEHEADER;
-pub const LPBITMAPFILEHEADER = ?&struct_tagBITMAPFILEHEADER;
-pub const PBITMAPFILEHEADER = ?&struct_tagBITMAPFILEHEADER;
+pub const LPBITMAPFILEHEADER = ?*struct_tagBITMAPFILEHEADER;
+pub const PBITMAPFILEHEADER = ?*struct_tagBITMAPFILEHEADER;
 pub const struct_tagFONTSIGNATURE = extern struct {
     fsUsb: [4]DWORD,
     fsCsb: [2]DWORD,
 };
 pub const FONTSIGNATURE = struct_tagFONTSIGNATURE;
-pub const PFONTSIGNATURE = ?&struct_tagFONTSIGNATURE;
-pub const LPFONTSIGNATURE = ?&struct_tagFONTSIGNATURE;
+pub const PFONTSIGNATURE = ?*struct_tagFONTSIGNATURE;
+pub const LPFONTSIGNATURE = ?*struct_tagFONTSIGNATURE;
 pub const struct_tagCHARSETINFO = extern struct {
     ciCharset: UINT,
     ciACP: UINT,
     fs: FONTSIGNATURE,
 };
 pub const CHARSETINFO = struct_tagCHARSETINFO;
-pub const PCHARSETINFO = ?&struct_tagCHARSETINFO;
-pub const NPCHARSETINFO = ?&struct_tagCHARSETINFO;
-pub const LPCHARSETINFO = ?&struct_tagCHARSETINFO;
+pub const PCHARSETINFO = ?*struct_tagCHARSETINFO;
+pub const NPCHARSETINFO = ?*struct_tagCHARSETINFO;
+pub const LPCHARSETINFO = ?*struct_tagCHARSETINFO;
 pub const struct_tagLOCALESIGNATURE = extern struct {
     lsUsb: [4]DWORD,
     lsCsbDefault: [2]DWORD,
     lsCsbSupported: [2]DWORD,
 };
 pub const LOCALESIGNATURE = struct_tagLOCALESIGNATURE;
-pub const PLOCALESIGNATURE = ?&struct_tagLOCALESIGNATURE;
-pub const LPLOCALESIGNATURE = ?&struct_tagLOCALESIGNATURE;
+pub const PLOCALESIGNATURE = ?*struct_tagLOCALESIGNATURE;
+pub const LPLOCALESIGNATURE = ?*struct_tagLOCALESIGNATURE;
 pub const struct_tagHANDLETABLE = extern struct {
     objectHandle: [1]HGDIOBJ,
 };
 pub const HANDLETABLE = struct_tagHANDLETABLE;
-pub const PHANDLETABLE = ?&struct_tagHANDLETABLE;
-pub const LPHANDLETABLE = ?&struct_tagHANDLETABLE;
+pub const PHANDLETABLE = ?*struct_tagHANDLETABLE;
+pub const LPHANDLETABLE = ?*struct_tagHANDLETABLE;
 pub const struct_tagMETARECORD = extern struct {
     rdSize: DWORD,
     rdFunction: WORD,
     rdParm: [1]WORD,
 };
 pub const METARECORD = struct_tagMETARECORD;
-pub const PMETARECORD = ?&struct_tagMETARECORD;
-pub const LPMETARECORD = ?&struct_tagMETARECORD;
+pub const PMETARECORD = ?*struct_tagMETARECORD;
+pub const LPMETARECORD = ?*struct_tagMETARECORD;
 pub const struct_tagMETAFILEPICT = extern struct {
     mm: LONG,
     xExt: LONG,
@@ -9429,7 +10107,7 @@ pub const struct_tagMETAFILEPICT = extern struct {
     hMF: HMETAFILE,
 };
 pub const METAFILEPICT = struct_tagMETAFILEPICT;
-pub const LPMETAFILEPICT = ?&struct_tagMETAFILEPICT;
+pub const LPMETAFILEPICT = ?*struct_tagMETAFILEPICT;
 pub const struct_tagMETAHEADER = extern struct {
     mtType: WORD,
     mtHeaderSize: WORD,
@@ -9440,16 +10118,16 @@ pub const struct_tagMETAHEADER = extern struct {
     mtNoParameters: WORD,
 };
 pub const METAHEADER = struct_tagMETAHEADER;
-pub const PMETAHEADER = ?&struct_tagMETAHEADER;
-pub const LPMETAHEADER = ?&struct_tagMETAHEADER;
+pub const PMETAHEADER = ?*struct_tagMETAHEADER;
+pub const LPMETAHEADER = ?*struct_tagMETAHEADER;
 pub const struct_tagENHMETARECORD = extern struct {
     iType: DWORD,
     nSize: DWORD,
     dParm: [1]DWORD,
 };
 pub const ENHMETARECORD = struct_tagENHMETARECORD;
-pub const PENHMETARECORD = ?&struct_tagENHMETARECORD;
-pub const LPENHMETARECORD = ?&struct_tagENHMETARECORD;
+pub const PENHMETARECORD = ?*struct_tagENHMETARECORD;
+pub const LPENHMETARECORD = ?*struct_tagENHMETARECORD;
 pub const struct_tagENHMETAHEADER = extern struct {
     iType: DWORD,
     nSize: DWORD,
@@ -9472,8 +10150,8 @@ pub const struct_tagENHMETAHEADER = extern struct {
     szlMicrometers: SIZEL,
 };
 pub const ENHMETAHEADER = struct_tagENHMETAHEADER;
-pub const PENHMETAHEADER = ?&struct_tagENHMETAHEADER;
-pub const LPENHMETAHEADER = ?&struct_tagENHMETAHEADER;
+pub const PENHMETAHEADER = ?*struct_tagENHMETAHEADER;
+pub const LPENHMETAHEADER = ?*struct_tagENHMETAHEADER;
 pub const BCHAR = BYTE;
 pub const struct_tagTEXTMETRICA = extern struct {
     tmHeight: LONG,
@@ -9498,9 +10176,9 @@ pub const struct_tagTEXTMETRICA = extern struct {
     tmCharSet: BYTE,
 };
 pub const TEXTMETRICA = struct_tagTEXTMETRICA;
-pub const PTEXTMETRICA = ?&struct_tagTEXTMETRICA;
-pub const NPTEXTMETRICA = ?&struct_tagTEXTMETRICA;
-pub const LPTEXTMETRICA = ?&struct_tagTEXTMETRICA;
+pub const PTEXTMETRICA = ?*struct_tagTEXTMETRICA;
+pub const NPTEXTMETRICA = ?*struct_tagTEXTMETRICA;
+pub const LPTEXTMETRICA = ?*struct_tagTEXTMETRICA;
 pub const struct_tagTEXTMETRICW = extern struct {
     tmHeight: LONG,
     tmAscent: LONG,
@@ -9524,9 +10202,9 @@ pub const struct_tagTEXTMETRICW = extern struct {
     tmCharSet: BYTE,
 };
 pub const TEXTMETRICW = struct_tagTEXTMETRICW;
-pub const PTEXTMETRICW = ?&struct_tagTEXTMETRICW;
-pub const NPTEXTMETRICW = ?&struct_tagTEXTMETRICW;
-pub const LPTEXTMETRICW = ?&struct_tagTEXTMETRICW;
+pub const PTEXTMETRICW = ?*struct_tagTEXTMETRICW;
+pub const NPTEXTMETRICW = ?*struct_tagTEXTMETRICW;
+pub const LPTEXTMETRICW = ?*struct_tagTEXTMETRICW;
 pub const TEXTMETRIC = TEXTMETRICA;
 pub const PTEXTMETRIC = PTEXTMETRICA;
 pub const NPTEXTMETRIC = NPTEXTMETRICA;
@@ -9558,9 +10236,9 @@ pub const struct_tagNEWTEXTMETRICA = extern struct {
     ntmAvgWidth: UINT,
 };
 pub const NEWTEXTMETRICA = struct_tagNEWTEXTMETRICA;
-pub const PNEWTEXTMETRICA = ?&struct_tagNEWTEXTMETRICA;
-pub const NPNEWTEXTMETRICA = ?&struct_tagNEWTEXTMETRICA;
-pub const LPNEWTEXTMETRICA = ?&struct_tagNEWTEXTMETRICA;
+pub const PNEWTEXTMETRICA = ?*struct_tagNEWTEXTMETRICA;
+pub const NPNEWTEXTMETRICA = ?*struct_tagNEWTEXTMETRICA;
+pub const LPNEWTEXTMETRICA = ?*struct_tagNEWTEXTMETRICA;
 pub const struct_tagNEWTEXTMETRICW = extern struct {
     tmHeight: LONG,
     tmAscent: LONG,
@@ -9588,9 +10266,9 @@ pub const struct_tagNEWTEXTMETRICW = extern struct {
     ntmAvgWidth: UINT,
 };
 pub const NEWTEXTMETRICW = struct_tagNEWTEXTMETRICW;
-pub const PNEWTEXTMETRICW = ?&struct_tagNEWTEXTMETRICW;
-pub const NPNEWTEXTMETRICW = ?&struct_tagNEWTEXTMETRICW;
-pub const LPNEWTEXTMETRICW = ?&struct_tagNEWTEXTMETRICW;
+pub const PNEWTEXTMETRICW = ?*struct_tagNEWTEXTMETRICW;
+pub const NPNEWTEXTMETRICW = ?*struct_tagNEWTEXTMETRICW;
+pub const LPNEWTEXTMETRICW = ?*struct_tagNEWTEXTMETRICW;
 pub const NEWTEXTMETRIC = NEWTEXTMETRICA;
 pub const PNEWTEXTMETRIC = PNEWTEXTMETRICA;
 pub const NPNEWTEXTMETRIC = NPNEWTEXTMETRICA;
@@ -9614,40 +10292,40 @@ pub const struct_tagPELARRAY = extern struct {
     paRGBs: BYTE,
 };
 pub const PELARRAY = struct_tagPELARRAY;
-pub const PPELARRAY = ?&struct_tagPELARRAY;
-pub const NPPELARRAY = ?&struct_tagPELARRAY;
-pub const LPPELARRAY = ?&struct_tagPELARRAY;
+pub const PPELARRAY = ?*struct_tagPELARRAY;
+pub const NPPELARRAY = ?*struct_tagPELARRAY;
+pub const LPPELARRAY = ?*struct_tagPELARRAY;
 pub const struct_tagLOGBRUSH = extern struct {
     lbStyle: UINT,
     lbColor: COLORREF,
     lbHatch: ULONG_PTR,
 };
 pub const LOGBRUSH = struct_tagLOGBRUSH;
-pub const PLOGBRUSH = ?&struct_tagLOGBRUSH;
-pub const NPLOGBRUSH = ?&struct_tagLOGBRUSH;
-pub const LPLOGBRUSH = ?&struct_tagLOGBRUSH;
+pub const PLOGBRUSH = ?*struct_tagLOGBRUSH;
+pub const NPLOGBRUSH = ?*struct_tagLOGBRUSH;
+pub const LPLOGBRUSH = ?*struct_tagLOGBRUSH;
 pub const struct_tagLOGBRUSH32 = extern struct {
     lbStyle: UINT,
     lbColor: COLORREF,
     lbHatch: ULONG,
 };
 pub const LOGBRUSH32 = struct_tagLOGBRUSH32;
-pub const PLOGBRUSH32 = ?&struct_tagLOGBRUSH32;
-pub const NPLOGBRUSH32 = ?&struct_tagLOGBRUSH32;
-pub const LPLOGBRUSH32 = ?&struct_tagLOGBRUSH32;
+pub const PLOGBRUSH32 = ?*struct_tagLOGBRUSH32;
+pub const NPLOGBRUSH32 = ?*struct_tagLOGBRUSH32;
+pub const LPLOGBRUSH32 = ?*struct_tagLOGBRUSH32;
 pub const PATTERN = LOGBRUSH;
-pub const PPATTERN = ?&PATTERN;
-pub const NPPATTERN = ?&PATTERN;
-pub const LPPATTERN = ?&PATTERN;
+pub const PPATTERN = ?[*]PATTERN;
+pub const NPPATTERN = ?[*]PATTERN;
+pub const LPPATTERN = ?[*]PATTERN;
 pub const struct_tagLOGPEN = extern struct {
     lopnStyle: UINT,
     lopnWidth: POINT,
     lopnColor: COLORREF,
 };
 pub const LOGPEN = struct_tagLOGPEN;
-pub const PLOGPEN = ?&struct_tagLOGPEN;
-pub const NPLOGPEN = ?&struct_tagLOGPEN;
-pub const LPLOGPEN = ?&struct_tagLOGPEN;
+pub const PLOGPEN = ?*struct_tagLOGPEN;
+pub const NPLOGPEN = ?*struct_tagLOGPEN;
+pub const LPLOGPEN = ?*struct_tagLOGPEN;
 pub const struct_tagEXTLOGPEN = extern struct {
     elpPenStyle: DWORD,
     elpWidth: DWORD,
@@ -9658,9 +10336,9 @@ pub const struct_tagEXTLOGPEN = extern struct {
     elpStyleEntry: [1]DWORD,
 };
 pub const EXTLOGPEN = struct_tagEXTLOGPEN;
-pub const PEXTLOGPEN = ?&struct_tagEXTLOGPEN;
-pub const NPEXTLOGPEN = ?&struct_tagEXTLOGPEN;
-pub const LPEXTLOGPEN = ?&struct_tagEXTLOGPEN;
+pub const PEXTLOGPEN = ?*struct_tagEXTLOGPEN;
+pub const NPEXTLOGPEN = ?*struct_tagEXTLOGPEN;
+pub const LPEXTLOGPEN = ?*struct_tagEXTLOGPEN;
 pub const struct_tagEXTLOGPEN32 = extern struct {
     elpPenStyle: DWORD,
     elpWidth: DWORD,
@@ -9671,9 +10349,9 @@ pub const struct_tagEXTLOGPEN32 = extern struct {
     elpStyleEntry: [1]DWORD,
 };
 pub const EXTLOGPEN32 = struct_tagEXTLOGPEN32;
-pub const PEXTLOGPEN32 = ?&struct_tagEXTLOGPEN32;
-pub const NPEXTLOGPEN32 = ?&struct_tagEXTLOGPEN32;
-pub const LPEXTLOGPEN32 = ?&struct_tagEXTLOGPEN32;
+pub const PEXTLOGPEN32 = ?*struct_tagEXTLOGPEN32;
+pub const NPEXTLOGPEN32 = ?*struct_tagEXTLOGPEN32;
+pub const LPEXTLOGPEN32 = ?*struct_tagEXTLOGPEN32;
 pub const struct_tagPALETTEENTRY = extern struct {
     peRed: BYTE,
     peGreen: BYTE,
@@ -9681,17 +10359,17 @@ pub const struct_tagPALETTEENTRY = extern struct {
     peFlags: BYTE,
 };
 pub const PALETTEENTRY = struct_tagPALETTEENTRY;
-pub const PPALETTEENTRY = ?&struct_tagPALETTEENTRY;
-pub const LPPALETTEENTRY = ?&struct_tagPALETTEENTRY;
+pub const PPALETTEENTRY = ?*struct_tagPALETTEENTRY;
+pub const LPPALETTEENTRY = ?*struct_tagPALETTEENTRY;
 pub const struct_tagLOGPALETTE = extern struct {
     palVersion: WORD,
     palNumEntries: WORD,
     palPalEntry: [1]PALETTEENTRY,
 };
 pub const LOGPALETTE = struct_tagLOGPALETTE;
-pub const PLOGPALETTE = ?&struct_tagLOGPALETTE;
-pub const NPLOGPALETTE = ?&struct_tagLOGPALETTE;
-pub const LPLOGPALETTE = ?&struct_tagLOGPALETTE;
+pub const PLOGPALETTE = ?*struct_tagLOGPALETTE;
+pub const NPLOGPALETTE = ?*struct_tagLOGPALETTE;
+pub const LPLOGPALETTE = ?*struct_tagLOGPALETTE;
 pub const struct_tagLOGFONTA = extern struct {
     lfHeight: LONG,
     lfWidth: LONG,
@@ -9709,9 +10387,9 @@ pub const struct_tagLOGFONTA = extern struct {
     lfFaceName: [32]CHAR,
 };
 pub const LOGFONTA = struct_tagLOGFONTA;
-pub const PLOGFONTA = ?&struct_tagLOGFONTA;
-pub const NPLOGFONTA = ?&struct_tagLOGFONTA;
-pub const LPLOGFONTA = ?&struct_tagLOGFONTA;
+pub const PLOGFONTA = ?*struct_tagLOGFONTA;
+pub const NPLOGFONTA = ?*struct_tagLOGFONTA;
+pub const LPLOGFONTA = ?*struct_tagLOGFONTA;
 pub const struct_tagLOGFONTW = extern struct {
     lfHeight: LONG,
     lfWidth: LONG,
@@ -9729,9 +10407,9 @@ pub const struct_tagLOGFONTW = extern struct {
     lfFaceName: [32]WCHAR,
 };
 pub const LOGFONTW = struct_tagLOGFONTW;
-pub const PLOGFONTW = ?&struct_tagLOGFONTW;
-pub const NPLOGFONTW = ?&struct_tagLOGFONTW;
-pub const LPLOGFONTW = ?&struct_tagLOGFONTW;
+pub const PLOGFONTW = ?*struct_tagLOGFONTW;
+pub const NPLOGFONTW = ?*struct_tagLOGFONTW;
+pub const LPLOGFONTW = ?*struct_tagLOGFONTW;
 pub const LOGFONT = LOGFONTA;
 pub const PLOGFONT = PLOGFONTA;
 pub const NPLOGFONT = NPLOGFONTA;
@@ -9742,14 +10420,14 @@ pub const struct_tagENUMLOGFONTA = extern struct {
     elfStyle: [32]BYTE,
 };
 pub const ENUMLOGFONTA = struct_tagENUMLOGFONTA;
-pub const LPENUMLOGFONTA = ?&struct_tagENUMLOGFONTA;
+pub const LPENUMLOGFONTA = ?*struct_tagENUMLOGFONTA;
 pub const struct_tagENUMLOGFONTW = extern struct {
     elfLogFont: LOGFONTW,
     elfFullName: [64]WCHAR,
     elfStyle: [32]WCHAR,
 };
 pub const ENUMLOGFONTW = struct_tagENUMLOGFONTW;
-pub const LPENUMLOGFONTW = ?&struct_tagENUMLOGFONTW;
+pub const LPENUMLOGFONTW = ?*struct_tagENUMLOGFONTW;
 pub const ENUMLOGFONT = ENUMLOGFONTA;
 pub const LPENUMLOGFONT = LPENUMLOGFONTA;
 pub const struct_tagENUMLOGFONTEXA = extern struct {
@@ -9759,7 +10437,7 @@ pub const struct_tagENUMLOGFONTEXA = extern struct {
     elfScript: [32]BYTE,
 };
 pub const ENUMLOGFONTEXA = struct_tagENUMLOGFONTEXA;
-pub const LPENUMLOGFONTEXA = ?&struct_tagENUMLOGFONTEXA;
+pub const LPENUMLOGFONTEXA = ?*struct_tagENUMLOGFONTEXA;
 pub const struct_tagENUMLOGFONTEXW = extern struct {
     elfLogFont: LOGFONTW,
     elfFullName: [64]WCHAR,
@@ -9767,7 +10445,7 @@ pub const struct_tagENUMLOGFONTEXW = extern struct {
     elfScript: [32]WCHAR,
 };
 pub const ENUMLOGFONTEXW = struct_tagENUMLOGFONTEXW;
-pub const LPENUMLOGFONTEXW = ?&struct_tagENUMLOGFONTEXW;
+pub const LPENUMLOGFONTEXW = ?*struct_tagENUMLOGFONTEXW;
 pub const ENUMLOGFONTEX = ENUMLOGFONTEXA;
 pub const LPENUMLOGFONTEX = LPENUMLOGFONTEXA;
 pub const struct_tagPANOSE = extern struct {
@@ -9783,7 +10461,7 @@ pub const struct_tagPANOSE = extern struct {
     bXHeight: BYTE,
 };
 pub const PANOSE = struct_tagPANOSE;
-pub const LPPANOSE = ?&struct_tagPANOSE;
+pub const LPPANOSE = ?*struct_tagPANOSE;
 pub const struct_tagEXTLOGFONTA = extern struct {
     elfLogFont: LOGFONTA,
     elfFullName: [64]BYTE,
@@ -9797,9 +10475,9 @@ pub const struct_tagEXTLOGFONTA = extern struct {
     elfPanose: PANOSE,
 };
 pub const EXTLOGFONTA = struct_tagEXTLOGFONTA;
-pub const PEXTLOGFONTA = ?&struct_tagEXTLOGFONTA;
-pub const NPEXTLOGFONTA = ?&struct_tagEXTLOGFONTA;
-pub const LPEXTLOGFONTA = ?&struct_tagEXTLOGFONTA;
+pub const PEXTLOGFONTA = ?*struct_tagEXTLOGFONTA;
+pub const NPEXTLOGFONTA = ?*struct_tagEXTLOGFONTA;
+pub const LPEXTLOGFONTA = ?*struct_tagEXTLOGFONTA;
 pub const struct_tagEXTLOGFONTW = extern struct {
     elfLogFont: LOGFONTW,
     elfFullName: [64]WCHAR,
@@ -9813,9 +10491,9 @@ pub const struct_tagEXTLOGFONTW = extern struct {
     elfPanose: PANOSE,
 };
 pub const EXTLOGFONTW = struct_tagEXTLOGFONTW;
-pub const PEXTLOGFONTW = ?&struct_tagEXTLOGFONTW;
-pub const NPEXTLOGFONTW = ?&struct_tagEXTLOGFONTW;
-pub const LPEXTLOGFONTW = ?&struct_tagEXTLOGFONTW;
+pub const PEXTLOGFONTW = ?*struct_tagEXTLOGFONTW;
+pub const NPEXTLOGFONTW = ?*struct_tagEXTLOGFONTW;
+pub const LPEXTLOGFONTW = ?*struct_tagEXTLOGFONTW;
 pub const EXTLOGFONT = EXTLOGFONTA;
 pub const PEXTLOGFONT = PEXTLOGFONTA;
 pub const NPEXTLOGFONT = NPEXTLOGFONTA;
@@ -9869,9 +10547,9 @@ pub const struct__devicemodeA = extern struct {
     dmPanningHeight: DWORD,
 };
 pub const DEVMODEA = struct__devicemodeA;
-pub const PDEVMODEA = ?&struct__devicemodeA;
-pub const NPDEVMODEA = ?&struct__devicemodeA;
-pub const LPDEVMODEA = ?&struct__devicemodeA;
+pub const PDEVMODEA = ?*struct__devicemodeA;
+pub const NPDEVMODEA = ?*struct__devicemodeA;
+pub const LPDEVMODEA = ?*struct__devicemodeA;
 pub const struct__devicemodeW = extern struct {
     dmDeviceName: [32]WCHAR,
     dmSpecVersion: WORD,
@@ -9921,9 +10599,9 @@ pub const struct__devicemodeW = extern struct {
     dmPanningHeight: DWORD,
 };
 pub const DEVMODEW = struct__devicemodeW;
-pub const PDEVMODEW = ?&struct__devicemodeW;
-pub const NPDEVMODEW = ?&struct__devicemodeW;
-pub const LPDEVMODEW = ?&struct__devicemodeW;
+pub const PDEVMODEW = ?*struct__devicemodeW;
+pub const NPDEVMODEW = ?*struct__devicemodeW;
+pub const LPDEVMODEW = ?*struct__devicemodeW;
 pub const DEVMODE = DEVMODEA;
 pub const PDEVMODE = PDEVMODEA;
 pub const NPDEVMODE = NPDEVMODEA;
@@ -9937,8 +10615,8 @@ pub const struct__DISPLAY_DEVICEA = extern struct {
     DeviceKey: [128]CHAR,
 };
 pub const DISPLAY_DEVICEA = struct__DISPLAY_DEVICEA;
-pub const PDISPLAY_DEVICEA = ?&struct__DISPLAY_DEVICEA;
-pub const LPDISPLAY_DEVICEA = ?&struct__DISPLAY_DEVICEA;
+pub const PDISPLAY_DEVICEA = ?*struct__DISPLAY_DEVICEA;
+pub const LPDISPLAY_DEVICEA = ?*struct__DISPLAY_DEVICEA;
 pub const struct__DISPLAY_DEVICEW = extern struct {
     cb: DWORD,
     DeviceName: [32]WCHAR,
@@ -9948,8 +10626,8 @@ pub const struct__DISPLAY_DEVICEW = extern struct {
     DeviceKey: [128]WCHAR,
 };
 pub const DISPLAY_DEVICEW = struct__DISPLAY_DEVICEW;
-pub const PDISPLAY_DEVICEW = ?&struct__DISPLAY_DEVICEW;
-pub const LPDISPLAY_DEVICEW = ?&struct__DISPLAY_DEVICEW;
+pub const PDISPLAY_DEVICEW = ?*struct__DISPLAY_DEVICEW;
+pub const LPDISPLAY_DEVICEW = ?*struct__DISPLAY_DEVICEW;
 pub const DISPLAY_DEVICE = DISPLAY_DEVICEA;
 pub const PDISPLAY_DEVICE = PDISPLAY_DEVICEA;
 pub const LPDISPLAY_DEVICE = LPDISPLAY_DEVICEA;
@@ -9958,33 +10636,60 @@ pub const struct_DISPLAYCONFIG_RATIONAL = extern struct {
     Denominator: UINT32,
 };
 pub const DISPLAYCONFIG_RATIONAL = struct_DISPLAYCONFIG_RATIONAL;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER: c_int = -4294967295;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_HD15: c_int = 0;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SVIDEO: c_int = 1;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPOSITE_VIDEO: c_int = 2;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPONENT_VIDEO: c_int = 3;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DVI: c_int = 4;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_HDMI: c_int = 5;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_LVDS: c_int = 6;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_D_JPN: c_int = 8;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SDI: c_int = 9;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EXTERNAL: c_int = 10;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EMBEDDED: c_int = 11;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EXTERNAL: c_int = 12;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EMBEDDED: c_int = 13;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SDTVDONGLE: c_int = 14;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_MIRACAST: c_int = 15;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INDIRECT_WIRED: c_int = 16;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL: c_int = -2147483648;
-pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_FORCE_UINT32: c_int = -4294967295;
-pub const DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY = c_int;
-pub const DISPLAYCONFIG_SCANLINE_ORDERING_UNSPECIFIED: c_int = 0;
-pub const DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE: c_int = 1;
-pub const DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED: c_int = 2;
-pub const DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_UPPERFIELDFIRST: c_int = 2;
-pub const DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_LOWERFIELDFIRST: c_int = 3;
-pub const DISPLAYCONFIG_SCANLINE_ORDERING_FORCE_UINT32: c_int = -4294967295;
-pub const DISPLAYCONFIG_SCANLINE_ORDERING = c_int;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER = -4294967295;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_HD15 = 0;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SVIDEO = 1;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPOSITE_VIDEO = 2;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPONENT_VIDEO = 3;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DVI = 4;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_HDMI = 5;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_LVDS = 6;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_D_JPN = 8;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SDI = 9;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EXTERNAL = 10;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EMBEDDED = 11;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EXTERNAL = 12;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EMBEDDED = 13;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SDTVDONGLE = 14;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_MIRACAST = 15;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INDIRECT_WIRED = 16;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL = -2147483648;
+pub const DISPLAYCONFIG_OUTPUT_TECHNOLOGY_FORCE_UINT32 = -4294967295;
+pub const DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY = extern enum {
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER = -4294967295,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_HD15 = 0,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SVIDEO = 1,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPOSITE_VIDEO = 2,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPONENT_VIDEO = 3,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DVI = 4,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_HDMI = 5,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_LVDS = 6,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_D_JPN = 8,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SDI = 9,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EXTERNAL = 10,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EMBEDDED = 11,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EXTERNAL = 12,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EMBEDDED = 13,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SDTVDONGLE = 14,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_MIRACAST = 15,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INDIRECT_WIRED = 16,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL = -2147483648,
+    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_FORCE_UINT32 = -4294967295,
+};
+pub const DISPLAYCONFIG_SCANLINE_ORDERING_UNSPECIFIED = 0;
+pub const DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE = 1;
+pub const DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED = 2;
+pub const DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_UPPERFIELDFIRST = 2;
+pub const DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_LOWERFIELDFIRST = 3;
+pub const DISPLAYCONFIG_SCANLINE_ORDERING_FORCE_UINT32 = -4294967295;
+pub const DISPLAYCONFIG_SCANLINE_ORDERING = extern enum {
+    DISPLAYCONFIG_SCANLINE_ORDERING_UNSPECIFIED = 0,
+    DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE = 1,
+    DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED = 2,
+    DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_UPPERFIELDFIRST = 2,
+    DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_LOWERFIELDFIRST = 3,
+    DISPLAYCONFIG_SCANLINE_ORDERING_FORCE_UINT32 = -4294967295,
+};
 pub const struct_DISPLAYCONFIG_2DREGION = extern struct {
     cx: UINT32,
     cy: UINT32,
@@ -10003,32 +10708,58 @@ pub const struct_DISPLAYCONFIG_VIDEO_SIGNAL_INFO = extern struct {
     scanLineOrdering: DISPLAYCONFIG_SCANLINE_ORDERING,
 };
 pub const DISPLAYCONFIG_VIDEO_SIGNAL_INFO = struct_DISPLAYCONFIG_VIDEO_SIGNAL_INFO;
-pub const DISPLAYCONFIG_SCALING_IDENTITY: c_int = 1;
-pub const DISPLAYCONFIG_SCALING_CENTERED: c_int = 2;
-pub const DISPLAYCONFIG_SCALING_STRETCHED: c_int = 3;
-pub const DISPLAYCONFIG_SCALING_ASPECTRATIOCENTEREDMAX: c_int = 4;
-pub const DISPLAYCONFIG_SCALING_CUSTOM: c_int = 5;
-pub const DISPLAYCONFIG_SCALING_PREFERRED: c_int = 128;
-pub const DISPLAYCONFIG_SCALING_FORCE_UINT32: c_int = -4294967295;
-pub const DISPLAYCONFIG_SCALING = c_int;
-pub const DISPLAYCONFIG_ROTATION_IDENTITY: c_int = 1;
-pub const DISPLAYCONFIG_ROTATION_ROTATE90: c_int = 2;
-pub const DISPLAYCONFIG_ROTATION_ROTATE180: c_int = 3;
-pub const DISPLAYCONFIG_ROTATION_ROTATE270: c_int = 4;
-pub const DISPLAYCONFIG_ROTATION_FORCE_UINT32: c_int = -4294967295;
-pub const DISPLAYCONFIG_ROTATION = c_int;
-pub const DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE: c_int = 1;
-pub const DISPLAYCONFIG_MODE_INFO_TYPE_TARGET: c_int = 2;
-pub const DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE: c_int = 3;
-pub const DISPLAYCONFIG_MODE_INFO_TYPE_FORCE_UINT32: c_int = -4294967295;
-pub const DISPLAYCONFIG_MODE_INFO_TYPE = c_int;
-pub const DISPLAYCONFIG_PIXELFORMAT_8BPP: c_int = 1;
-pub const DISPLAYCONFIG_PIXELFORMAT_16BPP: c_int = 2;
-pub const DISPLAYCONFIG_PIXELFORMAT_24BPP: c_int = 3;
-pub const DISPLAYCONFIG_PIXELFORMAT_32BPP: c_int = 4;
-pub const DISPLAYCONFIG_PIXELFORMAT_NONGDI: c_int = 5;
-pub const DISPLAYCONFIG_PIXELFORMAT_FORCE_UINT32: c_int = -4294967295;
-pub const DISPLAYCONFIG_PIXELFORMAT = c_int;
+pub const DISPLAYCONFIG_SCALING_IDENTITY = 1;
+pub const DISPLAYCONFIG_SCALING_CENTERED = 2;
+pub const DISPLAYCONFIG_SCALING_STRETCHED = 3;
+pub const DISPLAYCONFIG_SCALING_ASPECTRATIOCENTEREDMAX = 4;
+pub const DISPLAYCONFIG_SCALING_CUSTOM = 5;
+pub const DISPLAYCONFIG_SCALING_PREFERRED = 128;
+pub const DISPLAYCONFIG_SCALING_FORCE_UINT32 = -4294967295;
+pub const DISPLAYCONFIG_SCALING = extern enum {
+    DISPLAYCONFIG_SCALING_IDENTITY = 1,
+    DISPLAYCONFIG_SCALING_CENTERED = 2,
+    DISPLAYCONFIG_SCALING_STRETCHED = 3,
+    DISPLAYCONFIG_SCALING_ASPECTRATIOCENTEREDMAX = 4,
+    DISPLAYCONFIG_SCALING_CUSTOM = 5,
+    DISPLAYCONFIG_SCALING_PREFERRED = 128,
+    DISPLAYCONFIG_SCALING_FORCE_UINT32 = -4294967295,
+};
+pub const DISPLAYCONFIG_ROTATION_IDENTITY = 1;
+pub const DISPLAYCONFIG_ROTATION_ROTATE90 = 2;
+pub const DISPLAYCONFIG_ROTATION_ROTATE180 = 3;
+pub const DISPLAYCONFIG_ROTATION_ROTATE270 = 4;
+pub const DISPLAYCONFIG_ROTATION_FORCE_UINT32 = -4294967295;
+pub const DISPLAYCONFIG_ROTATION = extern enum {
+    DISPLAYCONFIG_ROTATION_IDENTITY = 1,
+    DISPLAYCONFIG_ROTATION_ROTATE90 = 2,
+    DISPLAYCONFIG_ROTATION_ROTATE180 = 3,
+    DISPLAYCONFIG_ROTATION_ROTATE270 = 4,
+    DISPLAYCONFIG_ROTATION_FORCE_UINT32 = -4294967295,
+};
+pub const DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE = 1;
+pub const DISPLAYCONFIG_MODE_INFO_TYPE_TARGET = 2;
+pub const DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE = 3;
+pub const DISPLAYCONFIG_MODE_INFO_TYPE_FORCE_UINT32 = -4294967295;
+pub const DISPLAYCONFIG_MODE_INFO_TYPE = extern enum {
+    DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE = 1,
+    DISPLAYCONFIG_MODE_INFO_TYPE_TARGET = 2,
+    DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE = 3,
+    DISPLAYCONFIG_MODE_INFO_TYPE_FORCE_UINT32 = -4294967295,
+};
+pub const DISPLAYCONFIG_PIXELFORMAT_8BPP = 1;
+pub const DISPLAYCONFIG_PIXELFORMAT_16BPP = 2;
+pub const DISPLAYCONFIG_PIXELFORMAT_24BPP = 3;
+pub const DISPLAYCONFIG_PIXELFORMAT_32BPP = 4;
+pub const DISPLAYCONFIG_PIXELFORMAT_NONGDI = 5;
+pub const DISPLAYCONFIG_PIXELFORMAT_FORCE_UINT32 = -4294967295;
+pub const DISPLAYCONFIG_PIXELFORMAT = extern enum {
+    DISPLAYCONFIG_PIXELFORMAT_8BPP = 1,
+    DISPLAYCONFIG_PIXELFORMAT_16BPP = 2,
+    DISPLAYCONFIG_PIXELFORMAT_24BPP = 3,
+    DISPLAYCONFIG_PIXELFORMAT_32BPP = 4,
+    DISPLAYCONFIG_PIXELFORMAT_NONGDI = 5,
+    DISPLAYCONFIG_PIXELFORMAT_FORCE_UINT32 = -4294967295,
+};
 pub const struct_DISPLAYCONFIG_SOURCE_MODE = extern struct {
     width: UINT32,
     height: UINT32,
@@ -10089,25 +10820,43 @@ pub const struct_DISPLAYCONFIG_PATH_INFO = extern struct {
     flags: UINT32,
 };
 pub const DISPLAYCONFIG_PATH_INFO = struct_DISPLAYCONFIG_PATH_INFO;
-pub const DISPLAYCONFIG_TOPOLOGY_INTERNAL: c_int = 1;
-pub const DISPLAYCONFIG_TOPOLOGY_CLONE: c_int = 2;
-pub const DISPLAYCONFIG_TOPOLOGY_EXTEND: c_int = 4;
-pub const DISPLAYCONFIG_TOPOLOGY_EXTERNAL: c_int = 8;
-pub const DISPLAYCONFIG_TOPOLOGY_FORCE_UINT32: c_int = -4294967295;
-pub const enum_DISPLAYCONFIG_TOPOLOGY_ID = c_int;
+pub const DISPLAYCONFIG_TOPOLOGY_INTERNAL = enum_DISPLAYCONFIG_TOPOLOGY_ID.DISPLAYCONFIG_TOPOLOGY_INTERNAL;
+pub const DISPLAYCONFIG_TOPOLOGY_CLONE = enum_DISPLAYCONFIG_TOPOLOGY_ID.DISPLAYCONFIG_TOPOLOGY_CLONE;
+pub const DISPLAYCONFIG_TOPOLOGY_EXTEND = enum_DISPLAYCONFIG_TOPOLOGY_ID.DISPLAYCONFIG_TOPOLOGY_EXTEND;
+pub const DISPLAYCONFIG_TOPOLOGY_EXTERNAL = enum_DISPLAYCONFIG_TOPOLOGY_ID.DISPLAYCONFIG_TOPOLOGY_EXTERNAL;
+pub const DISPLAYCONFIG_TOPOLOGY_FORCE_UINT32 = enum_DISPLAYCONFIG_TOPOLOGY_ID.DISPLAYCONFIG_TOPOLOGY_FORCE_UINT32;
+pub const enum_DISPLAYCONFIG_TOPOLOGY_ID = extern enum {
+    DISPLAYCONFIG_TOPOLOGY_INTERNAL = 1,
+    DISPLAYCONFIG_TOPOLOGY_CLONE = 2,
+    DISPLAYCONFIG_TOPOLOGY_EXTEND = 4,
+    DISPLAYCONFIG_TOPOLOGY_EXTERNAL = 8,
+    DISPLAYCONFIG_TOPOLOGY_FORCE_UINT32 = -4294967295,
+};
 pub const DISPLAYCONFIG_TOPOLOGY_ID = enum_DISPLAYCONFIG_TOPOLOGY_ID;
-pub const DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME: c_int = 1;
-pub const DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME: c_int = 2;
-pub const DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_PREFERRED_MODE: c_int = 3;
-pub const DISPLAYCONFIG_DEVICE_INFO_GET_ADAPTER_NAME: c_int = 4;
-pub const DISPLAYCONFIG_DEVICE_INFO_SET_TARGET_PERSISTENCE: c_int = 5;
-pub const DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_BASE_TYPE: c_int = 6;
-pub const DISPLAYCONFIG_DEVICE_INFO_GET_SUPPORT_VIRTUAL_RESOLUTION: c_int = 7;
-pub const DISPLAYCONFIG_DEVICE_INFO_SET_SUPPORT_VIRTUAL_RESOLUTION: c_int = 8;
-pub const DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO: c_int = 9;
-pub const DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE: c_int = 10;
-pub const DISPLAYCONFIG_DEVICE_INFO_FORCE_UINT32: c_int = -4294967295;
-pub const DISPLAYCONFIG_DEVICE_INFO_TYPE = c_int;
+pub const DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME = 1;
+pub const DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME = 2;
+pub const DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_PREFERRED_MODE = 3;
+pub const DISPLAYCONFIG_DEVICE_INFO_GET_ADAPTER_NAME = 4;
+pub const DISPLAYCONFIG_DEVICE_INFO_SET_TARGET_PERSISTENCE = 5;
+pub const DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_BASE_TYPE = 6;
+pub const DISPLAYCONFIG_DEVICE_INFO_GET_SUPPORT_VIRTUAL_RESOLUTION = 7;
+pub const DISPLAYCONFIG_DEVICE_INFO_SET_SUPPORT_VIRTUAL_RESOLUTION = 8;
+pub const DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO = 9;
+pub const DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE = 10;
+pub const DISPLAYCONFIG_DEVICE_INFO_FORCE_UINT32 = -4294967295;
+pub const DISPLAYCONFIG_DEVICE_INFO_TYPE = extern enum {
+    DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME = 1,
+    DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME = 2,
+    DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_PREFERRED_MODE = 3,
+    DISPLAYCONFIG_DEVICE_INFO_GET_ADAPTER_NAME = 4,
+    DISPLAYCONFIG_DEVICE_INFO_SET_TARGET_PERSISTENCE = 5,
+    DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_BASE_TYPE = 6,
+    DISPLAYCONFIG_DEVICE_INFO_GET_SUPPORT_VIRTUAL_RESOLUTION = 7,
+    DISPLAYCONFIG_DEVICE_INFO_SET_SUPPORT_VIRTUAL_RESOLUTION = 8,
+    DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO = 9,
+    DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE = 10,
+    DISPLAYCONFIG_DEVICE_INFO_FORCE_UINT32 = -4294967295,
+};
 pub const struct_DISPLAYCONFIG_DEVICE_INFO_HEADER = extern struct {
     type: DISPLAYCONFIG_DEVICE_INFO_TYPE,
     size: UINT32,
@@ -10171,13 +10920,20 @@ pub const struct_DISPLAYCONFIG_SUPPORT_VIRTUAL_RESOLUTION = extern struct {
     },
 };
 pub const DISPLAYCONFIG_SUPPORT_VIRTUAL_RESOLUTION = struct_DISPLAYCONFIG_SUPPORT_VIRTUAL_RESOLUTION;
-pub const DISPLAYCONFIG_COLOR_ENCODING_RGB: c_int = 0;
-pub const DISPLAYCONFIG_COLOR_ENCODING_YCBCR444: c_int = 1;
-pub const DISPLAYCONFIG_COLOR_ENCODING_YCBCR422: c_int = 2;
-pub const DISPLAYCONFIG_COLOR_ENCODING_YCBCR420: c_int = 3;
-pub const DISPLAYCONFIG_COLOR_ENCODING_INTENSITY: c_int = 4;
-pub const DISPLAYCONFIG_COLOR_ENCODING_FORCE_UINT32: c_int = -4294967295;
-pub const enum__DISPLAYCONFIG_COLOR_ENCODING = c_int;
+pub const DISPLAYCONFIG_COLOR_ENCODING_RGB = enum__DISPLAYCONFIG_COLOR_ENCODING.DISPLAYCONFIG_COLOR_ENCODING_RGB;
+pub const DISPLAYCONFIG_COLOR_ENCODING_YCBCR444 = enum__DISPLAYCONFIG_COLOR_ENCODING.DISPLAYCONFIG_COLOR_ENCODING_YCBCR444;
+pub const DISPLAYCONFIG_COLOR_ENCODING_YCBCR422 = enum__DISPLAYCONFIG_COLOR_ENCODING.DISPLAYCONFIG_COLOR_ENCODING_YCBCR422;
+pub const DISPLAYCONFIG_COLOR_ENCODING_YCBCR420 = enum__DISPLAYCONFIG_COLOR_ENCODING.DISPLAYCONFIG_COLOR_ENCODING_YCBCR420;
+pub const DISPLAYCONFIG_COLOR_ENCODING_INTENSITY = enum__DISPLAYCONFIG_COLOR_ENCODING.DISPLAYCONFIG_COLOR_ENCODING_INTENSITY;
+pub const DISPLAYCONFIG_COLOR_ENCODING_FORCE_UINT32 = enum__DISPLAYCONFIG_COLOR_ENCODING.DISPLAYCONFIG_COLOR_ENCODING_FORCE_UINT32;
+pub const enum__DISPLAYCONFIG_COLOR_ENCODING = extern enum {
+    DISPLAYCONFIG_COLOR_ENCODING_RGB = 0,
+    DISPLAYCONFIG_COLOR_ENCODING_YCBCR444 = 1,
+    DISPLAYCONFIG_COLOR_ENCODING_YCBCR422 = 2,
+    DISPLAYCONFIG_COLOR_ENCODING_YCBCR420 = 3,
+    DISPLAYCONFIG_COLOR_ENCODING_INTENSITY = 4,
+    DISPLAYCONFIG_COLOR_ENCODING_FORCE_UINT32 = -4294967295,
+};
 pub const DISPLAYCONFIG_COLOR_ENCODING = enum__DISPLAYCONFIG_COLOR_ENCODING;
 pub const struct__DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO = extern struct {
     header: DISPLAYCONFIG_DEVICE_INFO_HEADER,
@@ -10205,33 +10961,33 @@ pub const struct__RGNDATAHEADER = extern struct {
     rcBound: RECT,
 };
 pub const RGNDATAHEADER = struct__RGNDATAHEADER;
-pub const PRGNDATAHEADER = ?&struct__RGNDATAHEADER;
+pub const PRGNDATAHEADER = ?*struct__RGNDATAHEADER;
 pub const struct__RGNDATA = extern struct {
     rdh: RGNDATAHEADER,
     Buffer: [1]u8,
 };
 pub const RGNDATA = struct__RGNDATA;
-pub const PRGNDATA = ?&struct__RGNDATA;
-pub const NPRGNDATA = ?&struct__RGNDATA;
-pub const LPRGNDATA = ?&struct__RGNDATA;
+pub const PRGNDATA = ?*struct__RGNDATA;
+pub const NPRGNDATA = ?*struct__RGNDATA;
+pub const LPRGNDATA = ?*struct__RGNDATA;
 pub const struct__ABC = extern struct {
     abcA: c_int,
     abcB: UINT,
     abcC: c_int,
 };
 pub const ABC = struct__ABC;
-pub const PABC = ?&struct__ABC;
-pub const NPABC = ?&struct__ABC;
-pub const LPABC = ?&struct__ABC;
+pub const PABC = ?*struct__ABC;
+pub const NPABC = ?*struct__ABC;
+pub const LPABC = ?*struct__ABC;
 pub const struct__ABCFLOAT = extern struct {
     abcfA: FLOAT,
     abcfB: FLOAT,
     abcfC: FLOAT,
 };
 pub const ABCFLOAT = struct__ABCFLOAT;
-pub const PABCFLOAT = ?&struct__ABCFLOAT;
-pub const NPABCFLOAT = ?&struct__ABCFLOAT;
-pub const LPABCFLOAT = ?&struct__ABCFLOAT;
+pub const PABCFLOAT = ?*struct__ABCFLOAT;
+pub const NPABCFLOAT = ?*struct__ABCFLOAT;
+pub const LPABCFLOAT = ?*struct__ABCFLOAT;
 pub const struct__OUTLINETEXTMETRICA = extern struct {
     otmSize: UINT,
     otmTextMetrics: TEXTMETRICA,
@@ -10267,9 +11023,9 @@ pub const struct__OUTLINETEXTMETRICA = extern struct {
     otmpFullName: PSTR,
 };
 pub const OUTLINETEXTMETRICA = struct__OUTLINETEXTMETRICA;
-pub const POUTLINETEXTMETRICA = ?&struct__OUTLINETEXTMETRICA;
-pub const NPOUTLINETEXTMETRICA = ?&struct__OUTLINETEXTMETRICA;
-pub const LPOUTLINETEXTMETRICA = ?&struct__OUTLINETEXTMETRICA;
+pub const POUTLINETEXTMETRICA = ?*struct__OUTLINETEXTMETRICA;
+pub const NPOUTLINETEXTMETRICA = ?*struct__OUTLINETEXTMETRICA;
+pub const LPOUTLINETEXTMETRICA = ?*struct__OUTLINETEXTMETRICA;
 pub const struct__OUTLINETEXTMETRICW = extern struct {
     otmSize: UINT,
     otmTextMetrics: TEXTMETRICW,
@@ -10305,9 +11061,9 @@ pub const struct__OUTLINETEXTMETRICW = extern struct {
     otmpFullName: PSTR,
 };
 pub const OUTLINETEXTMETRICW = struct__OUTLINETEXTMETRICW;
-pub const POUTLINETEXTMETRICW = ?&struct__OUTLINETEXTMETRICW;
-pub const NPOUTLINETEXTMETRICW = ?&struct__OUTLINETEXTMETRICW;
-pub const LPOUTLINETEXTMETRICW = ?&struct__OUTLINETEXTMETRICW;
+pub const POUTLINETEXTMETRICW = ?*struct__OUTLINETEXTMETRICW;
+pub const NPOUTLINETEXTMETRICW = ?*struct__OUTLINETEXTMETRICW;
+pub const LPOUTLINETEXTMETRICW = ?*struct__OUTLINETEXTMETRICW;
 pub const OUTLINETEXTMETRIC = OUTLINETEXTMETRICA;
 pub const POUTLINETEXTMETRIC = POUTLINETEXTMETRICA;
 pub const NPOUTLINETEXTMETRIC = NPOUTLINETEXTMETRICA;
@@ -10319,12 +11075,12 @@ pub const struct_tagPOLYTEXTA = extern struct {
     lpstr: LPCSTR,
     uiFlags: UINT,
     rcl: RECT,
-    pdx: ?&c_int,
+    pdx: ?[*]c_int,
 };
 pub const POLYTEXTA = struct_tagPOLYTEXTA;
-pub const PPOLYTEXTA = ?&struct_tagPOLYTEXTA;
-pub const NPPOLYTEXTA = ?&struct_tagPOLYTEXTA;
-pub const LPPOLYTEXTA = ?&struct_tagPOLYTEXTA;
+pub const PPOLYTEXTA = ?*struct_tagPOLYTEXTA;
+pub const NPPOLYTEXTA = ?*struct_tagPOLYTEXTA;
+pub const LPPOLYTEXTA = ?*struct_tagPOLYTEXTA;
 pub const struct_tagPOLYTEXTW = extern struct {
     x: c_int,
     y: c_int,
@@ -10332,12 +11088,12 @@ pub const struct_tagPOLYTEXTW = extern struct {
     lpstr: LPCWSTR,
     uiFlags: UINT,
     rcl: RECT,
-    pdx: ?&c_int,
+    pdx: ?[*]c_int,
 };
 pub const POLYTEXTW = struct_tagPOLYTEXTW;
-pub const PPOLYTEXTW = ?&struct_tagPOLYTEXTW;
-pub const NPPOLYTEXTW = ?&struct_tagPOLYTEXTW;
-pub const LPPOLYTEXTW = ?&struct_tagPOLYTEXTW;
+pub const PPOLYTEXTW = ?*struct_tagPOLYTEXTW;
+pub const NPPOLYTEXTW = ?*struct_tagPOLYTEXTW;
+pub const LPPOLYTEXTW = ?*struct_tagPOLYTEXTW;
 pub const POLYTEXT = POLYTEXTA;
 pub const PPOLYTEXT = PPOLYTEXTA;
 pub const NPPOLYTEXT = NPPOLYTEXTA;
@@ -10354,7 +11110,7 @@ pub const struct__MAT2 = extern struct {
     eM22: FIXED,
 };
 pub const MAT2 = struct__MAT2;
-pub const LPMAT2 = ?&struct__MAT2;
+pub const LPMAT2 = ?*struct__MAT2;
 pub const struct__GLYPHMETRICS = extern struct {
     gmBlackBoxX: UINT,
     gmBlackBoxY: UINT,
@@ -10363,53 +11119,53 @@ pub const struct__GLYPHMETRICS = extern struct {
     gmCellIncY: c_short,
 };
 pub const GLYPHMETRICS = struct__GLYPHMETRICS;
-pub const LPGLYPHMETRICS = ?&struct__GLYPHMETRICS;
+pub const LPGLYPHMETRICS = ?*struct__GLYPHMETRICS;
 pub const struct_tagPOINTFX = extern struct {
     x: FIXED,
     y: FIXED,
 };
 pub const POINTFX = struct_tagPOINTFX;
-pub const LPPOINTFX = ?&struct_tagPOINTFX;
+pub const LPPOINTFX = ?*struct_tagPOINTFX;
 pub const struct_tagTTPOLYCURVE = extern struct {
     wType: WORD,
     cpfx: WORD,
     apfx: [1]POINTFX,
 };
 pub const TTPOLYCURVE = struct_tagTTPOLYCURVE;
-pub const LPTTPOLYCURVE = ?&struct_tagTTPOLYCURVE;
+pub const LPTTPOLYCURVE = ?*struct_tagTTPOLYCURVE;
 pub const struct_tagTTPOLYGONHEADER = extern struct {
     cb: DWORD,
     dwType: DWORD,
     pfxStart: POINTFX,
 };
 pub const TTPOLYGONHEADER = struct_tagTTPOLYGONHEADER;
-pub const LPTTPOLYGONHEADER = ?&struct_tagTTPOLYGONHEADER;
+pub const LPTTPOLYGONHEADER = ?*struct_tagTTPOLYGONHEADER;
 pub const struct_tagGCP_RESULTSA = extern struct {
     lStructSize: DWORD,
     lpOutString: LPSTR,
-    lpOrder: ?&UINT,
-    lpDx: ?&c_int,
-    lpCaretPos: ?&c_int,
+    lpOrder: ?[*]UINT,
+    lpDx: ?[*]c_int,
+    lpCaretPos: ?[*]c_int,
     lpClass: LPSTR,
     lpGlyphs: LPWSTR,
     nGlyphs: UINT,
     nMaxFit: c_int,
 };
 pub const GCP_RESULTSA = struct_tagGCP_RESULTSA;
-pub const LPGCP_RESULTSA = ?&struct_tagGCP_RESULTSA;
+pub const LPGCP_RESULTSA = ?*struct_tagGCP_RESULTSA;
 pub const struct_tagGCP_RESULTSW = extern struct {
     lStructSize: DWORD,
     lpOutString: LPWSTR,
-    lpOrder: ?&UINT,
-    lpDx: ?&c_int,
-    lpCaretPos: ?&c_int,
+    lpOrder: ?[*]UINT,
+    lpDx: ?[*]c_int,
+    lpCaretPos: ?[*]c_int,
     lpClass: LPSTR,
     lpGlyphs: LPWSTR,
     nGlyphs: UINT,
     nMaxFit: c_int,
 };
 pub const GCP_RESULTSW = struct_tagGCP_RESULTSW;
-pub const LPGCP_RESULTSW = ?&struct_tagGCP_RESULTSW;
+pub const LPGCP_RESULTSW = ?*struct_tagGCP_RESULTSW;
 pub const GCP_RESULTS = GCP_RESULTSA;
 pub const LPGCP_RESULTS = LPGCP_RESULTSA;
 pub const struct__RASTERIZER_STATUS = extern struct {
@@ -10418,7 +11174,7 @@ pub const struct__RASTERIZER_STATUS = extern struct {
     nLanguageID: c_short,
 };
 pub const RASTERIZER_STATUS = struct__RASTERIZER_STATUS;
-pub const LPRASTERIZER_STATUS = ?&struct__RASTERIZER_STATUS;
+pub const LPRASTERIZER_STATUS = ?*struct__RASTERIZER_STATUS;
 pub const struct_tagPIXELFORMATDESCRIPTOR = extern struct {
     nSize: WORD,
     nVersion: WORD,
@@ -10448,10 +11204,10 @@ pub const struct_tagPIXELFORMATDESCRIPTOR = extern struct {
     dwDamageMask: DWORD,
 };
 pub const PIXELFORMATDESCRIPTOR = struct_tagPIXELFORMATDESCRIPTOR;
-pub const PPIXELFORMATDESCRIPTOR = ?&struct_tagPIXELFORMATDESCRIPTOR;
-pub const LPPIXELFORMATDESCRIPTOR = ?&struct_tagPIXELFORMATDESCRIPTOR;
-pub const OLDFONTENUMPROCA = ?extern fn(?&const LOGFONTA, ?&const TEXTMETRICA, DWORD, LPARAM) c_int;
-pub const OLDFONTENUMPROCW = ?extern fn(?&const LOGFONTW, ?&const TEXTMETRICW, DWORD, LPARAM) c_int;
+pub const PPIXELFORMATDESCRIPTOR = ?*struct_tagPIXELFORMATDESCRIPTOR;
+pub const LPPIXELFORMATDESCRIPTOR = ?*struct_tagPIXELFORMATDESCRIPTOR;
+pub const OLDFONTENUMPROCA = ?extern fn(?[*]const LOGFONTA, ?[*]const TEXTMETRICA, DWORD, LPARAM) c_int;
+pub const OLDFONTENUMPROCW = ?extern fn(?[*]const LOGFONTW, ?[*]const TEXTMETRICW, DWORD, LPARAM) c_int;
 pub const FONTENUMPROCA = OLDFONTENUMPROCA;
 pub const FONTENUMPROCW = OLDFONTENUMPROCW;
 pub const FONTENUMPROC = FONTENUMPROCA;
@@ -10459,45 +11215,45 @@ pub const GOBJENUMPROC = ?extern fn(LPVOID, LPARAM) c_int;
 pub const LINEDDAPROC = ?extern fn(c_int, c_int, LPARAM) void;
 //pub extern fn AddFontResourceA(arg0: LPCSTR) c_int;
 //pub extern fn AddFontResourceW(arg0: LPCWSTR) c_int;
-//pub extern fn AnimatePalette(hPal: HPALETTE, iStartIndex: UINT, cEntries: UINT, ppe: ?&const PALETTEENTRY) BOOL;
+//pub extern fn AnimatePalette(hPal: HPALETTE, iStartIndex: UINT, cEntries: UINT, ppe: ?[*]const PALETTEENTRY) BOOL;
 //pub extern fn Arc(hdc: HDC, x1: c_int, y1: c_int, x2: c_int, y2: c_int, x3: c_int, y3: c_int, x4: c_int, y4: c_int) BOOL;
 //pub extern fn BitBlt(hdc: HDC, x: c_int, y: c_int, cx: c_int, cy: c_int, hdcSrc: HDC, x1: c_int, y1: c_int, rop: DWORD) BOOL;
 //pub extern fn CancelDC(hdc: HDC) BOOL;
 //pub extern fn Chord(hdc: HDC, x1: c_int, y1: c_int, x2: c_int, y2: c_int, x3: c_int, y3: c_int, x4: c_int, y4: c_int) BOOL;
-//pub extern fn ChoosePixelFormat(hdc: HDC, ppfd: ?&const PIXELFORMATDESCRIPTOR) c_int;
+//pub extern fn ChoosePixelFormat(hdc: HDC, ppfd: ?[*]const PIXELFORMATDESCRIPTOR) c_int;
 //pub extern fn CloseMetaFile(hdc: HDC) HMETAFILE;
 //pub extern fn CombineRgn(hrgnDst: HRGN, hrgnSrc1: HRGN, hrgnSrc2: HRGN, iMode: c_int) c_int;
 //pub extern fn CopyMetaFileA(arg0: HMETAFILE, arg1: LPCSTR) HMETAFILE;
 //pub extern fn CopyMetaFileW(arg0: HMETAFILE, arg1: LPCWSTR) HMETAFILE;
-//pub extern fn CreateBitmap(nWidth: c_int, nHeight: c_int, nPlanes: UINT, nBitCount: UINT, lpBits: ?&const c_void) HBITMAP;
-//pub extern fn CreateBitmapIndirect(pbm: ?&const BITMAP) HBITMAP;
-//pub extern fn CreateBrushIndirect(plbrush: ?&const LOGBRUSH) HBRUSH;
+//pub extern fn CreateBitmap(nWidth: c_int, nHeight: c_int, nPlanes: UINT, nBitCount: UINT, lpBits: ?*const c_void) HBITMAP;
+//pub extern fn CreateBitmapIndirect(pbm: ?[*]const BITMAP) HBITMAP;
+//pub extern fn CreateBrushIndirect(plbrush: ?[*]const LOGBRUSH) HBRUSH;
 //pub extern fn CreateCompatibleBitmap(hdc: HDC, cx: c_int, cy: c_int) HBITMAP;
 //pub extern fn CreateDiscardableBitmap(hdc: HDC, cx: c_int, cy: c_int) HBITMAP;
 //pub extern fn CreateCompatibleDC(hdc: HDC) HDC;
-//pub extern fn CreateDCA(pwszDriver: LPCSTR, pwszDevice: LPCSTR, pszPort: LPCSTR, pdm: ?&const DEVMODEA) HDC;
-//pub extern fn CreateDCW(pwszDriver: LPCWSTR, pwszDevice: LPCWSTR, pszPort: LPCWSTR, pdm: ?&const DEVMODEW) HDC;
-//pub extern fn CreateDIBitmap(hdc: HDC, pbmih: ?&const BITMAPINFOHEADER, flInit: DWORD, pjBits: ?&const c_void, pbmi: ?&const BITMAPINFO, iUsage: UINT) HBITMAP;
+//pub extern fn CreateDCA(pwszDriver: LPCSTR, pwszDevice: LPCSTR, pszPort: LPCSTR, pdm: ?[*]const DEVMODEA) HDC;
+//pub extern fn CreateDCW(pwszDriver: LPCWSTR, pwszDevice: LPCWSTR, pszPort: LPCWSTR, pdm: ?[*]const DEVMODEW) HDC;
+//pub extern fn CreateDIBitmap(hdc: HDC, pbmih: ?[*]const BITMAPINFOHEADER, flInit: DWORD, pjBits: ?*const c_void, pbmi: ?[*]const BITMAPINFO, iUsage: UINT) HBITMAP;
 //pub extern fn CreateDIBPatternBrush(h: HGLOBAL, iUsage: UINT) HBRUSH;
-//pub extern fn CreateDIBPatternBrushPt(lpPackedDIB: ?&const c_void, iUsage: UINT) HBRUSH;
+//pub extern fn CreateDIBPatternBrushPt(lpPackedDIB: ?*const c_void, iUsage: UINT) HBRUSH;
 //pub extern fn CreateEllipticRgn(x1: c_int, y1: c_int, x2: c_int, y2: c_int) HRGN;
-//pub extern fn CreateEllipticRgnIndirect(lprect: ?&const RECT) HRGN;
-//pub extern fn CreateFontIndirectA(lplf: ?&const LOGFONTA) HFONT;
-//pub extern fn CreateFontIndirectW(lplf: ?&const LOGFONTW) HFONT;
+//pub extern fn CreateEllipticRgnIndirect(lprect: ?[*]const RECT) HRGN;
+//pub extern fn CreateFontIndirectA(lplf: ?[*]const LOGFONTA) HFONT;
+//pub extern fn CreateFontIndirectW(lplf: ?[*]const LOGFONTW) HFONT;
 //pub extern fn CreateFontA(cHeight: c_int, cWidth: c_int, cEscapement: c_int, cOrientation: c_int, cWeight: c_int, bItalic: DWORD, bUnderline: DWORD, bStrikeOut: DWORD, iCharSet: DWORD, iOutPrecision: DWORD, iClipPrecision: DWORD, iQuality: DWORD, iPitchAndFamily: DWORD, pszFaceName: LPCSTR) HFONT;
 //pub extern fn CreateFontW(cHeight: c_int, cWidth: c_int, cEscapement: c_int, cOrientation: c_int, cWeight: c_int, bItalic: DWORD, bUnderline: DWORD, bStrikeOut: DWORD, iCharSet: DWORD, iOutPrecision: DWORD, iClipPrecision: DWORD, iQuality: DWORD, iPitchAndFamily: DWORD, pszFaceName: LPCWSTR) HFONT;
 //pub extern fn CreateHatchBrush(iHatch: c_int, color: COLORREF) HBRUSH;
-//pub extern fn CreateICA(pszDriver: LPCSTR, pszDevice: LPCSTR, pszPort: LPCSTR, pdm: ?&const DEVMODEA) HDC;
-//pub extern fn CreateICW(pszDriver: LPCWSTR, pszDevice: LPCWSTR, pszPort: LPCWSTR, pdm: ?&const DEVMODEW) HDC;
+//pub extern fn CreateICA(pszDriver: LPCSTR, pszDevice: LPCSTR, pszPort: LPCSTR, pdm: ?[*]const DEVMODEA) HDC;
+//pub extern fn CreateICW(pszDriver: LPCWSTR, pszDevice: LPCWSTR, pszPort: LPCWSTR, pdm: ?[*]const DEVMODEW) HDC;
 //pub extern fn CreateMetaFileA(pszFile: LPCSTR) HDC;
 //pub extern fn CreateMetaFileW(pszFile: LPCWSTR) HDC;
-//pub extern fn CreatePalette(plpal: ?&const LOGPALETTE) HPALETTE;
+//pub extern fn CreatePalette(plpal: ?[*]const LOGPALETTE) HPALETTE;
 //pub extern fn CreatePen(iStyle: c_int, cWidth: c_int, color: COLORREF) HPEN;
-//pub extern fn CreatePenIndirect(plpen: ?&const LOGPEN) HPEN;
-//pub extern fn CreatePolyPolygonRgn(pptl: ?&const POINT, pc: ?&const INT, cPoly: c_int, iMode: c_int) HRGN;
+//pub extern fn CreatePenIndirect(plpen: ?[*]const LOGPEN) HPEN;
+//pub extern fn CreatePolyPolygonRgn(pptl: ?[*]const POINT, pc: ?[*]const INT, cPoly: c_int, iMode: c_int) HRGN;
 //pub extern fn CreatePatternBrush(hbm: HBITMAP) HBRUSH;
 //pub extern fn CreateRectRgn(x1: c_int, y1: c_int, x2: c_int, y2: c_int) HRGN;
-//pub extern fn CreateRectRgnIndirect(lprect: ?&const RECT) HRGN;
+//pub extern fn CreateRectRgnIndirect(lprect: ?[*]const RECT) HRGN;
 //pub extern fn CreateRoundRectRgn(x1: c_int, y1: c_int, x2: c_int, y2: c_int, w: c_int, h: c_int) HRGN;
 //pub extern fn CreateScalableFontResourceA(fdwHidden: DWORD, lpszFont: LPCSTR, lpszFile: LPCSTR, lpszPath: LPCSTR) BOOL;
 //pub extern fn CreateScalableFontResourceW(fdwHidden: DWORD, lpszFont: LPCWSTR, lpszFile: LPCWSTR, lpszPath: LPCWSTR) BOOL;
@@ -10508,8 +11264,8 @@ pub const LINEDDAPROC = ?extern fn(c_int, c_int, LPARAM) void;
 //pub extern fn DescribePixelFormat(hdc: HDC, iPixelFormat: c_int, nBytes: UINT, ppfd: LPPIXELFORMATDESCRIPTOR) c_int;
 pub const LPFNDEVMODE = ?extern fn(HWND, HMODULE, LPDEVMODE, LPSTR, LPSTR, LPDEVMODE, LPSTR, UINT) UINT;
 pub const LPFNDEVCAPS = ?extern fn(LPSTR, LPSTR, UINT, LPSTR, LPDEVMODE) DWORD;
-//pub extern fn DeviceCapabilitiesA(pDevice: LPCSTR, pPort: LPCSTR, fwCapability: WORD, pOutput: LPSTR, pDevMode: ?&const DEVMODEA) c_int;
-//pub extern fn DeviceCapabilitiesW(pDevice: LPCWSTR, pPort: LPCWSTR, fwCapability: WORD, pOutput: LPWSTR, pDevMode: ?&const DEVMODEW) c_int;
+//pub extern fn DeviceCapabilitiesA(pDevice: LPCSTR, pPort: LPCSTR, fwCapability: WORD, pOutput: LPSTR, pDevMode: ?[*]const DEVMODEA) c_int;
+//pub extern fn DeviceCapabilitiesW(pDevice: LPCWSTR, pPort: LPCWSTR, fwCapability: WORD, pOutput: LPWSTR, pDevMode: ?[*]const DEVMODEW) c_int;
 //pub extern fn DrawEscape(hdc: HDC, iEscape: c_int, cjIn: c_int, lpIn: LPCSTR) c_int;
 //pub extern fn Ellipse(hdc: HDC, left: c_int, top: c_int, right: c_int, bottom: c_int) BOOL;
 //pub extern fn EnumFontFamiliesExA(hdc: HDC, lpLogfont: LPLOGFONTA, lpProc: FONTENUMPROCA, lParam: LPARAM, dwFlags: DWORD) c_int;
@@ -10523,7 +11279,7 @@ pub const LPFNDEVCAPS = ?extern fn(LPSTR, LPSTR, UINT, LPSTR, LPDEVMODE) DWORD;
 //pub extern fn Escape(hdc: HDC, iEscape: c_int, cjIn: c_int, pvIn: LPCSTR, pvOut: LPVOID) c_int;
 //pub extern fn ExtEscape(hdc: HDC, iEscape: c_int, cjInput: c_int, lpInData: LPCSTR, cjOutput: c_int, lpOutData: LPSTR) c_int;
 //pub extern fn ExcludeClipRect(hdc: HDC, left: c_int, top: c_int, right: c_int, bottom: c_int) c_int;
-//pub extern fn ExtCreateRegion(lpx: ?&const XFORM, nCount: DWORD, lpData: ?&const RGNDATA) HRGN;
+//pub extern fn ExtCreateRegion(lpx: ?[*]const XFORM, nCount: DWORD, lpData: ?[*]const RGNDATA) HRGN;
 //pub extern fn ExtFloodFill(hdc: HDC, x: c_int, y: c_int, color: COLORREF, type_0: UINT) BOOL;
 //pub extern fn FillRgn(hdc: HDC, hrgn: HRGN, hbr: HBRUSH) BOOL;
 //pub extern fn FloodFill(hdc: HDC, x: c_int, y: c_int, color: COLORREF) BOOL;
@@ -10556,8 +11312,8 @@ pub const LPFNDEVCAPS = ?extern fn(LPSTR, LPSTR, UINT, LPSTR, LPDEVMODE) DWORD;
 //pub extern fn GetDeviceCaps(hdc: HDC, index: c_int) c_int;
 //pub extern fn GetDIBits(hdc: HDC, hbm: HBITMAP, start: UINT, cLines: UINT, lpvBits: LPVOID, lpbmi: LPBITMAPINFO, usage: UINT) c_int;
 //pub extern fn GetFontData(hdc: HDC, dwTable: DWORD, dwOffset: DWORD, pvBuffer: PVOID, cjBuffer: DWORD) DWORD;
-//pub extern fn GetGlyphOutlineA(hdc: HDC, uChar: UINT, fuFormat: UINT, lpgm: LPGLYPHMETRICS, cjBuffer: DWORD, pvBuffer: LPVOID, lpmat2: ?&const MAT2) DWORD;
-//pub extern fn GetGlyphOutlineW(hdc: HDC, uChar: UINT, fuFormat: UINT, lpgm: LPGLYPHMETRICS, cjBuffer: DWORD, pvBuffer: LPVOID, lpmat2: ?&const MAT2) DWORD;
+//pub extern fn GetGlyphOutlineA(hdc: HDC, uChar: UINT, fuFormat: UINT, lpgm: LPGLYPHMETRICS, cjBuffer: DWORD, pvBuffer: LPVOID, lpmat2: ?[*]const MAT2) DWORD;
+//pub extern fn GetGlyphOutlineW(hdc: HDC, uChar: UINT, fuFormat: UINT, lpgm: LPGLYPHMETRICS, cjBuffer: DWORD, pvBuffer: LPVOID, lpmat2: ?[*]const MAT2) DWORD;
 //pub extern fn GetGraphicsMode(hdc: HDC) c_int;
 //pub extern fn GetMapMode(hdc: HDC) c_int;
 //pub extern fn GetMetaFileBitsEx(hMF: HMETAFILE, cbBuffer: UINT, lpData: LPVOID) UINT;
@@ -10591,7 +11347,7 @@ pub const LPFNDEVCAPS = ?extern fn(LPSTR, LPSTR, UINT, LPSTR, LPDEVMODE) DWORD;
 //pub extern fn GetTextExtentExPointW(hdc: HDC, lpszString: LPCWSTR, cchString: c_int, nMaxExtent: c_int, lpnFit: LPINT, lpnDx: LPINT, lpSize: LPSIZE) BOOL;
 //pub extern fn GetTextCharset(hdc: HDC) c_int;
 //pub extern fn GetTextCharsetInfo(hdc: HDC, lpSig: LPFONTSIGNATURE, dwFlags: DWORD) c_int;
-//pub extern fn TranslateCharsetInfo(lpSrc: ?&DWORD, lpCs: LPCHARSETINFO, dwFlags: DWORD) BOOL;
+//pub extern fn TranslateCharsetInfo(lpSrc: ?[*]DWORD, lpCs: LPCHARSETINFO, dwFlags: DWORD) BOOL;
 //pub extern fn GetFontLanguageInfo(hdc: HDC) DWORD;
 //pub extern fn GetCharacterPlacementA(hdc: HDC, lpString: LPCSTR, nCount: c_int, nMexExtent: c_int, lpResults: LPGCP_RESULTSA, dwFlags: DWORD) DWORD;
 //pub extern fn GetCharacterPlacementW(hdc: HDC, lpString: LPCWSTR, nCount: c_int, nMexExtent: c_int, lpResults: LPGCP_RESULTSW, dwFlags: DWORD) DWORD;
@@ -10600,8 +11356,8 @@ pub const struct_tagWCRANGE = extern struct {
     cGlyphs: USHORT,
 };
 pub const WCRANGE = struct_tagWCRANGE;
-pub const PWCRANGE = ?&struct_tagWCRANGE;
-pub const LPWCRANGE = ?&struct_tagWCRANGE;
+pub const PWCRANGE = ?*struct_tagWCRANGE;
+pub const LPWCRANGE = ?*struct_tagWCRANGE;
 pub const struct_tagGLYPHSET = extern struct {
     cbThis: DWORD,
     flAccel: DWORD,
@@ -10610,8 +11366,8 @@ pub const struct_tagGLYPHSET = extern struct {
     ranges: [1]WCRANGE,
 };
 pub const GLYPHSET = struct_tagGLYPHSET;
-pub const PGLYPHSET = ?&struct_tagGLYPHSET;
-pub const LPGLYPHSET = ?&struct_tagGLYPHSET;
+pub const PGLYPHSET = ?*struct_tagGLYPHSET;
+pub const LPGLYPHSET = ?*struct_tagGLYPHSET;
 //pub extern fn GetFontUnicodeRanges(hdc: HDC, lpgs: LPGLYPHSET) DWORD;
 //pub extern fn GetGlyphIndicesA(hdc: HDC, lpstr: LPCSTR, c: c_int, pgi: LPWORD, fl: DWORD) DWORD;
 //pub extern fn GetGlyphIndicesW(hdc: HDC, lpstr: LPCWSTR, c: c_int, pgi: LPWORD, fl: DWORD) DWORD;
@@ -10625,13 +11381,13 @@ pub const struct_tagDESIGNVECTOR = extern struct {
     dvValues: [16]LONG,
 };
 pub const DESIGNVECTOR = struct_tagDESIGNVECTOR;
-pub const PDESIGNVECTOR = ?&struct_tagDESIGNVECTOR;
-pub const LPDESIGNVECTOR = ?&struct_tagDESIGNVECTOR;
+pub const PDESIGNVECTOR = ?*struct_tagDESIGNVECTOR;
+pub const LPDESIGNVECTOR = ?*struct_tagDESIGNVECTOR;
 //pub extern fn AddFontResourceExA(name: LPCSTR, fl: DWORD, res: PVOID) c_int;
 //pub extern fn AddFontResourceExW(name: LPCWSTR, fl: DWORD, res: PVOID) c_int;
 //pub extern fn RemoveFontResourceExA(name: LPCSTR, fl: DWORD, pdv: PVOID) BOOL;
 //pub extern fn RemoveFontResourceExW(name: LPCWSTR, fl: DWORD, pdv: PVOID) BOOL;
-//pub extern fn AddFontMemResourceEx(pFileView: PVOID, cjSize: DWORD, pvResrved: PVOID, pNumFonts: ?&DWORD) HANDLE;
+//pub extern fn AddFontMemResourceEx(pFileView: PVOID, cjSize: DWORD, pvResrved: PVOID, pNumFonts: ?[*]DWORD) HANDLE;
 //pub extern fn RemoveFontMemResourceEx(h: HANDLE) BOOL;
 pub const struct_tagAXISINFOA = extern struct {
     axMinValue: LONG,
@@ -10639,16 +11395,16 @@ pub const struct_tagAXISINFOA = extern struct {
     axAxisName: [16]BYTE,
 };
 pub const AXISINFOA = struct_tagAXISINFOA;
-pub const PAXISINFOA = ?&struct_tagAXISINFOA;
-pub const LPAXISINFOA = ?&struct_tagAXISINFOA;
+pub const PAXISINFOA = ?*struct_tagAXISINFOA;
+pub const LPAXISINFOA = ?*struct_tagAXISINFOA;
 pub const struct_tagAXISINFOW = extern struct {
     axMinValue: LONG,
     axMaxValue: LONG,
     axAxisName: [16]WCHAR,
 };
 pub const AXISINFOW = struct_tagAXISINFOW;
-pub const PAXISINFOW = ?&struct_tagAXISINFOW;
-pub const LPAXISINFOW = ?&struct_tagAXISINFOW;
+pub const PAXISINFOW = ?*struct_tagAXISINFOW;
+pub const LPAXISINFOW = ?*struct_tagAXISINFOW;
 pub const AXISINFO = AXISINFOA;
 pub const PAXISINFO = PAXISINFOA;
 pub const LPAXISINFO = LPAXISINFOA;
@@ -10658,16 +11414,16 @@ pub const struct_tagAXESLISTA = extern struct {
     axlAxisInfo: [16]AXISINFOA,
 };
 pub const AXESLISTA = struct_tagAXESLISTA;
-pub const PAXESLISTA = ?&struct_tagAXESLISTA;
-pub const LPAXESLISTA = ?&struct_tagAXESLISTA;
+pub const PAXESLISTA = ?*struct_tagAXESLISTA;
+pub const LPAXESLISTA = ?*struct_tagAXESLISTA;
 pub const struct_tagAXESLISTW = extern struct {
     axlReserved: DWORD,
     axlNumAxes: DWORD,
     axlAxisInfo: [16]AXISINFOW,
 };
 pub const AXESLISTW = struct_tagAXESLISTW;
-pub const PAXESLISTW = ?&struct_tagAXESLISTW;
-pub const LPAXESLISTW = ?&struct_tagAXESLISTW;
+pub const PAXESLISTW = ?*struct_tagAXESLISTW;
+pub const LPAXESLISTW = ?*struct_tagAXESLISTW;
 pub const AXESLIST = AXESLISTA;
 pub const PAXESLIST = PAXESLISTA;
 pub const LPAXESLIST = LPAXESLISTA;
@@ -10676,34 +11432,34 @@ pub const struct_tagENUMLOGFONTEXDVA = extern struct {
     elfDesignVector: DESIGNVECTOR,
 };
 pub const ENUMLOGFONTEXDVA = struct_tagENUMLOGFONTEXDVA;
-pub const PENUMLOGFONTEXDVA = ?&struct_tagENUMLOGFONTEXDVA;
-pub const LPENUMLOGFONTEXDVA = ?&struct_tagENUMLOGFONTEXDVA;
+pub const PENUMLOGFONTEXDVA = ?*struct_tagENUMLOGFONTEXDVA;
+pub const LPENUMLOGFONTEXDVA = ?*struct_tagENUMLOGFONTEXDVA;
 pub const struct_tagENUMLOGFONTEXDVW = extern struct {
     elfEnumLogfontEx: ENUMLOGFONTEXW,
     elfDesignVector: DESIGNVECTOR,
 };
 pub const ENUMLOGFONTEXDVW = struct_tagENUMLOGFONTEXDVW;
-pub const PENUMLOGFONTEXDVW = ?&struct_tagENUMLOGFONTEXDVW;
-pub const LPENUMLOGFONTEXDVW = ?&struct_tagENUMLOGFONTEXDVW;
+pub const PENUMLOGFONTEXDVW = ?*struct_tagENUMLOGFONTEXDVW;
+pub const LPENUMLOGFONTEXDVW = ?*struct_tagENUMLOGFONTEXDVW;
 pub const ENUMLOGFONTEXDV = ENUMLOGFONTEXDVA;
 pub const PENUMLOGFONTEXDV = PENUMLOGFONTEXDVA;
 pub const LPENUMLOGFONTEXDV = LPENUMLOGFONTEXDVA;
-//pub extern fn CreateFontIndirectExA(arg0: ?&const ENUMLOGFONTEXDVA) HFONT;
-//pub extern fn CreateFontIndirectExW(arg0: ?&const ENUMLOGFONTEXDVW) HFONT;
+//pub extern fn CreateFontIndirectExA(arg0: ?[*]const ENUMLOGFONTEXDVA) HFONT;
+//pub extern fn CreateFontIndirectExW(arg0: ?[*]const ENUMLOGFONTEXDVW) HFONT;
 pub const struct_tagENUMTEXTMETRICA = extern struct {
     etmNewTextMetricEx: NEWTEXTMETRICEXA,
     etmAxesList: AXESLISTA,
 };
 pub const ENUMTEXTMETRICA = struct_tagENUMTEXTMETRICA;
-pub const PENUMTEXTMETRICA = ?&struct_tagENUMTEXTMETRICA;
-pub const LPENUMTEXTMETRICA = ?&struct_tagENUMTEXTMETRICA;
+pub const PENUMTEXTMETRICA = ?*struct_tagENUMTEXTMETRICA;
+pub const LPENUMTEXTMETRICA = ?*struct_tagENUMTEXTMETRICA;
 pub const struct_tagENUMTEXTMETRICW = extern struct {
     etmNewTextMetricEx: NEWTEXTMETRICEXW,
     etmAxesList: AXESLISTW,
 };
 pub const ENUMTEXTMETRICW = struct_tagENUMTEXTMETRICW;
-pub const PENUMTEXTMETRICW = ?&struct_tagENUMTEXTMETRICW;
-pub const LPENUMTEXTMETRICW = ?&struct_tagENUMTEXTMETRICW;
+pub const PENUMTEXTMETRICW = ?*struct_tagENUMTEXTMETRICW;
+pub const LPENUMTEXTMETRICW = ?*struct_tagENUMTEXTMETRICW;
 pub const ENUMTEXTMETRIC = ENUMTEXTMETRICA;
 pub const PENUMTEXTMETRIC = PENUMTEXTMETRICA;
 pub const LPENUMTEXTMETRIC = LPENUMTEXTMETRICA;
@@ -10716,22 +11472,22 @@ pub const LPENUMTEXTMETRIC = LPENUMTEXTMETRICA;
 //pub extern fn LineDDA(xStart: c_int, yStart: c_int, xEnd: c_int, yEnd: c_int, lpProc: LINEDDAPROC, data: LPARAM) BOOL;
 //pub extern fn LineTo(hdc: HDC, x: c_int, y: c_int) BOOL;
 //pub extern fn MaskBlt(hdcDest: HDC, xDest: c_int, yDest: c_int, width: c_int, height: c_int, hdcSrc: HDC, xSrc: c_int, ySrc: c_int, hbmMask: HBITMAP, xMask: c_int, yMask: c_int, rop: DWORD) BOOL;
-//pub extern fn PlgBlt(hdcDest: HDC, lpPoint: ?&const POINT, hdcSrc: HDC, xSrc: c_int, ySrc: c_int, width: c_int, height: c_int, hbmMask: HBITMAP, xMask: c_int, yMask: c_int) BOOL;
+//pub extern fn PlgBlt(hdcDest: HDC, lpPoint: ?[*]const POINT, hdcSrc: HDC, xSrc: c_int, ySrc: c_int, width: c_int, height: c_int, hbmMask: HBITMAP, xMask: c_int, yMask: c_int) BOOL;
 //pub extern fn OffsetClipRgn(hdc: HDC, x: c_int, y: c_int) c_int;
 //pub extern fn OffsetRgn(hrgn: HRGN, x: c_int, y: c_int) c_int;
 //pub extern fn PatBlt(hdc: HDC, x: c_int, y: c_int, w: c_int, h: c_int, rop: DWORD) BOOL;
 //pub extern fn Pie(hdc: HDC, left: c_int, top: c_int, right: c_int, bottom: c_int, xr1: c_int, yr1: c_int, xr2: c_int, yr2: c_int) BOOL;
 //pub extern fn PlayMetaFile(hdc: HDC, hmf: HMETAFILE) BOOL;
 //pub extern fn PaintRgn(hdc: HDC, hrgn: HRGN) BOOL;
-//pub extern fn PolyPolygon(hdc: HDC, apt: ?&const POINT, asz: ?&const INT, csz: c_int) BOOL;
+//pub extern fn PolyPolygon(hdc: HDC, apt: ?[*]const POINT, asz: ?[*]const INT, csz: c_int) BOOL;
 //pub extern fn PtInRegion(hrgn: HRGN, x: c_int, y: c_int) BOOL;
 //pub extern fn PtVisible(hdc: HDC, x: c_int, y: c_int) BOOL;
-//pub extern fn RectInRegion(hrgn: HRGN, lprect: ?&const RECT) BOOL;
-//pub extern fn RectVisible(hdc: HDC, lprect: ?&const RECT) BOOL;
+//pub extern fn RectInRegion(hrgn: HRGN, lprect: ?[*]const RECT) BOOL;
+//pub extern fn RectVisible(hdc: HDC, lprect: ?[*]const RECT) BOOL;
 //pub extern fn Rectangle(hdc: HDC, left: c_int, top: c_int, right: c_int, bottom: c_int) BOOL;
 //pub extern fn RestoreDC(hdc: HDC, nSavedDC: c_int) BOOL;
-//pub extern fn ResetDCA(hdc: HDC, lpdm: ?&const DEVMODEA) HDC;
-//pub extern fn ResetDCW(hdc: HDC, lpdm: ?&const DEVMODEW) HDC;
+//pub extern fn ResetDCA(hdc: HDC, lpdm: ?[*]const DEVMODEA) HDC;
+//pub extern fn ResetDCW(hdc: HDC, lpdm: ?[*]const DEVMODEW) HDC;
 //pub extern fn RealizePalette(hdc: HDC) UINT;
 //pub extern fn RemoveFontResourceA(lpFileName: LPCSTR) BOOL;
 //pub extern fn RemoveFontResourceW(lpFileName: LPCWSTR) BOOL;
@@ -10747,24 +11503,24 @@ pub const LPENUMTEXTMETRIC = LPENUMTEXTMETRICA;
 //pub extern fn SetDCBrushColor(hdc: HDC, color: COLORREF) COLORREF;
 //pub extern fn SetDCPenColor(hdc: HDC, color: COLORREF) COLORREF;
 //pub extern fn SetBkMode(hdc: HDC, mode: c_int) c_int;
-//pub extern fn SetBitmapBits(hbm: HBITMAP, cb: DWORD, pvBits: ?&const c_void) LONG;
-//pub extern fn SetBoundsRect(hdc: HDC, lprect: ?&const RECT, flags: UINT) UINT;
-//pub extern fn SetDIBits(hdc: HDC, hbm: HBITMAP, start: UINT, cLines: UINT, lpBits: ?&const c_void, lpbmi: ?&const BITMAPINFO, ColorUse: UINT) c_int;
-//pub extern fn SetDIBitsToDevice(hdc: HDC, xDest: c_int, yDest: c_int, w: DWORD, h: DWORD, xSrc: c_int, ySrc: c_int, StartScan: UINT, cLines: UINT, lpvBits: ?&const c_void, lpbmi: ?&const BITMAPINFO, ColorUse: UINT) c_int;
+//pub extern fn SetBitmapBits(hbm: HBITMAP, cb: DWORD, pvBits: ?*const c_void) LONG;
+//pub extern fn SetBoundsRect(hdc: HDC, lprect: ?[*]const RECT, flags: UINT) UINT;
+//pub extern fn SetDIBits(hdc: HDC, hbm: HBITMAP, start: UINT, cLines: UINT, lpBits: ?*const c_void, lpbmi: ?[*]const BITMAPINFO, ColorUse: UINT) c_int;
+//pub extern fn SetDIBitsToDevice(hdc: HDC, xDest: c_int, yDest: c_int, w: DWORD, h: DWORD, xSrc: c_int, ySrc: c_int, StartScan: UINT, cLines: UINT, lpvBits: ?*const c_void, lpbmi: ?[*]const BITMAPINFO, ColorUse: UINT) c_int;
 //pub extern fn SetMapperFlags(hdc: HDC, flags: DWORD) DWORD;
 //pub extern fn SetGraphicsMode(hdc: HDC, iMode: c_int) c_int;
 //pub extern fn SetMapMode(hdc: HDC, iMode: c_int) c_int;
 //pub extern fn SetLayout(hdc: HDC, l: DWORD) DWORD;
 //pub extern fn GetLayout(hdc: HDC) DWORD;
-//pub extern fn SetMetaFileBitsEx(cbBuffer: UINT, lpData: ?&const BYTE) HMETAFILE;
-//pub extern fn SetPaletteEntries(hpal: HPALETTE, iStart: UINT, cEntries: UINT, pPalEntries: ?&const PALETTEENTRY) UINT;
+//pub extern fn SetMetaFileBitsEx(cbBuffer: UINT, lpData: ?[*]const BYTE) HMETAFILE;
+//pub extern fn SetPaletteEntries(hpal: HPALETTE, iStart: UINT, cEntries: UINT, pPalEntries: ?[*]const PALETTEENTRY) UINT;
 //pub extern fn SetPixel(hdc: HDC, x: c_int, y: c_int, color: COLORREF) COLORREF;
 //pub extern fn SetPixelV(hdc: HDC, x: c_int, y: c_int, color: COLORREF) BOOL;
-//pub extern fn SetPixelFormat(hdc: HDC, format: c_int, ppfd: ?&const PIXELFORMATDESCRIPTOR) BOOL;
+//pub extern fn SetPixelFormat(hdc: HDC, format: c_int, ppfd: ?[*]const PIXELFORMATDESCRIPTOR) BOOL;
 //pub extern fn SetPolyFillMode(hdc: HDC, mode: c_int) c_int;
 //pub extern fn StretchBlt(hdcDest: HDC, xDest: c_int, yDest: c_int, wDest: c_int, hDest: c_int, hdcSrc: HDC, xSrc: c_int, ySrc: c_int, wSrc: c_int, hSrc: c_int, rop: DWORD) BOOL;
 //pub extern fn SetRectRgn(hrgn: HRGN, left: c_int, top: c_int, right: c_int, bottom: c_int) BOOL;
-pub extern "gdi32" stdcallcc fn StretchDIBits(hdc: HDC, xDest: c_int, yDest: c_int, DestWidth: c_int, DestHeight: c_int, xSrc: c_int, ySrc: c_int, SrcWidth: c_int, SrcHeight: c_int, lpBits: ?&const c_void, lpbmi: ?&const BITMAPINFO, iUsage: UINT, rop: DWORD) c_int;
+//pub extern fn StretchDIBits(hdc: HDC, xDest: c_int, yDest: c_int, DestWidth: c_int, DestHeight: c_int, xSrc: c_int, ySrc: c_int, SrcWidth: c_int, SrcHeight: c_int, lpBits: ?*const c_void, lpbmi: ?*const BITMAPINFO, iUsage: UINT, rop: DWORD) c_int;
 //pub extern fn SetROP2(hdc: HDC, rop2: c_int) c_int;
 //pub extern fn SetStretchBltMode(hdc: HDC, mode: c_int) c_int;
 //pub extern fn SetSystemPaletteUse(hdc: HDC, @"use": UINT) UINT;
@@ -10783,23 +11539,23 @@ pub const struct__TRIVERTEX = extern struct {
     Alpha: COLOR16,
 };
 pub const TRIVERTEX = struct__TRIVERTEX;
-pub const PTRIVERTEX = ?&struct__TRIVERTEX;
-pub const LPTRIVERTEX = ?&struct__TRIVERTEX;
+pub const PTRIVERTEX = ?*struct__TRIVERTEX;
+pub const LPTRIVERTEX = ?*struct__TRIVERTEX;
 pub const struct__GRADIENT_TRIANGLE = extern struct {
     Vertex1: ULONG,
     Vertex2: ULONG,
     Vertex3: ULONG,
 };
 pub const GRADIENT_TRIANGLE = struct__GRADIENT_TRIANGLE;
-pub const PGRADIENT_TRIANGLE = ?&struct__GRADIENT_TRIANGLE;
-pub const LPGRADIENT_TRIANGLE = ?&struct__GRADIENT_TRIANGLE;
+pub const PGRADIENT_TRIANGLE = ?*struct__GRADIENT_TRIANGLE;
+pub const LPGRADIENT_TRIANGLE = ?*struct__GRADIENT_TRIANGLE;
 pub const struct__GRADIENT_RECT = extern struct {
     UpperLeft: ULONG,
     LowerRight: ULONG,
 };
 pub const GRADIENT_RECT = struct__GRADIENT_RECT;
-pub const PGRADIENT_RECT = ?&struct__GRADIENT_RECT;
-pub const LPGRADIENT_RECT = ?&struct__GRADIENT_RECT;
+pub const PGRADIENT_RECT = ?*struct__GRADIENT_RECT;
+pub const LPGRADIENT_RECT = ?*struct__GRADIENT_RECT;
 pub const struct__BLENDFUNCTION = extern struct {
     BlendOp: BYTE,
     BlendFlags: BYTE,
@@ -10807,7 +11563,7 @@ pub const struct__BLENDFUNCTION = extern struct {
     AlphaFormat: BYTE,
 };
 pub const BLENDFUNCTION = struct__BLENDFUNCTION;
-pub const PBLENDFUNCTION = ?&struct__BLENDFUNCTION;
+pub const PBLENDFUNCTION = ?*struct__BLENDFUNCTION;
 //pub extern fn AlphaBlend(hdcDest: HDC, xoriginDest: c_int, yoriginDest: c_int, wDest: c_int, hDest: c_int, hdcSrc: HDC, xoriginSrc: c_int, yoriginSrc: c_int, wSrc: c_int, hSrc: c_int, ftn: BLENDFUNCTION) BOOL;
 //pub extern fn TransparentBlt(hdcDest: HDC, xoriginDest: c_int, yoriginDest: c_int, wDest: c_int, hDest: c_int, hdcSrc: HDC, xoriginSrc: c_int, yoriginSrc: c_int, wSrc: c_int, hSrc: c_int, crTransparent: UINT) BOOL;
 //pub extern fn GradientFill(hdc: HDC, pVertex: PTRIVERTEX, nVertex: ULONG, pMesh: PVOID, nMesh: ULONG, ulMode: ULONG) BOOL;
@@ -10815,16 +11571,16 @@ pub const PBLENDFUNCTION = ?&struct__BLENDFUNCTION;
 //pub extern fn GdiTransparentBlt(hdcDest: HDC, xoriginDest: c_int, yoriginDest: c_int, wDest: c_int, hDest: c_int, hdcSrc: HDC, xoriginSrc: c_int, yoriginSrc: c_int, wSrc: c_int, hSrc: c_int, crTransparent: UINT) BOOL;
 //pub extern fn GdiGradientFill(hdc: HDC, pVertex: PTRIVERTEX, nVertex: ULONG, pMesh: PVOID, nCount: ULONG, ulMode: ULONG) BOOL;
 //pub extern fn PlayMetaFileRecord(hdc: HDC, lpHandleTable: LPHANDLETABLE, lpMR: LPMETARECORD, noObjs: UINT) BOOL;
-pub const MFENUMPROC = ?extern fn(HDC, ?&HANDLETABLE, ?&METARECORD, c_int, LPARAM) c_int;
+pub const MFENUMPROC = ?extern fn(HDC, ?[*]HANDLETABLE, ?[*]METARECORD, c_int, LPARAM) c_int;
 //pub extern fn EnumMetaFile(hdc: HDC, hmf: HMETAFILE, proc: MFENUMPROC, param: LPARAM) BOOL;
-pub const ENHMFENUMPROC = ?extern fn(HDC, ?&HANDLETABLE, ?&const ENHMETARECORD, c_int, LPARAM) c_int;
+pub const ENHMFENUMPROC = ?extern fn(HDC, ?[*]HANDLETABLE, ?[*]const ENHMETARECORD, c_int, LPARAM) c_int;
 //pub extern fn CloseEnhMetaFile(hdc: HDC) HENHMETAFILE;
 //pub extern fn CopyEnhMetaFileA(hEnh: HENHMETAFILE, lpFileName: LPCSTR) HENHMETAFILE;
 //pub extern fn CopyEnhMetaFileW(hEnh: HENHMETAFILE, lpFileName: LPCWSTR) HENHMETAFILE;
-//pub extern fn CreateEnhMetaFileA(hdc: HDC, lpFilename: LPCSTR, lprc: ?&const RECT, lpDesc: LPCSTR) HDC;
-//pub extern fn CreateEnhMetaFileW(hdc: HDC, lpFilename: LPCWSTR, lprc: ?&const RECT, lpDesc: LPCWSTR) HDC;
+//pub extern fn CreateEnhMetaFileA(hdc: HDC, lpFilename: LPCSTR, lprc: ?[*]const RECT, lpDesc: LPCSTR) HDC;
+//pub extern fn CreateEnhMetaFileW(hdc: HDC, lpFilename: LPCWSTR, lprc: ?[*]const RECT, lpDesc: LPCWSTR) HDC;
 //pub extern fn DeleteEnhMetaFile(hmf: HENHMETAFILE) BOOL;
-//pub extern fn EnumEnhMetaFile(hdc: HDC, hmf: HENHMETAFILE, proc: ENHMFENUMPROC, param: LPVOID, lpRect: ?&const RECT) BOOL;
+//pub extern fn EnumEnhMetaFile(hdc: HDC, hmf: HENHMETAFILE, proc: ENHMFENUMPROC, param: LPVOID, lpRect: ?[*]const RECT) BOOL;
 //pub extern fn GetEnhMetaFileA(lpName: LPCSTR) HENHMETAFILE;
 //pub extern fn GetEnhMetaFileW(lpName: LPCWSTR) HENHMETAFILE;
 //pub extern fn GetEnhMetaFileBits(hEMF: HENHMETAFILE, nSize: UINT, lpData: LPBYTE) UINT;
@@ -10832,13 +11588,13 @@ pub const ENHMFENUMPROC = ?extern fn(HDC, ?&HANDLETABLE, ?&const ENHMETARECORD, 
 //pub extern fn GetEnhMetaFileDescriptionW(hemf: HENHMETAFILE, cchBuffer: UINT, lpDescription: LPWSTR) UINT;
 //pub extern fn GetEnhMetaFileHeader(hemf: HENHMETAFILE, nSize: UINT, lpEnhMetaHeader: LPENHMETAHEADER) UINT;
 //pub extern fn GetEnhMetaFilePaletteEntries(hemf: HENHMETAFILE, nNumEntries: UINT, lpPaletteEntries: LPPALETTEENTRY) UINT;
-//pub extern fn GetEnhMetaFilePixelFormat(hemf: HENHMETAFILE, cbBuffer: UINT, ppfd: ?&PIXELFORMATDESCRIPTOR) UINT;
+//pub extern fn GetEnhMetaFilePixelFormat(hemf: HENHMETAFILE, cbBuffer: UINT, ppfd: ?[*]PIXELFORMATDESCRIPTOR) UINT;
 //pub extern fn GetWinMetaFileBits(hemf: HENHMETAFILE, cbData16: UINT, pData16: LPBYTE, iMapMode: INT, hdcRef: HDC) UINT;
-//pub extern fn PlayEnhMetaFile(hdc: HDC, hmf: HENHMETAFILE, lprect: ?&const RECT) BOOL;
-//pub extern fn PlayEnhMetaFileRecord(hdc: HDC, pht: LPHANDLETABLE, pmr: ?&const ENHMETARECORD, cht: UINT) BOOL;
-//pub extern fn SetEnhMetaFileBits(nSize: UINT, pb: ?&const BYTE) HENHMETAFILE;
-//pub extern fn SetWinMetaFileBits(nSize: UINT, lpMeta16Data: ?&const BYTE, hdcRef: HDC, lpMFP: ?&const METAFILEPICT) HENHMETAFILE;
-//pub extern fn GdiComment(hdc: HDC, nSize: UINT, lpData: ?&const BYTE) BOOL;
+//pub extern fn PlayEnhMetaFile(hdc: HDC, hmf: HENHMETAFILE, lprect: ?[*]const RECT) BOOL;
+//pub extern fn PlayEnhMetaFileRecord(hdc: HDC, pht: LPHANDLETABLE, pmr: ?[*]const ENHMETARECORD, cht: UINT) BOOL;
+//pub extern fn SetEnhMetaFileBits(nSize: UINT, pb: ?[*]const BYTE) HENHMETAFILE;
+//pub extern fn SetWinMetaFileBits(nSize: UINT, lpMeta16Data: ?[*]const BYTE, hdcRef: HDC, lpMFP: ?[*]const METAFILEPICT) HENHMETAFILE;
+//pub extern fn GdiComment(hdc: HDC, nSize: UINT, lpData: ?[*]const BYTE) BOOL;
 //pub extern fn GetTextMetricsA(hdc: HDC, lptm: LPTEXTMETRICA) BOOL;
 //pub extern fn GetTextMetricsW(hdc: HDC, lptm: LPTEXTMETRICW) BOOL;
 pub const struct_tagDIBSECTION = extern struct {
@@ -10849,17 +11605,17 @@ pub const struct_tagDIBSECTION = extern struct {
     dsOffset: DWORD,
 };
 pub const DIBSECTION = struct_tagDIBSECTION;
-pub const LPDIBSECTION = ?&struct_tagDIBSECTION;
-pub const PDIBSECTION = ?&struct_tagDIBSECTION;
+pub const LPDIBSECTION = ?*struct_tagDIBSECTION;
+pub const PDIBSECTION = ?*struct_tagDIBSECTION;
 //pub extern fn AngleArc(hdc: HDC, x: c_int, y: c_int, r: DWORD, StartAngle: FLOAT, SweepAngle: FLOAT) BOOL;
-//pub extern fn PolyPolyline(hdc: HDC, apt: ?&const POINT, asz: ?&const DWORD, csz: DWORD) BOOL;
+//pub extern fn PolyPolyline(hdc: HDC, apt: ?[*]const POINT, asz: ?[*]const DWORD, csz: DWORD) BOOL;
 //pub extern fn GetWorldTransform(hdc: HDC, lpxf: LPXFORM) BOOL;
-//pub extern fn SetWorldTransform(hdc: HDC, lpxf: ?&const XFORM) BOOL;
-//pub extern fn ModifyWorldTransform(hdc: HDC, lpxf: ?&const XFORM, mode: DWORD) BOOL;
-//pub extern fn CombineTransform(lpxfOut: LPXFORM, lpxf1: ?&const XFORM, lpxf2: ?&const XFORM) BOOL;
-//pub extern fn CreateDIBSection(hdc: HDC, pbmi: ?&const BITMAPINFO, usage: UINT, ppvBits: ?&(?&c_void), hSection: HANDLE, offset: DWORD) HBITMAP;
-//pub extern fn GetDIBColorTable(hdc: HDC, iStart: UINT, cEntries: UINT, prgbq: ?&RGBQUAD) UINT;
-//pub extern fn SetDIBColorTable(hdc: HDC, iStart: UINT, cEntries: UINT, prgbq: ?&const RGBQUAD) UINT;
+//pub extern fn SetWorldTransform(hdc: HDC, lpxf: ?[*]const XFORM) BOOL;
+//pub extern fn ModifyWorldTransform(hdc: HDC, lpxf: ?[*]const XFORM, mode: DWORD) BOOL;
+//pub extern fn CombineTransform(lpxfOut: LPXFORM, lpxf1: ?[*]const XFORM, lpxf2: ?[*]const XFORM) BOOL;
+//pub extern fn CreateDIBSection(hdc: HDC, pbmi: ?[*]const BITMAPINFO, usage: UINT, ppvBits: ?[*](?*c_void), hSection: HANDLE, offset: DWORD) HBITMAP;
+//pub extern fn GetDIBColorTable(hdc: HDC, iStart: UINT, cEntries: UINT, prgbq: ?[*]RGBQUAD) UINT;
+//pub extern fn SetDIBColorTable(hdc: HDC, iStart: UINT, cEntries: UINT, prgbq: ?[*]const RGBQUAD) UINT;
 pub const struct_tagCOLORADJUSTMENT = extern struct {
     caSize: WORD,
     caFlags: WORD,
@@ -10875,9 +11631,9 @@ pub const struct_tagCOLORADJUSTMENT = extern struct {
     caRedGreenTint: SHORT,
 };
 pub const COLORADJUSTMENT = struct_tagCOLORADJUSTMENT;
-pub const PCOLORADJUSTMENT = ?&struct_tagCOLORADJUSTMENT;
-pub const LPCOLORADJUSTMENT = ?&struct_tagCOLORADJUSTMENT;
-//pub extern fn SetColorAdjustment(hdc: HDC, lpca: ?&const COLORADJUSTMENT) BOOL;
+pub const PCOLORADJUSTMENT = ?*struct_tagCOLORADJUSTMENT;
+pub const LPCOLORADJUSTMENT = ?*struct_tagCOLORADJUSTMENT;
+//pub extern fn SetColorAdjustment(hdc: HDC, lpca: ?[*]const COLORADJUSTMENT) BOOL;
 //pub extern fn GetColorAdjustment(hdc: HDC, lpca: LPCOLORADJUSTMENT) BOOL;
 //pub extern fn CreateHalftonePalette(hdc: HDC) HPALETTE;
 pub const ABORTPROC = ?extern fn(HDC, c_int) BOOL;
@@ -10889,7 +11645,7 @@ pub const struct__DOCINFOA = extern struct {
     fwType: DWORD,
 };
 pub const DOCINFOA = struct__DOCINFOA;
-pub const LPDOCINFOA = ?&struct__DOCINFOA;
+pub const LPDOCINFOA = ?*struct__DOCINFOA;
 pub const struct__DOCINFOW = extern struct {
     cbSize: c_int,
     lpszDocName: LPCWSTR,
@@ -10898,11 +11654,11 @@ pub const struct__DOCINFOW = extern struct {
     fwType: DWORD,
 };
 pub const DOCINFOW = struct__DOCINFOW;
-pub const LPDOCINFOW = ?&struct__DOCINFOW;
+pub const LPDOCINFOW = ?*struct__DOCINFOW;
 pub const DOCINFO = DOCINFOA;
 pub const LPDOCINFO = LPDOCINFOA;
-//pub extern fn StartDocA(hdc: HDC, lpdi: ?&const DOCINFOA) c_int;
-//pub extern fn StartDocW(hdc: HDC, lpdi: ?&const DOCINFOW) c_int;
+//pub extern fn StartDocA(hdc: HDC, lpdi: ?[*]const DOCINFOA) c_int;
+//pub extern fn StartDocW(hdc: HDC, lpdi: ?[*]const DOCINFOW) c_int;
 //pub extern fn EndDoc(hdc: HDC) c_int;
 //pub extern fn StartPage(hdc: HDC) c_int;
 //pub extern fn EndPage(hdc: HDC) c_int;
@@ -10917,14 +11673,14 @@ pub const LPDOCINFO = LPDOCINFOA;
 //pub extern fn FlattenPath(hdc: HDC) BOOL;
 //pub extern fn GetPath(hdc: HDC, apt: LPPOINT, aj: LPBYTE, cpt: c_int) c_int;
 //pub extern fn PathToRegion(hdc: HDC) HRGN;
-//pub extern fn PolyDraw(hdc: HDC, apt: ?&const POINT, aj: ?&const BYTE, cpt: c_int) BOOL;
+//pub extern fn PolyDraw(hdc: HDC, apt: ?[*]const POINT, aj: ?[*]const BYTE, cpt: c_int) BOOL;
 //pub extern fn SelectClipPath(hdc: HDC, mode: c_int) BOOL;
 //pub extern fn SetArcDirection(hdc: HDC, dir: c_int) c_int;
 //pub extern fn SetMiterLimit(hdc: HDC, limit: FLOAT, old: PFLOAT) BOOL;
 //pub extern fn StrokeAndFillPath(hdc: HDC) BOOL;
 //pub extern fn StrokePath(hdc: HDC) BOOL;
 //pub extern fn WidenPath(hdc: HDC) BOOL;
-//pub extern fn ExtCreatePen(iPenStyle: DWORD, cWidth: DWORD, plbrush: ?&const LOGBRUSH, cStyle: DWORD, pstyle: ?&const DWORD) HPEN;
+//pub extern fn ExtCreatePen(iPenStyle: DWORD, cWidth: DWORD, plbrush: ?[*]const LOGBRUSH, cStyle: DWORD, pstyle: ?[*]const DWORD) HPEN;
 //pub extern fn GetMiterLimit(hdc: HDC, plimit: PFLOAT) BOOL;
 //pub extern fn GetArcDirection(hdc: HDC) c_int;
 //pub extern fn GetObjectA(h: HANDLE, c: c_int, pv: LPVOID) c_int;
@@ -10932,18 +11688,18 @@ pub const LPDOCINFO = LPDOCINFOA;
 //pub extern fn MoveToEx(hdc: HDC, x: c_int, y: c_int, lppt: LPPOINT) BOOL;
 //pub extern fn TextOutA(hdc: HDC, x: c_int, y: c_int, lpString: LPCSTR, c: c_int) BOOL;
 //pub extern fn TextOutW(hdc: HDC, x: c_int, y: c_int, lpString: LPCWSTR, c: c_int) BOOL;
-//pub extern fn ExtTextOutA(hdc: HDC, x: c_int, y: c_int, options: UINT, lprect: ?&const RECT, lpString: LPCSTR, c: UINT, lpDx: ?&const INT) BOOL;
-//pub extern fn ExtTextOutW(hdc: HDC, x: c_int, y: c_int, options: UINT, lprect: ?&const RECT, lpString: LPCWSTR, c: UINT, lpDx: ?&const INT) BOOL;
-//pub extern fn PolyTextOutA(hdc: HDC, ppt: ?&const POLYTEXTA, nstrings: c_int) BOOL;
-//pub extern fn PolyTextOutW(hdc: HDC, ppt: ?&const POLYTEXTW, nstrings: c_int) BOOL;
-//pub extern fn CreatePolygonRgn(pptl: ?&const POINT, cPoint: c_int, iMode: c_int) HRGN;
+//pub extern fn ExtTextOutA(hdc: HDC, x: c_int, y: c_int, options: UINT, lprect: ?[*]const RECT, lpString: LPCSTR, c: UINT, lpDx: ?[*]const INT) BOOL;
+//pub extern fn ExtTextOutW(hdc: HDC, x: c_int, y: c_int, options: UINT, lprect: ?[*]const RECT, lpString: LPCWSTR, c: UINT, lpDx: ?[*]const INT) BOOL;
+//pub extern fn PolyTextOutA(hdc: HDC, ppt: ?[*]const POLYTEXTA, nstrings: c_int) BOOL;
+//pub extern fn PolyTextOutW(hdc: HDC, ppt: ?[*]const POLYTEXTW, nstrings: c_int) BOOL;
+//pub extern fn CreatePolygonRgn(pptl: ?[*]const POINT, cPoint: c_int, iMode: c_int) HRGN;
 //pub extern fn DPtoLP(hdc: HDC, lppt: LPPOINT, c: c_int) BOOL;
 //pub extern fn LPtoDP(hdc: HDC, lppt: LPPOINT, c: c_int) BOOL;
-//pub extern fn Polygon(hdc: HDC, apt: ?&const POINT, cpt: c_int) BOOL;
-//pub extern fn Polyline(hdc: HDC, apt: ?&const POINT, cpt: c_int) BOOL;
-//pub extern fn PolyBezier(hdc: HDC, apt: ?&const POINT, cpt: DWORD) BOOL;
-//pub extern fn PolyBezierTo(hdc: HDC, apt: ?&const POINT, cpt: DWORD) BOOL;
-//pub extern fn PolylineTo(hdc: HDC, apt: ?&const POINT, cpt: DWORD) BOOL;
+//pub extern fn Polygon(hdc: HDC, apt: ?[*]const POINT, cpt: c_int) BOOL;
+//pub extern fn Polyline(hdc: HDC, apt: ?[*]const POINT, cpt: c_int) BOOL;
+//pub extern fn PolyBezier(hdc: HDC, apt: ?[*]const POINT, cpt: DWORD) BOOL;
+//pub extern fn PolyBezierTo(hdc: HDC, apt: ?[*]const POINT, cpt: DWORD) BOOL;
+//pub extern fn PolylineTo(hdc: HDC, apt: ?[*]const POINT, cpt: DWORD) BOOL;
 //pub extern fn SetViewportExtEx(hdc: HDC, x: c_int, y: c_int, lpsz: LPSIZE) BOOL;
 //pub extern fn SetViewportOrgEx(hdc: HDC, x: c_int, y: c_int, lppt: LPPOINT) BOOL;
 //pub extern fn SetWindowExtEx(hdc: HDC, x: c_int, y: c_int, lpsz: LPSIZE) BOOL;
@@ -10962,7 +11718,7 @@ pub const struct_tagKERNINGPAIR = extern struct {
     iKernAmount: c_int,
 };
 pub const KERNINGPAIR = struct_tagKERNINGPAIR;
-pub const LPKERNINGPAIR = ?&struct_tagKERNINGPAIR;
+pub const LPKERNINGPAIR = ?*struct_tagKERNINGPAIR;
 //pub extern fn GetKerningPairsA(hdc: HDC, nPairs: DWORD, lpKernPair: LPKERNINGPAIR) DWORD;
 //pub extern fn GetKerningPairsW(hdc: HDC, nPairs: DWORD, lpKernPair: LPKERNINGPAIR) DWORD;
 //pub extern fn GetDCOrgEx(hdc: HDC, lppt: LPPOINT) BOOL;
@@ -10999,7 +11755,7 @@ pub const struct_tagEMR = extern struct {
     nSize: DWORD,
 };
 pub const EMR = struct_tagEMR;
-pub const PEMR = ?&struct_tagEMR;
+pub const PEMR = ?*struct_tagEMR;
 pub const struct_tagEMRTEXT = extern struct {
     ptlReference: POINTL,
     nChars: DWORD,
@@ -11009,103 +11765,103 @@ pub const struct_tagEMRTEXT = extern struct {
     offDx: DWORD,
 };
 pub const EMRTEXT = struct_tagEMRTEXT;
-pub const PEMRTEXT = ?&struct_tagEMRTEXT;
+pub const PEMRTEXT = ?*struct_tagEMRTEXT;
 pub const struct_tagABORTPATH = extern struct {
     emr: EMR,
 };
 pub const EMRABORTPATH = struct_tagABORTPATH;
-pub const PEMRABORTPATH = ?&struct_tagABORTPATH;
+pub const PEMRABORTPATH = ?*struct_tagABORTPATH;
 pub const EMRBEGINPATH = struct_tagABORTPATH;
-pub const PEMRBEGINPATH = ?&struct_tagABORTPATH;
+pub const PEMRBEGINPATH = ?*struct_tagABORTPATH;
 pub const EMRENDPATH = struct_tagABORTPATH;
-pub const PEMRENDPATH = ?&struct_tagABORTPATH;
+pub const PEMRENDPATH = ?*struct_tagABORTPATH;
 pub const EMRCLOSEFIGURE = struct_tagABORTPATH;
-pub const PEMRCLOSEFIGURE = ?&struct_tagABORTPATH;
+pub const PEMRCLOSEFIGURE = ?*struct_tagABORTPATH;
 pub const EMRFLATTENPATH = struct_tagABORTPATH;
-pub const PEMRFLATTENPATH = ?&struct_tagABORTPATH;
+pub const PEMRFLATTENPATH = ?*struct_tagABORTPATH;
 pub const EMRWIDENPATH = struct_tagABORTPATH;
-pub const PEMRWIDENPATH = ?&struct_tagABORTPATH;
+pub const PEMRWIDENPATH = ?*struct_tagABORTPATH;
 pub const EMRSETMETARGN = struct_tagABORTPATH;
-pub const PEMRSETMETARGN = ?&struct_tagABORTPATH;
+pub const PEMRSETMETARGN = ?*struct_tagABORTPATH;
 pub const EMRSAVEDC = struct_tagABORTPATH;
-pub const PEMRSAVEDC = ?&struct_tagABORTPATH;
+pub const PEMRSAVEDC = ?*struct_tagABORTPATH;
 pub const EMRREALIZEPALETTE = struct_tagABORTPATH;
-pub const PEMRREALIZEPALETTE = ?&struct_tagABORTPATH;
+pub const PEMRREALIZEPALETTE = ?*struct_tagABORTPATH;
 pub const struct_tagEMRSELECTCLIPPATH = extern struct {
     emr: EMR,
     iMode: DWORD,
 };
 pub const EMRSELECTCLIPPATH = struct_tagEMRSELECTCLIPPATH;
-pub const PEMRSELECTCLIPPATH = ?&struct_tagEMRSELECTCLIPPATH;
+pub const PEMRSELECTCLIPPATH = ?*struct_tagEMRSELECTCLIPPATH;
 pub const EMRSETBKMODE = struct_tagEMRSELECTCLIPPATH;
-pub const PEMRSETBKMODE = ?&struct_tagEMRSELECTCLIPPATH;
+pub const PEMRSETBKMODE = ?*struct_tagEMRSELECTCLIPPATH;
 pub const EMRSETMAPMODE = struct_tagEMRSELECTCLIPPATH;
-pub const PEMRSETMAPMODE = ?&struct_tagEMRSELECTCLIPPATH;
+pub const PEMRSETMAPMODE = ?*struct_tagEMRSELECTCLIPPATH;
 pub const EMRSETLAYOUT = struct_tagEMRSELECTCLIPPATH;
-pub const PEMRSETLAYOUT = ?&struct_tagEMRSELECTCLIPPATH;
+pub const PEMRSETLAYOUT = ?*struct_tagEMRSELECTCLIPPATH;
 pub const EMRSETPOLYFILLMODE = struct_tagEMRSELECTCLIPPATH;
-pub const PEMRSETPOLYFILLMODE = ?&struct_tagEMRSELECTCLIPPATH;
+pub const PEMRSETPOLYFILLMODE = ?*struct_tagEMRSELECTCLIPPATH;
 pub const EMRSETROP2 = struct_tagEMRSELECTCLIPPATH;
-pub const PEMRSETROP2 = ?&struct_tagEMRSELECTCLIPPATH;
+pub const PEMRSETROP2 = ?*struct_tagEMRSELECTCLIPPATH;
 pub const EMRSETSTRETCHBLTMODE = struct_tagEMRSELECTCLIPPATH;
-pub const PEMRSETSTRETCHBLTMODE = ?&struct_tagEMRSELECTCLIPPATH;
+pub const PEMRSETSTRETCHBLTMODE = ?*struct_tagEMRSELECTCLIPPATH;
 pub const EMRSETICMMODE = struct_tagEMRSELECTCLIPPATH;
-pub const PEMRSETICMMODE = ?&struct_tagEMRSELECTCLIPPATH;
+pub const PEMRSETICMMODE = ?*struct_tagEMRSELECTCLIPPATH;
 pub const EMRSETTEXTALIGN = struct_tagEMRSELECTCLIPPATH;
-pub const PEMRSETTEXTALIGN = ?&struct_tagEMRSELECTCLIPPATH;
+pub const PEMRSETTEXTALIGN = ?*struct_tagEMRSELECTCLIPPATH;
 pub const struct_tagEMRSETMITERLIMIT = extern struct {
     emr: EMR,
     eMiterLimit: FLOAT,
 };
 pub const EMRSETMITERLIMIT = struct_tagEMRSETMITERLIMIT;
-pub const PEMRSETMITERLIMIT = ?&struct_tagEMRSETMITERLIMIT;
+pub const PEMRSETMITERLIMIT = ?*struct_tagEMRSETMITERLIMIT;
 pub const struct_tagEMRRESTOREDC = extern struct {
     emr: EMR,
     iRelative: LONG,
 };
 pub const EMRRESTOREDC = struct_tagEMRRESTOREDC;
-pub const PEMRRESTOREDC = ?&struct_tagEMRRESTOREDC;
+pub const PEMRRESTOREDC = ?*struct_tagEMRRESTOREDC;
 pub const struct_tagEMRSETARCDIRECTION = extern struct {
     emr: EMR,
     iArcDirection: DWORD,
 };
 pub const EMRSETARCDIRECTION = struct_tagEMRSETARCDIRECTION;
-pub const PEMRSETARCDIRECTION = ?&struct_tagEMRSETARCDIRECTION;
+pub const PEMRSETARCDIRECTION = ?*struct_tagEMRSETARCDIRECTION;
 pub const struct_tagEMRSETMAPPERFLAGS = extern struct {
     emr: EMR,
     dwFlags: DWORD,
 };
 pub const EMRSETMAPPERFLAGS = struct_tagEMRSETMAPPERFLAGS;
-pub const PEMRSETMAPPERFLAGS = ?&struct_tagEMRSETMAPPERFLAGS;
+pub const PEMRSETMAPPERFLAGS = ?*struct_tagEMRSETMAPPERFLAGS;
 pub const struct_tagEMRSETTEXTCOLOR = extern struct {
     emr: EMR,
     crColor: COLORREF,
 };
 pub const EMRSETBKCOLOR = struct_tagEMRSETTEXTCOLOR;
-pub const PEMRSETBKCOLOR = ?&struct_tagEMRSETTEXTCOLOR;
+pub const PEMRSETBKCOLOR = ?*struct_tagEMRSETTEXTCOLOR;
 pub const EMRSETTEXTCOLOR = struct_tagEMRSETTEXTCOLOR;
-pub const PEMRSETTEXTCOLOR = ?&struct_tagEMRSETTEXTCOLOR;
+pub const PEMRSETTEXTCOLOR = ?*struct_tagEMRSETTEXTCOLOR;
 pub const struct_tagEMRSELECTOBJECT = extern struct {
     emr: EMR,
     ihObject: DWORD,
 };
 pub const EMRSELECTOBJECT = struct_tagEMRSELECTOBJECT;
-pub const PEMRSELECTOBJECT = ?&struct_tagEMRSELECTOBJECT;
+pub const PEMRSELECTOBJECT = ?*struct_tagEMRSELECTOBJECT;
 pub const EMRDELETEOBJECT = struct_tagEMRSELECTOBJECT;
-pub const PEMRDELETEOBJECT = ?&struct_tagEMRSELECTOBJECT;
+pub const PEMRDELETEOBJECT = ?*struct_tagEMRSELECTOBJECT;
 pub const struct_tagEMRSELECTPALETTE = extern struct {
     emr: EMR,
     ihPal: DWORD,
 };
 pub const EMRSELECTPALETTE = struct_tagEMRSELECTPALETTE;
-pub const PEMRSELECTPALETTE = ?&struct_tagEMRSELECTPALETTE;
+pub const PEMRSELECTPALETTE = ?*struct_tagEMRSELECTPALETTE;
 pub const struct_tagEMRRESIZEPALETTE = extern struct {
     emr: EMR,
     ihPal: DWORD,
     cEntries: DWORD,
 };
 pub const EMRRESIZEPALETTE = struct_tagEMRRESIZEPALETTE;
-pub const PEMRRESIZEPALETTE = ?&struct_tagEMRRESIZEPALETTE;
+pub const PEMRRESIZEPALETTE = ?*struct_tagEMRRESIZEPALETTE;
 pub const struct_tagEMRSETPALETTEENTRIES = extern struct {
     emr: EMR,
     ihPal: DWORD,
@@ -11114,20 +11870,20 @@ pub const struct_tagEMRSETPALETTEENTRIES = extern struct {
     aPalEntries: [1]PALETTEENTRY,
 };
 pub const EMRSETPALETTEENTRIES = struct_tagEMRSETPALETTEENTRIES;
-pub const PEMRSETPALETTEENTRIES = ?&struct_tagEMRSETPALETTEENTRIES;
+pub const PEMRSETPALETTEENTRIES = ?*struct_tagEMRSETPALETTEENTRIES;
 pub const struct_tagEMRSETCOLORADJUSTMENT = extern struct {
     emr: EMR,
     ColorAdjustment: COLORADJUSTMENT,
 };
 pub const EMRSETCOLORADJUSTMENT = struct_tagEMRSETCOLORADJUSTMENT;
-pub const PEMRSETCOLORADJUSTMENT = ?&struct_tagEMRSETCOLORADJUSTMENT;
+pub const PEMRSETCOLORADJUSTMENT = ?*struct_tagEMRSETCOLORADJUSTMENT;
 pub const struct_tagEMRGDICOMMENT = extern struct {
     emr: EMR,
     cbData: DWORD,
     Data: [1]BYTE,
 };
 pub const EMRGDICOMMENT = struct_tagEMRGDICOMMENT;
-pub const PEMRGDICOMMENT = ?&struct_tagEMRGDICOMMENT;
+pub const PEMRGDICOMMENT = ?*struct_tagEMRGDICOMMENT;
 pub const struct_tagEMREOF = extern struct {
     emr: EMR,
     nPalEntries: DWORD,
@@ -11135,57 +11891,57 @@ pub const struct_tagEMREOF = extern struct {
     nSizeLast: DWORD,
 };
 pub const EMREOF = struct_tagEMREOF;
-pub const PEMREOF = ?&struct_tagEMREOF;
+pub const PEMREOF = ?*struct_tagEMREOF;
 pub const struct_tagEMRLINETO = extern struct {
     emr: EMR,
     ptl: POINTL,
 };
 pub const EMRLINETO = struct_tagEMRLINETO;
-pub const PEMRLINETO = ?&struct_tagEMRLINETO;
+pub const PEMRLINETO = ?*struct_tagEMRLINETO;
 pub const EMRMOVETOEX = struct_tagEMRLINETO;
-pub const PEMRMOVETOEX = ?&struct_tagEMRLINETO;
+pub const PEMRMOVETOEX = ?*struct_tagEMRLINETO;
 pub const struct_tagEMROFFSETCLIPRGN = extern struct {
     emr: EMR,
     ptlOffset: POINTL,
 };
 pub const EMROFFSETCLIPRGN = struct_tagEMROFFSETCLIPRGN;
-pub const PEMROFFSETCLIPRGN = ?&struct_tagEMROFFSETCLIPRGN;
+pub const PEMROFFSETCLIPRGN = ?*struct_tagEMROFFSETCLIPRGN;
 pub const struct_tagEMRFILLPATH = extern struct {
     emr: EMR,
     rclBounds: RECTL,
 };
 pub const EMRFILLPATH = struct_tagEMRFILLPATH;
-pub const PEMRFILLPATH = ?&struct_tagEMRFILLPATH;
+pub const PEMRFILLPATH = ?*struct_tagEMRFILLPATH;
 pub const EMRSTROKEANDFILLPATH = struct_tagEMRFILLPATH;
-pub const PEMRSTROKEANDFILLPATH = ?&struct_tagEMRFILLPATH;
+pub const PEMRSTROKEANDFILLPATH = ?*struct_tagEMRFILLPATH;
 pub const EMRSTROKEPATH = struct_tagEMRFILLPATH;
-pub const PEMRSTROKEPATH = ?&struct_tagEMRFILLPATH;
+pub const PEMRSTROKEPATH = ?*struct_tagEMRFILLPATH;
 pub const struct_tagEMREXCLUDECLIPRECT = extern struct {
     emr: EMR,
     rclClip: RECTL,
 };
 pub const EMREXCLUDECLIPRECT = struct_tagEMREXCLUDECLIPRECT;
-pub const PEMREXCLUDECLIPRECT = ?&struct_tagEMREXCLUDECLIPRECT;
+pub const PEMREXCLUDECLIPRECT = ?*struct_tagEMREXCLUDECLIPRECT;
 pub const EMRINTERSECTCLIPRECT = struct_tagEMREXCLUDECLIPRECT;
-pub const PEMRINTERSECTCLIPRECT = ?&struct_tagEMREXCLUDECLIPRECT;
+pub const PEMRINTERSECTCLIPRECT = ?*struct_tagEMREXCLUDECLIPRECT;
 pub const struct_tagEMRSETVIEWPORTORGEX = extern struct {
     emr: EMR,
     ptlOrigin: POINTL,
 };
 pub const EMRSETVIEWPORTORGEX = struct_tagEMRSETVIEWPORTORGEX;
-pub const PEMRSETVIEWPORTORGEX = ?&struct_tagEMRSETVIEWPORTORGEX;
+pub const PEMRSETVIEWPORTORGEX = ?*struct_tagEMRSETVIEWPORTORGEX;
 pub const EMRSETWINDOWORGEX = struct_tagEMRSETVIEWPORTORGEX;
-pub const PEMRSETWINDOWORGEX = ?&struct_tagEMRSETVIEWPORTORGEX;
+pub const PEMRSETWINDOWORGEX = ?*struct_tagEMRSETVIEWPORTORGEX;
 pub const EMRSETBRUSHORGEX = struct_tagEMRSETVIEWPORTORGEX;
-pub const PEMRSETBRUSHORGEX = ?&struct_tagEMRSETVIEWPORTORGEX;
+pub const PEMRSETBRUSHORGEX = ?*struct_tagEMRSETVIEWPORTORGEX;
 pub const struct_tagEMRSETVIEWPORTEXTEX = extern struct {
     emr: EMR,
     szlExtent: SIZEL,
 };
 pub const EMRSETVIEWPORTEXTEX = struct_tagEMRSETVIEWPORTEXTEX;
-pub const PEMRSETVIEWPORTEXTEX = ?&struct_tagEMRSETVIEWPORTEXTEX;
+pub const PEMRSETVIEWPORTEXTEX = ?*struct_tagEMRSETVIEWPORTEXTEX;
 pub const EMRSETWINDOWEXTEX = struct_tagEMRSETVIEWPORTEXTEX;
-pub const PEMRSETWINDOWEXTEX = ?&struct_tagEMRSETVIEWPORTEXTEX;
+pub const PEMRSETWINDOWEXTEX = ?*struct_tagEMRSETVIEWPORTEXTEX;
 pub const struct_tagEMRSCALEVIEWPORTEXTEX = extern struct {
     emr: EMR,
     xNum: LONG,
@@ -11194,29 +11950,29 @@ pub const struct_tagEMRSCALEVIEWPORTEXTEX = extern struct {
     yDenom: LONG,
 };
 pub const EMRSCALEVIEWPORTEXTEX = struct_tagEMRSCALEVIEWPORTEXTEX;
-pub const PEMRSCALEVIEWPORTEXTEX = ?&struct_tagEMRSCALEVIEWPORTEXTEX;
+pub const PEMRSCALEVIEWPORTEXTEX = ?*struct_tagEMRSCALEVIEWPORTEXTEX;
 pub const EMRSCALEWINDOWEXTEX = struct_tagEMRSCALEVIEWPORTEXTEX;
-pub const PEMRSCALEWINDOWEXTEX = ?&struct_tagEMRSCALEVIEWPORTEXTEX;
+pub const PEMRSCALEWINDOWEXTEX = ?*struct_tagEMRSCALEVIEWPORTEXTEX;
 pub const struct_tagEMRSETWORLDTRANSFORM = extern struct {
     emr: EMR,
     xform: XFORM,
 };
 pub const EMRSETWORLDTRANSFORM = struct_tagEMRSETWORLDTRANSFORM;
-pub const PEMRSETWORLDTRANSFORM = ?&struct_tagEMRSETWORLDTRANSFORM;
+pub const PEMRSETWORLDTRANSFORM = ?*struct_tagEMRSETWORLDTRANSFORM;
 pub const struct_tagEMRMODIFYWORLDTRANSFORM = extern struct {
     emr: EMR,
     xform: XFORM,
     iMode: DWORD,
 };
 pub const EMRMODIFYWORLDTRANSFORM = struct_tagEMRMODIFYWORLDTRANSFORM;
-pub const PEMRMODIFYWORLDTRANSFORM = ?&struct_tagEMRMODIFYWORLDTRANSFORM;
+pub const PEMRMODIFYWORLDTRANSFORM = ?*struct_tagEMRMODIFYWORLDTRANSFORM;
 pub const struct_tagEMRSETPIXELV = extern struct {
     emr: EMR,
     ptlPixel: POINTL,
     crColor: COLORREF,
 };
 pub const EMRSETPIXELV = struct_tagEMRSETPIXELV;
-pub const PEMRSETPIXELV = ?&struct_tagEMRSETPIXELV;
+pub const PEMRSETPIXELV = ?*struct_tagEMRSETPIXELV;
 pub const struct_tagEMREXTFLOODFILL = extern struct {
     emr: EMR,
     ptlStart: POINTL,
@@ -11224,22 +11980,22 @@ pub const struct_tagEMREXTFLOODFILL = extern struct {
     iMode: DWORD,
 };
 pub const EMREXTFLOODFILL = struct_tagEMREXTFLOODFILL;
-pub const PEMREXTFLOODFILL = ?&struct_tagEMREXTFLOODFILL;
+pub const PEMREXTFLOODFILL = ?*struct_tagEMREXTFLOODFILL;
 pub const struct_tagEMRELLIPSE = extern struct {
     emr: EMR,
     rclBox: RECTL,
 };
 pub const EMRELLIPSE = struct_tagEMRELLIPSE;
-pub const PEMRELLIPSE = ?&struct_tagEMRELLIPSE;
+pub const PEMRELLIPSE = ?*struct_tagEMRELLIPSE;
 pub const EMRRECTANGLE = struct_tagEMRELLIPSE;
-pub const PEMRRECTANGLE = ?&struct_tagEMRELLIPSE;
+pub const PEMRRECTANGLE = ?*struct_tagEMRELLIPSE;
 pub const struct_tagEMRROUNDRECT = extern struct {
     emr: EMR,
     rclBox: RECTL,
     szlCorner: SIZEL,
 };
 pub const EMRROUNDRECT = struct_tagEMRROUNDRECT;
-pub const PEMRROUNDRECT = ?&struct_tagEMRROUNDRECT;
+pub const PEMRROUNDRECT = ?*struct_tagEMRROUNDRECT;
 pub const struct_tagEMRARC = extern struct {
     emr: EMR,
     rclBox: RECTL,
@@ -11247,13 +12003,13 @@ pub const struct_tagEMRARC = extern struct {
     ptlEnd: POINTL,
 };
 pub const EMRARC = struct_tagEMRARC;
-pub const PEMRARC = ?&struct_tagEMRARC;
+pub const PEMRARC = ?*struct_tagEMRARC;
 pub const EMRARCTO = struct_tagEMRARC;
-pub const PEMRARCTO = ?&struct_tagEMRARC;
+pub const PEMRARCTO = ?*struct_tagEMRARC;
 pub const EMRCHORD = struct_tagEMRARC;
-pub const PEMRCHORD = ?&struct_tagEMRARC;
+pub const PEMRCHORD = ?*struct_tagEMRARC;
 pub const EMRPIE = struct_tagEMRARC;
-pub const PEMRPIE = ?&struct_tagEMRARC;
+pub const PEMRPIE = ?*struct_tagEMRARC;
 pub const struct_tagEMRANGLEARC = extern struct {
     emr: EMR,
     ptlCenter: POINTL,
@@ -11262,7 +12018,7 @@ pub const struct_tagEMRANGLEARC = extern struct {
     eSweepAngle: FLOAT,
 };
 pub const EMRANGLEARC = struct_tagEMRANGLEARC;
-pub const PEMRANGLEARC = ?&struct_tagEMRANGLEARC;
+pub const PEMRANGLEARC = ?*struct_tagEMRANGLEARC;
 pub const struct_tagEMRPOLYLINE = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11270,15 +12026,15 @@ pub const struct_tagEMRPOLYLINE = extern struct {
     aptl: [1]POINTL,
 };
 pub const EMRPOLYLINE = struct_tagEMRPOLYLINE;
-pub const PEMRPOLYLINE = ?&struct_tagEMRPOLYLINE;
+pub const PEMRPOLYLINE = ?*struct_tagEMRPOLYLINE;
 pub const EMRPOLYBEZIER = struct_tagEMRPOLYLINE;
-pub const PEMRPOLYBEZIER = ?&struct_tagEMRPOLYLINE;
+pub const PEMRPOLYBEZIER = ?*struct_tagEMRPOLYLINE;
 pub const EMRPOLYGON = struct_tagEMRPOLYLINE;
-pub const PEMRPOLYGON = ?&struct_tagEMRPOLYLINE;
+pub const PEMRPOLYGON = ?*struct_tagEMRPOLYLINE;
 pub const EMRPOLYBEZIERTO = struct_tagEMRPOLYLINE;
-pub const PEMRPOLYBEZIERTO = ?&struct_tagEMRPOLYLINE;
+pub const PEMRPOLYBEZIERTO = ?*struct_tagEMRPOLYLINE;
 pub const EMRPOLYLINETO = struct_tagEMRPOLYLINE;
-pub const PEMRPOLYLINETO = ?&struct_tagEMRPOLYLINE;
+pub const PEMRPOLYLINETO = ?*struct_tagEMRPOLYLINE;
 pub const struct_tagEMRPOLYLINE16 = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11286,15 +12042,15 @@ pub const struct_tagEMRPOLYLINE16 = extern struct {
     apts: [1]POINTS,
 };
 pub const EMRPOLYLINE16 = struct_tagEMRPOLYLINE16;
-pub const PEMRPOLYLINE16 = ?&struct_tagEMRPOLYLINE16;
+pub const PEMRPOLYLINE16 = ?*struct_tagEMRPOLYLINE16;
 pub const EMRPOLYBEZIER16 = struct_tagEMRPOLYLINE16;
-pub const PEMRPOLYBEZIER16 = ?&struct_tagEMRPOLYLINE16;
+pub const PEMRPOLYBEZIER16 = ?*struct_tagEMRPOLYLINE16;
 pub const EMRPOLYGON16 = struct_tagEMRPOLYLINE16;
-pub const PEMRPOLYGON16 = ?&struct_tagEMRPOLYLINE16;
+pub const PEMRPOLYGON16 = ?*struct_tagEMRPOLYLINE16;
 pub const EMRPOLYBEZIERTO16 = struct_tagEMRPOLYLINE16;
-pub const PEMRPOLYBEZIERTO16 = ?&struct_tagEMRPOLYLINE16;
+pub const PEMRPOLYBEZIERTO16 = ?*struct_tagEMRPOLYLINE16;
 pub const EMRPOLYLINETO16 = struct_tagEMRPOLYLINE16;
-pub const PEMRPOLYLINETO16 = ?&struct_tagEMRPOLYLINE16;
+pub const PEMRPOLYLINETO16 = ?*struct_tagEMRPOLYLINE16;
 pub const struct_tagEMRPOLYDRAW = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11303,7 +12059,7 @@ pub const struct_tagEMRPOLYDRAW = extern struct {
     abTypes: [1]BYTE,
 };
 pub const EMRPOLYDRAW = struct_tagEMRPOLYDRAW;
-pub const PEMRPOLYDRAW = ?&struct_tagEMRPOLYDRAW;
+pub const PEMRPOLYDRAW = ?*struct_tagEMRPOLYDRAW;
 pub const struct_tagEMRPOLYDRAW16 = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11312,7 +12068,7 @@ pub const struct_tagEMRPOLYDRAW16 = extern struct {
     abTypes: [1]BYTE,
 };
 pub const EMRPOLYDRAW16 = struct_tagEMRPOLYDRAW16;
-pub const PEMRPOLYDRAW16 = ?&struct_tagEMRPOLYDRAW16;
+pub const PEMRPOLYDRAW16 = ?*struct_tagEMRPOLYDRAW16;
 pub const struct_tagEMRPOLYPOLYLINE = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11322,9 +12078,9 @@ pub const struct_tagEMRPOLYPOLYLINE = extern struct {
     aptl: [1]POINTL,
 };
 pub const EMRPOLYPOLYLINE = struct_tagEMRPOLYPOLYLINE;
-pub const PEMRPOLYPOLYLINE = ?&struct_tagEMRPOLYPOLYLINE;
+pub const PEMRPOLYPOLYLINE = ?*struct_tagEMRPOLYPOLYLINE;
 pub const EMRPOLYPOLYGON = struct_tagEMRPOLYPOLYLINE;
-pub const PEMRPOLYPOLYGON = ?&struct_tagEMRPOLYPOLYLINE;
+pub const PEMRPOLYPOLYGON = ?*struct_tagEMRPOLYPOLYLINE;
 pub const struct_tagEMRPOLYPOLYLINE16 = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11334,9 +12090,9 @@ pub const struct_tagEMRPOLYPOLYLINE16 = extern struct {
     apts: [1]POINTS,
 };
 pub const EMRPOLYPOLYLINE16 = struct_tagEMRPOLYPOLYLINE16;
-pub const PEMRPOLYPOLYLINE16 = ?&struct_tagEMRPOLYPOLYLINE16;
+pub const PEMRPOLYPOLYLINE16 = ?*struct_tagEMRPOLYPOLYLINE16;
 pub const EMRPOLYPOLYGON16 = struct_tagEMRPOLYPOLYLINE16;
-pub const PEMRPOLYPOLYGON16 = ?&struct_tagEMRPOLYPOLYLINE16;
+pub const PEMRPOLYPOLYGON16 = ?*struct_tagEMRPOLYPOLYLINE16;
 pub const struct_tagEMRINVERTRGN = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11344,9 +12100,9 @@ pub const struct_tagEMRINVERTRGN = extern struct {
     RgnData: [1]BYTE,
 };
 pub const EMRINVERTRGN = struct_tagEMRINVERTRGN;
-pub const PEMRINVERTRGN = ?&struct_tagEMRINVERTRGN;
+pub const PEMRINVERTRGN = ?*struct_tagEMRINVERTRGN;
 pub const EMRPAINTRGN = struct_tagEMRINVERTRGN;
-pub const PEMRPAINTRGN = ?&struct_tagEMRINVERTRGN;
+pub const PEMRPAINTRGN = ?*struct_tagEMRINVERTRGN;
 pub const struct_tagEMRFILLRGN = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11355,7 +12111,7 @@ pub const struct_tagEMRFILLRGN = extern struct {
     RgnData: [1]BYTE,
 };
 pub const EMRFILLRGN = struct_tagEMRFILLRGN;
-pub const PEMRFILLRGN = ?&struct_tagEMRFILLRGN;
+pub const PEMRFILLRGN = ?*struct_tagEMRFILLRGN;
 pub const struct_tagEMRFRAMERGN = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11365,7 +12121,7 @@ pub const struct_tagEMRFRAMERGN = extern struct {
     RgnData: [1]BYTE,
 };
 pub const EMRFRAMERGN = struct_tagEMRFRAMERGN;
-pub const PEMRFRAMERGN = ?&struct_tagEMRFRAMERGN;
+pub const PEMRFRAMERGN = ?*struct_tagEMRFRAMERGN;
 pub const struct_tagEMREXTSELECTCLIPRGN = extern struct {
     emr: EMR,
     cbRgnData: DWORD,
@@ -11373,7 +12129,7 @@ pub const struct_tagEMREXTSELECTCLIPRGN = extern struct {
     RgnData: [1]BYTE,
 };
 pub const EMREXTSELECTCLIPRGN = struct_tagEMREXTSELECTCLIPRGN;
-pub const PEMREXTSELECTCLIPRGN = ?&struct_tagEMREXTSELECTCLIPRGN;
+pub const PEMREXTSELECTCLIPRGN = ?*struct_tagEMREXTSELECTCLIPRGN;
 pub const struct_tagEMREXTTEXTOUTA = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11383,9 +12139,9 @@ pub const struct_tagEMREXTTEXTOUTA = extern struct {
     emrtext: EMRTEXT,
 };
 pub const EMREXTTEXTOUTA = struct_tagEMREXTTEXTOUTA;
-pub const PEMREXTTEXTOUTA = ?&struct_tagEMREXTTEXTOUTA;
+pub const PEMREXTTEXTOUTA = ?*struct_tagEMREXTTEXTOUTA;
 pub const EMREXTTEXTOUTW = struct_tagEMREXTTEXTOUTA;
-pub const PEMREXTTEXTOUTW = ?&struct_tagEMREXTTEXTOUTA;
+pub const PEMREXTTEXTOUTW = ?*struct_tagEMREXTTEXTOUTA;
 pub const struct_tagEMRPOLYTEXTOUTA = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11396,9 +12152,9 @@ pub const struct_tagEMRPOLYTEXTOUTA = extern struct {
     aemrtext: [1]EMRTEXT,
 };
 pub const EMRPOLYTEXTOUTA = struct_tagEMRPOLYTEXTOUTA;
-pub const PEMRPOLYTEXTOUTA = ?&struct_tagEMRPOLYTEXTOUTA;
+pub const PEMRPOLYTEXTOUTA = ?*struct_tagEMRPOLYTEXTOUTA;
 pub const EMRPOLYTEXTOUTW = struct_tagEMRPOLYTEXTOUTA;
-pub const PEMRPOLYTEXTOUTW = ?&struct_tagEMRPOLYTEXTOUTA;
+pub const PEMRPOLYTEXTOUTW = ?*struct_tagEMRPOLYTEXTOUTA;
 pub const struct_tagEMRBITBLT = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11418,7 +12174,7 @@ pub const struct_tagEMRBITBLT = extern struct {
     cbBitsSrc: DWORD,
 };
 pub const EMRBITBLT = struct_tagEMRBITBLT;
-pub const PEMRBITBLT = ?&struct_tagEMRBITBLT;
+pub const PEMRBITBLT = ?*struct_tagEMRBITBLT;
 pub const struct_tagEMRSTRETCHBLT = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11440,7 +12196,7 @@ pub const struct_tagEMRSTRETCHBLT = extern struct {
     cySrc: LONG,
 };
 pub const EMRSTRETCHBLT = struct_tagEMRSTRETCHBLT;
-pub const PEMRSTRETCHBLT = ?&struct_tagEMRSTRETCHBLT;
+pub const PEMRSTRETCHBLT = ?*struct_tagEMRSTRETCHBLT;
 pub const struct_tagEMRMASKBLT = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11467,7 +12223,7 @@ pub const struct_tagEMRMASKBLT = extern struct {
     cbBitsMask: DWORD,
 };
 pub const EMRMASKBLT = struct_tagEMRMASKBLT;
-pub const PEMRMASKBLT = ?&struct_tagEMRMASKBLT;
+pub const PEMRMASKBLT = ?*struct_tagEMRMASKBLT;
 pub const struct_tagEMRPLGBLT = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11492,7 +12248,7 @@ pub const struct_tagEMRPLGBLT = extern struct {
     cbBitsMask: DWORD,
 };
 pub const EMRPLGBLT = struct_tagEMRPLGBLT;
-pub const PEMRPLGBLT = ?&struct_tagEMRPLGBLT;
+pub const PEMRPLGBLT = ?*struct_tagEMRPLGBLT;
 pub const struct_tagEMRSETDIBITSTODEVICE = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11511,7 +12267,7 @@ pub const struct_tagEMRSETDIBITSTODEVICE = extern struct {
     cScans: DWORD,
 };
 pub const EMRSETDIBITSTODEVICE = struct_tagEMRSETDIBITSTODEVICE;
-pub const PEMRSETDIBITSTODEVICE = ?&struct_tagEMRSETDIBITSTODEVICE;
+pub const PEMRSETDIBITSTODEVICE = ?*struct_tagEMRSETDIBITSTODEVICE;
 pub const struct_tagEMRSTRETCHDIBITS = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11531,28 +12287,28 @@ pub const struct_tagEMRSTRETCHDIBITS = extern struct {
     cyDest: LONG,
 };
 pub const EMRSTRETCHDIBITS = struct_tagEMRSTRETCHDIBITS;
-pub const PEMRSTRETCHDIBITS = ?&struct_tagEMRSTRETCHDIBITS;
+pub const PEMRSTRETCHDIBITS = ?*struct_tagEMRSTRETCHDIBITS;
 pub const struct_tagEMREXTCREATEFONTINDIRECTW = extern struct {
     emr: EMR,
     ihFont: DWORD,
     elfw: EXTLOGFONTW,
 };
 pub const EMREXTCREATEFONTINDIRECTW = struct_tagEMREXTCREATEFONTINDIRECTW;
-pub const PEMREXTCREATEFONTINDIRECTW = ?&struct_tagEMREXTCREATEFONTINDIRECTW;
+pub const PEMREXTCREATEFONTINDIRECTW = ?*struct_tagEMREXTCREATEFONTINDIRECTW;
 pub const struct_tagEMRCREATEPALETTE = extern struct {
     emr: EMR,
     ihPal: DWORD,
     lgpl: LOGPALETTE,
 };
 pub const EMRCREATEPALETTE = struct_tagEMRCREATEPALETTE;
-pub const PEMRCREATEPALETTE = ?&struct_tagEMRCREATEPALETTE;
+pub const PEMRCREATEPALETTE = ?*struct_tagEMRCREATEPALETTE;
 pub const struct_tagEMRCREATEPEN = extern struct {
     emr: EMR,
     ihPen: DWORD,
     lopn: LOGPEN,
 };
 pub const EMRCREATEPEN = struct_tagEMRCREATEPEN;
-pub const PEMRCREATEPEN = ?&struct_tagEMRCREATEPEN;
+pub const PEMRCREATEPEN = ?*struct_tagEMRCREATEPEN;
 pub const struct_tagEMREXTCREATEPEN = extern struct {
     emr: EMR,
     ihPen: DWORD,
@@ -11563,14 +12319,14 @@ pub const struct_tagEMREXTCREATEPEN = extern struct {
     elp: EXTLOGPEN32,
 };
 pub const EMREXTCREATEPEN = struct_tagEMREXTCREATEPEN;
-pub const PEMREXTCREATEPEN = ?&struct_tagEMREXTCREATEPEN;
+pub const PEMREXTCREATEPEN = ?*struct_tagEMREXTCREATEPEN;
 pub const struct_tagEMRCREATEBRUSHINDIRECT = extern struct {
     emr: EMR,
     ihBrush: DWORD,
     lb: LOGBRUSH32,
 };
 pub const EMRCREATEBRUSHINDIRECT = struct_tagEMRCREATEBRUSHINDIRECT;
-pub const PEMRCREATEBRUSHINDIRECT = ?&struct_tagEMRCREATEBRUSHINDIRECT;
+pub const PEMRCREATEBRUSHINDIRECT = ?*struct_tagEMRCREATEBRUSHINDIRECT;
 pub const struct_tagEMRCREATEMONOBRUSH = extern struct {
     emr: EMR,
     ihBrush: DWORD,
@@ -11581,7 +12337,7 @@ pub const struct_tagEMRCREATEMONOBRUSH = extern struct {
     cbBits: DWORD,
 };
 pub const EMRCREATEMONOBRUSH = struct_tagEMRCREATEMONOBRUSH;
-pub const PEMRCREATEMONOBRUSH = ?&struct_tagEMRCREATEMONOBRUSH;
+pub const PEMRCREATEMONOBRUSH = ?*struct_tagEMRCREATEMONOBRUSH;
 pub const struct_tagEMRCREATEDIBPATTERNBRUSHPT = extern struct {
     emr: EMR,
     ihBrush: DWORD,
@@ -11592,7 +12348,7 @@ pub const struct_tagEMRCREATEDIBPATTERNBRUSHPT = extern struct {
     cbBits: DWORD,
 };
 pub const EMRCREATEDIBPATTERNBRUSHPT = struct_tagEMRCREATEDIBPATTERNBRUSHPT;
-pub const PEMRCREATEDIBPATTERNBRUSHPT = ?&struct_tagEMRCREATEDIBPATTERNBRUSHPT;
+pub const PEMRCREATEDIBPATTERNBRUSHPT = ?*struct_tagEMRCREATEDIBPATTERNBRUSHPT;
 pub const struct_tagEMRFORMAT = extern struct {
     dSignature: DWORD,
     nVersion: DWORD,
@@ -11600,14 +12356,14 @@ pub const struct_tagEMRFORMAT = extern struct {
     offData: DWORD,
 };
 pub const EMRFORMAT = struct_tagEMRFORMAT;
-pub const PEMRFORMAT = ?&struct_tagEMRFORMAT;
+pub const PEMRFORMAT = ?*struct_tagEMRFORMAT;
 pub const struct_tagEMRGLSRECORD = extern struct {
     emr: EMR,
     cbData: DWORD,
     Data: [1]BYTE,
 };
 pub const EMRGLSRECORD = struct_tagEMRGLSRECORD;
-pub const PEMRGLSRECORD = ?&struct_tagEMRGLSRECORD;
+pub const PEMRGLSRECORD = ?*struct_tagEMRGLSRECORD;
 pub const struct_tagEMRGLSBOUNDEDRECORD = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11615,30 +12371,30 @@ pub const struct_tagEMRGLSBOUNDEDRECORD = extern struct {
     Data: [1]BYTE,
 };
 pub const EMRGLSBOUNDEDRECORD = struct_tagEMRGLSBOUNDEDRECORD;
-pub const PEMRGLSBOUNDEDRECORD = ?&struct_tagEMRGLSBOUNDEDRECORD;
+pub const PEMRGLSBOUNDEDRECORD = ?*struct_tagEMRGLSBOUNDEDRECORD;
 pub const struct_tagEMRPIXELFORMAT = extern struct {
     emr: EMR,
     pfd: PIXELFORMATDESCRIPTOR,
 };
 pub const EMRPIXELFORMAT = struct_tagEMRPIXELFORMAT;
-pub const PEMRPIXELFORMAT = ?&struct_tagEMRPIXELFORMAT;
+pub const PEMRPIXELFORMAT = ?*struct_tagEMRPIXELFORMAT;
 pub const struct_tagEMRCREATECOLORSPACE = extern struct {
     emr: EMR,
     ihCS: DWORD,
     lcs: LOGCOLORSPACEA,
 };
 pub const EMRCREATECOLORSPACE = struct_tagEMRCREATECOLORSPACE;
-pub const PEMRCREATECOLORSPACE = ?&struct_tagEMRCREATECOLORSPACE;
+pub const PEMRCREATECOLORSPACE = ?*struct_tagEMRCREATECOLORSPACE;
 pub const struct_tagEMRSETCOLORSPACE = extern struct {
     emr: EMR,
     ihCS: DWORD,
 };
 pub const EMRSETCOLORSPACE = struct_tagEMRSETCOLORSPACE;
-pub const PEMRSETCOLORSPACE = ?&struct_tagEMRSETCOLORSPACE;
+pub const PEMRSETCOLORSPACE = ?*struct_tagEMRSETCOLORSPACE;
 pub const EMRSELECTCOLORSPACE = struct_tagEMRSETCOLORSPACE;
-pub const PEMRSELECTCOLORSPACE = ?&struct_tagEMRSETCOLORSPACE;
+pub const PEMRSELECTCOLORSPACE = ?*struct_tagEMRSETCOLORSPACE;
 pub const EMRDELETECOLORSPACE = struct_tagEMRSETCOLORSPACE;
-pub const PEMRDELETECOLORSPACE = ?&struct_tagEMRSETCOLORSPACE;
+pub const PEMRDELETECOLORSPACE = ?*struct_tagEMRSETCOLORSPACE;
 pub const struct_tagEMREXTESCAPE = extern struct {
     emr: EMR,
     iEscape: INT,
@@ -11646,9 +12402,9 @@ pub const struct_tagEMREXTESCAPE = extern struct {
     EscData: [1]BYTE,
 };
 pub const EMREXTESCAPE = struct_tagEMREXTESCAPE;
-pub const PEMREXTESCAPE = ?&struct_tagEMREXTESCAPE;
+pub const PEMREXTESCAPE = ?*struct_tagEMREXTESCAPE;
 pub const EMRDRAWESCAPE = struct_tagEMREXTESCAPE;
-pub const PEMRDRAWESCAPE = ?&struct_tagEMREXTESCAPE;
+pub const PEMRDRAWESCAPE = ?*struct_tagEMREXTESCAPE;
 pub const struct_tagEMRNAMEDESCAPE = extern struct {
     emr: EMR,
     iEscape: INT,
@@ -11657,7 +12413,7 @@ pub const struct_tagEMRNAMEDESCAPE = extern struct {
     EscData: [1]BYTE,
 };
 pub const EMRNAMEDESCAPE = struct_tagEMRNAMEDESCAPE;
-pub const PEMRNAMEDESCAPE = ?&struct_tagEMRNAMEDESCAPE;
+pub const PEMRNAMEDESCAPE = ?*struct_tagEMRNAMEDESCAPE;
 pub const struct_tagEMRSETICMPROFILE = extern struct {
     emr: EMR,
     dwFlags: DWORD,
@@ -11666,11 +12422,11 @@ pub const struct_tagEMRSETICMPROFILE = extern struct {
     Data: [1]BYTE,
 };
 pub const EMRSETICMPROFILE = struct_tagEMRSETICMPROFILE;
-pub const PEMRSETICMPROFILE = ?&struct_tagEMRSETICMPROFILE;
+pub const PEMRSETICMPROFILE = ?*struct_tagEMRSETICMPROFILE;
 pub const EMRSETICMPROFILEA = struct_tagEMRSETICMPROFILE;
-pub const PEMRSETICMPROFILEA = ?&struct_tagEMRSETICMPROFILE;
+pub const PEMRSETICMPROFILEA = ?*struct_tagEMRSETICMPROFILE;
 pub const EMRSETICMPROFILEW = struct_tagEMRSETICMPROFILE;
-pub const PEMRSETICMPROFILEW = ?&struct_tagEMRSETICMPROFILE;
+pub const PEMRSETICMPROFILEW = ?*struct_tagEMRSETICMPROFILE;
 pub const struct_tagEMRCREATECOLORSPACEW = extern struct {
     emr: EMR,
     ihCS: DWORD,
@@ -11680,7 +12436,7 @@ pub const struct_tagEMRCREATECOLORSPACEW = extern struct {
     Data: [1]BYTE,
 };
 pub const EMRCREATECOLORSPACEW = struct_tagEMRCREATECOLORSPACEW;
-pub const PEMRCREATECOLORSPACEW = ?&struct_tagEMRCREATECOLORSPACEW;
+pub const PEMRCREATECOLORSPACEW = ?*struct_tagEMRCREATECOLORSPACEW;
 pub const struct_tagCOLORMATCHTOTARGET = extern struct {
     emr: EMR,
     dwAction: DWORD,
@@ -11690,7 +12446,7 @@ pub const struct_tagCOLORMATCHTOTARGET = extern struct {
     Data: [1]BYTE,
 };
 pub const EMRCOLORMATCHTOTARGET = struct_tagCOLORMATCHTOTARGET;
-pub const PEMRCOLORMATCHTOTARGET = ?&struct_tagCOLORMATCHTOTARGET;
+pub const PEMRCOLORMATCHTOTARGET = ?*struct_tagCOLORMATCHTOTARGET;
 pub const struct_tagCOLORCORRECTPALETTE = extern struct {
     emr: EMR,
     ihPalette: DWORD,
@@ -11699,7 +12455,7 @@ pub const struct_tagCOLORCORRECTPALETTE = extern struct {
     nReserved: DWORD,
 };
 pub const EMRCOLORCORRECTPALETTE = struct_tagCOLORCORRECTPALETTE;
-pub const PEMRCOLORCORRECTPALETTE = ?&struct_tagCOLORCORRECTPALETTE;
+pub const PEMRCOLORCORRECTPALETTE = ?*struct_tagCOLORCORRECTPALETTE;
 pub const struct_tagEMRALPHABLEND = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11721,7 +12477,7 @@ pub const struct_tagEMRALPHABLEND = extern struct {
     cySrc: LONG,
 };
 pub const EMRALPHABLEND = struct_tagEMRALPHABLEND;
-pub const PEMRALPHABLEND = ?&struct_tagEMRALPHABLEND;
+pub const PEMRALPHABLEND = ?*struct_tagEMRALPHABLEND;
 pub const struct_tagEMRGRADIENTFILL = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11731,7 +12487,7 @@ pub const struct_tagEMRGRADIENTFILL = extern struct {
     Ver: [1]TRIVERTEX,
 };
 pub const EMRGRADIENTFILL = struct_tagEMRGRADIENTFILL;
-pub const PEMRGRADIENTFILL = ?&struct_tagEMRGRADIENTFILL;
+pub const PEMRGRADIENTFILL = ?*struct_tagEMRGRADIENTFILL;
 pub const struct_tagEMRTRANSPARENTBLT = extern struct {
     emr: EMR,
     rclBounds: RECTL,
@@ -11753,7 +12509,7 @@ pub const struct_tagEMRTRANSPARENTBLT = extern struct {
     cySrc: LONG,
 };
 pub const EMRTRANSPARENTBLT = struct_tagEMRTRANSPARENTBLT;
-pub const PEMRTRANSPARENTBLT = ?&struct_tagEMRTRANSPARENTBLT;
+pub const PEMRTRANSPARENTBLT = ?*struct_tagEMRTRANSPARENTBLT;
 //pub extern fn wglCopyContext(arg0: HGLRC, arg1: HGLRC, arg2: UINT) BOOL;
 //pub extern fn wglCreateContext(arg0: HDC) HGLRC;
 //pub extern fn wglCreateLayerContext(arg0: HDC, arg1: c_int) HGLRC;
@@ -11770,7 +12526,7 @@ pub const struct__POINTFLOAT = extern struct {
     y: FLOAT,
 };
 pub const POINTFLOAT = struct__POINTFLOAT;
-pub const PPOINTFLOAT = ?&struct__POINTFLOAT;
+pub const PPOINTFLOAT = ?*struct__POINTFLOAT;
 pub const struct__GLYPHMETRICSFLOAT = extern struct {
     gmfBlackBoxX: FLOAT,
     gmfBlackBoxY: FLOAT,
@@ -11779,8 +12535,8 @@ pub const struct__GLYPHMETRICSFLOAT = extern struct {
     gmfCellIncY: FLOAT,
 };
 pub const GLYPHMETRICSFLOAT = struct__GLYPHMETRICSFLOAT;
-pub const PGLYPHMETRICSFLOAT = ?&struct__GLYPHMETRICSFLOAT;
-pub const LPGLYPHMETRICSFLOAT = ?&struct__GLYPHMETRICSFLOAT;
+pub const PGLYPHMETRICSFLOAT = ?*struct__GLYPHMETRICSFLOAT;
+pub const LPGLYPHMETRICSFLOAT = ?*struct__GLYPHMETRICSFLOAT;
 //pub extern fn wglUseFontOutlinesA(arg0: HDC, arg1: DWORD, arg2: DWORD, arg3: DWORD, arg4: FLOAT, arg5: FLOAT, arg6: c_int, arg7: LPGLYPHMETRICSFLOAT) BOOL;
 //pub extern fn wglUseFontOutlinesW(arg0: HDC, arg1: DWORD, arg2: DWORD, arg3: DWORD, arg4: FLOAT, arg5: FLOAT, arg6: c_int, arg7: LPGLYPHMETRICSFLOAT) BOOL;
 pub const struct_tagLAYERPLANEDESCRIPTOR = extern struct {
@@ -11810,11 +12566,11 @@ pub const struct_tagLAYERPLANEDESCRIPTOR = extern struct {
     crTransparent: COLORREF,
 };
 pub const LAYERPLANEDESCRIPTOR = struct_tagLAYERPLANEDESCRIPTOR;
-pub const PLAYERPLANEDESCRIPTOR = ?&struct_tagLAYERPLANEDESCRIPTOR;
-pub const LPLAYERPLANEDESCRIPTOR = ?&struct_tagLAYERPLANEDESCRIPTOR;
+pub const PLAYERPLANEDESCRIPTOR = ?*struct_tagLAYERPLANEDESCRIPTOR;
+pub const LPLAYERPLANEDESCRIPTOR = ?*struct_tagLAYERPLANEDESCRIPTOR;
 //pub extern fn wglDescribeLayerPlane(arg0: HDC, arg1: c_int, arg2: c_int, arg3: UINT, arg4: LPLAYERPLANEDESCRIPTOR) BOOL;
-//pub extern fn wglSetLayerPaletteEntries(arg0: HDC, arg1: c_int, arg2: c_int, arg3: c_int, arg4: ?&const COLORREF) c_int;
-//pub extern fn wglGetLayerPaletteEntries(arg0: HDC, arg1: c_int, arg2: c_int, arg3: c_int, arg4: ?&COLORREF) c_int;
+//pub extern fn wglSetLayerPaletteEntries(arg0: HDC, arg1: c_int, arg2: c_int, arg3: c_int, arg4: ?[*]const COLORREF) c_int;
+//pub extern fn wglGetLayerPaletteEntries(arg0: HDC, arg1: c_int, arg2: c_int, arg3: c_int, arg4: ?[*]COLORREF) c_int;
 //pub extern fn wglRealizeLayerPalette(arg0: HDC, arg1: c_int, arg2: BOOL) BOOL;
 //pub extern fn wglSwapLayerBuffers(arg0: HDC, arg1: UINT) BOOL;
 pub const struct__WGLSWAP = extern struct {
@@ -11822,9 +12578,9 @@ pub const struct__WGLSWAP = extern struct {
     uiFlags: UINT,
 };
 pub const WGLSWAP = struct__WGLSWAP;
-pub const PWGLSWAP = ?&struct__WGLSWAP;
-pub const LPWGLSWAP = ?&struct__WGLSWAP;
-//pub extern fn wglSwapMultipleBuffers(arg0: UINT, arg1: ?&const WGLSWAP) DWORD;
+pub const PWGLSWAP = ?*struct__WGLSWAP;
+pub const LPWGLSWAP = ?*struct__WGLSWAP;
+//pub extern fn wglSwapMultipleBuffers(arg0: UINT, arg1: ?[*]const WGLSWAP) DWORD;
 pub const HDWP = HANDLE;
 pub const MENUTEMPLATEA = c_void;
 pub const MENUTEMPLATEW = c_void;
@@ -11876,11 +12632,11 @@ pub const struct_tagCREATESTRUCTA = extern struct {
     dwExStyle: DWORD,
 };
 pub const struct_tagCBT_CREATEWNDA = extern struct {
-    lpcs: ?&struct_tagCREATESTRUCTA,
+    lpcs: ?*struct_tagCREATESTRUCTA,
     hwndInsertAfter: HWND,
 };
 pub const CBT_CREATEWNDA = struct_tagCBT_CREATEWNDA;
-pub const LPCBT_CREATEWNDA = ?&struct_tagCBT_CREATEWNDA;
+pub const LPCBT_CREATEWNDA = ?*struct_tagCBT_CREATEWNDA;
 pub const struct_tagCREATESTRUCTW = extern struct {
     lpCreateParams: LPVOID,
     hInstance: HINSTANCE,
@@ -11896,11 +12652,11 @@ pub const struct_tagCREATESTRUCTW = extern struct {
     dwExStyle: DWORD,
 };
 pub const struct_tagCBT_CREATEWNDW = extern struct {
-    lpcs: ?&struct_tagCREATESTRUCTW,
+    lpcs: ?*struct_tagCREATESTRUCTW,
     hwndInsertAfter: HWND,
 };
 pub const CBT_CREATEWNDW = struct_tagCBT_CREATEWNDW;
-pub const LPCBT_CREATEWNDW = ?&struct_tagCBT_CREATEWNDW;
+pub const LPCBT_CREATEWNDW = ?*struct_tagCBT_CREATEWNDW;
 pub const CBT_CREATEWND = CBT_CREATEWNDA;
 pub const LPCBT_CREATEWND = LPCBT_CREATEWNDA;
 pub const struct_tagCBTACTIVATESTRUCT = extern struct {
@@ -11908,18 +12664,18 @@ pub const struct_tagCBTACTIVATESTRUCT = extern struct {
     hWndActive: HWND,
 };
 pub const CBTACTIVATESTRUCT = struct_tagCBTACTIVATESTRUCT;
-pub const LPCBTACTIVATESTRUCT = ?&struct_tagCBTACTIVATESTRUCT;
+pub const LPCBTACTIVATESTRUCT = ?*struct_tagCBTACTIVATESTRUCT;
 pub const struct_tagWTSSESSION_NOTIFICATION = extern struct {
     cbSize: DWORD,
     dwSessionId: DWORD,
 };
 pub const WTSSESSION_NOTIFICATION = struct_tagWTSSESSION_NOTIFICATION;
-pub const PWTSSESSION_NOTIFICATION = ?&struct_tagWTSSESSION_NOTIFICATION;
+pub const PWTSSESSION_NOTIFICATION = ?*struct_tagWTSSESSION_NOTIFICATION;
 pub const SHELLHOOKINFO = extern struct {
     hwnd: HWND,
     rc: RECT,
 };
-pub const LPSHELLHOOKINFO = ?&extern struct {
+pub const LPSHELLHOOKINFO = ?[*]extern struct {
     hwnd: HWND,
     rc: RECT,
 };
@@ -11931,12 +12687,12 @@ pub const struct_tagEVENTMSG = extern struct {
     hwnd: HWND,
 };
 pub const EVENTMSG = struct_tagEVENTMSG;
-pub const PEVENTMSGMSG = ?&struct_tagEVENTMSG;
-pub const NPEVENTMSGMSG = ?&struct_tagEVENTMSG;
-pub const LPEVENTMSGMSG = ?&struct_tagEVENTMSG;
-pub const PEVENTMSG = ?&struct_tagEVENTMSG;
-pub const NPEVENTMSG = ?&struct_tagEVENTMSG;
-pub const LPEVENTMSG = ?&struct_tagEVENTMSG;
+pub const PEVENTMSGMSG = ?*struct_tagEVENTMSG;
+pub const NPEVENTMSGMSG = ?*struct_tagEVENTMSG;
+pub const LPEVENTMSGMSG = ?*struct_tagEVENTMSG;
+pub const PEVENTMSG = ?*struct_tagEVENTMSG;
+pub const NPEVENTMSG = ?*struct_tagEVENTMSG;
+pub const LPEVENTMSG = ?*struct_tagEVENTMSG;
 pub const struct_tagCWPSTRUCT = extern struct {
     lParam: LPARAM,
     wParam: WPARAM,
@@ -11944,9 +12700,9 @@ pub const struct_tagCWPSTRUCT = extern struct {
     hwnd: HWND,
 };
 pub const CWPSTRUCT = struct_tagCWPSTRUCT;
-pub const PCWPSTRUCT = ?&struct_tagCWPSTRUCT;
-pub const NPCWPSTRUCT = ?&struct_tagCWPSTRUCT;
-pub const LPCWPSTRUCT = ?&struct_tagCWPSTRUCT;
+pub const PCWPSTRUCT = ?*struct_tagCWPSTRUCT;
+pub const NPCWPSTRUCT = ?*struct_tagCWPSTRUCT;
+pub const LPCWPSTRUCT = ?*struct_tagCWPSTRUCT;
 pub const struct_tagCWPRETSTRUCT = extern struct {
     lResult: LRESULT,
     lParam: LPARAM,
@@ -11955,9 +12711,9 @@ pub const struct_tagCWPRETSTRUCT = extern struct {
     hwnd: HWND,
 };
 pub const CWPRETSTRUCT = struct_tagCWPRETSTRUCT;
-pub const PCWPRETSTRUCT = ?&struct_tagCWPRETSTRUCT;
-pub const NPCWPRETSTRUCT = ?&struct_tagCWPRETSTRUCT;
-pub const LPCWPRETSTRUCT = ?&struct_tagCWPRETSTRUCT;
+pub const PCWPRETSTRUCT = ?*struct_tagCWPRETSTRUCT;
+pub const NPCWPRETSTRUCT = ?*struct_tagCWPRETSTRUCT;
+pub const LPCWPRETSTRUCT = ?*struct_tagCWPRETSTRUCT;
 pub const struct_tagKBDLLHOOKSTRUCT = extern struct {
     vkCode: DWORD,
     scanCode: DWORD,
@@ -11966,8 +12722,8 @@ pub const struct_tagKBDLLHOOKSTRUCT = extern struct {
     dwExtraInfo: ULONG_PTR,
 };
 pub const KBDLLHOOKSTRUCT = struct_tagKBDLLHOOKSTRUCT;
-pub const LPKBDLLHOOKSTRUCT = ?&struct_tagKBDLLHOOKSTRUCT;
-pub const PKBDLLHOOKSTRUCT = ?&struct_tagKBDLLHOOKSTRUCT;
+pub const LPKBDLLHOOKSTRUCT = ?*struct_tagKBDLLHOOKSTRUCT;
+pub const PKBDLLHOOKSTRUCT = ?*struct_tagKBDLLHOOKSTRUCT;
 pub const struct_tagMSLLHOOKSTRUCT = extern struct {
     pt: POINT,
     mouseData: DWORD,
@@ -11976,8 +12732,8 @@ pub const struct_tagMSLLHOOKSTRUCT = extern struct {
     dwExtraInfo: ULONG_PTR,
 };
 pub const MSLLHOOKSTRUCT = struct_tagMSLLHOOKSTRUCT;
-pub const LPMSLLHOOKSTRUCT = ?&struct_tagMSLLHOOKSTRUCT;
-pub const PMSLLHOOKSTRUCT = ?&struct_tagMSLLHOOKSTRUCT;
+pub const LPMSLLHOOKSTRUCT = ?*struct_tagMSLLHOOKSTRUCT;
+pub const PMSLLHOOKSTRUCT = ?*struct_tagMSLLHOOKSTRUCT;
 pub const struct_tagDEBUGHOOKINFO = extern struct {
     idThread: DWORD,
     idThreadInstaller: DWORD,
@@ -11986,9 +12742,9 @@ pub const struct_tagDEBUGHOOKINFO = extern struct {
     code: c_int,
 };
 pub const DEBUGHOOKINFO = struct_tagDEBUGHOOKINFO;
-pub const PDEBUGHOOKINFO = ?&struct_tagDEBUGHOOKINFO;
-pub const NPDEBUGHOOKINFO = ?&struct_tagDEBUGHOOKINFO;
-pub const LPDEBUGHOOKINFO = ?&struct_tagDEBUGHOOKINFO;
+pub const PDEBUGHOOKINFO = ?*struct_tagDEBUGHOOKINFO;
+pub const NPDEBUGHOOKINFO = ?*struct_tagDEBUGHOOKINFO;
+pub const LPDEBUGHOOKINFO = ?*struct_tagDEBUGHOOKINFO;
 pub const struct_tagMOUSEHOOKSTRUCT = extern struct {
     pt: POINT,
     hwnd: HWND,
@@ -11996,15 +12752,15 @@ pub const struct_tagMOUSEHOOKSTRUCT = extern struct {
     dwExtraInfo: ULONG_PTR,
 };
 pub const MOUSEHOOKSTRUCT = struct_tagMOUSEHOOKSTRUCT;
-pub const LPMOUSEHOOKSTRUCT = ?&struct_tagMOUSEHOOKSTRUCT;
-pub const PMOUSEHOOKSTRUCT = ?&struct_tagMOUSEHOOKSTRUCT;
+pub const LPMOUSEHOOKSTRUCT = ?*struct_tagMOUSEHOOKSTRUCT;
+pub const PMOUSEHOOKSTRUCT = ?*struct_tagMOUSEHOOKSTRUCT;
 pub const struct_tagMOUSEHOOKSTRUCTEX = extern struct {
     @"": struct_tagMOUSEHOOKSTRUCT,
     mouseData: DWORD,
 };
 pub const MOUSEHOOKSTRUCTEX = struct_tagMOUSEHOOKSTRUCTEX;
-pub const LPMOUSEHOOKSTRUCTEX = ?&struct_tagMOUSEHOOKSTRUCTEX;
-pub const PMOUSEHOOKSTRUCTEX = ?&struct_tagMOUSEHOOKSTRUCTEX;
+pub const LPMOUSEHOOKSTRUCTEX = ?*struct_tagMOUSEHOOKSTRUCTEX;
+pub const PMOUSEHOOKSTRUCTEX = ?*struct_tagMOUSEHOOKSTRUCTEX;
 pub const struct_tagHARDWAREHOOKSTRUCT = extern struct {
     hwnd: HWND,
     message: UINT,
@@ -12012,16 +12768,16 @@ pub const struct_tagHARDWAREHOOKSTRUCT = extern struct {
     lParam: LPARAM,
 };
 pub const HARDWAREHOOKSTRUCT = struct_tagHARDWAREHOOKSTRUCT;
-pub const LPHARDWAREHOOKSTRUCT = ?&struct_tagHARDWAREHOOKSTRUCT;
-pub const PHARDWAREHOOKSTRUCT = ?&struct_tagHARDWAREHOOKSTRUCT;
+pub const LPHARDWAREHOOKSTRUCT = ?*struct_tagHARDWAREHOOKSTRUCT;
+pub const PHARDWAREHOOKSTRUCT = ?*struct_tagHARDWAREHOOKSTRUCT;
 //pub extern fn LoadKeyboardLayoutA(pwszKLID: LPCSTR, Flags: UINT) HKL;
 //pub extern fn LoadKeyboardLayoutW(pwszKLID: LPCWSTR, Flags: UINT) HKL;
 //pub extern fn ActivateKeyboardLayout(hkl: HKL, Flags: UINT) HKL;
-//pub extern fn ToUnicodeEx(wVirtKey: UINT, wScanCode: UINT, lpKeyState: ?&const BYTE, pwszBuff: LPWSTR, cchBuff: c_int, wFlags: UINT, dwhkl: HKL) c_int;
+//pub extern fn ToUnicodeEx(wVirtKey: UINT, wScanCode: UINT, lpKeyState: ?[*]const BYTE, pwszBuff: LPWSTR, cchBuff: c_int, wFlags: UINT, dwhkl: HKL) c_int;
 //pub extern fn UnloadKeyboardLayout(hkl: HKL) BOOL;
 //pub extern fn GetKeyboardLayoutNameA(pwszKLID: LPSTR) BOOL;
 //pub extern fn GetKeyboardLayoutNameW(pwszKLID: LPWSTR) BOOL;
-//pub extern fn GetKeyboardLayoutList(nBuff: c_int, lpList: ?&HKL) c_int;
+//pub extern fn GetKeyboardLayoutList(nBuff: c_int, lpList: ?[*]HKL) c_int;
 //pub extern fn GetKeyboardLayout(idThread: DWORD) HKL;
 pub const struct_tagMOUSEMOVEPOINT = extern struct {
     x: c_int,
@@ -12030,13 +12786,13 @@ pub const struct_tagMOUSEMOVEPOINT = extern struct {
     dwExtraInfo: ULONG_PTR,
 };
 pub const MOUSEMOVEPOINT = struct_tagMOUSEMOVEPOINT;
-pub const PMOUSEMOVEPOINT = ?&struct_tagMOUSEMOVEPOINT;
-pub const LPMOUSEMOVEPOINT = ?&struct_tagMOUSEMOVEPOINT;
+pub const PMOUSEMOVEPOINT = ?*struct_tagMOUSEMOVEPOINT;
+pub const LPMOUSEMOVEPOINT = ?*struct_tagMOUSEMOVEPOINT;
 //pub extern fn GetMouseMovePointsEx(cbSize: UINT, lppt: LPMOUSEMOVEPOINT, lpptBuf: LPMOUSEMOVEPOINT, nBufPoints: c_int, resolution: DWORD) c_int;
-//pub extern fn CreateDesktopA(lpszDesktop: LPCSTR, lpszDevice: LPCSTR, pDevmode: ?&DEVMODEA, dwFlags: DWORD, dwDesiredAccess: ACCESS_MASK, lpsa: LPSECURITY_ATTRIBUTES) HDESK;
-//pub extern fn CreateDesktopW(lpszDesktop: LPCWSTR, lpszDevice: LPCWSTR, pDevmode: ?&DEVMODEW, dwFlags: DWORD, dwDesiredAccess: ACCESS_MASK, lpsa: LPSECURITY_ATTRIBUTES) HDESK;
-//pub extern fn CreateDesktopExA(lpszDesktop: LPCSTR, lpszDevice: LPCSTR, pDevmode: ?&DEVMODEA, dwFlags: DWORD, dwDesiredAccess: ACCESS_MASK, lpsa: LPSECURITY_ATTRIBUTES, ulHeapSize: ULONG, pvoid: PVOID) HDESK;
-//pub extern fn CreateDesktopExW(lpszDesktop: LPCWSTR, lpszDevice: LPCWSTR, pDevmode: ?&DEVMODEW, dwFlags: DWORD, dwDesiredAccess: ACCESS_MASK, lpsa: LPSECURITY_ATTRIBUTES, ulHeapSize: ULONG, pvoid: PVOID) HDESK;
+//pub extern fn CreateDesktopA(lpszDesktop: LPCSTR, lpszDevice: LPCSTR, pDevmode: ?[*]DEVMODEA, dwFlags: DWORD, dwDesiredAccess: ACCESS_MASK, lpsa: LPSECURITY_ATTRIBUTES) HDESK;
+//pub extern fn CreateDesktopW(lpszDesktop: LPCWSTR, lpszDevice: LPCWSTR, pDevmode: ?[*]DEVMODEW, dwFlags: DWORD, dwDesiredAccess: ACCESS_MASK, lpsa: LPSECURITY_ATTRIBUTES) HDESK;
+//pub extern fn CreateDesktopExA(lpszDesktop: LPCSTR, lpszDevice: LPCSTR, pDevmode: ?[*]DEVMODEA, dwFlags: DWORD, dwDesiredAccess: ACCESS_MASK, lpsa: LPSECURITY_ATTRIBUTES, ulHeapSize: ULONG, pvoid: PVOID) HDESK;
+//pub extern fn CreateDesktopExW(lpszDesktop: LPCWSTR, lpszDevice: LPCWSTR, pDevmode: ?[*]DEVMODEW, dwFlags: DWORD, dwDesiredAccess: ACCESS_MASK, lpsa: LPSECURITY_ATTRIBUTES, ulHeapSize: ULONG, pvoid: PVOID) HDESK;
 //pub extern fn OpenDesktopA(lpszDesktop: LPCSTR, dwFlags: DWORD, fInherit: BOOL, dwDesiredAccess: ACCESS_MASK) HDESK;
 //pub extern fn OpenDesktopW(lpszDesktop: LPCWSTR, dwFlags: DWORD, fInherit: BOOL, dwDesiredAccess: ACCESS_MASK) HDESK;
 //pub extern fn OpenInputDesktop(dwFlags: DWORD, fInherit: BOOL, dwDesiredAccess: ACCESS_MASK) HDESK;
@@ -12064,7 +12820,7 @@ pub const struct_tagUSEROBJECTFLAGS = extern struct {
     dwFlags: DWORD,
 };
 pub const USEROBJECTFLAGS = struct_tagUSEROBJECTFLAGS;
-pub const PUSEROBJECTFLAGS = ?&struct_tagUSEROBJECTFLAGS;
+pub const PUSEROBJECTFLAGS = ?*struct_tagUSEROBJECTFLAGS;
 //pub extern fn GetUserObjectInformationA(hObj: HANDLE, nIndex: c_int, pvInfo: PVOID, nLength: DWORD, lpnLengthNeeded: LPDWORD) BOOL;
 //pub extern fn GetUserObjectInformationW(hObj: HANDLE, nIndex: c_int, pvInfo: PVOID, nLength: DWORD, lpnLengthNeeded: LPDWORD) BOOL;
 //pub extern fn SetUserObjectInformationA(hObj: HANDLE, nIndex: c_int, pvInfo: PVOID, nLength: DWORD) BOOL;
@@ -12084,9 +12840,9 @@ pub const struct_tagWNDCLASSEXA = extern struct {
     hIconSm: HICON,
 };
 pub const WNDCLASSEXA = struct_tagWNDCLASSEXA;
-pub const PWNDCLASSEXA = ?&struct_tagWNDCLASSEXA;
-pub const NPWNDCLASSEXA = ?&struct_tagWNDCLASSEXA;
-pub const LPWNDCLASSEXA = ?&struct_tagWNDCLASSEXA;
+pub const PWNDCLASSEXA = ?*struct_tagWNDCLASSEXA;
+pub const NPWNDCLASSEXA = ?*struct_tagWNDCLASSEXA;
+pub const LPWNDCLASSEXA = ?*struct_tagWNDCLASSEXA;
 pub const struct_tagWNDCLASSEXW = extern struct {
     cbSize: UINT,
     style: UINT,
@@ -12102,9 +12858,9 @@ pub const struct_tagWNDCLASSEXW = extern struct {
     hIconSm: HICON,
 };
 pub const WNDCLASSEXW = struct_tagWNDCLASSEXW;
-pub const PWNDCLASSEXW = ?&struct_tagWNDCLASSEXW;
-pub const NPWNDCLASSEXW = ?&struct_tagWNDCLASSEXW;
-pub const LPWNDCLASSEXW = ?&struct_tagWNDCLASSEXW;
+pub const PWNDCLASSEXW = ?*struct_tagWNDCLASSEXW;
+pub const NPWNDCLASSEXW = ?*struct_tagWNDCLASSEXW;
+pub const LPWNDCLASSEXW = ?*struct_tagWNDCLASSEXW;
 pub const WNDCLASSEX = WNDCLASSEXA;
 pub const PWNDCLASSEX = PWNDCLASSEXA;
 pub const NPWNDCLASSEX = NPWNDCLASSEXA;
@@ -12122,9 +12878,9 @@ pub const struct_tagWNDCLASSA = extern struct {
     lpszClassName: LPCSTR,
 };
 pub const WNDCLASSA = struct_tagWNDCLASSA;
-pub const PWNDCLASSA = ?&struct_tagWNDCLASSA;
-pub const NPWNDCLASSA = ?&struct_tagWNDCLASSA;
-pub const LPWNDCLASSA = ?&struct_tagWNDCLASSA;
+pub const PWNDCLASSA = ?*struct_tagWNDCLASSA;
+pub const NPWNDCLASSA = ?*struct_tagWNDCLASSA;
+pub const LPWNDCLASSA = ?*struct_tagWNDCLASSA;
 pub const struct_tagWNDCLASSW = extern struct {
     style: UINT,
     lpfnWndProc: WNDPROC,
@@ -12138,9 +12894,9 @@ pub const struct_tagWNDCLASSW = extern struct {
     lpszClassName: LPCWSTR,
 };
 pub const WNDCLASSW = struct_tagWNDCLASSW;
-pub const PWNDCLASSW = ?&struct_tagWNDCLASSW;
-pub const NPWNDCLASSW = ?&struct_tagWNDCLASSW;
-pub const LPWNDCLASSW = ?&struct_tagWNDCLASSW;
+pub const PWNDCLASSW = ?*struct_tagWNDCLASSW;
+pub const NPWNDCLASSW = ?*struct_tagWNDCLASSW;
+pub const LPWNDCLASSW = ?*struct_tagWNDCLASSW;
 pub const WNDCLASS = WNDCLASSA;
 pub const PWNDCLASS = PWNDCLASSA;
 pub const NPWNDCLASS = NPWNDCLASSA;
@@ -12156,9 +12912,9 @@ pub const struct_tagMSG = extern struct {
     pt: POINT,
 };
 pub const MSG = struct_tagMSG;
-pub const PMSG = ?&struct_tagMSG;
-pub const NPMSG = ?&struct_tagMSG;
-pub const LPMSG = ?&struct_tagMSG;
+pub const PMSG = ?*struct_tagMSG;
+pub const NPMSG = ?*struct_tagMSG;
+pub const LPMSG = ?*struct_tagMSG;
 pub const struct_tagMINMAXINFO = extern struct {
     ptReserved: POINT,
     ptMaxSize: POINT,
@@ -12167,29 +12923,29 @@ pub const struct_tagMINMAXINFO = extern struct {
     ptMaxTrackSize: POINT,
 };
 pub const MINMAXINFO = struct_tagMINMAXINFO;
-pub const PMINMAXINFO = ?&struct_tagMINMAXINFO;
-pub const LPMINMAXINFO = ?&struct_tagMINMAXINFO;
+pub const PMINMAXINFO = ?*struct_tagMINMAXINFO;
+pub const LPMINMAXINFO = ?*struct_tagMINMAXINFO;
 pub const struct_tagCOPYDATASTRUCT = extern struct {
     dwData: ULONG_PTR,
     cbData: DWORD,
     lpData: PVOID,
 };
 pub const COPYDATASTRUCT = struct_tagCOPYDATASTRUCT;
-pub const PCOPYDATASTRUCT = ?&struct_tagCOPYDATASTRUCT;
+pub const PCOPYDATASTRUCT = ?*struct_tagCOPYDATASTRUCT;
 pub const struct_tagMDINEXTMENU = extern struct {
     hmenuIn: HMENU,
     hmenuNext: HMENU,
     hwndNext: HWND,
 };
 pub const MDINEXTMENU = struct_tagMDINEXTMENU;
-pub const PMDINEXTMENU = ?&struct_tagMDINEXTMENU;
-pub const LPMDINEXTMENU = ?&struct_tagMDINEXTMENU;
+pub const PMDINEXTMENU = ?*struct_tagMDINEXTMENU;
+pub const LPMDINEXTMENU = ?*struct_tagMDINEXTMENU;
 pub const POWERBROADCAST_SETTING = extern struct {
     PowerSetting: GUID,
     DataLength: DWORD,
     Data: [1]UCHAR,
 };
-pub const PPOWERBROADCAST_SETTING = ?&extern struct {
+pub const PPOWERBROADCAST_SETTING = ?[*]extern struct {
     PowerSetting: GUID,
     DataLength: DWORD,
     Data: [1]UCHAR,
@@ -12206,14 +12962,14 @@ pub const struct_tagWINDOWPOS = extern struct {
     flags: UINT,
 };
 pub const WINDOWPOS = struct_tagWINDOWPOS;
-pub const LPWINDOWPOS = ?&struct_tagWINDOWPOS;
-pub const PWINDOWPOS = ?&struct_tagWINDOWPOS;
+pub const LPWINDOWPOS = ?*struct_tagWINDOWPOS;
+pub const PWINDOWPOS = ?*struct_tagWINDOWPOS;
 pub const struct_tagNCCALCSIZE_PARAMS = extern struct {
     rgrc: [3]RECT,
     lppos: PWINDOWPOS,
 };
 pub const NCCALCSIZE_PARAMS = struct_tagNCCALCSIZE_PARAMS;
-pub const LPNCCALCSIZE_PARAMS = ?&struct_tagNCCALCSIZE_PARAMS;
+pub const LPNCCALCSIZE_PARAMS = ?*struct_tagNCCALCSIZE_PARAMS;
 pub const struct_tagTRACKMOUSEEVENT = extern struct {
     cbSize: DWORD,
     dwFlags: DWORD,
@@ -12221,19 +12977,19 @@ pub const struct_tagTRACKMOUSEEVENT = extern struct {
     dwHoverTime: DWORD,
 };
 pub const TRACKMOUSEEVENT = struct_tagTRACKMOUSEEVENT;
-pub const LPTRACKMOUSEEVENT = ?&struct_tagTRACKMOUSEEVENT;
+pub const LPTRACKMOUSEEVENT = ?*struct_tagTRACKMOUSEEVENT;
 //pub extern fn TrackMouseEvent(lpEventTrack: LPTRACKMOUSEEVENT) BOOL;
 //pub extern fn DrawEdge(hdc: HDC, qrc: LPRECT, edge: UINT, grfFlags: UINT) BOOL;
 //pub extern fn DrawFrameControl(arg0: HDC, arg1: LPRECT, arg2: UINT, arg3: UINT) BOOL;
-//pub extern fn DrawCaption(hwnd: HWND, hdc: HDC, lprect: ?&const RECT, flags: UINT) BOOL;
-//pub extern fn DrawAnimatedRects(hwnd: HWND, idAni: c_int, lprcFrom: ?&const RECT, lprcTo: ?&const RECT) BOOL;
+//pub extern fn DrawCaption(hwnd: HWND, hdc: HDC, lprect: ?[*]const RECT, flags: UINT) BOOL;
+//pub extern fn DrawAnimatedRects(hwnd: HWND, idAni: c_int, lprcFrom: ?[*]const RECT, lprcTo: ?[*]const RECT) BOOL;
 pub const struct_tagACCEL = extern struct {
     fVirt: BYTE,
     key: WORD,
     cmd: WORD,
 };
 pub const ACCEL = struct_tagACCEL;
-pub const LPACCEL = ?&struct_tagACCEL;
+pub const LPACCEL = ?*struct_tagACCEL;
 pub const struct_tagPAINTSTRUCT = extern struct {
     hdc: HDC,
     fErase: BOOL,
@@ -12243,13 +12999,13 @@ pub const struct_tagPAINTSTRUCT = extern struct {
     rgbReserved: [32]BYTE,
 };
 pub const PAINTSTRUCT = struct_tagPAINTSTRUCT;
-pub const PPAINTSTRUCT = ?&struct_tagPAINTSTRUCT;
-pub const NPPAINTSTRUCT = ?&struct_tagPAINTSTRUCT;
-pub const LPPAINTSTRUCT = ?&struct_tagPAINTSTRUCT;
+pub const PPAINTSTRUCT = ?*struct_tagPAINTSTRUCT;
+pub const NPPAINTSTRUCT = ?*struct_tagPAINTSTRUCT;
+pub const LPPAINTSTRUCT = ?*struct_tagPAINTSTRUCT;
 pub const CREATESTRUCTA = struct_tagCREATESTRUCTA;
-pub const LPCREATESTRUCTA = ?&struct_tagCREATESTRUCTA;
+pub const LPCREATESTRUCTA = ?*struct_tagCREATESTRUCTA;
 pub const CREATESTRUCTW = struct_tagCREATESTRUCTW;
-pub const LPCREATESTRUCTW = ?&struct_tagCREATESTRUCTW;
+pub const LPCREATESTRUCTW = ?*struct_tagCREATESTRUCTW;
 pub const CREATESTRUCT = CREATESTRUCTA;
 pub const LPCREATESTRUCT = LPCREATESTRUCTA;
 pub const struct_tagWINDOWPLACEMENT = extern struct {
@@ -12261,21 +13017,21 @@ pub const struct_tagWINDOWPLACEMENT = extern struct {
     rcNormalPosition: RECT,
 };
 pub const WINDOWPLACEMENT = struct_tagWINDOWPLACEMENT;
-pub const PWINDOWPLACEMENT = ?&WINDOWPLACEMENT;
-pub const LPWINDOWPLACEMENT = ?&WINDOWPLACEMENT;
+pub const PWINDOWPLACEMENT = ?[*]WINDOWPLACEMENT;
+pub const LPWINDOWPLACEMENT = ?[*]WINDOWPLACEMENT;
 pub const struct_tagNMHDR = extern struct {
     hwndFrom: HWND,
     idFrom: UINT_PTR,
     code: UINT,
 };
 pub const NMHDR = struct_tagNMHDR;
-pub const LPNMHDR = ?&NMHDR;
+pub const LPNMHDR = ?[*]NMHDR;
 pub const struct_tagSTYLESTRUCT = extern struct {
     styleOld: DWORD,
     styleNew: DWORD,
 };
 pub const STYLESTRUCT = struct_tagSTYLESTRUCT;
-pub const LPSTYLESTRUCT = ?&struct_tagSTYLESTRUCT;
+pub const LPSTYLESTRUCT = ?*struct_tagSTYLESTRUCT;
 pub const struct_tagMEASUREITEMSTRUCT = extern struct {
     CtlType: UINT,
     CtlID: UINT,
@@ -12285,8 +13041,8 @@ pub const struct_tagMEASUREITEMSTRUCT = extern struct {
     itemData: ULONG_PTR,
 };
 pub const MEASUREITEMSTRUCT = struct_tagMEASUREITEMSTRUCT;
-pub const PMEASUREITEMSTRUCT = ?&struct_tagMEASUREITEMSTRUCT;
-pub const LPMEASUREITEMSTRUCT = ?&struct_tagMEASUREITEMSTRUCT;
+pub const PMEASUREITEMSTRUCT = ?*struct_tagMEASUREITEMSTRUCT;
+pub const LPMEASUREITEMSTRUCT = ?*struct_tagMEASUREITEMSTRUCT;
 pub const struct_tagDRAWITEMSTRUCT = extern struct {
     CtlType: UINT,
     CtlID: UINT,
@@ -12299,8 +13055,8 @@ pub const struct_tagDRAWITEMSTRUCT = extern struct {
     itemData: ULONG_PTR,
 };
 pub const DRAWITEMSTRUCT = struct_tagDRAWITEMSTRUCT;
-pub const PDRAWITEMSTRUCT = ?&struct_tagDRAWITEMSTRUCT;
-pub const LPDRAWITEMSTRUCT = ?&struct_tagDRAWITEMSTRUCT;
+pub const PDRAWITEMSTRUCT = ?*struct_tagDRAWITEMSTRUCT;
+pub const LPDRAWITEMSTRUCT = ?*struct_tagDRAWITEMSTRUCT;
 pub const struct_tagDELETEITEMSTRUCT = extern struct {
     CtlType: UINT,
     CtlID: UINT,
@@ -12309,8 +13065,8 @@ pub const struct_tagDELETEITEMSTRUCT = extern struct {
     itemData: ULONG_PTR,
 };
 pub const DELETEITEMSTRUCT = struct_tagDELETEITEMSTRUCT;
-pub const PDELETEITEMSTRUCT = ?&struct_tagDELETEITEMSTRUCT;
-pub const LPDELETEITEMSTRUCT = ?&struct_tagDELETEITEMSTRUCT;
+pub const PDELETEITEMSTRUCT = ?*struct_tagDELETEITEMSTRUCT;
+pub const LPDELETEITEMSTRUCT = ?*struct_tagDELETEITEMSTRUCT;
 pub const struct_tagCOMPAREITEMSTRUCT = extern struct {
     CtlType: UINT,
     CtlID: UINT,
@@ -12322,15 +13078,15 @@ pub const struct_tagCOMPAREITEMSTRUCT = extern struct {
     dwLocaleId: DWORD,
 };
 pub const COMPAREITEMSTRUCT = struct_tagCOMPAREITEMSTRUCT;
-pub const PCOMPAREITEMSTRUCT = ?&struct_tagCOMPAREITEMSTRUCT;
-pub const LPCOMPAREITEMSTRUCT = ?&struct_tagCOMPAREITEMSTRUCT;
-pub extern "user32" stdcallcc fn GetMessageA(lpMsg: LPMSG, hWnd: HWND, wMsgFilterMin: UINT, wMsgFilterMax: UINT) BOOL;
+pub const PCOMPAREITEMSTRUCT = ?*struct_tagCOMPAREITEMSTRUCT;
+pub const LPCOMPAREITEMSTRUCT = ?*struct_tagCOMPAREITEMSTRUCT;
+//pub extern fn GetMessageA(lpMsg: LPMSG, hWnd: HWND, wMsgFilterMin: UINT, wMsgFilterMax: UINT) BOOL;
 //pub extern fn GetMessageW(lpMsg: LPMSG, hWnd: HWND, wMsgFilterMin: UINT, wMsgFilterMax: UINT) BOOL;
-pub extern "user32" stdcallcc fn TranslateMessage(lpMsg: ?&const MSG) BOOL;
-pub extern "user32" stdcallcc fn DispatchMessageA(lpMsg: ?&const MSG) LRESULT;
-//pub extern fn DispatchMessageW(lpMsg: ?&const MSG) LRESULT;
+//pub extern fn TranslateMessage(lpMsg: ?*const MSG) BOOL;
+//pub extern fn DispatchMessageA(lpMsg: ?*const MSG) LRESULT;
+//pub extern fn DispatchMessageW(lpMsg: ?*const MSG) LRESULT;
 //pub extern fn SetMessageQueue(cMessagesMax: c_int) BOOL;
-pub extern "user32" stdcallcc fn PeekMessageA(lpMsg: LPMSG, hWnd: HWND, wMsgFilterMin: UINT, wMsgFilterMax: UINT, wRemoveMsg: UINT) BOOL;
+//pub extern fn PeekMessageA(lpMsg: LPMSG, hWnd: HWND, wMsgFilterMin: UINT, wMsgFilterMax: UINT, wRemoveMsg: UINT) BOOL;
 //pub extern fn PeekMessageW(lpMsg: LPMSG, hWnd: HWND, wMsgFilterMin: UINT, wMsgFilterMax: UINT, wRemoveMsg: UINT) BOOL;
 //pub extern fn RegisterHotKey(hWnd: HWND, id: c_int, fsModifiers: UINT, vk: UINT) BOOL;
 //pub extern fn UnregisterHotKey(hWnd: HWND, id: c_int) BOOL;
@@ -12342,7 +13098,7 @@ pub extern "user32" stdcallcc fn PeekMessageA(lpMsg: LPMSG, hWnd: HWND, wMsgFilt
 //pub extern fn GetUnpredictedMessagePos() DWORD;
 //pub extern fn IsWow64Message() BOOL;
 //pub extern fn SetMessageExtraInfo(lParam: LPARAM) LPARAM;
-pub extern "user32" stdcallcc fn SendMessageA(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
+//pub extern fn SendMessageA(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
 //pub extern fn SendMessageW(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
 //pub extern fn SendMessageTimeoutA(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM, fuFlags: UINT, uTimeout: UINT, lpdwResult: PDWORD_PTR) LRESULT;
 //pub extern fn SendMessageTimeoutW(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM, fuFlags: UINT, uTimeout: UINT, lpdwResult: PDWORD_PTR) LRESULT;
@@ -12356,7 +13112,7 @@ pub const BSMINFO = extern struct {
     hwnd: HWND,
     luid: LUID,
 };
-pub const PBSMINFO = ?&extern struct {
+pub const PBSMINFO = ?[*]extern struct {
     cbSize: UINT,
     hdesk: HDESK,
     hwnd: HWND,
@@ -12367,12 +13123,12 @@ pub const PBSMINFO = ?&extern struct {
 //pub extern fn BroadcastSystemMessageA(flags: DWORD, lpInfo: LPDWORD, Msg: UINT, wParam: WPARAM, lParam: LPARAM) c_long;
 //pub extern fn BroadcastSystemMessageW(flags: DWORD, lpInfo: LPDWORD, Msg: UINT, wParam: WPARAM, lParam: LPARAM) c_long;
 pub const HDEVNOTIFY = PVOID;
-pub const PHDEVNOTIFY = ?&HDEVNOTIFY;
+pub const PHDEVNOTIFY = ?[*]HDEVNOTIFY;
 //pub extern fn RegisterDeviceNotificationA(hRecipient: HANDLE, NotificationFilter: LPVOID, Flags: DWORD) HDEVNOTIFY;
 //pub extern fn RegisterDeviceNotificationW(hRecipient: HANDLE, NotificationFilter: LPVOID, Flags: DWORD) HDEVNOTIFY;
 //pub extern fn UnregisterDeviceNotification(Handle: HDEVNOTIFY) BOOL;
 pub const HPOWERNOTIFY = PVOID;
-pub const PHPOWERNOTIFY = ?&HPOWERNOTIFY;
+pub const PHPOWERNOTIFY = ?[*]HPOWERNOTIFY;
 //pub extern fn RegisterPowerSettingNotification(hRecipient: HANDLE, PowerSettingGuid: LPCGUID, Flags: DWORD) HPOWERNOTIFY;
 //pub extern fn UnregisterPowerSettingNotification(Handle: HPOWERNOTIFY) BOOL;
 //pub extern fn RegisterSuspendResumeNotification(hRecipient: HANDLE, Flags: DWORD) HPOWERNOTIFY;
@@ -12385,7 +13141,7 @@ pub const PHPOWERNOTIFY = ?&HPOWERNOTIFY;
 //pub extern fn ReplyMessage(lResult: LRESULT) BOOL;
 //pub extern fn WaitMessage() BOOL;
 //pub extern fn WaitForInputIdle(hProcess: HANDLE, dwMilliseconds: DWORD) DWORD;
-pub extern "user32" stdcallcc fn DefWindowProcA(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
+//pub extern fn DefWindowProcA(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
 //pub extern fn DefWindowProcW(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
 //pub extern fn PostQuitMessage(nExitCode: c_int) void;
 //pub extern fn CallWindowProcA(lpPrevWndFunc: WNDPROC, hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
@@ -12394,42 +13150,43 @@ pub extern "user32" stdcallcc fn DefWindowProcA(hWnd: HWND, Msg: UINT, wParam: W
 //pub extern fn InSendMessageEx(lpReserved: LPVOID) DWORD;
 //pub extern fn GetDoubleClickTime() UINT;
 //pub extern fn SetDoubleClickTime(arg0: UINT) BOOL;
-pub extern "user32" stdcallcc fn RegisterClassA(lpWndClass: ?&const WNDCLASSA) ATOM;
-//pub extern fn RegisterClassW(lpWndClass: ?&const WNDCLASSW) ATOM;
+//Note: translate c ptr-array to ptr
+//pub extern fn RegisterClassA(lpWndClass: ?*const WNDCLASSA) ATOM;
+//pub extern fn RegisterClassW(lpWndClass: ?[*]const WNDCLASSW) ATOM;
 //pub extern fn UnregisterClassA(lpClassName: LPCSTR, hInstance: HINSTANCE) BOOL;
 //pub extern fn UnregisterClassW(lpClassName: LPCWSTR, hInstance: HINSTANCE) BOOL;
 //pub extern fn GetClassInfoA(hInstance: HINSTANCE, lpClassName: LPCSTR, lpWndClass: LPWNDCLASSA) BOOL;
 //pub extern fn GetClassInfoW(hInstance: HINSTANCE, lpClassName: LPCWSTR, lpWndClass: LPWNDCLASSW) BOOL;
-//pub extern fn RegisterClassExA(arg0: ?&const WNDCLASSEXA) ATOM;
-//pub extern fn RegisterClassExW(arg0: ?&const WNDCLASSEXW) ATOM;
+//pub extern fn RegisterClassExA(arg0: ?[*]const WNDCLASSEXA) ATOM;
+//pub extern fn RegisterClassExW(arg0: ?[*]const WNDCLASSEXW) ATOM;
 //pub extern fn GetClassInfoExA(hInstance: HINSTANCE, lpszClass: LPCSTR, lpwcx: LPWNDCLASSEXA) BOOL;
 //pub extern fn GetClassInfoExW(hInstance: HINSTANCE, lpszClass: LPCWSTR, lpwcx: LPWNDCLASSEXW) BOOL;
 pub const PREGISTERCLASSNAMEW = ?extern fn(LPCWSTR) BOOLEAN;
-pub extern "user32" stdcallcc fn CreateWindowExA(dwExStyle: DWORD, lpClassName: LPCSTR, lpWindowName: LPCSTR, dwStyle: DWORD, X: c_int, Y: c_int, nWidth: c_int, nHeight: c_int, hWndParent: HWND, hMenu: HMENU, hInstance: HINSTANCE, lpParam: LPVOID) HWND;
+//pub extern fn CreateWindowExA(dwExStyle: DWORD, lpClassName: LPCSTR, lpWindowName: LPCSTR, dwStyle: DWORD, X: c_int, Y: c_int, nWidth: c_int, nHeight: c_int, hWndParent: HWND, hMenu: HMENU, hInstance: HINSTANCE, lpParam: LPVOID) HWND;
 //pub extern fn CreateWindowExW(dwExStyle: DWORD, lpClassName: LPCWSTR, lpWindowName: LPCWSTR, dwStyle: DWORD, X: c_int, Y: c_int, nWidth: c_int, nHeight: c_int, hWndParent: HWND, hMenu: HMENU, hInstance: HINSTANCE, lpParam: LPVOID) HWND;
 //pub extern fn IsWindow(hWnd: HWND) BOOL;
 //pub extern fn IsMenu(hMenu: HMENU) BOOL;
 //pub extern fn IsChild(hWndParent: HWND, hWnd: HWND) BOOL;
-pub extern "user32" stdcallcc fn DestroyWindow(hWnd: HWND) BOOL;
-pub extern "user32" stdcallcc fn ShowWindow(hWnd: HWND, nCmdShow: c_int) BOOL;
+//pub extern fn DestroyWindow(hWnd: HWND) BOOL;
+//pub extern fn ShowWindow(hWnd: HWND, nCmdShow: c_int) BOOL;
 //pub extern fn AnimateWindow(hWnd: HWND, dwTime: DWORD, dwFlags: DWORD) BOOL;
-//pub extern fn UpdateLayeredWindow(hWnd: HWND, hdcDst: HDC, pptDst: ?&POINT, psize: ?&SIZE, hdcSrc: HDC, pptSrc: ?&POINT, crKey: COLORREF, pblend: ?&BLENDFUNCTION, dwFlags: DWORD) BOOL;
+//pub extern fn UpdateLayeredWindow(hWnd: HWND, hdcDst: HDC, pptDst: ?[*]POINT, psize: ?[*]SIZE, hdcSrc: HDC, pptSrc: ?[*]POINT, crKey: COLORREF, pblend: ?[*]BLENDFUNCTION, dwFlags: DWORD) BOOL;
 pub const struct_tagUPDATELAYEREDWINDOWINFO = extern struct {
     cbSize: DWORD,
     hdcDst: HDC,
-    pptDst: ?&const POINT,
-    psize: ?&const SIZE,
+    pptDst: ?[*]const POINT,
+    psize: ?[*]const SIZE,
     hdcSrc: HDC,
-    pptSrc: ?&const POINT,
+    pptSrc: ?[*]const POINT,
     crKey: COLORREF,
-    pblend: ?&const BLENDFUNCTION,
+    pblend: ?[*]const BLENDFUNCTION,
     dwFlags: DWORD,
-    prcDirty: ?&const RECT,
+    prcDirty: ?[*]const RECT,
 };
 pub const UPDATELAYEREDWINDOWINFO = struct_tagUPDATELAYEREDWINDOWINFO;
-pub const PUPDATELAYEREDWINDOWINFO = ?&struct_tagUPDATELAYEREDWINDOWINFO;
-//pub extern fn UpdateLayeredWindowIndirect(hWnd: HWND, pULWInfo: ?&const UPDATELAYEREDWINDOWINFO) BOOL;
-//pub extern fn GetLayeredWindowAttributes(hwnd: HWND, pcrKey: ?&COLORREF, pbAlpha: ?&BYTE, pdwFlags: ?&DWORD) BOOL;
+pub const PUPDATELAYEREDWINDOWINFO = ?*struct_tagUPDATELAYEREDWINDOWINFO;
+//pub extern fn UpdateLayeredWindowIndirect(hWnd: HWND, pULWInfo: ?[*]const UPDATELAYEREDWINDOWINFO) BOOL;
+//pub extern fn GetLayeredWindowAttributes(hwnd: HWND, pcrKey: ?[*]COLORREF, pbAlpha: ?[*]BYTE, pdwFlags: ?[*]DWORD) BOOL;
 //pub extern fn PrintWindow(hwnd: HWND, hdcBlt: HDC, nFlags: UINT) BOOL;
 //pub extern fn SetLayeredWindowAttributes(hwnd: HWND, crKey: COLORREF, bAlpha: BYTE, dwFlags: DWORD) BOOL;
 //pub extern fn ShowWindowAsync(hWnd: HWND, nCmdShow: c_int) BOOL;
@@ -12441,7 +13198,7 @@ pub const FLASHWINFO = extern struct {
     uCount: UINT,
     dwTimeout: DWORD,
 };
-pub const PFLASHWINFO = ?&extern struct {
+pub const PFLASHWINFO = ?[*]extern struct {
     cbSize: UINT,
     hwnd: HWND,
     dwFlags: DWORD,
@@ -12454,9 +13211,9 @@ pub const PFLASHWINFO = ?&extern struct {
 //pub extern fn CloseWindow(hWnd: HWND) BOOL;
 //pub extern fn MoveWindow(hWnd: HWND, X: c_int, Y: c_int, nWidth: c_int, nHeight: c_int, bRepaint: BOOL) BOOL;
 //pub extern fn SetWindowPos(hWnd: HWND, hWndInsertAfter: HWND, X: c_int, Y: c_int, cx: c_int, cy: c_int, uFlags: UINT) BOOL;
-//pub extern fn GetWindowPlacement(hWnd: HWND, lpwndpl: ?&WINDOWPLACEMENT) BOOL;
-//pub extern fn SetWindowPlacement(hWnd: HWND, lpwndpl: ?&const WINDOWPLACEMENT) BOOL;
-//pub extern fn GetWindowDisplayAffinity(hWnd: HWND, pdwAffinity: ?&DWORD) BOOL;
+//pub extern fn GetWindowPlacement(hWnd: HWND, lpwndpl: ?[*]WINDOWPLACEMENT) BOOL;
+//pub extern fn SetWindowPlacement(hWnd: HWND, lpwndpl: ?[*]const WINDOWPLACEMENT) BOOL;
+//pub extern fn GetWindowDisplayAffinity(hWnd: HWND, pdwAffinity: ?[*]DWORD) BOOL;
 //pub extern fn SetWindowDisplayAffinity(hWnd: HWND, dwAffinity: DWORD) BOOL;
 //pub extern fn BeginDeferWindowPos(nNumWindows: c_int) HDWP;
 //pub extern fn DeferWindowPos(hWinPosInfo: HDWP, hWnd: HWND, hWndInsertAfter: HWND, x: c_int, y: c_int, cx: c_int, cy: c_int, uFlags: UINT) HDWP;
@@ -12475,11 +13232,11 @@ pub const DLGTEMPLATE = extern struct {
     cx: c_short,
     cy: c_short,
 };
-pub const LPDLGTEMPLATEA = ?&DLGTEMPLATE;
-pub const LPDLGTEMPLATEW = ?&DLGTEMPLATE;
+pub const LPDLGTEMPLATEA = ?[*]DLGTEMPLATE;
+pub const LPDLGTEMPLATEW = ?[*]DLGTEMPLATE;
 pub const LPDLGTEMPLATE = LPDLGTEMPLATEA;
-pub const LPCDLGTEMPLATEA = ?&const DLGTEMPLATE;
-pub const LPCDLGTEMPLATEW = ?&const DLGTEMPLATE;
+pub const LPCDLGTEMPLATEA = ?[*]const DLGTEMPLATE;
+pub const LPCDLGTEMPLATEW = ?[*]const DLGTEMPLATE;
 pub const LPCDLGTEMPLATE = LPCDLGTEMPLATEA;
 pub const DLGITEMTEMPLATE = extern struct {
     style: DWORD,
@@ -12490,11 +13247,11 @@ pub const DLGITEMTEMPLATE = extern struct {
     cy: c_short,
     id: WORD,
 };
-pub const PDLGITEMTEMPLATEA = ?&DLGITEMTEMPLATE;
-pub const PDLGITEMTEMPLATEW = ?&DLGITEMTEMPLATE;
+pub const PDLGITEMTEMPLATEA = ?[*]DLGITEMTEMPLATE;
+pub const PDLGITEMTEMPLATEW = ?[*]DLGITEMTEMPLATE;
 pub const PDLGITEMTEMPLATE = PDLGITEMTEMPLATEA;
-pub const LPDLGITEMTEMPLATEA = ?&DLGITEMTEMPLATE;
-pub const LPDLGITEMTEMPLATEW = ?&DLGITEMTEMPLATE;
+pub const LPDLGITEMTEMPLATEA = ?[*]DLGITEMTEMPLATE;
+pub const LPDLGITEMTEMPLATEW = ?[*]DLGITEMTEMPLATE;
 pub const LPDLGITEMTEMPLATE = LPDLGITEMTEMPLATEA;
 //pub extern fn CreateDialogParamA(hInstance: HINSTANCE, lpTemplateName: LPCSTR, hWndParent: HWND, lpDialogFunc: DLGPROC, dwInitParam: LPARAM) HWND;
 //pub extern fn CreateDialogParamW(hInstance: HINSTANCE, lpTemplateName: LPCWSTR, hWndParent: HWND, lpDialogFunc: DLGPROC, dwInitParam: LPARAM) HWND;
@@ -12507,7 +13264,7 @@ pub const LPDLGITEMTEMPLATE = LPDLGITEMTEMPLATEA;
 //pub extern fn EndDialog(hDlg: HWND, nResult: INT_PTR) BOOL;
 //pub extern fn GetDlgItem(hDlg: HWND, nIDDlgItem: c_int) HWND;
 //pub extern fn SetDlgItemInt(hDlg: HWND, nIDDlgItem: c_int, uValue: UINT, bSigned: BOOL) BOOL;
-//pub extern fn GetDlgItemInt(hDlg: HWND, nIDDlgItem: c_int, lpTranslated: ?&BOOL, bSigned: BOOL) UINT;
+//pub extern fn GetDlgItemInt(hDlg: HWND, nIDDlgItem: c_int, lpTranslated: ?[*]BOOL, bSigned: BOOL) UINT;
 //pub extern fn SetDlgItemTextA(hDlg: HWND, nIDDlgItem: c_int, lpString: LPCSTR) BOOL;
 //pub extern fn SetDlgItemTextW(hDlg: HWND, nIDDlgItem: c_int, lpString: LPCWSTR) BOOL;
 //pub extern fn GetDlgItemTextA(hDlg: HWND, nIDDlgItem: c_int, lpString: LPSTR, cchMax: c_int) UINT;
@@ -12523,18 +13280,27 @@ pub const LPDLGITEMTEMPLATE = LPDLGITEMTEMPLATEA;
 //pub extern fn GetDialogBaseUnits() c_long;
 //pub extern fn DefDlgProcA(hDlg: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
 //pub extern fn DefDlgProcW(hDlg: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
-pub const DCDC_DEFAULT: c_int = 0;
-pub const DCDC_DISABLE_FONT_UPDATE: c_int = 1;
-pub const DCDC_DISABLE_RELAYOUT: c_int = 2;
-pub const enum_DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS = c_int;
+pub const DCDC_DEFAULT = enum_DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS.DCDC_DEFAULT;
+pub const DCDC_DISABLE_FONT_UPDATE = enum_DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS.DCDC_DISABLE_FONT_UPDATE;
+pub const DCDC_DISABLE_RELAYOUT = enum_DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS.DCDC_DISABLE_RELAYOUT;
+pub const enum_DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS = extern enum {
+    DCDC_DEFAULT = 0,
+    DCDC_DISABLE_FONT_UPDATE = 1,
+    DCDC_DISABLE_RELAYOUT = 2,
+};
 pub const DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS = enum_DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS;
 //pub extern fn SetDialogControlDpiChangeBehavior(hWnd: HWND, mask: DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS, values: DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS) BOOL;
 //pub extern fn GetDialogControlDpiChangeBehavior(hWnd: HWND) DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS;
-pub const DDC_DEFAULT: c_int = 0;
-pub const DDC_DISABLE_ALL: c_int = 1;
-pub const DDC_DISABLE_RESIZE: c_int = 2;
-pub const DDC_DISABLE_CONTROL_RELAYOUT: c_int = 4;
-pub const enum_DIALOG_DPI_CHANGE_BEHAVIORS = c_int;
+pub const DDC_DEFAULT = enum_DIALOG_DPI_CHANGE_BEHAVIORS.DDC_DEFAULT;
+pub const DDC_DISABLE_ALL = enum_DIALOG_DPI_CHANGE_BEHAVIORS.DDC_DISABLE_ALL;
+pub const DDC_DISABLE_RESIZE = enum_DIALOG_DPI_CHANGE_BEHAVIORS.DDC_DISABLE_RESIZE;
+pub const DDC_DISABLE_CONTROL_RELAYOUT = enum_DIALOG_DPI_CHANGE_BEHAVIORS.DDC_DISABLE_CONTROL_RELAYOUT;
+pub const enum_DIALOG_DPI_CHANGE_BEHAVIORS = extern enum {
+    DDC_DEFAULT = 0,
+    DDC_DISABLE_ALL = 1,
+    DDC_DISABLE_RESIZE = 2,
+    DDC_DISABLE_CONTROL_RELAYOUT = 4,
+};
 pub const DIALOG_DPI_CHANGE_BEHAVIORS = enum_DIALOG_DPI_CHANGE_BEHAVIORS;
 //pub extern fn SetDialogDpiChangeBehavior(hDlg: HWND, mask: DIALOG_DPI_CHANGE_BEHAVIORS, values: DIALOG_DPI_CHANGE_BEHAVIORS) BOOL;
 //pub extern fn GetDialogDpiChangeBehavior(hDlg: HWND) DIALOG_DPI_CHANGE_BEHAVIORS;
@@ -12557,7 +13323,7 @@ pub const DIALOG_DPI_CHANGE_BEHAVIORS = enum_DIALOG_DPI_CHANGE_BEHAVIORS;
 //pub extern fn GetClipboardFormatNameW(format: UINT, lpszFormatName: LPWSTR, cchMaxCount: c_int) c_int;
 //pub extern fn EmptyClipboard() BOOL;
 //pub extern fn IsClipboardFormatAvailable(format: UINT) BOOL;
-//pub extern fn GetPriorityClipboardFormat(paFormatPriorityList: ?&UINT, cFormats: c_int) c_int;
+//pub extern fn GetPriorityClipboardFormat(paFormatPriorityList: ?[*]UINT, cFormats: c_int) c_int;
 //pub extern fn GetOpenClipboardWindow() HWND;
 //pub extern fn AddClipboardFormatListener(hwnd: HWND) BOOL;
 //pub extern fn RemoveClipboardFormatListener(hwnd: HWND) BOOL;
@@ -12603,9 +13369,9 @@ pub const DIALOG_DPI_CHANGE_BEHAVIORS = enum_DIALOG_DPI_CHANGE_BEHAVIORS;
 //pub extern fn GetKeyNameTextA(lParam: LONG, lpString: LPSTR, cchSize: c_int) c_int;
 //pub extern fn GetKeyNameTextW(lParam: LONG, lpString: LPWSTR, cchSize: c_int) c_int;
 //pub extern fn GetKeyboardType(nTypeFlag: c_int) c_int;
-//pub extern fn ToAscii(uVirtKey: UINT, uScanCode: UINT, lpKeyState: ?&const BYTE, lpChar: LPWORD, uFlags: UINT) c_int;
-//pub extern fn ToAsciiEx(uVirtKey: UINT, uScanCode: UINT, lpKeyState: ?&const BYTE, lpChar: LPWORD, uFlags: UINT, dwhkl: HKL) c_int;
-//pub extern fn ToUnicode(wVirtKey: UINT, wScanCode: UINT, lpKeyState: ?&const BYTE, pwszBuff: LPWSTR, cchBuff: c_int, wFlags: UINT) c_int;
+//pub extern fn ToAscii(uVirtKey: UINT, uScanCode: UINT, lpKeyState: ?[*]const BYTE, lpChar: LPWORD, uFlags: UINT) c_int;
+//pub extern fn ToAsciiEx(uVirtKey: UINT, uScanCode: UINT, lpKeyState: ?[*]const BYTE, lpChar: LPWORD, uFlags: UINT, dwhkl: HKL) c_int;
+//pub extern fn ToUnicode(wVirtKey: UINT, wScanCode: UINT, lpKeyState: ?[*]const BYTE, pwszBuff: LPWSTR, cchBuff: c_int, wFlags: UINT) c_int;
 //pub extern fn OemKeyScan(wOemChar: WORD) DWORD;
 //pub extern fn VkKeyScanA(ch: CHAR) SHORT;
 //pub extern fn VkKeyScanW(ch: WCHAR) SHORT;
@@ -12622,8 +13388,8 @@ pub const struct_tagMOUSEINPUT = extern struct {
     dwExtraInfo: ULONG_PTR,
 };
 pub const MOUSEINPUT = struct_tagMOUSEINPUT;
-pub const PMOUSEINPUT = ?&struct_tagMOUSEINPUT;
-pub const LPMOUSEINPUT = ?&struct_tagMOUSEINPUT;
+pub const PMOUSEINPUT = ?*struct_tagMOUSEINPUT;
+pub const LPMOUSEINPUT = ?*struct_tagMOUSEINPUT;
 pub const struct_tagKEYBDINPUT = extern struct {
     wVk: WORD,
     wScan: WORD,
@@ -12632,16 +13398,16 @@ pub const struct_tagKEYBDINPUT = extern struct {
     dwExtraInfo: ULONG_PTR,
 };
 pub const KEYBDINPUT = struct_tagKEYBDINPUT;
-pub const PKEYBDINPUT = ?&struct_tagKEYBDINPUT;
-pub const LPKEYBDINPUT = ?&struct_tagKEYBDINPUT;
+pub const PKEYBDINPUT = ?*struct_tagKEYBDINPUT;
+pub const LPKEYBDINPUT = ?*struct_tagKEYBDINPUT;
 pub const struct_tagHARDWAREINPUT = extern struct {
     uMsg: DWORD,
     wParamL: WORD,
     wParamH: WORD,
 };
 pub const HARDWAREINPUT = struct_tagHARDWAREINPUT;
-pub const PHARDWAREINPUT = ?&struct_tagHARDWAREINPUT;
-pub const LPHARDWAREINPUT = ?&struct_tagHARDWAREINPUT;
+pub const PHARDWAREINPUT = ?*struct_tagHARDWAREINPUT;
+pub const LPHARDWAREINPUT = ?*struct_tagHARDWAREINPUT;
 pub const struct_tagINPUT = extern struct {
     type: DWORD,
     @"": extern union {
@@ -12651,13 +13417,13 @@ pub const struct_tagINPUT = extern struct {
     },
 };
 pub const INPUT = struct_tagINPUT;
-pub const PINPUT = ?&struct_tagINPUT;
-pub const LPINPUT = ?&struct_tagINPUT;
+pub const PINPUT = ?*struct_tagINPUT;
+pub const LPINPUT = ?*struct_tagINPUT;
 //pub extern fn SendInput(cInputs: UINT, pInputs: LPINPUT, cbSize: c_int) UINT;
 pub const struct_HTOUCHINPUT__ = extern struct {
     unused: c_int,
 };
-pub const HTOUCHINPUT = ?&struct_HTOUCHINPUT__;
+pub const HTOUCHINPUT = ?*struct_HTOUCHINPUT__;
 pub const struct_tagTOUCHINPUT = extern struct {
     x: LONG,
     y: LONG,
@@ -12671,19 +13437,25 @@ pub const struct_tagTOUCHINPUT = extern struct {
     cyContact: DWORD,
 };
 pub const TOUCHINPUT = struct_tagTOUCHINPUT;
-pub const PTOUCHINPUT = ?&struct_tagTOUCHINPUT;
-pub const PCTOUCHINPUT = ?&const TOUCHINPUT;
+pub const PTOUCHINPUT = ?*struct_tagTOUCHINPUT;
+pub const PCTOUCHINPUT = ?[*]const TOUCHINPUT;
 //pub extern fn GetTouchInputInfo(hTouchInput: HTOUCHINPUT, cInputs: UINT, pInputs: PTOUCHINPUT, cbSize: c_int) BOOL;
 //pub extern fn CloseTouchInputHandle(hTouchInput: HTOUCHINPUT) BOOL;
 //pub extern fn RegisterTouchWindow(hwnd: HWND, ulFlags: ULONG) BOOL;
 //pub extern fn UnregisterTouchWindow(hwnd: HWND) BOOL;
 //pub extern fn IsTouchWindow(hwnd: HWND, pulFlags: PULONG) BOOL;
-pub const PT_POINTER: c_int = 1;
-pub const PT_TOUCH: c_int = 2;
-pub const PT_PEN: c_int = 3;
-pub const PT_MOUSE: c_int = 4;
-pub const PT_TOUCHPAD: c_int = 5;
-pub const enum_tagPOINTER_INPUT_TYPE = c_int;
+pub const PT_POINTER = enum_tagPOINTER_INPUT_TYPE.PT_POINTER;
+pub const PT_TOUCH = enum_tagPOINTER_INPUT_TYPE.PT_TOUCH;
+pub const PT_PEN = enum_tagPOINTER_INPUT_TYPE.PT_PEN;
+pub const PT_MOUSE = enum_tagPOINTER_INPUT_TYPE.PT_MOUSE;
+pub const PT_TOUCHPAD = enum_tagPOINTER_INPUT_TYPE.PT_TOUCHPAD;
+pub const enum_tagPOINTER_INPUT_TYPE = extern enum {
+    PT_POINTER = 1,
+    PT_TOUCH = 2,
+    PT_PEN = 3,
+    PT_MOUSE = 4,
+    PT_TOUCHPAD = 5,
+};
 pub const POINTER_INPUT_TYPE = DWORD;
 pub const POINTER_FLAGS = UINT32;
 pub const POINTER_CHANGE_NONE = enum_tagPOINTER_BUTTON_CHANGE_TYPE.POINTER_CHANGE_NONE;
@@ -12755,7 +13527,7 @@ pub const struct_tagPOINTER_PEN_INFO = extern struct {
 };
 pub const POINTER_PEN_INFO = struct_tagPOINTER_PEN_INFO;
 //pub extern fn InitializeTouchInjection(maxCount: UINT32, dwMode: DWORD) BOOL;
-//pub extern fn InjectTouchInput(count: UINT32, contacts: ?&const POINTER_TOUCH_INFO) BOOL;
+//pub extern fn InjectTouchInput(count: UINT32, contacts: ?[*]const POINTER_TOUCH_INFO) BOOL;
 pub const struct_tagUSAGE_PROPERTIES = extern struct {
     level: USHORT,
     page: USHORT,
@@ -12769,7 +13541,7 @@ pub const struct_tagUSAGE_PROPERTIES = extern struct {
     physicalMaximum: INT32,
 };
 pub const USAGE_PROPERTIES = struct_tagUSAGE_PROPERTIES;
-pub const PUSAGE_PROPERTIES = ?&struct_tagUSAGE_PROPERTIES;
+pub const PUSAGE_PROPERTIES = ?*struct_tagUSAGE_PROPERTIES;
 pub const struct_tagPOINTER_TYPE_INFO = extern struct {
     type: POINTER_INPUT_TYPE,
     @"": extern union {
@@ -12778,7 +13550,7 @@ pub const struct_tagPOINTER_TYPE_INFO = extern struct {
     },
 };
 pub const POINTER_TYPE_INFO = struct_tagPOINTER_TYPE_INFO;
-pub const PPOINTER_TYPE_INFO = ?&struct_tagPOINTER_TYPE_INFO;
+pub const PPOINTER_TYPE_INFO = ?*struct_tagPOINTER_TYPE_INFO;
 pub const struct_tagINPUT_INJECTION_VALUE = extern struct {
     page: USHORT,
     usage: USHORT,
@@ -12786,21 +13558,21 @@ pub const struct_tagINPUT_INJECTION_VALUE = extern struct {
     index: USHORT,
 };
 pub const INPUT_INJECTION_VALUE = struct_tagINPUT_INJECTION_VALUE;
-pub const PINPUT_INJECTION_VALUE = ?&struct_tagINPUT_INJECTION_VALUE;
-//pub extern fn GetPointerType(pointerId: UINT32, pointerType: ?&POINTER_INPUT_TYPE) BOOL;
-//pub extern fn GetPointerCursorId(pointerId: UINT32, cursorId: ?&UINT32) BOOL;
-//pub extern fn GetPointerInfo(pointerId: UINT32, pointerInfo: ?&POINTER_INFO) BOOL;
-//pub extern fn GetPointerInfoHistory(pointerId: UINT32, entriesCount: ?&UINT32, pointerInfo: ?&POINTER_INFO) BOOL;
-//pub extern fn GetPointerFrameInfo(pointerId: UINT32, pointerCount: ?&UINT32, pointerInfo: ?&POINTER_INFO) BOOL;
-//pub extern fn GetPointerFrameInfoHistory(pointerId: UINT32, entriesCount: ?&UINT32, pointerCount: ?&UINT32, pointerInfo: ?&POINTER_INFO) BOOL;
-//pub extern fn GetPointerTouchInfo(pointerId: UINT32, touchInfo: ?&POINTER_TOUCH_INFO) BOOL;
-//pub extern fn GetPointerTouchInfoHistory(pointerId: UINT32, entriesCount: ?&UINT32, touchInfo: ?&POINTER_TOUCH_INFO) BOOL;
-//pub extern fn GetPointerFrameTouchInfo(pointerId: UINT32, pointerCount: ?&UINT32, touchInfo: ?&POINTER_TOUCH_INFO) BOOL;
-//pub extern fn GetPointerFrameTouchInfoHistory(pointerId: UINT32, entriesCount: ?&UINT32, pointerCount: ?&UINT32, touchInfo: ?&POINTER_TOUCH_INFO) BOOL;
-//pub extern fn GetPointerPenInfo(pointerId: UINT32, penInfo: ?&POINTER_PEN_INFO) BOOL;
-//pub extern fn GetPointerPenInfoHistory(pointerId: UINT32, entriesCount: ?&UINT32, penInfo: ?&POINTER_PEN_INFO) BOOL;
-//pub extern fn GetPointerFramePenInfo(pointerId: UINT32, pointerCount: ?&UINT32, penInfo: ?&POINTER_PEN_INFO) BOOL;
-//pub extern fn GetPointerFramePenInfoHistory(pointerId: UINT32, entriesCount: ?&UINT32, pointerCount: ?&UINT32, penInfo: ?&POINTER_PEN_INFO) BOOL;
+pub const PINPUT_INJECTION_VALUE = ?*struct_tagINPUT_INJECTION_VALUE;
+//pub extern fn GetPointerType(pointerId: UINT32, pointerType: ?[*]POINTER_INPUT_TYPE) BOOL;
+//pub extern fn GetPointerCursorId(pointerId: UINT32, cursorId: ?[*]UINT32) BOOL;
+//pub extern fn GetPointerInfo(pointerId: UINT32, pointerInfo: ?[*]POINTER_INFO) BOOL;
+//pub extern fn GetPointerInfoHistory(pointerId: UINT32, entriesCount: ?[*]UINT32, pointerInfo: ?[*]POINTER_INFO) BOOL;
+//pub extern fn GetPointerFrameInfo(pointerId: UINT32, pointerCount: ?[*]UINT32, pointerInfo: ?[*]POINTER_INFO) BOOL;
+//pub extern fn GetPointerFrameInfoHistory(pointerId: UINT32, entriesCount: ?[*]UINT32, pointerCount: ?[*]UINT32, pointerInfo: ?[*]POINTER_INFO) BOOL;
+//pub extern fn GetPointerTouchInfo(pointerId: UINT32, touchInfo: ?[*]POINTER_TOUCH_INFO) BOOL;
+//pub extern fn GetPointerTouchInfoHistory(pointerId: UINT32, entriesCount: ?[*]UINT32, touchInfo: ?[*]POINTER_TOUCH_INFO) BOOL;
+//pub extern fn GetPointerFrameTouchInfo(pointerId: UINT32, pointerCount: ?[*]UINT32, touchInfo: ?[*]POINTER_TOUCH_INFO) BOOL;
+//pub extern fn GetPointerFrameTouchInfoHistory(pointerId: UINT32, entriesCount: ?[*]UINT32, pointerCount: ?[*]UINT32, touchInfo: ?[*]POINTER_TOUCH_INFO) BOOL;
+//pub extern fn GetPointerPenInfo(pointerId: UINT32, penInfo: ?[*]POINTER_PEN_INFO) BOOL;
+//pub extern fn GetPointerPenInfoHistory(pointerId: UINT32, entriesCount: ?[*]UINT32, penInfo: ?[*]POINTER_PEN_INFO) BOOL;
+//pub extern fn GetPointerFramePenInfo(pointerId: UINT32, pointerCount: ?[*]UINT32, penInfo: ?[*]POINTER_PEN_INFO) BOOL;
+//pub extern fn GetPointerFramePenInfoHistory(pointerId: UINT32, entriesCount: ?[*]UINT32, pointerCount: ?[*]UINT32, penInfo: ?[*]POINTER_PEN_INFO) BOOL;
 //pub extern fn SkipPointerFrameMessages(pointerId: UINT32) BOOL;
 //pub extern fn RegisterPointerInputTarget(hwnd: HWND, pointerType: POINTER_INPUT_TYPE) BOOL;
 //pub extern fn UnregisterPointerInputTarget(hwnd: HWND, pointerType: POINTER_INPUT_TYPE) BOOL;
@@ -12814,7 +13586,7 @@ pub const struct_tagTOUCH_HIT_TESTING_PROXIMITY_EVALUATION = extern struct {
     adjustedPoint: POINT,
 };
 pub const TOUCH_HIT_TESTING_PROXIMITY_EVALUATION = struct_tagTOUCH_HIT_TESTING_PROXIMITY_EVALUATION;
-pub const PTOUCH_HIT_TESTING_PROXIMITY_EVALUATION = ?&struct_tagTOUCH_HIT_TESTING_PROXIMITY_EVALUATION;
+pub const PTOUCH_HIT_TESTING_PROXIMITY_EVALUATION = ?*struct_tagTOUCH_HIT_TESTING_PROXIMITY_EVALUATION;
 pub const struct_tagTOUCH_HIT_TESTING_INPUT = extern struct {
     pointerId: UINT32,
     point: POINT,
@@ -12823,26 +13595,39 @@ pub const struct_tagTOUCH_HIT_TESTING_INPUT = extern struct {
     orientation: UINT32,
 };
 pub const TOUCH_HIT_TESTING_INPUT = struct_tagTOUCH_HIT_TESTING_INPUT;
-pub const PTOUCH_HIT_TESTING_INPUT = ?&struct_tagTOUCH_HIT_TESTING_INPUT;
-//pub extern fn EvaluateProximityToRect(controlBoundingBox: ?&const RECT, pHitTestingInput: ?&const TOUCH_HIT_TESTING_INPUT, pProximityEval: ?&TOUCH_HIT_TESTING_PROXIMITY_EVALUATION) BOOL;
-//pub extern fn EvaluateProximityToPolygon(numVertices: UINT32, controlPolygon: ?&const POINT, pHitTestingInput: ?&const TOUCH_HIT_TESTING_INPUT, pProximityEval: ?&TOUCH_HIT_TESTING_PROXIMITY_EVALUATION) BOOL;
-//pub extern fn PackTouchHitTestingProximityEvaluation(pHitTestingInput: ?&const TOUCH_HIT_TESTING_INPUT, pProximityEval: ?&const TOUCH_HIT_TESTING_PROXIMITY_EVALUATION) LRESULT;
-pub const FEEDBACK_TOUCH_CONTACTVISUALIZATION: c_int = 1;
-pub const FEEDBACK_PEN_BARRELVISUALIZATION: c_int = 2;
-pub const FEEDBACK_PEN_TAP: c_int = 3;
-pub const FEEDBACK_PEN_DOUBLETAP: c_int = 4;
-pub const FEEDBACK_PEN_PRESSANDHOLD: c_int = 5;
-pub const FEEDBACK_PEN_RIGHTTAP: c_int = 6;
-pub const FEEDBACK_TOUCH_TAP: c_int = 7;
-pub const FEEDBACK_TOUCH_DOUBLETAP: c_int = 8;
-pub const FEEDBACK_TOUCH_PRESSANDHOLD: c_int = 9;
-pub const FEEDBACK_TOUCH_RIGHTTAP: c_int = 10;
-pub const FEEDBACK_GESTURE_PRESSANDTAP: c_int = 11;
-pub const FEEDBACK_MAX: c_int = -4294967295;
-pub const enum_tagFEEDBACK_TYPE = c_int;
+pub const PTOUCH_HIT_TESTING_INPUT = ?*struct_tagTOUCH_HIT_TESTING_INPUT;
+//pub extern fn EvaluateProximityToRect(controlBoundingBox: ?[*]const RECT, pHitTestingInput: ?[*]const TOUCH_HIT_TESTING_INPUT, pProximityEval: ?[*]TOUCH_HIT_TESTING_PROXIMITY_EVALUATION) BOOL;
+//pub extern fn EvaluateProximityToPolygon(numVertices: UINT32, controlPolygon: ?[*]const POINT, pHitTestingInput: ?[*]const TOUCH_HIT_TESTING_INPUT, pProximityEval: ?[*]TOUCH_HIT_TESTING_PROXIMITY_EVALUATION) BOOL;
+//pub extern fn PackTouchHitTestingProximityEvaluation(pHitTestingInput: ?[*]const TOUCH_HIT_TESTING_INPUT, pProximityEval: ?[*]const TOUCH_HIT_TESTING_PROXIMITY_EVALUATION) LRESULT;
+pub const FEEDBACK_TOUCH_CONTACTVISUALIZATION = enum_tagFEEDBACK_TYPE.FEEDBACK_TOUCH_CONTACTVISUALIZATION;
+pub const FEEDBACK_PEN_BARRELVISUALIZATION = enum_tagFEEDBACK_TYPE.FEEDBACK_PEN_BARRELVISUALIZATION;
+pub const FEEDBACK_PEN_TAP = enum_tagFEEDBACK_TYPE.FEEDBACK_PEN_TAP;
+pub const FEEDBACK_PEN_DOUBLETAP = enum_tagFEEDBACK_TYPE.FEEDBACK_PEN_DOUBLETAP;
+pub const FEEDBACK_PEN_PRESSANDHOLD = enum_tagFEEDBACK_TYPE.FEEDBACK_PEN_PRESSANDHOLD;
+pub const FEEDBACK_PEN_RIGHTTAP = enum_tagFEEDBACK_TYPE.FEEDBACK_PEN_RIGHTTAP;
+pub const FEEDBACK_TOUCH_TAP = enum_tagFEEDBACK_TYPE.FEEDBACK_TOUCH_TAP;
+pub const FEEDBACK_TOUCH_DOUBLETAP = enum_tagFEEDBACK_TYPE.FEEDBACK_TOUCH_DOUBLETAP;
+pub const FEEDBACK_TOUCH_PRESSANDHOLD = enum_tagFEEDBACK_TYPE.FEEDBACK_TOUCH_PRESSANDHOLD;
+pub const FEEDBACK_TOUCH_RIGHTTAP = enum_tagFEEDBACK_TYPE.FEEDBACK_TOUCH_RIGHTTAP;
+pub const FEEDBACK_GESTURE_PRESSANDTAP = enum_tagFEEDBACK_TYPE.FEEDBACK_GESTURE_PRESSANDTAP;
+pub const FEEDBACK_MAX = enum_tagFEEDBACK_TYPE.FEEDBACK_MAX;
+pub const enum_tagFEEDBACK_TYPE = extern enum {
+    FEEDBACK_TOUCH_CONTACTVISUALIZATION = 1,
+    FEEDBACK_PEN_BARRELVISUALIZATION = 2,
+    FEEDBACK_PEN_TAP = 3,
+    FEEDBACK_PEN_DOUBLETAP = 4,
+    FEEDBACK_PEN_PRESSANDHOLD = 5,
+    FEEDBACK_PEN_RIGHTTAP = 6,
+    FEEDBACK_TOUCH_TAP = 7,
+    FEEDBACK_TOUCH_DOUBLETAP = 8,
+    FEEDBACK_TOUCH_PRESSANDHOLD = 9,
+    FEEDBACK_TOUCH_RIGHTTAP = 10,
+    FEEDBACK_GESTURE_PRESSANDTAP = 11,
+    FEEDBACK_MAX = -4294967295,
+};
 pub const FEEDBACK_TYPE = enum_tagFEEDBACK_TYPE;
-//pub extern fn GetWindowFeedbackSetting(hwnd: HWND, feedback: FEEDBACK_TYPE, dwFlags: DWORD, pSize: ?&UINT32, config: ?&c_void) BOOL;
-//pub extern fn SetWindowFeedbackSetting(hwnd: HWND, feedback: FEEDBACK_TYPE, dwFlags: DWORD, size: UINT32, configuration: ?&const c_void) BOOL;
+//pub extern fn GetWindowFeedbackSetting(hwnd: HWND, feedback: FEEDBACK_TYPE, dwFlags: DWORD, pSize: ?[*]UINT32, config: ?*c_void) BOOL;
+//pub extern fn SetWindowFeedbackSetting(hwnd: HWND, feedback: FEEDBACK_TYPE, dwFlags: DWORD, size: UINT32, configuration: ?*const c_void) BOOL;
 pub const struct_tagINPUT_TRANSFORM = extern struct {
     @"": extern union {
         @"": extern struct {
@@ -12867,13 +13652,13 @@ pub const struct_tagINPUT_TRANSFORM = extern struct {
     },
 };
 pub const INPUT_TRANSFORM = struct_tagINPUT_TRANSFORM;
-//pub extern fn GetPointerInputTransform(pointerId: UINT32, historyCount: UINT32, inputTransform: ?&INPUT_TRANSFORM) BOOL;
+//pub extern fn GetPointerInputTransform(pointerId: UINT32, historyCount: UINT32, inputTransform: ?[*]INPUT_TRANSFORM) BOOL;
 pub const struct_tagLASTINPUTINFO = extern struct {
     cbSize: UINT,
     dwTime: DWORD,
 };
 pub const LASTINPUTINFO = struct_tagLASTINPUTINFO;
-pub const PLASTINPUTINFO = ?&struct_tagLASTINPUTINFO;
+pub const PLASTINPUTINFO = ?*struct_tagLASTINPUTINFO;
 //pub extern fn GetLastInputInfo(plii: PLASTINPUTINFO) BOOL;
 //pub extern fn MapVirtualKeyA(uCode: UINT, uMapType: UINT) UINT;
 //pub extern fn MapVirtualKeyW(uCode: UINT, uMapType: UINT) UINT;
@@ -12884,8 +13669,8 @@ pub const PLASTINPUTINFO = ?&struct_tagLASTINPUTINFO;
 //pub extern fn GetCapture() HWND;
 //pub extern fn SetCapture(hWnd: HWND) HWND;
 //pub extern fn ReleaseCapture() BOOL;
-//pub extern fn MsgWaitForMultipleObjects(nCount: DWORD, pHandles: ?&const HANDLE, fWaitAll: BOOL, dwMilliseconds: DWORD, dwWakeMask: DWORD) DWORD;
-//pub extern fn MsgWaitForMultipleObjectsEx(nCount: DWORD, pHandles: ?&const HANDLE, dwMilliseconds: DWORD, dwWakeMask: DWORD, dwFlags: DWORD) DWORD;
+//pub extern fn MsgWaitForMultipleObjects(nCount: DWORD, pHandles: ?[*]const HANDLE, fWaitAll: BOOL, dwMilliseconds: DWORD, dwWakeMask: DWORD) DWORD;
+//pub extern fn MsgWaitForMultipleObjectsEx(nCount: DWORD, pHandles: ?[*]const HANDLE, dwMilliseconds: DWORD, dwWakeMask: DWORD, dwFlags: DWORD) DWORD;
 //pub extern fn SetTimer(hWnd: HWND, nIDEvent: UINT_PTR, uElapse: UINT, lpTimerFunc: TIMERPROC) UINT_PTR;
 //pub extern fn SetCoalescableTimer(hWnd: HWND, nIDEvent: UINT_PTR, uElapse: UINT, lpTimerFunc: TIMERPROC, uToleranceDelay: ULONG) UINT_PTR;
 //pub extern fn KillTimer(hWnd: HWND, uIDEvent: UINT_PTR) BOOL;
@@ -12905,8 +13690,8 @@ pub const PLASTINPUTINFO = ?&struct_tagLASTINPUTINFO;
 //pub extern fn GetSystemMetricsForDpi(nIndex: c_int, dpi: UINT) c_int;
 //pub extern fn LoadMenuA(hInstance: HINSTANCE, lpMenuName: LPCSTR) HMENU;
 //pub extern fn LoadMenuW(hInstance: HINSTANCE, lpMenuName: LPCWSTR) HMENU;
-//pub extern fn LoadMenuIndirectA(lpMenuTemplate: ?&const MENUTEMPLATEA) HMENU;
-//pub extern fn LoadMenuIndirectW(lpMenuTemplate: ?&const MENUTEMPLATEW) HMENU;
+//pub extern fn LoadMenuIndirectA(lpMenuTemplate: ?*const MENUTEMPLATEA) HMENU;
+//pub extern fn LoadMenuIndirectW(lpMenuTemplate: ?*const MENUTEMPLATEW) HMENU;
 //pub extern fn GetMenu(hWnd: HWND) HMENU;
 //pub extern fn SetMenu(hWnd: HWND, hMenu: HMENU) BOOL;
 //pub extern fn ChangeMenuA(hMenu: HMENU, cmd: UINT, lpszNewItem: LPCSTR, cmdInsert: UINT, flags: UINT) BOOL;
@@ -12935,15 +13720,15 @@ pub const PLASTINPUTINFO = ?&struct_tagLASTINPUTINFO;
 //pub extern fn DeleteMenu(hMenu: HMENU, uPosition: UINT, uFlags: UINT) BOOL;
 //pub extern fn SetMenuItemBitmaps(hMenu: HMENU, uPosition: UINT, uFlags: UINT, hBitmapUnchecked: HBITMAP, hBitmapChecked: HBITMAP) BOOL;
 //pub extern fn GetMenuCheckMarkDimensions() LONG;
-//pub extern fn TrackPopupMenu(hMenu: HMENU, uFlags: UINT, x: c_int, y: c_int, nReserved: c_int, hWnd: HWND, prcRect: ?&const RECT) BOOL;
+//pub extern fn TrackPopupMenu(hMenu: HMENU, uFlags: UINT, x: c_int, y: c_int, nReserved: c_int, hWnd: HWND, prcRect: ?[*]const RECT) BOOL;
 pub const struct_tagTPMPARAMS = extern struct {
     cbSize: UINT,
     rcExclude: RECT,
 };
 pub const TPMPARAMS = struct_tagTPMPARAMS;
-pub const LPTPMPARAMS = ?&TPMPARAMS;
+pub const LPTPMPARAMS = ?[*]TPMPARAMS;
 //pub extern fn TrackPopupMenuEx(hMenu: HMENU, uFlags: UINT, x: c_int, y: c_int, hwnd: HWND, lptpm: LPTPMPARAMS) BOOL;
-//pub extern fn CalculatePopupWindowPosition(anchorPoint: ?&const POINT, windowSize: ?&const SIZE, flags: UINT, excludeRect: ?&RECT, popupWindowPosition: ?&RECT) BOOL;
+//pub extern fn CalculatePopupWindowPosition(anchorPoint: ?[*]const POINT, windowSize: ?[*]const SIZE, flags: UINT, excludeRect: ?[*]RECT, popupWindowPosition: ?[*]RECT) BOOL;
 pub const struct_tagMENUINFO = extern struct {
     cbSize: DWORD,
     fMask: DWORD,
@@ -12954,8 +13739,8 @@ pub const struct_tagMENUINFO = extern struct {
     dwMenuData: ULONG_PTR,
 };
 pub const MENUINFO = struct_tagMENUINFO;
-pub const LPMENUINFO = ?&struct_tagMENUINFO;
-pub const LPCMENUINFO = ?&const MENUINFO;
+pub const LPMENUINFO = ?*struct_tagMENUINFO;
+pub const LPCMENUINFO = ?[*]const MENUINFO;
 //pub extern fn GetMenuInfo(arg0: HMENU, arg1: LPMENUINFO) BOOL;
 //pub extern fn SetMenuInfo(arg0: HMENU, arg1: LPCMENUINFO) BOOL;
 //pub extern fn EndMenu() BOOL;
@@ -12967,7 +13752,7 @@ pub const struct_tagMENUGETOBJECTINFO = extern struct {
     pvObj: PVOID,
 };
 pub const MENUGETOBJECTINFO = struct_tagMENUGETOBJECTINFO;
-pub const PMENUGETOBJECTINFO = ?&struct_tagMENUGETOBJECTINFO;
+pub const PMENUGETOBJECTINFO = ?*struct_tagMENUGETOBJECTINFO;
 pub const struct_tagMENUITEMINFOA = extern struct {
     cbSize: UINT,
     fMask: UINT,
@@ -12983,7 +13768,7 @@ pub const struct_tagMENUITEMINFOA = extern struct {
     hbmpItem: HBITMAP,
 };
 pub const MENUITEMINFOA = struct_tagMENUITEMINFOA;
-pub const LPMENUITEMINFOA = ?&struct_tagMENUITEMINFOA;
+pub const LPMENUITEMINFOA = ?*struct_tagMENUITEMINFOA;
 pub const struct_tagMENUITEMINFOW = extern struct {
     cbSize: UINT,
     fMask: UINT,
@@ -12999,11 +13784,11 @@ pub const struct_tagMENUITEMINFOW = extern struct {
     hbmpItem: HBITMAP,
 };
 pub const MENUITEMINFOW = struct_tagMENUITEMINFOW;
-pub const LPMENUITEMINFOW = ?&struct_tagMENUITEMINFOW;
+pub const LPMENUITEMINFOW = ?*struct_tagMENUITEMINFOW;
 pub const MENUITEMINFO = MENUITEMINFOA;
 pub const LPMENUITEMINFO = LPMENUITEMINFOA;
-pub const LPCMENUITEMINFOA = ?&const MENUITEMINFOA;
-pub const LPCMENUITEMINFOW = ?&const MENUITEMINFOW;
+pub const LPCMENUITEMINFOA = ?[*]const MENUITEMINFOA;
+pub const LPCMENUITEMINFOW = ?[*]const MENUITEMINFOW;
 pub const LPCMENUITEMINFO = LPCMENUITEMINFOA;
 //pub extern fn InsertMenuItemA(hmenu: HMENU, item: UINT, fByPosition: BOOL, lpmi: LPCMENUITEMINFOA) BOOL;
 //pub extern fn InsertMenuItemW(hmenu: HMENU, item: UINT, fByPosition: BOOL, lpmi: LPCMENUITEMINFOW) BOOL;
@@ -13024,8 +13809,8 @@ pub const struct_tagDROPSTRUCT = extern struct {
     dwControlData: DWORD,
 };
 pub const DROPSTRUCT = struct_tagDROPSTRUCT;
-pub const PDROPSTRUCT = ?&struct_tagDROPSTRUCT;
-pub const LPDROPSTRUCT = ?&struct_tagDROPSTRUCT;
+pub const PDROPSTRUCT = ?*struct_tagDROPSTRUCT;
+pub const LPDROPSTRUCT = ?*struct_tagDROPSTRUCT;
 //pub extern fn DragObject(hwndParent: HWND, hwndFrom: HWND, fmt: UINT, data: ULONG_PTR, hcur: HCURSOR) DWORD;
 //pub extern fn DragDetect(hwnd: HWND, pt: POINT) BOOL;
 //pub extern fn DrawIcon(hDC: HDC, X: c_int, Y: c_int, hIcon: HICON) BOOL;
@@ -13037,7 +13822,7 @@ pub const struct_tagDRAWTEXTPARAMS = extern struct {
     uiLengthDrawn: UINT,
 };
 pub const DRAWTEXTPARAMS = struct_tagDRAWTEXTPARAMS;
-pub const LPDRAWTEXTPARAMS = ?&struct_tagDRAWTEXTPARAMS;
+pub const LPDRAWTEXTPARAMS = ?*struct_tagDRAWTEXTPARAMS;
 //pub extern fn DrawTextA(hdc: HDC, lpchText: LPCSTR, cchText: c_int, lprc: LPRECT, format: UINT) c_int;
 //pub extern fn DrawTextW(hdc: HDC, lpchText: LPCWSTR, cchText: c_int, lprc: LPRECT, format: UINT) c_int;
 //pub extern fn DrawTextExA(hdc: HDC, lpchText: LPSTR, cchText: c_int, lprc: LPRECT, format: UINT, lpdtp: LPDRAWTEXTPARAMS) c_int;
@@ -13046,10 +13831,10 @@ pub const LPDRAWTEXTPARAMS = ?&struct_tagDRAWTEXTPARAMS;
 //pub extern fn GrayStringW(hDC: HDC, hBrush: HBRUSH, lpOutputFunc: GRAYSTRINGPROC, lpData: LPARAM, nCount: c_int, X: c_int, Y: c_int, nWidth: c_int, nHeight: c_int) BOOL;
 //pub extern fn DrawStateA(hdc: HDC, hbrFore: HBRUSH, qfnCallBack: DRAWSTATEPROC, lData: LPARAM, wData: WPARAM, x: c_int, y: c_int, cx: c_int, cy: c_int, uFlags: UINT) BOOL;
 //pub extern fn DrawStateW(hdc: HDC, hbrFore: HBRUSH, qfnCallBack: DRAWSTATEPROC, lData: LPARAM, wData: WPARAM, x: c_int, y: c_int, cx: c_int, cy: c_int, uFlags: UINT) BOOL;
-//pub extern fn TabbedTextOutA(hdc: HDC, x: c_int, y: c_int, lpString: LPCSTR, chCount: c_int, nTabPositions: c_int, lpnTabStopPositions: ?&const INT, nTabOrigin: c_int) LONG;
-//pub extern fn TabbedTextOutW(hdc: HDC, x: c_int, y: c_int, lpString: LPCWSTR, chCount: c_int, nTabPositions: c_int, lpnTabStopPositions: ?&const INT, nTabOrigin: c_int) LONG;
-//pub extern fn GetTabbedTextExtentA(hdc: HDC, lpString: LPCSTR, chCount: c_int, nTabPositions: c_int, lpnTabStopPositions: ?&const INT) DWORD;
-//pub extern fn GetTabbedTextExtentW(hdc: HDC, lpString: LPCWSTR, chCount: c_int, nTabPositions: c_int, lpnTabStopPositions: ?&const INT) DWORD;
+//pub extern fn TabbedTextOutA(hdc: HDC, x: c_int, y: c_int, lpString: LPCSTR, chCount: c_int, nTabPositions: c_int, lpnTabStopPositions: ?[*]const INT, nTabOrigin: c_int) LONG;
+//pub extern fn TabbedTextOutW(hdc: HDC, x: c_int, y: c_int, lpString: LPCWSTR, chCount: c_int, nTabPositions: c_int, lpnTabStopPositions: ?[*]const INT, nTabOrigin: c_int) LONG;
+//pub extern fn GetTabbedTextExtentA(hdc: HDC, lpString: LPCSTR, chCount: c_int, nTabPositions: c_int, lpnTabStopPositions: ?[*]const INT) DWORD;
+//pub extern fn GetTabbedTextExtentW(hdc: HDC, lpString: LPCWSTR, chCount: c_int, nTabPositions: c_int, lpnTabStopPositions: ?[*]const INT) DWORD;
 //pub extern fn UpdateWindow(hWnd: HWND) BOOL;
 //pub extern fn SetActiveWindow(hWnd: HWND) HWND;
 //pub extern fn GetForegroundWindow() HWND;
@@ -13059,27 +13844,27 @@ pub const LPDRAWTEXTPARAMS = ?&struct_tagDRAWTEXTPARAMS;
 //pub extern fn AllowSetForegroundWindow(dwProcessId: DWORD) BOOL;
 //pub extern fn LockSetForegroundWindow(uLockCode: UINT) BOOL;
 //pub extern fn WindowFromDC(hDC: HDC) HWND;
-pub extern "user32" stdcallcc fn GetDC(hWnd: HWND) HDC;
+//pub extern fn GetDC(hWnd: HWND) HDC;
 //pub extern fn GetDCEx(hWnd: HWND, hrgnClip: HRGN, flags: DWORD) HDC;
 //pub extern fn GetWindowDC(hWnd: HWND) HDC;
-pub extern "user32" stdcallcc fn ReleaseDC(hWnd: HWND, hDC: HDC) c_int;
+//pub extern fn ReleaseDC(hWnd: HWND, hDC: HDC) c_int;
 //pub extern fn BeginPaint(hWnd: HWND, lpPaint: LPPAINTSTRUCT) HDC;
-//pub extern fn EndPaint(hWnd: HWND, lpPaint: ?&const PAINTSTRUCT) BOOL;
+//pub extern fn EndPaint(hWnd: HWND, lpPaint: ?[*]const PAINTSTRUCT) BOOL;
 //pub extern fn GetUpdateRect(hWnd: HWND, lpRect: LPRECT, bErase: BOOL) BOOL;
 //pub extern fn GetUpdateRgn(hWnd: HWND, hRgn: HRGN, bErase: BOOL) c_int;
 //pub extern fn SetWindowRgn(hWnd: HWND, hRgn: HRGN, bRedraw: BOOL) c_int;
 //pub extern fn GetWindowRgn(hWnd: HWND, hRgn: HRGN) c_int;
 //pub extern fn GetWindowRgnBox(hWnd: HWND, lprc: LPRECT) c_int;
 //pub extern fn ExcludeUpdateRgn(hDC: HDC, hWnd: HWND) c_int;
-pub extern "user32" stdcallcc fn InvalidateRect(hWnd: HWND, lpRect: ?&const RECT, bErase: BOOL) BOOL;
-pub extern "user32" stdcallcc fn ValidateRect(hWnd: HWND, lpRect: ?&const RECT) BOOL;
+//pub extern fn InvalidateRect(hWnd: HWND, lpRect: ?[*]const RECT, bErase: BOOL) BOOL;
+//pub extern fn ValidateRect(hWnd: HWND, lpRect: ?[*]const RECT) BOOL;
 //pub extern fn InvalidateRgn(hWnd: HWND, hRgn: HRGN, bErase: BOOL) BOOL;
 //pub extern fn ValidateRgn(hWnd: HWND, hRgn: HRGN) BOOL;
-//pub extern fn RedrawWindow(hWnd: HWND, lprcUpdate: ?&const RECT, hrgnUpdate: HRGN, flags: UINT) BOOL;
+//pub extern fn RedrawWindow(hWnd: HWND, lprcUpdate: ?[*]const RECT, hrgnUpdate: HRGN, flags: UINT) BOOL;
 //pub extern fn LockWindowUpdate(hWndLock: HWND) BOOL;
-//pub extern fn ScrollWindow(hWnd: HWND, XAmount: c_int, YAmount: c_int, lpRect: ?&const RECT, lpClipRect: ?&const RECT) BOOL;
-//pub extern fn ScrollDC(hDC: HDC, dx: c_int, dy: c_int, lprcScroll: ?&const RECT, lprcClip: ?&const RECT, hrgnUpdate: HRGN, lprcUpdate: LPRECT) BOOL;
-//pub extern fn ScrollWindowEx(hWnd: HWND, dx: c_int, dy: c_int, prcScroll: ?&const RECT, prcClip: ?&const RECT, hrgnUpdate: HRGN, prcUpdate: LPRECT, flags: UINT) c_int;
+//pub extern fn ScrollWindow(hWnd: HWND, XAmount: c_int, YAmount: c_int, lpRect: ?[*]const RECT, lpClipRect: ?[*]const RECT) BOOL;
+//pub extern fn ScrollDC(hDC: HDC, dx: c_int, dy: c_int, lprcScroll: ?[*]const RECT, lprcClip: ?[*]const RECT, hrgnUpdate: HRGN, lprcUpdate: LPRECT) BOOL;
+//pub extern fn ScrollWindowEx(hWnd: HWND, dx: c_int, dy: c_int, prcScroll: ?[*]const RECT, prcClip: ?[*]const RECT, hrgnUpdate: HRGN, prcUpdate: LPRECT, flags: UINT) c_int;
 //pub extern fn SetScrollPos(hWnd: HWND, nBar: c_int, nPos: c_int, bRedraw: BOOL) c_int;
 //pub extern fn GetScrollPos(hWnd: HWND, nBar: c_int) c_int;
 //pub extern fn SetScrollRange(hWnd: HWND, nBar: c_int, nMinPos: c_int, nMaxPos: c_int, bRedraw: BOOL) BOOL;
@@ -13104,9 +13889,9 @@ pub extern "user32" stdcallcc fn ValidateRect(hWnd: HWND, lpRect: ?&const RECT) 
 //pub extern fn GetWindowTextLengthW(hWnd: HWND) c_int;
 //pub extern fn GetClientRect(hWnd: HWND, lpRect: LPRECT) BOOL;
 //pub extern fn GetWindowRect(hWnd: HWND, lpRect: LPRECT) BOOL;
-pub extern "user32" stdcallcc fn AdjustWindowRect(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL) BOOL;
-pub extern "user32" stdcallcc fn AdjustWindowRectEx(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL, dwExStyle: DWORD) BOOL;
-pub extern "user32" stdcallcc fn AdjustWindowRectExForDpi(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL, dwExStyle: DWORD, dpi: UINT) BOOL;
+//pub extern fn AdjustWindowRect(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL) BOOL;
+//pub extern fn AdjustWindowRectEx(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL, dwExStyle: DWORD) BOOL;
+//pub extern fn AdjustWindowRectExForDpi(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL, dwExStyle: DWORD, dpi: UINT) BOOL;
 pub const struct_tagHELPINFO = extern struct {
     cbSize: UINT,
     iContextType: c_int,
@@ -13116,7 +13901,7 @@ pub const struct_tagHELPINFO = extern struct {
     MousePos: POINT,
 };
 pub const HELPINFO = struct_tagHELPINFO;
-pub const LPHELPINFO = ?&struct_tagHELPINFO;
+pub const LPHELPINFO = ?*struct_tagHELPINFO;
 //pub extern fn SetWindowContextHelpId(arg0: HWND, arg1: DWORD) BOOL;
 //pub extern fn GetWindowContextHelpId(arg0: HWND) DWORD;
 //pub extern fn SetMenuContextHelpId(arg0: HMENU, arg1: DWORD) BOOL;
@@ -13139,8 +13924,8 @@ pub const struct_tagMSGBOXPARAMSA = extern struct {
     dwLanguageId: DWORD,
 };
 pub const MSGBOXPARAMSA = struct_tagMSGBOXPARAMSA;
-pub const PMSGBOXPARAMSA = ?&struct_tagMSGBOXPARAMSA;
-pub const LPMSGBOXPARAMSA = ?&struct_tagMSGBOXPARAMSA;
+pub const PMSGBOXPARAMSA = ?*struct_tagMSGBOXPARAMSA;
+pub const LPMSGBOXPARAMSA = ?*struct_tagMSGBOXPARAMSA;
 pub const struct_tagMSGBOXPARAMSW = extern struct {
     cbSize: UINT,
     hwndOwner: HWND,
@@ -13154,13 +13939,13 @@ pub const struct_tagMSGBOXPARAMSW = extern struct {
     dwLanguageId: DWORD,
 };
 pub const MSGBOXPARAMSW = struct_tagMSGBOXPARAMSW;
-pub const PMSGBOXPARAMSW = ?&struct_tagMSGBOXPARAMSW;
-pub const LPMSGBOXPARAMSW = ?&struct_tagMSGBOXPARAMSW;
+pub const PMSGBOXPARAMSW = ?*struct_tagMSGBOXPARAMSW;
+pub const LPMSGBOXPARAMSW = ?*struct_tagMSGBOXPARAMSW;
 pub const MSGBOXPARAMS = MSGBOXPARAMSA;
 pub const PMSGBOXPARAMS = PMSGBOXPARAMSA;
 pub const LPMSGBOXPARAMS = LPMSGBOXPARAMSA;
-//pub extern fn MessageBoxIndirectA(lpmbp: ?&const MSGBOXPARAMSA) c_int;
-//pub extern fn MessageBoxIndirectW(lpmbp: ?&const MSGBOXPARAMSW) c_int;
+//pub extern fn MessageBoxIndirectA(lpmbp: ?[*]const MSGBOXPARAMSA) c_int;
+//pub extern fn MessageBoxIndirectW(lpmbp: ?[*]const MSGBOXPARAMSW) c_int;
 //pub extern fn MessageBeep(uType: UINT) BOOL;
 //pub extern fn ShowCursor(bShow: BOOL) c_int;
 //pub extern fn SetCursorPos(X: c_int, Y: c_int) BOOL;
@@ -13188,26 +13973,26 @@ pub const LPMSGBOXPARAMS = LPMSGBOXPARAMSA;
 //pub extern fn WindowFromPoint(Point: POINT) HWND;
 //pub extern fn WindowFromPhysicalPoint(Point: POINT) HWND;
 //pub extern fn ChildWindowFromPoint(hWndParent: HWND, Point: POINT) HWND;
-//pub extern fn ClipCursor(lpRect: ?&const RECT) BOOL;
+//pub extern fn ClipCursor(lpRect: ?[*]const RECT) BOOL;
 //pub extern fn ChildWindowFromPointEx(hwnd: HWND, pt: POINT, flags: UINT) HWND;
 //pub extern fn GetSysColor(nIndex: c_int) DWORD;
 //pub extern fn GetSysColorBrush(nIndex: c_int) HBRUSH;
-//pub extern fn SetSysColors(cElements: c_int, lpaElements: ?&const INT, lpaRgbValues: ?&const COLORREF) BOOL;
-//pub extern fn DrawFocusRect(hDC: HDC, lprc: ?&const RECT) BOOL;
-//pub extern fn FillRect(hDC: HDC, lprc: ?&const RECT, hbr: HBRUSH) c_int;
-//pub extern fn FrameRect(hDC: HDC, lprc: ?&const RECT, hbr: HBRUSH) c_int;
-//pub extern fn InvertRect(hDC: HDC, lprc: ?&const RECT) BOOL;
+//pub extern fn SetSysColors(cElements: c_int, lpaElements: ?[*]const INT, lpaRgbValues: ?[*]const COLORREF) BOOL;
+//pub extern fn DrawFocusRect(hDC: HDC, lprc: ?[*]const RECT) BOOL;
+//pub extern fn FillRect(hDC: HDC, lprc: ?[*]const RECT, hbr: HBRUSH) c_int;
+//pub extern fn FrameRect(hDC: HDC, lprc: ?[*]const RECT, hbr: HBRUSH) c_int;
+//pub extern fn InvertRect(hDC: HDC, lprc: ?[*]const RECT) BOOL;
 //pub extern fn SetRect(lprc: LPRECT, xLeft: c_int, yTop: c_int, xRight: c_int, yBottom: c_int) BOOL;
 //pub extern fn SetRectEmpty(lprc: LPRECT) BOOL;
-//pub extern fn CopyRect(lprcDst: LPRECT, lprcSrc: ?&const RECT) BOOL;
+//pub extern fn CopyRect(lprcDst: LPRECT, lprcSrc: ?[*]const RECT) BOOL;
 //pub extern fn InflateRect(lprc: LPRECT, dx: c_int, dy: c_int) BOOL;
-//pub extern fn IntersectRect(lprcDst: LPRECT, lprcSrc1: ?&const RECT, lprcSrc2: ?&const RECT) BOOL;
-//pub extern fn UnionRect(lprcDst: LPRECT, lprcSrc1: ?&const RECT, lprcSrc2: ?&const RECT) BOOL;
-//pub extern fn SubtractRect(lprcDst: LPRECT, lprcSrc1: ?&const RECT, lprcSrc2: ?&const RECT) BOOL;
+//pub extern fn IntersectRect(lprcDst: LPRECT, lprcSrc1: ?[*]const RECT, lprcSrc2: ?[*]const RECT) BOOL;
+//pub extern fn UnionRect(lprcDst: LPRECT, lprcSrc1: ?[*]const RECT, lprcSrc2: ?[*]const RECT) BOOL;
+//pub extern fn SubtractRect(lprcDst: LPRECT, lprcSrc1: ?[*]const RECT, lprcSrc2: ?[*]const RECT) BOOL;
 //pub extern fn OffsetRect(lprc: LPRECT, dx: c_int, dy: c_int) BOOL;
-//pub extern fn IsRectEmpty(lprc: ?&const RECT) BOOL;
-//pub extern fn EqualRect(lprc1: ?&const RECT, lprc2: ?&const RECT) BOOL;
-//pub extern fn PtInRect(lprc: ?&const RECT, pt: POINT) BOOL;
+//pub extern fn IsRectEmpty(lprc: ?[*]const RECT) BOOL;
+//pub extern fn EqualRect(lprc1: ?[*]const RECT, lprc2: ?[*]const RECT) BOOL;
+//pub extern fn PtInRect(lprc: ?[*]const RECT, pt: POINT) BOOL;
 //pub extern fn GetWindowWord(hWnd: HWND, nIndex: c_int) WORD;
 //pub extern fn SetWindowWord(hWnd: HWND, nIndex: c_int, wNewWord: WORD) WORD;
 //pub extern fn GetWindowLongA(hWnd: HWND, nIndex: c_int) LONG;
@@ -13228,7 +14013,7 @@ pub const LPMSGBOXPARAMS = LPMSGBOXPARAMSA;
 //pub extern fn GetClassLongPtrW(hWnd: HWND, nIndex: c_int) ULONG_PTR;
 //pub extern fn SetClassLongPtrA(hWnd: HWND, nIndex: c_int, dwNewLong: LONG_PTR) ULONG_PTR;
 //pub extern fn SetClassLongPtrW(hWnd: HWND, nIndex: c_int, dwNewLong: LONG_PTR) ULONG_PTR;
-//pub extern fn GetProcessDefaultLayout(pdwDefaultLayout: ?&DWORD) BOOL;
+//pub extern fn GetProcessDefaultLayout(pdwDefaultLayout: ?[*]DWORD) BOOL;
 //pub extern fn SetProcessDefaultLayout(dwDefaultLayout: DWORD) BOOL;
 //pub extern fn GetDesktopWindow() HWND;
 //pub extern fn GetParent(hWnd: HWND) HWND;
@@ -13262,7 +14047,7 @@ pub const MENUITEMTEMPLATEHEADER = extern struct {
     versionNumber: WORD,
     offset: WORD,
 };
-pub const PMENUITEMTEMPLATEHEADER = ?&extern struct {
+pub const PMENUITEMTEMPLATEHEADER = ?[*]extern struct {
     versionNumber: WORD,
     offset: WORD,
 };
@@ -13271,18 +14056,18 @@ pub const MENUITEMTEMPLATE = extern struct {
     mtID: WORD,
     mtString: [1]WCHAR,
 };
-pub const PMENUITEMTEMPLATE = ?&extern struct {
+pub const PMENUITEMTEMPLATE = ?[*]extern struct {
     mtOption: WORD,
     mtID: WORD,
     mtString: [1]WCHAR,
 };
 //pub extern fn LoadBitmapA(hInstance: HINSTANCE, lpBitmapName: LPCSTR) HBITMAP;
 //pub extern fn LoadBitmapW(hInstance: HINSTANCE, lpBitmapName: LPCWSTR) HBITMAP;
-pub extern "user32" stdcallcc fn LoadCursorA(hInstance: HINSTANCE, lpCursorName: LPCSTR) HCURSOR;
+//pub extern fn LoadCursorA(hInstance: HINSTANCE, lpCursorName: LPCSTR) HCURSOR;
 //pub extern fn LoadCursorW(hInstance: HINSTANCE, lpCursorName: LPCWSTR) HCURSOR;
 //pub extern fn LoadCursorFromFileA(lpFileName: LPCSTR) HCURSOR;
 //pub extern fn LoadCursorFromFileW(lpFileName: LPCWSTR) HCURSOR;
-//pub extern fn CreateCursor(hInst: HINSTANCE, xHotSpot: c_int, yHotSpot: c_int, nWidth: c_int, nHeight: c_int, pvANDPlane: ?&const c_void, pvXORPlane: ?&const c_void) HCURSOR;
+//pub extern fn CreateCursor(hInst: HINSTANCE, xHotSpot: c_int, yHotSpot: c_int, nWidth: c_int, nHeight: c_int, pvANDPlane: ?*const c_void, pvXORPlane: ?*const c_void) HCURSOR;
 //pub extern fn DestroyCursor(hCursor: HCURSOR) BOOL;
 //pub extern fn SetSystemCursor(hcur: HCURSOR, id: DWORD) BOOL;
 pub const struct__ICONINFO = extern struct {
@@ -13293,12 +14078,12 @@ pub const struct__ICONINFO = extern struct {
     hbmColor: HBITMAP,
 };
 pub const ICONINFO = struct__ICONINFO;
-pub const PICONINFO = ?&ICONINFO;
+pub const PICONINFO = ?[*]ICONINFO;
 //pub extern fn LoadIconA(hInstance: HINSTANCE, lpIconName: LPCSTR) HICON;
 //pub extern fn LoadIconW(hInstance: HINSTANCE, lpIconName: LPCWSTR) HICON;
-//pub extern fn PrivateExtractIconsA(szFileName: LPCSTR, nIconIndex: c_int, cxIcon: c_int, cyIcon: c_int, phicon: ?&HICON, piconid: ?&UINT, nIcons: UINT, flags: UINT) UINT;
-//pub extern fn PrivateExtractIconsW(szFileName: LPCWSTR, nIconIndex: c_int, cxIcon: c_int, cyIcon: c_int, phicon: ?&HICON, piconid: ?&UINT, nIcons: UINT, flags: UINT) UINT;
-//pub extern fn CreateIcon(hInstance: HINSTANCE, nWidth: c_int, nHeight: c_int, cPlanes: BYTE, cBitsPixel: BYTE, lpbANDbits: ?&const BYTE, lpbXORbits: ?&const BYTE) HICON;
+//pub extern fn PrivateExtractIconsA(szFileName: LPCSTR, nIconIndex: c_int, cxIcon: c_int, cyIcon: c_int, phicon: ?[*]HICON, piconid: ?[*]UINT, nIcons: UINT, flags: UINT) UINT;
+//pub extern fn PrivateExtractIconsW(szFileName: LPCWSTR, nIconIndex: c_int, cxIcon: c_int, cyIcon: c_int, phicon: ?[*]HICON, piconid: ?[*]UINT, nIcons: UINT, flags: UINT) UINT;
+//pub extern fn CreateIcon(hInstance: HINSTANCE, nWidth: c_int, nHeight: c_int, cPlanes: BYTE, cBitsPixel: BYTE, lpbANDbits: ?[*]const BYTE, lpbXORbits: ?[*]const BYTE) HICON;
 //pub extern fn DestroyIcon(hIcon: HICON) BOOL;
 //pub extern fn LookupIconIdFromDirectory(presbits: PBYTE, fIcon: BOOL) c_int;
 //pub extern fn LookupIconIdFromDirectoryEx(presbits: PBYTE, fIcon: BOOL, cxDesired: c_int, cyDesired: c_int, Flags: UINT) c_int;
@@ -13314,7 +14099,7 @@ pub const struct_tagCURSORSHAPE = extern struct {
     BitsPixel: BYTE,
 };
 pub const CURSORSHAPE = struct_tagCURSORSHAPE;
-pub const LPCURSORSHAPE = ?&struct_tagCURSORSHAPE;
+pub const LPCURSORSHAPE = ?*struct_tagCURSORSHAPE;
 //pub extern fn LoadImageA(hInst: HINSTANCE, name: LPCSTR, type_0: UINT, cx: c_int, cy: c_int, fuLoad: UINT) HANDLE;
 //pub extern fn LoadImageW(hInst: HINSTANCE, name: LPCWSTR, type_0: UINT, cx: c_int, cy: c_int, fuLoad: UINT) HANDLE;
 //pub extern fn CopyImage(h: HANDLE, type_0: UINT, cx: c_int, cy: c_int, flags: UINT) HANDLE;
@@ -13334,7 +14119,7 @@ pub const struct__ICONINFOEXA = extern struct {
     szResName: [260]CHAR,
 };
 pub const ICONINFOEXA = struct__ICONINFOEXA;
-pub const PICONINFOEXA = ?&struct__ICONINFOEXA;
+pub const PICONINFOEXA = ?*struct__ICONINFOEXA;
 pub const struct__ICONINFOEXW = extern struct {
     cbSize: DWORD,
     fIcon: BOOL,
@@ -13347,14 +14132,17 @@ pub const struct__ICONINFOEXW = extern struct {
     szResName: [260]WCHAR,
 };
 pub const ICONINFOEXW = struct__ICONINFOEXW;
-pub const PICONINFOEXW = ?&struct__ICONINFOEXW;
+pub const PICONINFOEXW = ?*struct__ICONINFOEXW;
 pub const ICONINFOEX = ICONINFOEXA;
 pub const PICONINFOEX = PICONINFOEXA;
 //pub extern fn GetIconInfoExA(hicon: HICON, piconinfo: PICONINFOEXA) BOOL;
 //pub extern fn GetIconInfoExW(hicon: HICON, piconinfo: PICONINFOEXW) BOOL;
-pub const EDIT_CONTROL_FEATURE_ENTERPRISE_DATA_PROTECTION_PASTE_SUPPORT: c_int = 0;
-pub const EDIT_CONTROL_FEATURE_PASTE_NOTIFICATIONS: c_int = 1;
-pub const EDIT_CONTROL_FEATURE = c_int;
+pub const EDIT_CONTROL_FEATURE_ENTERPRISE_DATA_PROTECTION_PASTE_SUPPORT = 0;
+pub const EDIT_CONTROL_FEATURE_PASTE_NOTIFICATIONS = 1;
+pub const EDIT_CONTROL_FEATURE = extern enum {
+    EDIT_CONTROL_FEATURE_ENTERPRISE_DATA_PROTECTION_PASTE_SUPPORT = 0,
+    EDIT_CONTROL_FEATURE_PASTE_NOTIFICATIONS = 1,
+};
 //pub extern fn IsDialogMessageA(hDlg: HWND, lpMsg: LPMSG) BOOL;
 //pub extern fn IsDialogMessageW(hDlg: HWND, lpMsg: LPMSG) BOOL;
 //pub extern fn MapDialogRect(hDlg: HWND, lpRect: LPRECT) BOOL;
@@ -13376,8 +14164,8 @@ pub const struct_tagSCROLLINFO = extern struct {
     nTrackPos: c_int,
 };
 pub const SCROLLINFO = struct_tagSCROLLINFO;
-pub const LPSCROLLINFO = ?&struct_tagSCROLLINFO;
-pub const LPCSCROLLINFO = ?&const SCROLLINFO;
+pub const LPSCROLLINFO = ?*struct_tagSCROLLINFO;
+pub const LPCSCROLLINFO = ?[*]const SCROLLINFO;
 //pub extern fn SetScrollInfo(hwnd: HWND, nBar: c_int, lpsi: LPCSCROLLINFO, redraw: BOOL) c_int;
 //pub extern fn GetScrollInfo(hwnd: HWND, nBar: c_int, lpsi: LPSCROLLINFO) BOOL;
 pub const struct_tagMDICREATESTRUCTA = extern struct {
@@ -13392,7 +14180,7 @@ pub const struct_tagMDICREATESTRUCTA = extern struct {
     lParam: LPARAM,
 };
 pub const MDICREATESTRUCTA = struct_tagMDICREATESTRUCTA;
-pub const LPMDICREATESTRUCTA = ?&struct_tagMDICREATESTRUCTA;
+pub const LPMDICREATESTRUCTA = ?*struct_tagMDICREATESTRUCTA;
 pub const struct_tagMDICREATESTRUCTW = extern struct {
     szClass: LPCWSTR,
     szTitle: LPCWSTR,
@@ -13405,7 +14193,7 @@ pub const struct_tagMDICREATESTRUCTW = extern struct {
     lParam: LPARAM,
 };
 pub const MDICREATESTRUCTW = struct_tagMDICREATESTRUCTW;
-pub const LPMDICREATESTRUCTW = ?&struct_tagMDICREATESTRUCTW;
+pub const LPMDICREATESTRUCTW = ?*struct_tagMDICREATESTRUCTW;
 pub const MDICREATESTRUCT = MDICREATESTRUCTA;
 pub const LPMDICREATESTRUCT = LPMDICREATESTRUCTA;
 pub const struct_tagCLIENTCREATESTRUCT = extern struct {
@@ -13413,7 +14201,7 @@ pub const struct_tagCLIENTCREATESTRUCT = extern struct {
     idFirstChild: UINT,
 };
 pub const CLIENTCREATESTRUCT = struct_tagCLIENTCREATESTRUCT;
-pub const LPCLIENTCREATESTRUCT = ?&struct_tagCLIENTCREATESTRUCT;
+pub const LPCLIENTCREATESTRUCT = ?*struct_tagCLIENTCREATESTRUCT;
 //pub extern fn DefFrameProcA(hWnd: HWND, hWndMDIClient: HWND, uMsg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
 //pub extern fn DefFrameProcW(hWnd: HWND, hWndMDIClient: HWND, uMsg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
 //pub extern fn DefMDIChildProcA(hWnd: HWND, uMsg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
@@ -13422,8 +14210,8 @@ pub const LPCLIENTCREATESTRUCT = ?&struct_tagCLIENTCREATESTRUCT;
 //pub extern fn ArrangeIconicWindows(hWnd: HWND) UINT;
 //pub extern fn CreateMDIWindowA(lpClassName: LPCSTR, lpWindowName: LPCSTR, dwStyle: DWORD, X: c_int, Y: c_int, nWidth: c_int, nHeight: c_int, hWndParent: HWND, hInstance: HINSTANCE, lParam: LPARAM) HWND;
 //pub extern fn CreateMDIWindowW(lpClassName: LPCWSTR, lpWindowName: LPCWSTR, dwStyle: DWORD, X: c_int, Y: c_int, nWidth: c_int, nHeight: c_int, hWndParent: HWND, hInstance: HINSTANCE, lParam: LPARAM) HWND;
-//pub extern fn TileWindows(hwndParent: HWND, wHow: UINT, lpRect: ?&const RECT, cKids: UINT, lpKids: ?&const HWND) WORD;
-//pub extern fn CascadeWindows(hwndParent: HWND, wHow: UINT, lpRect: ?&const RECT, cKids: UINT, lpKids: ?&const HWND) WORD;
+//pub extern fn TileWindows(hwndParent: HWND, wHow: UINT, lpRect: ?[*]const RECT, cKids: UINT, lpKids: ?[*]const HWND) WORD;
+//pub extern fn CascadeWindows(hwndParent: HWND, wHow: UINT, lpRect: ?[*]const RECT, cKids: UINT, lpKids: ?[*]const HWND) WORD;
 pub const HELPPOLY = DWORD;
 pub const struct_tagMULTIKEYHELPA = extern struct {
     mkSize: DWORD,
@@ -13431,16 +14219,16 @@ pub const struct_tagMULTIKEYHELPA = extern struct {
     szKeyphrase: [1]CHAR,
 };
 pub const MULTIKEYHELPA = struct_tagMULTIKEYHELPA;
-pub const PMULTIKEYHELPA = ?&struct_tagMULTIKEYHELPA;
-pub const LPMULTIKEYHELPA = ?&struct_tagMULTIKEYHELPA;
+pub const PMULTIKEYHELPA = ?*struct_tagMULTIKEYHELPA;
+pub const LPMULTIKEYHELPA = ?*struct_tagMULTIKEYHELPA;
 pub const struct_tagMULTIKEYHELPW = extern struct {
     mkSize: DWORD,
     mkKeylist: WCHAR,
     szKeyphrase: [1]WCHAR,
 };
 pub const MULTIKEYHELPW = struct_tagMULTIKEYHELPW;
-pub const PMULTIKEYHELPW = ?&struct_tagMULTIKEYHELPW;
-pub const LPMULTIKEYHELPW = ?&struct_tagMULTIKEYHELPW;
+pub const PMULTIKEYHELPW = ?*struct_tagMULTIKEYHELPW;
+pub const LPMULTIKEYHELPW = ?*struct_tagMULTIKEYHELPW;
 pub const MULTIKEYHELP = MULTIKEYHELPA;
 pub const PMULTIKEYHELP = PMULTIKEYHELPA;
 pub const LPMULTIKEYHELP = LPMULTIKEYHELPA;
@@ -13454,8 +14242,8 @@ pub const struct_tagHELPWININFOA = extern struct {
     rgchMember: [2]CHAR,
 };
 pub const HELPWININFOA = struct_tagHELPWININFOA;
-pub const PHELPWININFOA = ?&struct_tagHELPWININFOA;
-pub const LPHELPWININFOA = ?&struct_tagHELPWININFOA;
+pub const PHELPWININFOA = ?*struct_tagHELPWININFOA;
+pub const LPHELPWININFOA = ?*struct_tagHELPWININFOA;
 pub const struct_tagHELPWININFOW = extern struct {
     wStructSize: c_int,
     x: c_int,
@@ -13466,8 +14254,8 @@ pub const struct_tagHELPWININFOW = extern struct {
     rgchMember: [2]WCHAR,
 };
 pub const HELPWININFOW = struct_tagHELPWININFOW;
-pub const PHELPWININFOW = ?&struct_tagHELPWININFOW;
-pub const LPHELPWININFOW = ?&struct_tagHELPWININFOW;
+pub const PHELPWININFOW = ?*struct_tagHELPWININFOW;
+pub const LPHELPWININFOW = ?*struct_tagHELPWININFOW;
 pub const HELPWININFO = HELPWININFOA;
 pub const PHELPWININFO = PHELPWININFOA;
 pub const LPHELPWININFO = LPHELPWININFOA;
@@ -13481,7 +14269,7 @@ pub const struct_tagTouchPredictionParameters = extern struct {
     bUseHWTimeStamp: UINT,
 };
 pub const TOUCHPREDICTIONPARAMETERS = struct_tagTouchPredictionParameters;
-pub const PTOUCHPREDICTIONPARAMETERS = ?&struct_tagTouchPredictionParameters;
+pub const PTOUCHPREDICTIONPARAMETERS = ?*struct_tagTouchPredictionParameters;
 pub const struct_tagNONCLIENTMETRICSA = extern struct {
     cbSize: UINT,
     iBorderWidth: c_int,
@@ -13501,8 +14289,8 @@ pub const struct_tagNONCLIENTMETRICSA = extern struct {
     iPaddedBorderWidth: c_int,
 };
 pub const NONCLIENTMETRICSA = struct_tagNONCLIENTMETRICSA;
-pub const PNONCLIENTMETRICSA = ?&struct_tagNONCLIENTMETRICSA;
-pub const LPNONCLIENTMETRICSA = ?&struct_tagNONCLIENTMETRICSA;
+pub const PNONCLIENTMETRICSA = ?*struct_tagNONCLIENTMETRICSA;
+pub const LPNONCLIENTMETRICSA = ?*struct_tagNONCLIENTMETRICSA;
 pub const struct_tagNONCLIENTMETRICSW = extern struct {
     cbSize: UINT,
     iBorderWidth: c_int,
@@ -13522,8 +14310,8 @@ pub const struct_tagNONCLIENTMETRICSW = extern struct {
     iPaddedBorderWidth: c_int,
 };
 pub const NONCLIENTMETRICSW = struct_tagNONCLIENTMETRICSW;
-pub const PNONCLIENTMETRICSW = ?&struct_tagNONCLIENTMETRICSW;
-pub const LPNONCLIENTMETRICSW = ?&struct_tagNONCLIENTMETRICSW;
+pub const PNONCLIENTMETRICSW = ?*struct_tagNONCLIENTMETRICSW;
+pub const LPNONCLIENTMETRICSW = ?*struct_tagNONCLIENTMETRICSW;
 pub const NONCLIENTMETRICS = NONCLIENTMETRICSA;
 pub const PNONCLIENTMETRICS = PNONCLIENTMETRICSA;
 pub const LPNONCLIENTMETRICS = LPNONCLIENTMETRICSA;
@@ -13535,8 +14323,8 @@ pub const struct_tagMINIMIZEDMETRICS = extern struct {
     iArrange: c_int,
 };
 pub const MINIMIZEDMETRICS = struct_tagMINIMIZEDMETRICS;
-pub const PMINIMIZEDMETRICS = ?&struct_tagMINIMIZEDMETRICS;
-pub const LPMINIMIZEDMETRICS = ?&struct_tagMINIMIZEDMETRICS;
+pub const PMINIMIZEDMETRICS = ?*struct_tagMINIMIZEDMETRICS;
+pub const LPMINIMIZEDMETRICS = ?*struct_tagMINIMIZEDMETRICS;
 pub const struct_tagICONMETRICSA = extern struct {
     cbSize: UINT,
     iHorzSpacing: c_int,
@@ -13545,8 +14333,8 @@ pub const struct_tagICONMETRICSA = extern struct {
     lfFont: LOGFONTA,
 };
 pub const ICONMETRICSA = struct_tagICONMETRICSA;
-pub const PICONMETRICSA = ?&struct_tagICONMETRICSA;
-pub const LPICONMETRICSA = ?&struct_tagICONMETRICSA;
+pub const PICONMETRICSA = ?*struct_tagICONMETRICSA;
+pub const LPICONMETRICSA = ?*struct_tagICONMETRICSA;
 pub const struct_tagICONMETRICSW = extern struct {
     cbSize: UINT,
     iHorzSpacing: c_int,
@@ -13555,8 +14343,8 @@ pub const struct_tagICONMETRICSW = extern struct {
     lfFont: LOGFONTW,
 };
 pub const ICONMETRICSW = struct_tagICONMETRICSW;
-pub const PICONMETRICSW = ?&struct_tagICONMETRICSW;
-pub const LPICONMETRICSW = ?&struct_tagICONMETRICSW;
+pub const PICONMETRICSW = ?*struct_tagICONMETRICSW;
+pub const LPICONMETRICSW = ?*struct_tagICONMETRICSW;
 pub const ICONMETRICS = ICONMETRICSA;
 pub const PICONMETRICS = PICONMETRICSA;
 pub const LPICONMETRICS = LPICONMETRICSA;
@@ -13565,7 +14353,7 @@ pub const struct_tagANIMATIONINFO = extern struct {
     iMinAnimate: c_int,
 };
 pub const ANIMATIONINFO = struct_tagANIMATIONINFO;
-pub const LPANIMATIONINFO = ?&struct_tagANIMATIONINFO;
+pub const LPANIMATIONINFO = ?*struct_tagANIMATIONINFO;
 pub const struct_tagSERIALKEYSA = extern struct {
     cbSize: UINT,
     dwFlags: DWORD,
@@ -13576,7 +14364,7 @@ pub const struct_tagSERIALKEYSA = extern struct {
     iActive: UINT,
 };
 pub const SERIALKEYSA = struct_tagSERIALKEYSA;
-pub const LPSERIALKEYSA = ?&struct_tagSERIALKEYSA;
+pub const LPSERIALKEYSA = ?*struct_tagSERIALKEYSA;
 pub const struct_tagSERIALKEYSW = extern struct {
     cbSize: UINT,
     dwFlags: DWORD,
@@ -13587,7 +14375,7 @@ pub const struct_tagSERIALKEYSW = extern struct {
     iActive: UINT,
 };
 pub const SERIALKEYSW = struct_tagSERIALKEYSW;
-pub const LPSERIALKEYSW = ?&struct_tagSERIALKEYSW;
+pub const LPSERIALKEYSW = ?*struct_tagSERIALKEYSW;
 pub const SERIALKEYS = SERIALKEYSA;
 pub const LPSERIALKEYS = LPSERIALKEYSA;
 pub const struct_tagHIGHCONTRASTA = extern struct {
@@ -13596,14 +14384,14 @@ pub const struct_tagHIGHCONTRASTA = extern struct {
     lpszDefaultScheme: LPSTR,
 };
 pub const HIGHCONTRASTA = struct_tagHIGHCONTRASTA;
-pub const LPHIGHCONTRASTA = ?&struct_tagHIGHCONTRASTA;
+pub const LPHIGHCONTRASTA = ?*struct_tagHIGHCONTRASTA;
 pub const struct_tagHIGHCONTRASTW = extern struct {
     cbSize: UINT,
     dwFlags: DWORD,
     lpszDefaultScheme: LPWSTR,
 };
 pub const HIGHCONTRASTW = struct_tagHIGHCONTRASTW;
-pub const LPHIGHCONTRASTW = ?&struct_tagHIGHCONTRASTW;
+pub const LPHIGHCONTRASTW = ?*struct_tagHIGHCONTRASTW;
 pub const HIGHCONTRAST = HIGHCONTRASTA;
 pub const LPHIGHCONTRAST = LPHIGHCONTRASTA;
 pub const struct__VIDEOPARAMETERS = extern struct {
@@ -13632,23 +14420,23 @@ pub const struct__VIDEOPARAMETERS = extern struct {
     bOEMCopyProtection: [256]UCHAR,
 };
 pub const VIDEOPARAMETERS = struct__VIDEOPARAMETERS;
-pub const PVIDEOPARAMETERS = ?&struct__VIDEOPARAMETERS;
-pub const LPVIDEOPARAMETERS = ?&struct__VIDEOPARAMETERS;
-//pub extern fn ChangeDisplaySettingsA(lpDevMode: ?&DEVMODEA, dwFlags: DWORD) LONG;
-//pub extern fn ChangeDisplaySettingsW(lpDevMode: ?&DEVMODEW, dwFlags: DWORD) LONG;
-//pub extern fn ChangeDisplaySettingsExA(lpszDeviceName: LPCSTR, lpDevMode: ?&DEVMODEA, hwnd: HWND, dwflags: DWORD, lParam: LPVOID) LONG;
-//pub extern fn ChangeDisplaySettingsExW(lpszDeviceName: LPCWSTR, lpDevMode: ?&DEVMODEW, hwnd: HWND, dwflags: DWORD, lParam: LPVOID) LONG;
-//pub extern fn EnumDisplaySettingsA(lpszDeviceName: LPCSTR, iModeNum: DWORD, lpDevMode: ?&DEVMODEA) BOOL;
-//pub extern fn EnumDisplaySettingsW(lpszDeviceName: LPCWSTR, iModeNum: DWORD, lpDevMode: ?&DEVMODEW) BOOL;
-//pub extern fn EnumDisplaySettingsExA(lpszDeviceName: LPCSTR, iModeNum: DWORD, lpDevMode: ?&DEVMODEA, dwFlags: DWORD) BOOL;
-//pub extern fn EnumDisplaySettingsExW(lpszDeviceName: LPCWSTR, iModeNum: DWORD, lpDevMode: ?&DEVMODEW, dwFlags: DWORD) BOOL;
+pub const PVIDEOPARAMETERS = ?*struct__VIDEOPARAMETERS;
+pub const LPVIDEOPARAMETERS = ?*struct__VIDEOPARAMETERS;
+//pub extern fn ChangeDisplaySettingsA(lpDevMode: ?[*]DEVMODEA, dwFlags: DWORD) LONG;
+//pub extern fn ChangeDisplaySettingsW(lpDevMode: ?[*]DEVMODEW, dwFlags: DWORD) LONG;
+//pub extern fn ChangeDisplaySettingsExA(lpszDeviceName: LPCSTR, lpDevMode: ?[*]DEVMODEA, hwnd: HWND, dwflags: DWORD, lParam: LPVOID) LONG;
+//pub extern fn ChangeDisplaySettingsExW(lpszDeviceName: LPCWSTR, lpDevMode: ?[*]DEVMODEW, hwnd: HWND, dwflags: DWORD, lParam: LPVOID) LONG;
+//pub extern fn EnumDisplaySettingsA(lpszDeviceName: LPCSTR, iModeNum: DWORD, lpDevMode: ?[*]DEVMODEA) BOOL;
+//pub extern fn EnumDisplaySettingsW(lpszDeviceName: LPCWSTR, iModeNum: DWORD, lpDevMode: ?[*]DEVMODEW) BOOL;
+//pub extern fn EnumDisplaySettingsExA(lpszDeviceName: LPCSTR, iModeNum: DWORD, lpDevMode: ?[*]DEVMODEA, dwFlags: DWORD) BOOL;
+//pub extern fn EnumDisplaySettingsExW(lpszDeviceName: LPCWSTR, iModeNum: DWORD, lpDevMode: ?[*]DEVMODEW, dwFlags: DWORD) BOOL;
 //pub extern fn EnumDisplayDevicesA(lpDevice: LPCSTR, iDevNum: DWORD, lpDisplayDevice: PDISPLAY_DEVICEA, dwFlags: DWORD) BOOL;
 //pub extern fn EnumDisplayDevicesW(lpDevice: LPCWSTR, iDevNum: DWORD, lpDisplayDevice: PDISPLAY_DEVICEW, dwFlags: DWORD) BOOL;
-//pub extern fn GetDisplayConfigBufferSizes(flags: UINT32, numPathArrayElements: ?&UINT32, numModeInfoArrayElements: ?&UINT32) LONG;
-//pub extern fn SetDisplayConfig(numPathArrayElements: UINT32, pathArray: ?&DISPLAYCONFIG_PATH_INFO, numModeInfoArrayElements: UINT32, modeInfoArray: ?&DISPLAYCONFIG_MODE_INFO, flags: UINT32) LONG;
-//pub extern fn QueryDisplayConfig(flags: UINT32, numPathArrayElements: ?&UINT32, pathArray: ?&DISPLAYCONFIG_PATH_INFO, numModeInfoArrayElements: ?&UINT32, modeInfoArray: ?&DISPLAYCONFIG_MODE_INFO, currentTopologyId: ?&DISPLAYCONFIG_TOPOLOGY_ID) LONG;
-//pub extern fn DisplayConfigGetDeviceInfo(requestPacket: ?&DISPLAYCONFIG_DEVICE_INFO_HEADER) LONG;
-//pub extern fn DisplayConfigSetDeviceInfo(setPacket: ?&DISPLAYCONFIG_DEVICE_INFO_HEADER) LONG;
+//pub extern fn GetDisplayConfigBufferSizes(flags: UINT32, numPathArrayElements: ?[*]UINT32, numModeInfoArrayElements: ?[*]UINT32) LONG;
+//pub extern fn SetDisplayConfig(numPathArrayElements: UINT32, pathArray: ?[*]DISPLAYCONFIG_PATH_INFO, numModeInfoArrayElements: UINT32, modeInfoArray: ?[*]DISPLAYCONFIG_MODE_INFO, flags: UINT32) LONG;
+//pub extern fn QueryDisplayConfig(flags: UINT32, numPathArrayElements: ?[*]UINT32, pathArray: ?[*]DISPLAYCONFIG_PATH_INFO, numModeInfoArrayElements: ?[*]UINT32, modeInfoArray: ?[*]DISPLAYCONFIG_MODE_INFO, currentTopologyId: ?[*]DISPLAYCONFIG_TOPOLOGY_ID) LONG;
+//pub extern fn DisplayConfigGetDeviceInfo(requestPacket: ?[*]DISPLAYCONFIG_DEVICE_INFO_HEADER) LONG;
+//pub extern fn DisplayConfigSetDeviceInfo(setPacket: ?[*]DISPLAYCONFIG_DEVICE_INFO_HEADER) LONG;
 //pub extern fn SystemParametersInfoA(uiAction: UINT, uiParam: UINT, pvParam: PVOID, fWinIni: UINT) BOOL;
 //pub extern fn SystemParametersInfoW(uiAction: UINT, uiParam: UINT, pvParam: PVOID, fWinIni: UINT) BOOL;
 //pub extern fn SystemParametersInfoForDpi(uiAction: UINT, uiParam: UINT, pvParam: PVOID, fWinIni: UINT, dpi: UINT) BOOL;
@@ -13661,13 +14449,13 @@ pub const struct_tagFILTERKEYS = extern struct {
     iBounceMSec: DWORD,
 };
 pub const FILTERKEYS = struct_tagFILTERKEYS;
-pub const LPFILTERKEYS = ?&struct_tagFILTERKEYS;
+pub const LPFILTERKEYS = ?*struct_tagFILTERKEYS;
 pub const struct_tagSTICKYKEYS = extern struct {
     cbSize: UINT,
     dwFlags: DWORD,
 };
 pub const STICKYKEYS = struct_tagSTICKYKEYS;
-pub const LPSTICKYKEYS = ?&struct_tagSTICKYKEYS;
+pub const LPSTICKYKEYS = ?*struct_tagSTICKYKEYS;
 pub const struct_tagMOUSEKEYS = extern struct {
     cbSize: UINT,
     dwFlags: DWORD,
@@ -13678,14 +14466,14 @@ pub const struct_tagMOUSEKEYS = extern struct {
     dwReserved2: DWORD,
 };
 pub const MOUSEKEYS = struct_tagMOUSEKEYS;
-pub const LPMOUSEKEYS = ?&struct_tagMOUSEKEYS;
+pub const LPMOUSEKEYS = ?*struct_tagMOUSEKEYS;
 pub const struct_tagACCESSTIMEOUT = extern struct {
     cbSize: UINT,
     dwFlags: DWORD,
     iTimeOutMSec: DWORD,
 };
 pub const ACCESSTIMEOUT = struct_tagACCESSTIMEOUT;
-pub const LPACCESSTIMEOUT = ?&struct_tagACCESSTIMEOUT;
+pub const LPACCESSTIMEOUT = ?*struct_tagACCESSTIMEOUT;
 pub const struct_tagSOUNDSENTRYA = extern struct {
     cbSize: UINT,
     dwFlags: DWORD,
@@ -13701,7 +14489,7 @@ pub const struct_tagSOUNDSENTRYA = extern struct {
     iWindowsEffectOrdinal: DWORD,
 };
 pub const SOUNDSENTRYA = struct_tagSOUNDSENTRYA;
-pub const LPSOUNDSENTRYA = ?&struct_tagSOUNDSENTRYA;
+pub const LPSOUNDSENTRYA = ?*struct_tagSOUNDSENTRYA;
 pub const struct_tagSOUNDSENTRYW = extern struct {
     cbSize: UINT,
     dwFlags: DWORD,
@@ -13717,7 +14505,7 @@ pub const struct_tagSOUNDSENTRYW = extern struct {
     iWindowsEffectOrdinal: DWORD,
 };
 pub const SOUNDSENTRYW = struct_tagSOUNDSENTRYW;
-pub const LPSOUNDSENTRYW = ?&struct_tagSOUNDSENTRYW;
+pub const LPSOUNDSENTRYW = ?*struct_tagSOUNDSENTRYW;
 pub const SOUNDSENTRY = SOUNDSENTRYA;
 pub const LPSOUNDSENTRY = LPSOUNDSENTRYA;
 //pub extern fn SoundSentry() BOOL;
@@ -13726,14 +14514,14 @@ pub const struct_tagTOGGLEKEYS = extern struct {
     dwFlags: DWORD,
 };
 pub const TOGGLEKEYS = struct_tagTOGGLEKEYS;
-pub const LPTOGGLEKEYS = ?&struct_tagTOGGLEKEYS;
+pub const LPTOGGLEKEYS = ?*struct_tagTOGGLEKEYS;
 pub const struct_tagAUDIODESCRIPTION = extern struct {
     cbSize: UINT,
     Enabled: BOOL,
     Locale: LCID,
 };
 pub const AUDIODESCRIPTION = struct_tagAUDIODESCRIPTION;
-pub const LPAUDIODESCRIPTION = ?&struct_tagAUDIODESCRIPTION;
+pub const LPAUDIODESCRIPTION = ?*struct_tagAUDIODESCRIPTION;
 //pub extern fn SetDebugErrorLevel(dwLevel: DWORD) void;
 //pub extern fn SetLastErrorEx(dwErrCode: DWORD, dwType: DWORD) void;
 //pub extern fn InternalGetWindowText(hWnd: HWND, pString: LPWSTR, cchMaxCount: c_int) c_int;
@@ -13748,19 +14536,19 @@ pub const struct_tagMONITORINFO = extern struct {
     dwFlags: DWORD,
 };
 pub const MONITORINFO = struct_tagMONITORINFO;
-pub const LPMONITORINFO = ?&struct_tagMONITORINFO;
+pub const LPMONITORINFO = ?*struct_tagMONITORINFO;
 pub const struct_tagMONITORINFOEXA = extern struct {
     @"": struct_tagMONITORINFO,
     szDevice: [32]CHAR,
 };
 pub const MONITORINFOEXA = struct_tagMONITORINFOEXA;
-pub const LPMONITORINFOEXA = ?&struct_tagMONITORINFOEXA;
+pub const LPMONITORINFOEXA = ?*struct_tagMONITORINFOEXA;
 pub const struct_tagMONITORINFOEXW = extern struct {
     @"": struct_tagMONITORINFO,
     szDevice: [32]WCHAR,
 };
 pub const MONITORINFOEXW = struct_tagMONITORINFOEXW;
-pub const LPMONITORINFOEXW = ?&struct_tagMONITORINFOEXW;
+pub const LPMONITORINFOEXW = ?*struct_tagMONITORINFOEXW;
 pub const MONITORINFOEX = MONITORINFOEXA;
 pub const LPMONITORINFOEX = LPMONITORINFOEXA;
 //pub extern fn GetMonitorInfoA(hMonitor: HMONITOR, lpmi: LPMONITORINFO) BOOL;
@@ -13784,8 +14572,8 @@ pub const struct_tagGUITHREADINFO = extern struct {
     rcCaret: RECT,
 };
 pub const GUITHREADINFO = struct_tagGUITHREADINFO;
-pub const PGUITHREADINFO = ?&struct_tagGUITHREADINFO;
-pub const LPGUITHREADINFO = ?&struct_tagGUITHREADINFO;
+pub const PGUITHREADINFO = ?*struct_tagGUITHREADINFO;
+pub const LPGUITHREADINFO = ?*struct_tagGUITHREADINFO;
 //pub extern fn GetGUIThreadInfo(idThread: DWORD, pgui: PGUITHREADINFO) BOOL;
 //pub extern fn BlockInput(fBlockIt: BOOL) BOOL;
 //pub extern fn SetProcessDPIAware() BOOL;
@@ -13810,8 +14598,8 @@ pub const struct_tagCURSORINFO = extern struct {
     ptScreenPos: POINT,
 };
 pub const CURSORINFO = struct_tagCURSORINFO;
-pub const PCURSORINFO = ?&struct_tagCURSORINFO;
-pub const LPCURSORINFO = ?&struct_tagCURSORINFO;
+pub const PCURSORINFO = ?*struct_tagCURSORINFO;
+pub const LPCURSORINFO = ?*struct_tagCURSORINFO;
 //pub extern fn GetCursorInfo(pci: PCURSORINFO) BOOL;
 pub const struct_tagWINDOWINFO = extern struct {
     cbSize: DWORD,
@@ -13826,8 +14614,8 @@ pub const struct_tagWINDOWINFO = extern struct {
     wCreatorVersion: WORD,
 };
 pub const WINDOWINFO = struct_tagWINDOWINFO;
-pub const PWINDOWINFO = ?&struct_tagWINDOWINFO;
-pub const LPWINDOWINFO = ?&struct_tagWINDOWINFO;
+pub const PWINDOWINFO = ?*struct_tagWINDOWINFO;
+pub const LPWINDOWINFO = ?*struct_tagWINDOWINFO;
 //pub extern fn GetWindowInfo(hwnd: HWND, pwi: PWINDOWINFO) BOOL;
 pub const struct_tagTITLEBARINFO = extern struct {
     cbSize: DWORD,
@@ -13835,8 +14623,8 @@ pub const struct_tagTITLEBARINFO = extern struct {
     rgstate: [6]DWORD,
 };
 pub const TITLEBARINFO = struct_tagTITLEBARINFO;
-pub const PTITLEBARINFO = ?&struct_tagTITLEBARINFO;
-pub const LPTITLEBARINFO = ?&struct_tagTITLEBARINFO;
+pub const PTITLEBARINFO = ?*struct_tagTITLEBARINFO;
+pub const LPTITLEBARINFO = ?*struct_tagTITLEBARINFO;
 //pub extern fn GetTitleBarInfo(hwnd: HWND, pti: PTITLEBARINFO) BOOL;
 pub const struct_tagTITLEBARINFOEX = extern struct {
     cbSize: DWORD,
@@ -13845,12 +14633,12 @@ pub const struct_tagTITLEBARINFOEX = extern struct {
     rgrect: [6]RECT,
 };
 pub const TITLEBARINFOEX = struct_tagTITLEBARINFOEX;
-pub const PTITLEBARINFOEX = ?&struct_tagTITLEBARINFOEX;
-pub const LPTITLEBARINFOEX = ?&struct_tagTITLEBARINFOEX;
+pub const PTITLEBARINFOEX = ?*struct_tagTITLEBARINFOEX;
+pub const LPTITLEBARINFOEX = ?*struct_tagTITLEBARINFOEX;
 pub const struct_tagMENUBARINFO = @OpaqueType();
 pub const MENUBARINFO = struct_tagMENUBARINFO;
-pub const PMENUBARINFO = ?&struct_tagMENUBARINFO;
-pub const LPMENUBARINFO = ?&struct_tagMENUBARINFO;
+pub const PMENUBARINFO = ?*struct_tagMENUBARINFO;
+pub const LPMENUBARINFO = ?*struct_tagMENUBARINFO;
 //pub extern fn GetMenuBarInfo(hwnd: HWND, idObject: LONG, idItem: LONG, pmbi: PMENUBARINFO) BOOL;
 pub const struct_tagSCROLLBARINFO = extern struct {
     cbSize: DWORD,
@@ -13862,8 +14650,8 @@ pub const struct_tagSCROLLBARINFO = extern struct {
     rgstate: [6]DWORD,
 };
 pub const SCROLLBARINFO = struct_tagSCROLLBARINFO;
-pub const PSCROLLBARINFO = ?&struct_tagSCROLLBARINFO;
-pub const LPSCROLLBARINFO = ?&struct_tagSCROLLBARINFO;
+pub const PSCROLLBARINFO = ?*struct_tagSCROLLBARINFO;
+pub const LPSCROLLBARINFO = ?*struct_tagSCROLLBARINFO;
 //pub extern fn GetScrollBarInfo(hwnd: HWND, idObject: LONG, psbi: PSCROLLBARINFO) BOOL;
 pub const struct_tagCOMBOBOXINFO = extern struct {
     cbSize: DWORD,
@@ -13875,8 +14663,8 @@ pub const struct_tagCOMBOBOXINFO = extern struct {
     hwndList: HWND,
 };
 pub const COMBOBOXINFO = struct_tagCOMBOBOXINFO;
-pub const PCOMBOBOXINFO = ?&struct_tagCOMBOBOXINFO;
-pub const LPCOMBOBOXINFO = ?&struct_tagCOMBOBOXINFO;
+pub const PCOMBOBOXINFO = ?*struct_tagCOMBOBOXINFO;
+pub const LPCOMBOBOXINFO = ?*struct_tagCOMBOBOXINFO;
 //pub extern fn GetComboBoxInfo(hwndCombo: HWND, pcbi: PCOMBOBOXINFO) BOOL;
 //pub extern fn GetAncestor(hwnd: HWND, gaFlags: UINT) HWND;
 //pub extern fn RealChildWindowFromPoint(hwndParent: HWND, ptParentClientCoords: POINT) HWND;
@@ -13894,8 +14682,8 @@ pub const struct_tagALTTABINFO = extern struct {
     ptStart: POINT,
 };
 pub const ALTTABINFO = struct_tagALTTABINFO;
-pub const PALTTABINFO = ?&struct_tagALTTABINFO;
-pub const LPALTTABINFO = ?&struct_tagALTTABINFO;
+pub const PALTTABINFO = ?*struct_tagALTTABINFO;
+pub const LPALTTABINFO = ?*struct_tagALTTABINFO;
 //pub extern fn GetAltTabInfoA(hwnd: HWND, iItem: c_int, pati: PALTTABINFO, pszItemText: LPSTR, cchItemText: UINT) BOOL;
 //pub extern fn GetAltTabInfoW(hwnd: HWND, iItem: c_int, pati: PALTTABINFO, pszItemText: LPWSTR, cchItemText: UINT) BOOL;
 //pub extern fn GetListBoxInfo(hwnd: HWND) DWORD;
@@ -13904,7 +14692,7 @@ pub const LPALTTABINFO = ?&struct_tagALTTABINFO;
 pub const struct_HRAWINPUT__ = extern struct {
     unused: c_int,
 };
-pub const HRAWINPUT = ?&struct_HRAWINPUT__;
+pub const HRAWINPUT = ?*struct_HRAWINPUT__;
 pub const struct_tagRAWINPUTHEADER = extern struct {
     dwType: DWORD,
     dwSize: DWORD,
@@ -13912,8 +14700,8 @@ pub const struct_tagRAWINPUTHEADER = extern struct {
     wParam: WPARAM,
 };
 pub const RAWINPUTHEADER = struct_tagRAWINPUTHEADER;
-pub const PRAWINPUTHEADER = ?&struct_tagRAWINPUTHEADER;
-pub const LPRAWINPUTHEADER = ?&struct_tagRAWINPUTHEADER;
+pub const PRAWINPUTHEADER = ?*struct_tagRAWINPUTHEADER;
+pub const LPRAWINPUTHEADER = ?*struct_tagRAWINPUTHEADER;
 pub const struct_tagRAWMOUSE = extern struct {
     usFlags: USHORT,
     @"": extern union {
@@ -13929,8 +14717,8 @@ pub const struct_tagRAWMOUSE = extern struct {
     ulExtraInformation: ULONG,
 };
 pub const RAWMOUSE = struct_tagRAWMOUSE;
-pub const PRAWMOUSE = ?&struct_tagRAWMOUSE;
-pub const LPRAWMOUSE = ?&struct_tagRAWMOUSE;
+pub const PRAWMOUSE = ?*struct_tagRAWMOUSE;
+pub const LPRAWMOUSE = ?*struct_tagRAWMOUSE;
 pub const struct_tagRAWKEYBOARD = extern struct {
     MakeCode: USHORT,
     Flags: USHORT,
@@ -13940,16 +14728,16 @@ pub const struct_tagRAWKEYBOARD = extern struct {
     ExtraInformation: ULONG,
 };
 pub const RAWKEYBOARD = struct_tagRAWKEYBOARD;
-pub const PRAWKEYBOARD = ?&struct_tagRAWKEYBOARD;
-pub const LPRAWKEYBOARD = ?&struct_tagRAWKEYBOARD;
+pub const PRAWKEYBOARD = ?*struct_tagRAWKEYBOARD;
+pub const LPRAWKEYBOARD = ?*struct_tagRAWKEYBOARD;
 pub const struct_tagRAWHID = extern struct {
     dwSizeHid: DWORD,
     dwCount: DWORD,
     bRawData: [1]BYTE,
 };
 pub const RAWHID = struct_tagRAWHID;
-pub const PRAWHID = ?&struct_tagRAWHID;
-pub const LPRAWHID = ?&struct_tagRAWHID;
+pub const PRAWHID = ?*struct_tagRAWHID;
+pub const LPRAWHID = ?*struct_tagRAWHID;
 pub const struct_tagRAWINPUT = extern struct {
     header: RAWINPUTHEADER,
     data: extern union {
@@ -13959,8 +14747,8 @@ pub const struct_tagRAWINPUT = extern struct {
     },
 };
 pub const RAWINPUT = struct_tagRAWINPUT;
-pub const PRAWINPUT = ?&struct_tagRAWINPUT;
-pub const LPRAWINPUT = ?&struct_tagRAWINPUT;
+pub const PRAWINPUT = ?*struct_tagRAWINPUT;
+pub const LPRAWINPUT = ?*struct_tagRAWINPUT;
 //pub extern fn GetRawInputData(hRawInput: HRAWINPUT, uiCommand: UINT, pData: LPVOID, pcbSize: PUINT, cbSizeHeader: UINT) UINT;
 pub const struct_tagRID_DEVICE_INFO_MOUSE = extern struct {
     dwId: DWORD,
@@ -13969,7 +14757,7 @@ pub const struct_tagRID_DEVICE_INFO_MOUSE = extern struct {
     fHasHorizontalWheel: BOOL,
 };
 pub const RID_DEVICE_INFO_MOUSE = struct_tagRID_DEVICE_INFO_MOUSE;
-pub const PRID_DEVICE_INFO_MOUSE = ?&struct_tagRID_DEVICE_INFO_MOUSE;
+pub const PRID_DEVICE_INFO_MOUSE = ?*struct_tagRID_DEVICE_INFO_MOUSE;
 pub const struct_tagRID_DEVICE_INFO_KEYBOARD = extern struct {
     dwType: DWORD,
     dwSubType: DWORD,
@@ -13979,7 +14767,7 @@ pub const struct_tagRID_DEVICE_INFO_KEYBOARD = extern struct {
     dwNumberOfKeysTotal: DWORD,
 };
 pub const RID_DEVICE_INFO_KEYBOARD = struct_tagRID_DEVICE_INFO_KEYBOARD;
-pub const PRID_DEVICE_INFO_KEYBOARD = ?&struct_tagRID_DEVICE_INFO_KEYBOARD;
+pub const PRID_DEVICE_INFO_KEYBOARD = ?*struct_tagRID_DEVICE_INFO_KEYBOARD;
 pub const struct_tagRID_DEVICE_INFO_HID = extern struct {
     dwVendorId: DWORD,
     dwProductId: DWORD,
@@ -13988,7 +14776,7 @@ pub const struct_tagRID_DEVICE_INFO_HID = extern struct {
     usUsage: USHORT,
 };
 pub const RID_DEVICE_INFO_HID = struct_tagRID_DEVICE_INFO_HID;
-pub const PRID_DEVICE_INFO_HID = ?&struct_tagRID_DEVICE_INFO_HID;
+pub const PRID_DEVICE_INFO_HID = ?*struct_tagRID_DEVICE_INFO_HID;
 pub const struct_tagRID_DEVICE_INFO = extern struct {
     cbSize: DWORD,
     dwType: DWORD,
@@ -13999,8 +14787,8 @@ pub const struct_tagRID_DEVICE_INFO = extern struct {
     },
 };
 pub const RID_DEVICE_INFO = struct_tagRID_DEVICE_INFO;
-pub const PRID_DEVICE_INFO = ?&struct_tagRID_DEVICE_INFO;
-pub const LPRID_DEVICE_INFO = ?&struct_tagRID_DEVICE_INFO;
+pub const PRID_DEVICE_INFO = ?*struct_tagRID_DEVICE_INFO;
+pub const LPRID_DEVICE_INFO = ?*struct_tagRID_DEVICE_INFO;
 //pub extern fn GetRawInputDeviceInfoA(hDevice: HANDLE, uiCommand: UINT, pData: LPVOID, pcbSize: PUINT) UINT;
 //pub extern fn GetRawInputDeviceInfoW(hDevice: HANDLE, uiCommand: UINT, pData: LPVOID, pcbSize: PUINT) UINT;
 //pub extern fn GetRawInputBuffer(pData: PRAWINPUT, pcbSize: PUINT, cbSizeHeader: UINT) UINT;
@@ -14011,9 +14799,9 @@ pub const struct_tagRAWINPUTDEVICE = extern struct {
     hwndTarget: HWND,
 };
 pub const RAWINPUTDEVICE = struct_tagRAWINPUTDEVICE;
-pub const PRAWINPUTDEVICE = ?&struct_tagRAWINPUTDEVICE;
-pub const LPRAWINPUTDEVICE = ?&struct_tagRAWINPUTDEVICE;
-pub const PCRAWINPUTDEVICE = ?&const RAWINPUTDEVICE;
+pub const PRAWINPUTDEVICE = ?*struct_tagRAWINPUTDEVICE;
+pub const LPRAWINPUTDEVICE = ?*struct_tagRAWINPUTDEVICE;
+pub const PCRAWINPUTDEVICE = ?[*]const RAWINPUTDEVICE;
 //pub extern fn RegisterRawInputDevices(pRawInputDevices: PCRAWINPUTDEVICE, uiNumDevices: UINT, cbSize: UINT) BOOL;
 //pub extern fn GetRegisteredRawInputDevices(pRawInputDevices: PRAWINPUTDEVICE, puiNumDevices: PUINT, cbSize: UINT) UINT;
 pub const struct_tagRAWINPUTDEVICELIST = extern struct {
@@ -14021,15 +14809,21 @@ pub const struct_tagRAWINPUTDEVICELIST = extern struct {
     dwType: DWORD,
 };
 pub const RAWINPUTDEVICELIST = struct_tagRAWINPUTDEVICELIST;
-pub const PRAWINPUTDEVICELIST = ?&struct_tagRAWINPUTDEVICELIST;
+pub const PRAWINPUTDEVICELIST = ?*struct_tagRAWINPUTDEVICELIST;
 //pub extern fn GetRawInputDeviceList(pRawInputDeviceList: PRAWINPUTDEVICELIST, puiNumDevices: PUINT, cbSize: UINT) UINT;
-//pub extern fn DefRawInputProc(paRawInput: ?&PRAWINPUT, nInput: INT, cbSizeHeader: UINT) LRESULT;
-pub const POINTER_DEVICE_TYPE_INTEGRATED_PEN: c_int = 1;
-pub const POINTER_DEVICE_TYPE_EXTERNAL_PEN: c_int = 2;
-pub const POINTER_DEVICE_TYPE_TOUCH: c_int = 3;
-pub const POINTER_DEVICE_TYPE_TOUCH_PAD: c_int = 4;
-pub const POINTER_DEVICE_TYPE_MAX: c_int = -4294967295;
-pub const enum_tagPOINTER_DEVICE_TYPE = c_int;
+//pub extern fn DefRawInputProc(paRawInput: ?[*]PRAWINPUT, nInput: INT, cbSizeHeader: UINT) LRESULT;
+pub const POINTER_DEVICE_TYPE_INTEGRATED_PEN = enum_tagPOINTER_DEVICE_TYPE.POINTER_DEVICE_TYPE_INTEGRATED_PEN;
+pub const POINTER_DEVICE_TYPE_EXTERNAL_PEN = enum_tagPOINTER_DEVICE_TYPE.POINTER_DEVICE_TYPE_EXTERNAL_PEN;
+pub const POINTER_DEVICE_TYPE_TOUCH = enum_tagPOINTER_DEVICE_TYPE.POINTER_DEVICE_TYPE_TOUCH;
+pub const POINTER_DEVICE_TYPE_TOUCH_PAD = enum_tagPOINTER_DEVICE_TYPE.POINTER_DEVICE_TYPE_TOUCH_PAD;
+pub const POINTER_DEVICE_TYPE_MAX = enum_tagPOINTER_DEVICE_TYPE.POINTER_DEVICE_TYPE_MAX;
+pub const enum_tagPOINTER_DEVICE_TYPE = extern enum {
+    POINTER_DEVICE_TYPE_INTEGRATED_PEN = 1,
+    POINTER_DEVICE_TYPE_EXTERNAL_PEN = 2,
+    POINTER_DEVICE_TYPE_TOUCH = 3,
+    POINTER_DEVICE_TYPE_TOUCH_PAD = 4,
+    POINTER_DEVICE_TYPE_MAX = -4294967295,
+};
 pub const POINTER_DEVICE_TYPE = enum_tagPOINTER_DEVICE_TYPE;
 pub const struct_tagPOINTER_DEVICE_INFO = extern struct {
     displayOrientation: DWORD,
@@ -14052,36 +14846,41 @@ pub const struct_tagPOINTER_DEVICE_PROPERTY = extern struct {
     usageId: USHORT,
 };
 pub const POINTER_DEVICE_PROPERTY = struct_tagPOINTER_DEVICE_PROPERTY;
-pub const POINTER_DEVICE_CURSOR_TYPE_UNKNOWN: c_int = 0;
-pub const POINTER_DEVICE_CURSOR_TYPE_TIP: c_int = 1;
-pub const POINTER_DEVICE_CURSOR_TYPE_ERASER: c_int = 2;
-pub const POINTER_DEVICE_CURSOR_TYPE_MAX: c_int = -4294967295;
-pub const enum_tagPOINTER_DEVICE_CURSOR_TYPE = c_int;
+pub const POINTER_DEVICE_CURSOR_TYPE_UNKNOWN = enum_tagPOINTER_DEVICE_CURSOR_TYPE.POINTER_DEVICE_CURSOR_TYPE_UNKNOWN;
+pub const POINTER_DEVICE_CURSOR_TYPE_TIP = enum_tagPOINTER_DEVICE_CURSOR_TYPE.POINTER_DEVICE_CURSOR_TYPE_TIP;
+pub const POINTER_DEVICE_CURSOR_TYPE_ERASER = enum_tagPOINTER_DEVICE_CURSOR_TYPE.POINTER_DEVICE_CURSOR_TYPE_ERASER;
+pub const POINTER_DEVICE_CURSOR_TYPE_MAX = enum_tagPOINTER_DEVICE_CURSOR_TYPE.POINTER_DEVICE_CURSOR_TYPE_MAX;
+pub const enum_tagPOINTER_DEVICE_CURSOR_TYPE = extern enum {
+    POINTER_DEVICE_CURSOR_TYPE_UNKNOWN = 0,
+    POINTER_DEVICE_CURSOR_TYPE_TIP = 1,
+    POINTER_DEVICE_CURSOR_TYPE_ERASER = 2,
+    POINTER_DEVICE_CURSOR_TYPE_MAX = -4294967295,
+};
 pub const POINTER_DEVICE_CURSOR_TYPE = enum_tagPOINTER_DEVICE_CURSOR_TYPE;
 pub const struct_tagPOINTER_DEVICE_CURSOR_INFO = extern struct {
     cursorId: UINT32,
     cursor: POINTER_DEVICE_CURSOR_TYPE,
 };
 pub const POINTER_DEVICE_CURSOR_INFO = struct_tagPOINTER_DEVICE_CURSOR_INFO;
-//pub extern fn GetPointerDevices(deviceCount: ?&UINT32, pointerDevices: ?&POINTER_DEVICE_INFO) BOOL;
-//pub extern fn GetPointerDevice(device: HANDLE, pointerDevice: ?&POINTER_DEVICE_INFO) BOOL;
-//pub extern fn GetPointerDeviceProperties(device: HANDLE, propertyCount: ?&UINT32, pointerProperties: ?&POINTER_DEVICE_PROPERTY) BOOL;
+//pub extern fn GetPointerDevices(deviceCount: ?[*]UINT32, pointerDevices: ?[*]POINTER_DEVICE_INFO) BOOL;
+//pub extern fn GetPointerDevice(device: HANDLE, pointerDevice: ?[*]POINTER_DEVICE_INFO) BOOL;
+//pub extern fn GetPointerDeviceProperties(device: HANDLE, propertyCount: ?[*]UINT32, pointerProperties: ?[*]POINTER_DEVICE_PROPERTY) BOOL;
 //pub extern fn RegisterPointerDeviceNotifications(window: HWND, notifyRange: BOOL) BOOL;
-//pub extern fn GetPointerDeviceRects(device: HANDLE, pointerDeviceRect: ?&RECT, displayRect: ?&RECT) BOOL;
-//pub extern fn GetPointerDeviceCursors(device: HANDLE, cursorCount: ?&UINT32, deviceCursors: ?&POINTER_DEVICE_CURSOR_INFO) BOOL;
-//pub extern fn GetRawPointerDeviceData(pointerId: UINT32, historyCount: UINT32, propertiesCount: UINT32, pProperties: ?&POINTER_DEVICE_PROPERTY, pValues: ?&LONG) BOOL;
+//pub extern fn GetPointerDeviceRects(device: HANDLE, pointerDeviceRect: ?[*]RECT, displayRect: ?[*]RECT) BOOL;
+//pub extern fn GetPointerDeviceCursors(device: HANDLE, cursorCount: ?[*]UINT32, deviceCursors: ?[*]POINTER_DEVICE_CURSOR_INFO) BOOL;
+//pub extern fn GetRawPointerDeviceData(pointerId: UINT32, historyCount: UINT32, propertiesCount: UINT32, pProperties: ?[*]POINTER_DEVICE_PROPERTY, pValues: ?[*]LONG) BOOL;
 //pub extern fn ChangeWindowMessageFilter(message: UINT, dwFlag: DWORD) BOOL;
 pub const struct_tagCHANGEFILTERSTRUCT = extern struct {
     cbSize: DWORD,
     ExtStatus: DWORD,
 };
 pub const CHANGEFILTERSTRUCT = struct_tagCHANGEFILTERSTRUCT;
-pub const PCHANGEFILTERSTRUCT = ?&struct_tagCHANGEFILTERSTRUCT;
+pub const PCHANGEFILTERSTRUCT = ?*struct_tagCHANGEFILTERSTRUCT;
 //pub extern fn ChangeWindowMessageFilterEx(hwnd: HWND, message: UINT, action: DWORD, pChangeFilterStruct: PCHANGEFILTERSTRUCT) BOOL;
 pub const struct_HGESTUREINFO__ = extern struct {
     unused: c_int,
 };
-pub const HGESTUREINFO = ?&struct_HGESTUREINFO__;
+pub const HGESTUREINFO = ?*struct_HGESTUREINFO__;
 pub const struct_tagGESTUREINFO = extern struct {
     cbSize: UINT,
     dwFlags: DWORD,
@@ -14094,8 +14893,8 @@ pub const struct_tagGESTUREINFO = extern struct {
     cbExtraArgs: UINT,
 };
 pub const GESTUREINFO = struct_tagGESTUREINFO;
-pub const PGESTUREINFO = ?&struct_tagGESTUREINFO;
-pub const PCGESTUREINFO = ?&const GESTUREINFO;
+pub const PGESTUREINFO = ?*struct_tagGESTUREINFO;
+pub const PCGESTUREINFO = ?[*]const GESTUREINFO;
 pub const struct_tagGESTURENOTIFYSTRUCT = extern struct {
     cbSize: UINT,
     dwFlags: DWORD,
@@ -14104,7 +14903,7 @@ pub const struct_tagGESTURENOTIFYSTRUCT = extern struct {
     dwInstanceID: DWORD,
 };
 pub const GESTURENOTIFYSTRUCT = struct_tagGESTURENOTIFYSTRUCT;
-pub const PGESTURENOTIFYSTRUCT = ?&struct_tagGESTURENOTIFYSTRUCT;
+pub const PGESTURENOTIFYSTRUCT = ?*struct_tagGESTURENOTIFYSTRUCT;
 //pub extern fn GetGestureInfo(hGestureInfo: HGESTUREINFO, pGestureInfo: PGESTUREINFO) BOOL;
 //pub extern fn GetGestureExtraArgs(hGestureInfo: HGESTUREINFO, cbExtraArgs: UINT, pExtraArgs: PBYTE) BOOL;
 //pub extern fn CloseGestureInfoHandle(hGestureInfo: HGESTUREINFO) BOOL;
@@ -14114,65 +14913,93 @@ pub const struct_tagGESTURECONFIG = extern struct {
     dwBlock: DWORD,
 };
 pub const GESTURECONFIG = struct_tagGESTURECONFIG;
-pub const PGESTURECONFIG = ?&struct_tagGESTURECONFIG;
+pub const PGESTURECONFIG = ?*struct_tagGESTURECONFIG;
 //pub extern fn SetGestureConfig(hwnd: HWND, dwReserved: DWORD, cIDs: UINT, pGestureConfig: PGESTURECONFIG, cbSize: UINT) BOOL;
 //pub extern fn GetGestureConfig(hwnd: HWND, dwReserved: DWORD, dwFlags: DWORD, pcIDs: PUINT, pGestureConfig: PGESTURECONFIG, cbSize: UINT) BOOL;
 //pub extern fn ShutdownBlockReasonCreate(hWnd: HWND, pwszReason: LPCWSTR) BOOL;
-//pub extern fn ShutdownBlockReasonQuery(hWnd: HWND, pwszBuff: LPWSTR, pcchBuff: ?&DWORD) BOOL;
+//pub extern fn ShutdownBlockReasonQuery(hWnd: HWND, pwszBuff: LPWSTR, pcchBuff: ?[*]DWORD) BOOL;
 //pub extern fn ShutdownBlockReasonDestroy(hWnd: HWND) BOOL;
-pub const IMDT_UNAVAILABLE: c_int = 0;
-pub const IMDT_KEYBOARD: c_int = 1;
-pub const IMDT_MOUSE: c_int = 2;
-pub const IMDT_TOUCH: c_int = 4;
-pub const IMDT_PEN: c_int = 8;
-pub const IMDT_TOUCHPAD: c_int = 16;
-pub const enum_tagINPUT_MESSAGE_DEVICE_TYPE = c_int;
+pub const IMDT_UNAVAILABLE = enum_tagINPUT_MESSAGE_DEVICE_TYPE.IMDT_UNAVAILABLE;
+pub const IMDT_KEYBOARD = enum_tagINPUT_MESSAGE_DEVICE_TYPE.IMDT_KEYBOARD;
+pub const IMDT_MOUSE = enum_tagINPUT_MESSAGE_DEVICE_TYPE.IMDT_MOUSE;
+pub const IMDT_TOUCH = enum_tagINPUT_MESSAGE_DEVICE_TYPE.IMDT_TOUCH;
+pub const IMDT_PEN = enum_tagINPUT_MESSAGE_DEVICE_TYPE.IMDT_PEN;
+pub const IMDT_TOUCHPAD = enum_tagINPUT_MESSAGE_DEVICE_TYPE.IMDT_TOUCHPAD;
+pub const enum_tagINPUT_MESSAGE_DEVICE_TYPE = extern enum {
+    IMDT_UNAVAILABLE = 0,
+    IMDT_KEYBOARD = 1,
+    IMDT_MOUSE = 2,
+    IMDT_TOUCH = 4,
+    IMDT_PEN = 8,
+    IMDT_TOUCHPAD = 16,
+};
 pub const INPUT_MESSAGE_DEVICE_TYPE = enum_tagINPUT_MESSAGE_DEVICE_TYPE;
-pub const IMO_UNAVAILABLE: c_int = 0;
-pub const IMO_HARDWARE: c_int = 1;
-pub const IMO_INJECTED: c_int = 2;
-pub const IMO_SYSTEM: c_int = 4;
-pub const enum_tagINPUT_MESSAGE_ORIGIN_ID = c_int;
+pub const IMO_UNAVAILABLE = enum_tagINPUT_MESSAGE_ORIGIN_ID.IMO_UNAVAILABLE;
+pub const IMO_HARDWARE = enum_tagINPUT_MESSAGE_ORIGIN_ID.IMO_HARDWARE;
+pub const IMO_INJECTED = enum_tagINPUT_MESSAGE_ORIGIN_ID.IMO_INJECTED;
+pub const IMO_SYSTEM = enum_tagINPUT_MESSAGE_ORIGIN_ID.IMO_SYSTEM;
+pub const enum_tagINPUT_MESSAGE_ORIGIN_ID = extern enum {
+    IMO_UNAVAILABLE = 0,
+    IMO_HARDWARE = 1,
+    IMO_INJECTED = 2,
+    IMO_SYSTEM = 4,
+};
 pub const INPUT_MESSAGE_ORIGIN_ID = enum_tagINPUT_MESSAGE_ORIGIN_ID;
 pub const struct_tagINPUT_MESSAGE_SOURCE = extern struct {
     deviceType: INPUT_MESSAGE_DEVICE_TYPE,
     originId: INPUT_MESSAGE_ORIGIN_ID,
 };
 pub const INPUT_MESSAGE_SOURCE = struct_tagINPUT_MESSAGE_SOURCE;
-//pub extern fn GetCurrentInputMessageSource(inputMessageSource: ?&INPUT_MESSAGE_SOURCE) BOOL;
-//pub extern fn GetCIMSSM(inputMessageSource: ?&INPUT_MESSAGE_SOURCE) BOOL;
-pub const AR_ENABLED: c_int = 0;
-pub const AR_DISABLED: c_int = 1;
-pub const AR_SUPPRESSED: c_int = 2;
-pub const AR_REMOTESESSION: c_int = 4;
-pub const AR_MULTIMON: c_int = 8;
-pub const AR_NOSENSOR: c_int = 16;
-pub const AR_NOT_SUPPORTED: c_int = 32;
-pub const AR_DOCKED: c_int = 64;
-pub const AR_LAPTOP: c_int = 128;
-pub const enum_tagAR_STATE = c_int;
+//pub extern fn GetCurrentInputMessageSource(inputMessageSource: ?[*]INPUT_MESSAGE_SOURCE) BOOL;
+//pub extern fn GetCIMSSM(inputMessageSource: ?[*]INPUT_MESSAGE_SOURCE) BOOL;
+pub const AR_ENABLED = enum_tagAR_STATE.AR_ENABLED;
+pub const AR_DISABLED = enum_tagAR_STATE.AR_DISABLED;
+pub const AR_SUPPRESSED = enum_tagAR_STATE.AR_SUPPRESSED;
+pub const AR_REMOTESESSION = enum_tagAR_STATE.AR_REMOTESESSION;
+pub const AR_MULTIMON = enum_tagAR_STATE.AR_MULTIMON;
+pub const AR_NOSENSOR = enum_tagAR_STATE.AR_NOSENSOR;
+pub const AR_NOT_SUPPORTED = enum_tagAR_STATE.AR_NOT_SUPPORTED;
+pub const AR_DOCKED = enum_tagAR_STATE.AR_DOCKED;
+pub const AR_LAPTOP = enum_tagAR_STATE.AR_LAPTOP;
+pub const enum_tagAR_STATE = extern enum {
+    AR_ENABLED = 0,
+    AR_DISABLED = 1,
+    AR_SUPPRESSED = 2,
+    AR_REMOTESESSION = 4,
+    AR_MULTIMON = 8,
+    AR_NOSENSOR = 16,
+    AR_NOT_SUPPORTED = 32,
+    AR_DOCKED = 64,
+    AR_LAPTOP = 128,
+};
 pub const AR_STATE = enum_tagAR_STATE;
-pub const PAR_STATE = ?&enum_tagAR_STATE;
-pub const ORIENTATION_PREFERENCE_NONE: c_int = 0;
-pub const ORIENTATION_PREFERENCE_LANDSCAPE: c_int = 1;
-pub const ORIENTATION_PREFERENCE_PORTRAIT: c_int = 2;
-pub const ORIENTATION_PREFERENCE_LANDSCAPE_FLIPPED: c_int = 4;
-pub const ORIENTATION_PREFERENCE_PORTRAIT_FLIPPED: c_int = 8;
-pub const enum_ORIENTATION_PREFERENCE = c_int;
+pub const PAR_STATE = ?[*]enum_tagAR_STATE;
+pub const ORIENTATION_PREFERENCE_NONE = enum_ORIENTATION_PREFERENCE._NONE;
+pub const ORIENTATION_PREFERENCE_LANDSCAPE = enum_ORIENTATION_PREFERENCE._LANDSCAPE;
+pub const ORIENTATION_PREFERENCE_PORTRAIT = enum_ORIENTATION_PREFERENCE._PORTRAIT;
+pub const ORIENTATION_PREFERENCE_LANDSCAPE_FLIPPED = enum_ORIENTATION_PREFERENCE._LANDSCAPE_FLIPPED;
+pub const ORIENTATION_PREFERENCE_PORTRAIT_FLIPPED = enum_ORIENTATION_PREFERENCE._PORTRAIT_FLIPPED;
+pub const enum_ORIENTATION_PREFERENCE = extern enum {
+    _NONE = 0,
+    _LANDSCAPE = 1,
+    _PORTRAIT = 2,
+    _LANDSCAPE_FLIPPED = 4,
+    _PORTRAIT_FLIPPED = 8,
+};
 pub const ORIENTATION_PREFERENCE = enum_ORIENTATION_PREFERENCE;
 //pub extern fn GetAutoRotationState(pState: PAR_STATE) BOOL;
-//pub extern fn GetDisplayAutoRotationPreferences(pOrientation: ?&ORIENTATION_PREFERENCE) BOOL;
-//pub extern fn GetDisplayAutoRotationPreferencesByProcessId(dwProcessId: DWORD, pOrientation: ?&ORIENTATION_PREFERENCE, fRotateScreen: ?&BOOL) BOOL;
+//pub extern fn GetDisplayAutoRotationPreferences(pOrientation: ?[*]ORIENTATION_PREFERENCE) BOOL;
+//pub extern fn GetDisplayAutoRotationPreferencesByProcessId(dwProcessId: DWORD, pOrientation: ?[*]ORIENTATION_PREFERENCE, fRotateScreen: ?[*]BOOL) BOOL;
 //pub extern fn SetDisplayAutoRotationPreferences(orientation: ORIENTATION_PREFERENCE) BOOL;
 //pub extern fn IsImmersiveProcess(hProcess: HANDLE) BOOL;
 //pub extern fn SetProcessRestrictionExemption(fEnableExemption: BOOL) BOOL;
-//pub extern fn GetDateFormatA(Locale: LCID, dwFlags: DWORD, lpDate: ?&const SYSTEMTIME, lpFormat: LPCSTR, lpDateStr: LPSTR, cchDate: c_int) c_int;
-//pub extern fn GetDateFormatW(Locale: LCID, dwFlags: DWORD, lpDate: ?&const SYSTEMTIME, lpFormat: LPCWSTR, lpDateStr: LPWSTR, cchDate: c_int) c_int;
-//pub extern fn GetTimeFormatA(Locale: LCID, dwFlags: DWORD, lpTime: ?&const SYSTEMTIME, lpFormat: LPCSTR, lpTimeStr: LPSTR, cchTime: c_int) c_int;
-//pub extern fn GetTimeFormatW(Locale: LCID, dwFlags: DWORD, lpTime: ?&const SYSTEMTIME, lpFormat: LPCWSTR, lpTimeStr: LPWSTR, cchTime: c_int) c_int;
-//pub extern fn GetTimeFormatEx(lpLocaleName: LPCWSTR, dwFlags: DWORD, lpTime: ?&const SYSTEMTIME, lpFormat: LPCWSTR, lpTimeStr: LPWSTR, cchTime: c_int) c_int;
-//pub extern fn GetDateFormatEx(lpLocaleName: LPCWSTR, dwFlags: DWORD, lpDate: ?&const SYSTEMTIME, lpFormat: LPCWSTR, lpDateStr: LPWSTR, cchDate: c_int, lpCalendar: LPCWSTR) c_int;
-//pub extern fn GetDurationFormatEx(lpLocaleName: LPCWSTR, dwFlags: DWORD, lpDuration: ?&const SYSTEMTIME, ullDuration: ULONGLONG, lpFormat: LPCWSTR, lpDurationStr: LPWSTR, cchDuration: c_int) c_int;
+//pub extern fn GetDateFormatA(Locale: LCID, dwFlags: DWORD, lpDate: ?[*]const SYSTEMTIME, lpFormat: LPCSTR, lpDateStr: LPSTR, cchDate: c_int) c_int;
+//pub extern fn GetDateFormatW(Locale: LCID, dwFlags: DWORD, lpDate: ?[*]const SYSTEMTIME, lpFormat: LPCWSTR, lpDateStr: LPWSTR, cchDate: c_int) c_int;
+//pub extern fn GetTimeFormatA(Locale: LCID, dwFlags: DWORD, lpTime: ?[*]const SYSTEMTIME, lpFormat: LPCSTR, lpTimeStr: LPSTR, cchTime: c_int) c_int;
+//pub extern fn GetTimeFormatW(Locale: LCID, dwFlags: DWORD, lpTime: ?[*]const SYSTEMTIME, lpFormat: LPCWSTR, lpTimeStr: LPWSTR, cchTime: c_int) c_int;
+//pub extern fn GetTimeFormatEx(lpLocaleName: LPCWSTR, dwFlags: DWORD, lpTime: ?[*]const SYSTEMTIME, lpFormat: LPCWSTR, lpTimeStr: LPWSTR, cchTime: c_int) c_int;
+//pub extern fn GetDateFormatEx(lpLocaleName: LPCWSTR, dwFlags: DWORD, lpDate: ?[*]const SYSTEMTIME, lpFormat: LPCWSTR, lpDateStr: LPWSTR, cchDate: c_int, lpCalendar: LPCWSTR) c_int;
+//pub extern fn GetDurationFormatEx(lpLocaleName: LPCWSTR, dwFlags: DWORD, lpDuration: ?[*]const SYSTEMTIME, ullDuration: ULONGLONG, lpFormat: LPCWSTR, lpDurationStr: LPWSTR, cchDuration: c_int) c_int;
 pub const LGRPID = DWORD;
 pub const LCTYPE = DWORD;
 pub const CALTYPE = DWORD;
@@ -14183,7 +15010,7 @@ pub const struct__cpinfo = extern struct {
     LeadByte: [12]BYTE,
 };
 pub const CPINFO = struct__cpinfo;
-pub const LPCPINFO = ?&struct__cpinfo;
+pub const LPCPINFO = ?*struct__cpinfo;
 pub const struct__cpinfoexA = extern struct {
     MaxCharSize: UINT,
     DefaultChar: [2]BYTE,
@@ -14193,7 +15020,7 @@ pub const struct__cpinfoexA = extern struct {
     CodePageName: [260]CHAR,
 };
 pub const CPINFOEXA = struct__cpinfoexA;
-pub const LPCPINFOEXA = ?&struct__cpinfoexA;
+pub const LPCPINFOEXA = ?*struct__cpinfoexA;
 pub const struct__cpinfoexW = extern struct {
     MaxCharSize: UINT,
     DefaultChar: [2]BYTE,
@@ -14203,7 +15030,7 @@ pub const struct__cpinfoexW = extern struct {
     CodePageName: [260]WCHAR,
 };
 pub const CPINFOEXW = struct__cpinfoexW;
-pub const LPCPINFOEXW = ?&struct__cpinfoexW;
+pub const LPCPINFOEXW = ?*struct__cpinfoexW;
 pub const CPINFOEX = CPINFOEXA;
 pub const LPCPINFOEX = LPCPINFOEXA;
 pub const struct__numberfmtA = extern struct {
@@ -14215,7 +15042,7 @@ pub const struct__numberfmtA = extern struct {
     NegativeOrder: UINT,
 };
 pub const NUMBERFMTA = struct__numberfmtA;
-pub const LPNUMBERFMTA = ?&struct__numberfmtA;
+pub const LPNUMBERFMTA = ?*struct__numberfmtA;
 pub const struct__numberfmtW = extern struct {
     NumDigits: UINT,
     LeadingZero: UINT,
@@ -14225,7 +15052,7 @@ pub const struct__numberfmtW = extern struct {
     NegativeOrder: UINT,
 };
 pub const NUMBERFMTW = struct__numberfmtW;
-pub const LPNUMBERFMTW = ?&struct__numberfmtW;
+pub const LPNUMBERFMTW = ?*struct__numberfmtW;
 pub const NUMBERFMT = NUMBERFMTA;
 pub const LPNUMBERFMT = LPNUMBERFMTA;
 pub const struct__currencyfmtA = extern struct {
@@ -14239,7 +15066,7 @@ pub const struct__currencyfmtA = extern struct {
     lpCurrencySymbol: LPSTR,
 };
 pub const CURRENCYFMTA = struct__currencyfmtA;
-pub const LPCURRENCYFMTA = ?&struct__currencyfmtA;
+pub const LPCURRENCYFMTA = ?*struct__currencyfmtA;
 pub const struct__currencyfmtW = extern struct {
     NumDigits: UINT,
     LeadingZero: UINT,
@@ -14251,11 +15078,13 @@ pub const struct__currencyfmtW = extern struct {
     lpCurrencySymbol: LPWSTR,
 };
 pub const CURRENCYFMTW = struct__currencyfmtW;
-pub const LPCURRENCYFMTW = ?&struct__currencyfmtW;
+pub const LPCURRENCYFMTW = ?*struct__currencyfmtW;
 pub const CURRENCYFMT = CURRENCYFMTA;
 pub const LPCURRENCYFMT = LPCURRENCYFMTA;
-pub const COMPARE_STRING: c_int = 1;
-pub const enum_SYSNLS_FUNCTION = c_int;
+pub const COMPARE_STRING = enum_SYSNLS_FUNCTION.COMPARE_STRING;
+pub const enum_SYSNLS_FUNCTION = extern enum {
+    COMPARE_STRING = 1,
+};
 pub const NLS_FUNCTION = DWORD;
 pub const struct__nlsversioninfo = extern struct {
     dwNLSVersionInfoSize: DWORD,
@@ -14265,7 +15094,7 @@ pub const struct__nlsversioninfo = extern struct {
     guidCustomVersion: GUID,
 };
 pub const NLSVERSIONINFO = struct__nlsversioninfo;
-pub const LPNLSVERSIONINFO = ?&struct__nlsversioninfo;
+pub const LPNLSVERSIONINFO = ?*struct__nlsversioninfo;
 pub const struct__nlsversioninfoex = extern struct {
     dwNLSVersionInfoSize: DWORD,
     dwNLSVersion: DWORD,
@@ -14274,39 +15103,68 @@ pub const struct__nlsversioninfoex = extern struct {
     guidCustomVersion: GUID,
 };
 pub const NLSVERSIONINFOEX = struct__nlsversioninfoex;
-pub const LPNLSVERSIONINFOEX = ?&struct__nlsversioninfoex;
+pub const LPNLSVERSIONINFOEX = ?*struct__nlsversioninfoex;
 pub const GEOTYPE = DWORD;
 pub const GEOCLASS = DWORD;
 pub const GEOID = LONG;
-pub const GEO_NATION: c_int = 1;
-pub const GEO_LATITUDE: c_int = 2;
-pub const GEO_LONGITUDE: c_int = 3;
-pub const GEO_ISO2: c_int = 4;
-pub const GEO_ISO3: c_int = 5;
-pub const GEO_RFC1766: c_int = 6;
-pub const GEO_LCID: c_int = 7;
-pub const GEO_FRIENDLYNAME: c_int = 8;
-pub const GEO_OFFICIALNAME: c_int = 9;
-pub const GEO_TIMEZONES: c_int = 10;
-pub const GEO_OFFICIALLANGUAGES: c_int = 11;
-pub const GEO_ISO_UN_NUMBER: c_int = 12;
-pub const GEO_PARENT: c_int = 13;
-pub const GEO_DIALINGCODE: c_int = 14;
-pub const GEO_CURRENCYCODE: c_int = 15;
-pub const GEO_CURRENCYSYMBOL: c_int = 16;
-pub const GEO_NAME: c_int = 17;
-pub const GEO_ID: c_int = 18;
-pub const enum_SYSGEOTYPE = c_int;
-pub const GEOCLASS_NATION: c_int = 16;
-pub const GEOCLASS_REGION: c_int = 14;
-pub const GEOCLASS_ALL: c_int = 0;
-pub const enum_SYSGEOCLASS = c_int;
-pub const NormalizationOther: c_int = 0;
-pub const NormalizationC: c_int = 1;
-pub const NormalizationD: c_int = 2;
-pub const NormalizationKC: c_int = 5;
-pub const NormalizationKD: c_int = 6;
-pub const enum__NORM_FORM = c_int;
+pub const GEO_NATION = enum_SYSGEOTYPE.GEO_NATION;
+pub const GEO_LATITUDE = enum_SYSGEOTYPE.GEO_LATITUDE;
+pub const GEO_LONGITUDE = enum_SYSGEOTYPE.GEO_LONGITUDE;
+pub const GEO_ISO2 = enum_SYSGEOTYPE.GEO_ISO2;
+pub const GEO_ISO3 = enum_SYSGEOTYPE.GEO_ISO3;
+pub const GEO_RFC1766 = enum_SYSGEOTYPE.GEO_RFC1766;
+pub const GEO_LCID = enum_SYSGEOTYPE.GEO_LCID;
+pub const GEO_FRIENDLYNAME = enum_SYSGEOTYPE.GEO_FRIENDLYNAME;
+pub const GEO_OFFICIALNAME = enum_SYSGEOTYPE.GEO_OFFICIALNAME;
+pub const GEO_TIMEZONES = enum_SYSGEOTYPE.GEO_TIMEZONES;
+pub const GEO_OFFICIALLANGUAGES = enum_SYSGEOTYPE.GEO_OFFICIALLANGUAGES;
+pub const GEO_ISO_UN_NUMBER = enum_SYSGEOTYPE.GEO_ISO_UN_NUMBER;
+pub const GEO_PARENT = enum_SYSGEOTYPE.GEO_PARENT;
+pub const GEO_DIALINGCODE = enum_SYSGEOTYPE.GEO_DIALINGCODE;
+pub const GEO_CURRENCYCODE = enum_SYSGEOTYPE.GEO_CURRENCYCODE;
+pub const GEO_CURRENCYSYMBOL = enum_SYSGEOTYPE.GEO_CURRENCYSYMBOL;
+pub const GEO_NAME = enum_SYSGEOTYPE.GEO_NAME;
+pub const GEO_ID = enum_SYSGEOTYPE.GEO_ID;
+pub const enum_SYSGEOTYPE = extern enum {
+    GEO_NATION = 1,
+    GEO_LATITUDE = 2,
+    GEO_LONGITUDE = 3,
+    GEO_ISO2 = 4,
+    GEO_ISO3 = 5,
+    GEO_RFC1766 = 6,
+    GEO_LCID = 7,
+    GEO_FRIENDLYNAME = 8,
+    GEO_OFFICIALNAME = 9,
+    GEO_TIMEZONES = 10,
+    GEO_OFFICIALLANGUAGES = 11,
+    GEO_ISO_UN_NUMBER = 12,
+    GEO_PARENT = 13,
+    GEO_DIALINGCODE = 14,
+    GEO_CURRENCYCODE = 15,
+    GEO_CURRENCYSYMBOL = 16,
+    GEO_NAME = 17,
+    GEO_ID = 18,
+};
+pub const GEOCLASS_NATION = enum_SYSGEOCLASS.GEOCLASS_NATION;
+pub const GEOCLASS_REGION = enum_SYSGEOCLASS.GEOCLASS_REGION;
+pub const GEOCLASS_ALL = enum_SYSGEOCLASS.GEOCLASS_ALL;
+pub const enum_SYSGEOCLASS = extern enum {
+    GEOCLASS_NATION = 16,
+    GEOCLASS_REGION = 14,
+    GEOCLASS_ALL = 0,
+};
+pub const NormalizationOther = enum__NORM_FORM.NormalizationOther;
+pub const NormalizationC = enum__NORM_FORM.NormalizationC;
+pub const NormalizationD = enum__NORM_FORM.NormalizationD;
+pub const NormalizationKC = enum__NORM_FORM.NormalizationKC;
+pub const NormalizationKD = enum__NORM_FORM.NormalizationKD;
+pub const enum__NORM_FORM = extern enum {
+    NormalizationOther = 0,
+    NormalizationC = 1,
+    NormalizationD = 2,
+    NormalizationKC = 5,
+    NormalizationKD = 6,
+};
 pub const NORM_FORM = enum__NORM_FORM;
 pub const LANGUAGEGROUP_ENUMPROCA = ?extern fn(LGRPID, LPSTR, LPSTR, DWORD, LONG_PTR) BOOL;
 pub const LANGGROUPLOCALE_ENUMPROCA = ?extern fn(LGRPID, LCID, LPSTR, LONG_PTR) BOOL;
@@ -14346,7 +15204,7 @@ pub const struct__FILEMUIINFO = extern struct {
     abBuffer: [8]BYTE,
 };
 pub const FILEMUIINFO = struct__FILEMUIINFO;
-pub const PFILEMUIINFO = ?&struct__FILEMUIINFO;
+pub const PFILEMUIINFO = ?*struct__FILEMUIINFO;
 //pub extern fn CompareStringEx(lpLocaleName: LPCWSTR, dwCmpFlags: DWORD, lpString1: LPCWCH, cchCount1: c_int, lpString2: LPCWCH, cchCount2: c_int, lpVersionInformation: LPNLSVERSIONINFO, lpReserved: LPVOID, lParam: LPARAM) c_int;
 //pub extern fn CompareStringOrdinal(lpString1: LPCWCH, cchCount1: c_int, lpString2: LPCWCH, cchCount2: c_int, bIgnoreCase: BOOL) c_int;
 //pub extern fn CompareStringW(Locale: LCID, dwCmpFlags: DWORD, lpString1: PCNZWCH, cchCount1: c_int, lpString2: PCNZWCH, cchCount2: c_int) c_int;
@@ -14378,11 +15236,11 @@ pub const PFILEMUIINFO = ?&struct__FILEMUIINFO;
 //pub extern fn IsDBCSLeadByteEx(CodePage: UINT, TestChar: BYTE) BOOL;
 //pub extern fn LCIDToLocaleName(Locale: LCID, lpName: LPWSTR, cchName: c_int, dwFlags: DWORD) c_int;
 //pub extern fn LocaleNameToLCID(lpName: LPCWSTR, dwFlags: DWORD) LCID;
-//pub extern fn GetDurationFormat(Locale: LCID, dwFlags: DWORD, lpDuration: ?&const SYSTEMTIME, ullDuration: ULONGLONG, lpFormat: LPCWSTR, lpDurationStr: LPWSTR, cchDuration: c_int) c_int;
-//pub extern fn GetNumberFormatA(Locale: LCID, dwFlags: DWORD, lpValue: LPCSTR, lpFormat: ?&const NUMBERFMTA, lpNumberStr: LPSTR, cchNumber: c_int) c_int;
-//pub extern fn GetNumberFormatW(Locale: LCID, dwFlags: DWORD, lpValue: LPCWSTR, lpFormat: ?&const NUMBERFMTW, lpNumberStr: LPWSTR, cchNumber: c_int) c_int;
-//pub extern fn GetCurrencyFormatA(Locale: LCID, dwFlags: DWORD, lpValue: LPCSTR, lpFormat: ?&const CURRENCYFMTA, lpCurrencyStr: LPSTR, cchCurrency: c_int) c_int;
-//pub extern fn GetCurrencyFormatW(Locale: LCID, dwFlags: DWORD, lpValue: LPCWSTR, lpFormat: ?&const CURRENCYFMTW, lpCurrencyStr: LPWSTR, cchCurrency: c_int) c_int;
+//pub extern fn GetDurationFormat(Locale: LCID, dwFlags: DWORD, lpDuration: ?[*]const SYSTEMTIME, ullDuration: ULONGLONG, lpFormat: LPCWSTR, lpDurationStr: LPWSTR, cchDuration: c_int) c_int;
+//pub extern fn GetNumberFormatA(Locale: LCID, dwFlags: DWORD, lpValue: LPCSTR, lpFormat: ?[*]const NUMBERFMTA, lpNumberStr: LPSTR, cchNumber: c_int) c_int;
+//pub extern fn GetNumberFormatW(Locale: LCID, dwFlags: DWORD, lpValue: LPCWSTR, lpFormat: ?[*]const NUMBERFMTW, lpNumberStr: LPWSTR, cchNumber: c_int) c_int;
+//pub extern fn GetCurrencyFormatA(Locale: LCID, dwFlags: DWORD, lpValue: LPCSTR, lpFormat: ?[*]const CURRENCYFMTA, lpCurrencyStr: LPSTR, cchCurrency: c_int) c_int;
+//pub extern fn GetCurrencyFormatW(Locale: LCID, dwFlags: DWORD, lpValue: LPCWSTR, lpFormat: ?[*]const CURRENCYFMTW, lpCurrencyStr: LPWSTR, cchCurrency: c_int) c_int;
 //pub extern fn EnumCalendarInfoA(lpCalInfoEnumProc: CALINFO_ENUMPROCA, Locale: LCID, Calendar: CALID, CalType: CALTYPE) BOOL;
 //pub extern fn EnumCalendarInfoW(lpCalInfoEnumProc: CALINFO_ENUMPROCW, Locale: LCID, Calendar: CALID, CalType: CALTYPE) BOOL;
 //pub extern fn EnumCalendarInfoExA(lpCalInfoEnumProcEx: CALINFO_ENUMPROCEXA, Locale: LCID, Calendar: CALID, CalType: CALTYPE) BOOL;
@@ -14423,7 +15281,7 @@ pub const PFILEMUIINFO = ?&struct__FILEMUIINFO;
 //pub extern fn GetSystemPreferredUILanguages(dwFlags: DWORD, pulNumLanguages: PULONG, pwszLanguagesBuffer: PZZWSTR, pcchLanguagesBuffer: PULONG) BOOL;
 //pub extern fn GetThreadPreferredUILanguages(dwFlags: DWORD, pulNumLanguages: PULONG, pwszLanguagesBuffer: PZZWSTR, pcchLanguagesBuffer: PULONG) BOOL;
 //pub extern fn SetThreadPreferredUILanguages(dwFlags: DWORD, pwszLanguagesBuffer: PCZZWSTR, pulNumLanguages: PULONG) BOOL;
-//pub extern fn GetFileMUIInfo(dwFlags: DWORD, pcwszFilePath: PCWSTR, pFileMUIInfo: PFILEMUIINFO, pcbFileMUIInfo: ?&DWORD) BOOL;
+//pub extern fn GetFileMUIInfo(dwFlags: DWORD, pcwszFilePath: PCWSTR, pFileMUIInfo: PFILEMUIINFO, pcbFileMUIInfo: ?[*]DWORD) BOOL;
 //pub extern fn GetFileMUIPath(dwFlags: DWORD, pcwszFilePath: PCWSTR, pwszLanguage: PWSTR, pcchLanguage: PULONG, pwszFileMUIPath: PWSTR, pcchFileMUIPath: PULONG, pululEnumerator: PULONGLONG) BOOL;
 //pub extern fn GetUILanguageInfo(dwFlags: DWORD, pwmszLanguage: PCZZWSTR, pwszFallbackLanguages: PZZWSTR, pcchFallbackLanguages: PDWORD, pAttributes: PDWORD) BOOL;
 //pub extern fn NotifyUILanguageChange(dwFlags: DWORD, pcwstrNewLanguage: PCWSTR, pcwstrPreviousLanguage: PCWSTR, dwReserved: DWORD, pdwStatusRtrn: PDWORD) BOOL;
@@ -14449,8 +15307,8 @@ pub const PFILEMUIINFO = ?&struct__FILEMUIINFO;
 //pub extern fn GetStringScripts(dwFlags: DWORD, lpString: LPCWSTR, cchString: c_int, lpScripts: LPWSTR, cchScripts: c_int) c_int;
 //pub extern fn GetLocaleInfoEx(lpLocaleName: LPCWSTR, LCType: LCTYPE, lpLCData: LPWSTR, cchData: c_int) c_int;
 //pub extern fn GetCalendarInfoEx(lpLocaleName: LPCWSTR, Calendar: CALID, lpReserved: LPCWSTR, CalType: CALTYPE, lpCalData: LPWSTR, cchData: c_int, lpValue: LPDWORD) c_int;
-//pub extern fn GetNumberFormatEx(lpLocaleName: LPCWSTR, dwFlags: DWORD, lpValue: LPCWSTR, lpFormat: ?&const NUMBERFMTW, lpNumberStr: LPWSTR, cchNumber: c_int) c_int;
-//pub extern fn GetCurrencyFormatEx(lpLocaleName: LPCWSTR, dwFlags: DWORD, lpValue: LPCWSTR, lpFormat: ?&const CURRENCYFMTW, lpCurrencyStr: LPWSTR, cchCurrency: c_int) c_int;
+//pub extern fn GetNumberFormatEx(lpLocaleName: LPCWSTR, dwFlags: DWORD, lpValue: LPCWSTR, lpFormat: ?[*]const NUMBERFMTW, lpNumberStr: LPWSTR, cchNumber: c_int) c_int;
+//pub extern fn GetCurrencyFormatEx(lpLocaleName: LPCWSTR, dwFlags: DWORD, lpValue: LPCWSTR, lpFormat: ?[*]const CURRENCYFMTW, lpCurrencyStr: LPWSTR, cchCurrency: c_int) c_int;
 //pub extern fn GetUserDefaultLocaleName(lpLocaleName: LPWSTR, cchLocaleName: c_int) c_int;
 //pub extern fn GetSystemDefaultLocaleName(lpLocaleName: LPWSTR, cchLocaleName: c_int) c_int;
 //pub extern fn GetNLSVersionEx(function: NLS_FUNCTION, lpLocaleName: LPCWSTR, lpVersionInformation: LPNLSVERSIONINFOEX) BOOL;
@@ -14472,7 +15330,7 @@ pub const struct__COORD = extern struct {
     Y: SHORT,
 };
 pub const COORD = struct__COORD;
-pub const PCOORD = ?&struct__COORD;
+pub const PCOORD = ?*struct__COORD;
 pub const struct__SMALL_RECT = extern struct {
     Left: SHORT,
     Top: SHORT,
@@ -14480,7 +15338,7 @@ pub const struct__SMALL_RECT = extern struct {
     Bottom: SHORT,
 };
 pub const SMALL_RECT = struct__SMALL_RECT;
-pub const PSMALL_RECT = ?&struct__SMALL_RECT;
+pub const PSMALL_RECT = ?*struct__SMALL_RECT;
 pub const struct__KEY_EVENT_RECORD = extern struct {
     bKeyDown: BOOL,
     wRepeatCount: WORD,
@@ -14493,7 +15351,7 @@ pub const struct__KEY_EVENT_RECORD = extern struct {
     dwControlKeyState: DWORD,
 };
 pub const KEY_EVENT_RECORD = struct__KEY_EVENT_RECORD;
-pub const PKEY_EVENT_RECORD = ?&struct__KEY_EVENT_RECORD;
+pub const PKEY_EVENT_RECORD = ?*struct__KEY_EVENT_RECORD;
 pub const struct__MOUSE_EVENT_RECORD = extern struct {
     dwMousePosition: COORD,
     dwButtonState: DWORD,
@@ -14501,22 +15359,22 @@ pub const struct__MOUSE_EVENT_RECORD = extern struct {
     dwEventFlags: DWORD,
 };
 pub const MOUSE_EVENT_RECORD = struct__MOUSE_EVENT_RECORD;
-pub const PMOUSE_EVENT_RECORD = ?&struct__MOUSE_EVENT_RECORD;
+pub const PMOUSE_EVENT_RECORD = ?*struct__MOUSE_EVENT_RECORD;
 pub const struct__WINDOW_BUFFER_SIZE_RECORD = extern struct {
     dwSize: COORD,
 };
 pub const WINDOW_BUFFER_SIZE_RECORD = struct__WINDOW_BUFFER_SIZE_RECORD;
-pub const PWINDOW_BUFFER_SIZE_RECORD = ?&struct__WINDOW_BUFFER_SIZE_RECORD;
+pub const PWINDOW_BUFFER_SIZE_RECORD = ?*struct__WINDOW_BUFFER_SIZE_RECORD;
 pub const struct__MENU_EVENT_RECORD = extern struct {
     dwCommandId: UINT,
 };
 pub const MENU_EVENT_RECORD = struct__MENU_EVENT_RECORD;
-pub const PMENU_EVENT_RECORD = ?&struct__MENU_EVENT_RECORD;
+pub const PMENU_EVENT_RECORD = ?*struct__MENU_EVENT_RECORD;
 pub const struct__FOCUS_EVENT_RECORD = extern struct {
     bSetFocus: BOOL,
 };
 pub const FOCUS_EVENT_RECORD = struct__FOCUS_EVENT_RECORD;
-pub const PFOCUS_EVENT_RECORD = ?&struct__FOCUS_EVENT_RECORD;
+pub const PFOCUS_EVENT_RECORD = ?*struct__FOCUS_EVENT_RECORD;
 pub const struct__INPUT_RECORD = extern struct {
     EventType: WORD,
     Event: extern union {
@@ -14528,7 +15386,7 @@ pub const struct__INPUT_RECORD = extern struct {
     },
 };
 pub const INPUT_RECORD = struct__INPUT_RECORD;
-pub const PINPUT_RECORD = ?&struct__INPUT_RECORD;
+pub const PINPUT_RECORD = ?*struct__INPUT_RECORD;
 pub const struct__CHAR_INFO = extern struct {
     Char: extern union {
         UnicodeChar: WCHAR,
@@ -14537,7 +15395,7 @@ pub const struct__CHAR_INFO = extern struct {
     Attributes: WORD,
 };
 pub const CHAR_INFO = struct__CHAR_INFO;
-pub const PCHAR_INFO = ?&struct__CHAR_INFO;
+pub const PCHAR_INFO = ?*struct__CHAR_INFO;
 pub const struct__CONSOLE_SCREEN_BUFFER_INFO = extern struct {
     dwSize: COORD,
     dwCursorPosition: COORD,
@@ -14546,7 +15404,7 @@ pub const struct__CONSOLE_SCREEN_BUFFER_INFO = extern struct {
     dwMaximumWindowSize: COORD,
 };
 pub const CONSOLE_SCREEN_BUFFER_INFO = struct__CONSOLE_SCREEN_BUFFER_INFO;
-pub const PCONSOLE_SCREEN_BUFFER_INFO = ?&struct__CONSOLE_SCREEN_BUFFER_INFO;
+pub const PCONSOLE_SCREEN_BUFFER_INFO = ?*struct__CONSOLE_SCREEN_BUFFER_INFO;
 pub const struct__CONSOLE_SCREEN_BUFFER_INFOEX = extern struct {
     cbSize: ULONG,
     dwSize: COORD,
@@ -14559,19 +15417,19 @@ pub const struct__CONSOLE_SCREEN_BUFFER_INFOEX = extern struct {
     ColorTable: [16]COLORREF,
 };
 pub const CONSOLE_SCREEN_BUFFER_INFOEX = struct__CONSOLE_SCREEN_BUFFER_INFOEX;
-pub const PCONSOLE_SCREEN_BUFFER_INFOEX = ?&struct__CONSOLE_SCREEN_BUFFER_INFOEX;
+pub const PCONSOLE_SCREEN_BUFFER_INFOEX = ?*struct__CONSOLE_SCREEN_BUFFER_INFOEX;
 pub const struct__CONSOLE_CURSOR_INFO = extern struct {
     dwSize: DWORD,
     bVisible: BOOL,
 };
 pub const CONSOLE_CURSOR_INFO = struct__CONSOLE_CURSOR_INFO;
-pub const PCONSOLE_CURSOR_INFO = ?&struct__CONSOLE_CURSOR_INFO;
+pub const PCONSOLE_CURSOR_INFO = ?*struct__CONSOLE_CURSOR_INFO;
 pub const struct__CONSOLE_FONT_INFO = extern struct {
     nFont: DWORD,
     dwFontSize: COORD,
 };
 pub const CONSOLE_FONT_INFO = struct__CONSOLE_FONT_INFO;
-pub const PCONSOLE_FONT_INFO = ?&struct__CONSOLE_FONT_INFO;
+pub const PCONSOLE_FONT_INFO = ?*struct__CONSOLE_FONT_INFO;
 pub const struct__CONSOLE_FONT_INFOEX = extern struct {
     cbSize: ULONG,
     nFont: DWORD,
@@ -14581,7 +15439,7 @@ pub const struct__CONSOLE_FONT_INFOEX = extern struct {
     FaceName: [32]WCHAR,
 };
 pub const CONSOLE_FONT_INFOEX = struct__CONSOLE_FONT_INFOEX;
-pub const PCONSOLE_FONT_INFOEX = ?&struct__CONSOLE_FONT_INFOEX;
+pub const PCONSOLE_FONT_INFOEX = ?*struct__CONSOLE_FONT_INFOEX;
 pub const struct__CONSOLE_HISTORY_INFO = extern struct {
     cbSize: UINT,
     HistoryBufferSize: UINT,
@@ -14589,28 +15447,28 @@ pub const struct__CONSOLE_HISTORY_INFO = extern struct {
     dwFlags: DWORD,
 };
 pub const CONSOLE_HISTORY_INFO = struct__CONSOLE_HISTORY_INFO;
-pub const PCONSOLE_HISTORY_INFO = ?&struct__CONSOLE_HISTORY_INFO;
+pub const PCONSOLE_HISTORY_INFO = ?*struct__CONSOLE_HISTORY_INFO;
 pub const struct__CONSOLE_SELECTION_INFO = extern struct {
     dwFlags: DWORD,
     dwSelectionAnchor: COORD,
     srSelection: SMALL_RECT,
 };
 pub const CONSOLE_SELECTION_INFO = struct__CONSOLE_SELECTION_INFO;
-pub const PCONSOLE_SELECTION_INFO = ?&struct__CONSOLE_SELECTION_INFO;
+pub const PCONSOLE_SELECTION_INFO = ?*struct__CONSOLE_SELECTION_INFO;
 pub const PHANDLER_ROUTINE = ?extern fn(DWORD) BOOL;
 //pub extern fn PeekConsoleInputW(hConsoleInput: HANDLE, lpBuffer: PINPUT_RECORD, nLength: DWORD, lpNumberOfEventsRead: LPDWORD) BOOL;
-//pub extern fn WriteConsoleInputA(hConsoleInput: HANDLE, lpBuffer: ?&const INPUT_RECORD, nLength: DWORD, lpNumberOfEventsWritten: LPDWORD) BOOL;
-//pub extern fn WriteConsoleInputW(hConsoleInput: HANDLE, lpBuffer: ?&const INPUT_RECORD, nLength: DWORD, lpNumberOfEventsWritten: LPDWORD) BOOL;
+//pub extern fn WriteConsoleInputA(hConsoleInput: HANDLE, lpBuffer: ?[*]const INPUT_RECORD, nLength: DWORD, lpNumberOfEventsWritten: LPDWORD) BOOL;
+//pub extern fn WriteConsoleInputW(hConsoleInput: HANDLE, lpBuffer: ?[*]const INPUT_RECORD, nLength: DWORD, lpNumberOfEventsWritten: LPDWORD) BOOL;
 //pub extern fn ReadConsoleOutputA(hConsoleOutput: HANDLE, lpBuffer: PCHAR_INFO, dwBufferSize: COORD, dwBufferCoord: COORD, lpReadRegion: PSMALL_RECT) BOOL;
 //pub extern fn ReadConsoleOutputW(hConsoleOutput: HANDLE, lpBuffer: PCHAR_INFO, dwBufferSize: COORD, dwBufferCoord: COORD, lpReadRegion: PSMALL_RECT) BOOL;
-//pub extern fn WriteConsoleOutputA(hConsoleOutput: HANDLE, lpBuffer: ?&const CHAR_INFO, dwBufferSize: COORD, dwBufferCoord: COORD, lpWriteRegion: PSMALL_RECT) BOOL;
-//pub extern fn WriteConsoleOutputW(hConsoleOutput: HANDLE, lpBuffer: ?&const CHAR_INFO, dwBufferSize: COORD, dwBufferCoord: COORD, lpWriteRegion: PSMALL_RECT) BOOL;
+//pub extern fn WriteConsoleOutputA(hConsoleOutput: HANDLE, lpBuffer: ?[*]const CHAR_INFO, dwBufferSize: COORD, dwBufferCoord: COORD, lpWriteRegion: PSMALL_RECT) BOOL;
+//pub extern fn WriteConsoleOutputW(hConsoleOutput: HANDLE, lpBuffer: ?[*]const CHAR_INFO, dwBufferSize: COORD, dwBufferCoord: COORD, lpWriteRegion: PSMALL_RECT) BOOL;
 //pub extern fn ReadConsoleOutputCharacterA(hConsoleOutput: HANDLE, lpCharacter: LPSTR, nLength: DWORD, dwReadCoord: COORD, lpNumberOfCharsRead: LPDWORD) BOOL;
 //pub extern fn ReadConsoleOutputCharacterW(hConsoleOutput: HANDLE, lpCharacter: LPWSTR, nLength: DWORD, dwReadCoord: COORD, lpNumberOfCharsRead: LPDWORD) BOOL;
 //pub extern fn ReadConsoleOutputAttribute(hConsoleOutput: HANDLE, lpAttribute: LPWORD, nLength: DWORD, dwReadCoord: COORD, lpNumberOfAttrsRead: LPDWORD) BOOL;
 //pub extern fn WriteConsoleOutputCharacterA(hConsoleOutput: HANDLE, lpCharacter: LPCSTR, nLength: DWORD, dwWriteCoord: COORD, lpNumberOfCharsWritten: LPDWORD) BOOL;
 //pub extern fn WriteConsoleOutputCharacterW(hConsoleOutput: HANDLE, lpCharacter: LPCWSTR, nLength: DWORD, dwWriteCoord: COORD, lpNumberOfCharsWritten: LPDWORD) BOOL;
-//pub extern fn WriteConsoleOutputAttribute(hConsoleOutput: HANDLE, lpAttribute: ?&const WORD, nLength: DWORD, dwWriteCoord: COORD, lpNumberOfAttrsWritten: LPDWORD) BOOL;
+//pub extern fn WriteConsoleOutputAttribute(hConsoleOutput: HANDLE, lpAttribute: ?[*]const WORD, nLength: DWORD, dwWriteCoord: COORD, lpNumberOfAttrsWritten: LPDWORD) BOOL;
 //pub extern fn FillConsoleOutputCharacterA(hConsoleOutput: HANDLE, cCharacter: CHAR, nLength: DWORD, dwWriteCoord: COORD, lpNumberOfCharsWritten: LPDWORD) BOOL;
 //pub extern fn FillConsoleOutputCharacterW(hConsoleOutput: HANDLE, cCharacter: WCHAR, nLength: DWORD, dwWriteCoord: COORD, lpNumberOfCharsWritten: LPDWORD) BOOL;
 //pub extern fn FillConsoleOutputAttribute(hConsoleOutput: HANDLE, wAttribute: WORD, nLength: DWORD, dwWriteCoord: COORD, lpNumberOfAttrsWritten: LPDWORD) BOOL;
@@ -14631,10 +15489,10 @@ pub const PHANDLER_ROUTINE = ?extern fn(DWORD) BOOL;
 //pub extern fn FlushConsoleInputBuffer(hConsoleInput: HANDLE) BOOL;
 //pub extern fn SetConsoleScreenBufferSize(hConsoleOutput: HANDLE, dwSize: COORD) BOOL;
 //pub extern fn SetConsoleCursorPosition(hConsoleOutput: HANDLE, dwCursorPosition: COORD) BOOL;
-//pub extern fn SetConsoleCursorInfo(hConsoleOutput: HANDLE, lpConsoleCursorInfo: ?&const CONSOLE_CURSOR_INFO) BOOL;
-//pub extern fn ScrollConsoleScreenBufferA(hConsoleOutput: HANDLE, lpScrollRectangle: ?&const SMALL_RECT, lpClipRectangle: ?&const SMALL_RECT, dwDestinationOrigin: COORD, lpFill: ?&const CHAR_INFO) BOOL;
-//pub extern fn ScrollConsoleScreenBufferW(hConsoleOutput: HANDLE, lpScrollRectangle: ?&const SMALL_RECT, lpClipRectangle: ?&const SMALL_RECT, dwDestinationOrigin: COORD, lpFill: ?&const CHAR_INFO) BOOL;
-//pub extern fn SetConsoleWindowInfo(hConsoleOutput: HANDLE, bAbsolute: BOOL, lpConsoleWindow: ?&const SMALL_RECT) BOOL;
+//pub extern fn SetConsoleCursorInfo(hConsoleOutput: HANDLE, lpConsoleCursorInfo: ?[*]const CONSOLE_CURSOR_INFO) BOOL;
+//pub extern fn ScrollConsoleScreenBufferA(hConsoleOutput: HANDLE, lpScrollRectangle: ?[*]const SMALL_RECT, lpClipRectangle: ?[*]const SMALL_RECT, dwDestinationOrigin: COORD, lpFill: ?[*]const CHAR_INFO) BOOL;
+//pub extern fn ScrollConsoleScreenBufferW(hConsoleOutput: HANDLE, lpScrollRectangle: ?[*]const SMALL_RECT, lpClipRectangle: ?[*]const SMALL_RECT, dwDestinationOrigin: COORD, lpFill: ?[*]const CHAR_INFO) BOOL;
+//pub extern fn SetConsoleWindowInfo(hConsoleOutput: HANDLE, bAbsolute: BOOL, lpConsoleWindow: ?[*]const SMALL_RECT) BOOL;
 //pub extern fn SetConsoleTextAttribute(hConsoleOutput: HANDLE, wAttributes: WORD) BOOL;
 //pub extern fn GenerateConsoleCtrlEvent(dwCtrlEvent: DWORD, dwProcessGroupId: DWORD) BOOL;
 //pub extern fn FreeConsole() BOOL;
@@ -14652,7 +15510,7 @@ pub const struct__CONSOLE_READCONSOLE_CONTROL = extern struct {
     dwControlKeyState: ULONG,
 };
 pub const CONSOLE_READCONSOLE_CONTROL = struct__CONSOLE_READCONSOLE_CONTROL;
-pub const PCONSOLE_READCONSOLE_CONTROL = ?&struct__CONSOLE_READCONSOLE_CONTROL;
+pub const PCONSOLE_READCONSOLE_CONTROL = ?*struct__CONSOLE_READCONSOLE_CONTROL;
 //pub extern fn AllocConsole() BOOL;
 //pub extern fn GetConsoleCP() UINT;
 //pub extern fn GetConsoleMode(hConsoleHandle: HANDLE, lpMode: LPDWORD) BOOL;
@@ -14665,9 +15523,9 @@ pub const PCONSOLE_READCONSOLE_CONTROL = ?&struct__CONSOLE_READCONSOLE_CONTROL;
 //pub extern fn ReadConsoleInputW(hConsoleInput: HANDLE, lpBuffer: PINPUT_RECORD, nLength: DWORD, lpNumberOfEventsRead: LPDWORD) BOOL;
 //pub extern fn SetConsoleCtrlHandler(HandlerRoutine: PHANDLER_ROUTINE, Add: BOOL) BOOL;
 //pub extern fn SetConsoleMode(hConsoleHandle: HANDLE, dwMode: DWORD) BOOL;
-//pub extern fn WriteConsoleA(hConsoleOutput: HANDLE, lpBuffer: ?&const c_void, nNumberOfCharsToWrite: DWORD, lpNumberOfCharsWritten: LPDWORD, lpReserved: LPVOID) BOOL;
-//pub extern fn WriteConsoleW(hConsoleOutput: HANDLE, lpBuffer: ?&const c_void, nNumberOfCharsToWrite: DWORD, lpNumberOfCharsWritten: LPDWORD, lpReserved: LPVOID) BOOL;
-//pub extern fn CreateConsoleScreenBuffer(dwDesiredAccess: DWORD, dwShareMode: DWORD, lpSecurityAttributes: ?&const SECURITY_ATTRIBUTES, dwFlags: DWORD, lpScreenBufferData: LPVOID) HANDLE;
+//pub extern fn WriteConsoleA(hConsoleOutput: HANDLE, lpBuffer: ?*const c_void, nNumberOfCharsToWrite: DWORD, lpNumberOfCharsWritten: LPDWORD, lpReserved: LPVOID) BOOL;
+//pub extern fn WriteConsoleW(hConsoleOutput: HANDLE, lpBuffer: ?*const c_void, nNumberOfCharsToWrite: DWORD, lpNumberOfCharsWritten: LPDWORD, lpReserved: LPVOID) BOOL;
+//pub extern fn CreateConsoleScreenBuffer(dwDesiredAccess: DWORD, dwShareMode: DWORD, lpSecurityAttributes: ?[*]const SECURITY_ATTRIBUTES, dwFlags: DWORD, lpScreenBufferData: LPVOID) HANDLE;
 //pub extern fn SetConsoleCP(wCodePageID: UINT) BOOL;
 //pub extern fn SetConsoleOutputCP(wCodePageID: UINT) BOOL;
 //pub extern fn GetConsoleDisplayMode(lpModeFlags: LPDWORD) BOOL;
@@ -14716,8 +15574,8 @@ pub const VS_FIXEDFILEINFO = struct_tagVS_FIXEDFILEINFO;
 //pub extern fn GetFileVersionInfoExW(dwFlags: DWORD, lpwstrFilename: LPCWSTR, dwHandle: DWORD, dwLen: DWORD, lpData: LPVOID) BOOL;
 //pub extern fn VerLanguageNameA(wLang: DWORD, szLang: LPSTR, cchLang: DWORD) DWORD;
 //pub extern fn VerLanguageNameW(wLang: DWORD, szLang: LPWSTR, cchLang: DWORD) DWORD;
-//pub extern fn VerQueryValueA(pBlock: LPCVOID, lpSubBlock: LPCSTR, lplpBuffer: ?&LPVOID, puLen: PUINT) BOOL;
-//pub extern fn VerQueryValueW(pBlock: LPCVOID, lpSubBlock: LPCWSTR, lplpBuffer: ?&LPVOID, puLen: PUINT) BOOL;
+//pub extern fn VerQueryValueA(pBlock: LPCVOID, lpSubBlock: LPCSTR, lplpBuffer: ?[*]LPVOID, puLen: PUINT) BOOL;
+//pub extern fn VerQueryValueW(pBlock: LPCVOID, lpSubBlock: LPCWSTR, lplpBuffer: ?[*]LPVOID, puLen: PUINT) BOOL;
 pub const LSTATUS = LONG;
 pub const REGSAM = ACCESS_MASK;
 pub const struct_val_context = extern struct {
@@ -14725,7 +15583,7 @@ pub const struct_val_context = extern struct {
     value_context: LPVOID,
     val_buff_ptr: LPVOID,
 };
-pub const PVALCONTEXT = ?&struct_val_context;
+pub const PVALCONTEXT = ?*struct_val_context;
 pub const struct_pvalueA = extern struct {
     pv_valuename: LPSTR,
     pv_valuelen: c_int,
@@ -14733,7 +15591,7 @@ pub const struct_pvalueA = extern struct {
     pv_type: DWORD,
 };
 pub const PVALUEA = struct_pvalueA;
-pub const PPVALUEA = ?&struct_pvalueA;
+pub const PPVALUEA = ?*struct_pvalueA;
 pub const struct_pvalueW = extern struct {
     pv_valuename: LPWSTR,
     pv_valuelen: c_int,
@@ -14741,11 +15599,11 @@ pub const struct_pvalueW = extern struct {
     pv_type: DWORD,
 };
 pub const PVALUEW = struct_pvalueW;
-pub const PPVALUEW = ?&struct_pvalueW;
+pub const PPVALUEW = ?*struct_pvalueW;
 pub const PVALUE = PVALUEA;
 pub const PPVALUE = PPVALUEA;
-pub const QUERYHANDLER = extern fn(LPVOID, PVALCONTEXT, DWORD, LPVOID, ?&DWORD, DWORD) DWORD;
-pub const PQUERYHANDLER = ?&QUERYHANDLER;
+pub const QUERYHANDLER = extern fn(LPVOID, PVALCONTEXT, DWORD, LPVOID, ?[*]DWORD, DWORD) DWORD;
+pub const PQUERYHANDLER = ?[*]QUERYHANDLER;
 pub const struct_provider_info = extern struct {
     pi_R0_1val: PQUERYHANDLER,
     pi_R0_allvals: PQUERYHANDLER,
@@ -14755,7 +15613,7 @@ pub const struct_provider_info = extern struct {
     pi_key_context: LPVOID,
 };
 pub const REG_PROVIDER = struct_provider_info;
-pub const PPROVIDER = ?&struct_provider_info;
+pub const PPROVIDER = ?*struct_provider_info;
 pub const struct_value_entA = extern struct {
     ve_valuename: LPSTR,
     ve_valuelen: DWORD,
@@ -14763,7 +15621,7 @@ pub const struct_value_entA = extern struct {
     ve_type: DWORD,
 };
 pub const VALENTA = struct_value_entA;
-pub const PVALENTA = ?&struct_value_entA;
+pub const PVALENTA = ?*struct_value_entA;
 pub const struct_value_entW = extern struct {
     ve_valuename: LPWSTR,
     ve_valuelen: DWORD,
@@ -14771,7 +15629,7 @@ pub const struct_value_entW = extern struct {
     ve_type: DWORD,
 };
 pub const VALENTW = struct_value_entW;
-pub const PVALENTW = ?&struct_value_entW;
+pub const PVALENTW = ?*struct_value_entW;
 pub const VALENT = VALENTA;
 pub const PVALENT = PVALENTA;
 //pub extern fn RegCloseKey(hKey: HKEY) LSTATUS;
@@ -14798,7 +15656,7 @@ pub const PVALENT = PVALENTA;
 //pub extern fn RegDeleteKeyTransactedW(hKey: HKEY, lpSubKey: LPCWSTR, samDesired: REGSAM, Reserved: DWORD, hTransaction: HANDLE, pExtendedParameter: PVOID) LSTATUS;
 //pub extern fn RegDisableReflectionKey(hBase: HKEY) LONG;
 //pub extern fn RegEnableReflectionKey(hBase: HKEY) LONG;
-//pub extern fn RegQueryReflectionKey(hBase: HKEY, bIsReflectionDisabled: ?&BOOL) LONG;
+//pub extern fn RegQueryReflectionKey(hBase: HKEY, bIsReflectionDisabled: ?[*]BOOL) LONG;
 //pub extern fn RegDeleteValueA(hKey: HKEY, lpValueName: LPCSTR) LSTATUS;
 //pub extern fn RegDeleteValueW(hKey: HKEY, lpValueName: LPCWSTR) LSTATUS;
 //pub extern fn RegEnumKeyA(hKey: HKEY, dwIndex: DWORD, lpName: LPSTR, cchName: DWORD) LSTATUS;
@@ -14836,8 +15694,8 @@ pub const PVALENT = PVALENTA;
 //pub extern fn RegSetKeySecurity(hKey: HKEY, SecurityInformation: SECURITY_INFORMATION, pSecurityDescriptor: PSECURITY_DESCRIPTOR) LSTATUS;
 //pub extern fn RegSetValueA(hKey: HKEY, lpSubKey: LPCSTR, dwType: DWORD, lpData: LPCSTR, cbData: DWORD) LSTATUS;
 //pub extern fn RegSetValueW(hKey: HKEY, lpSubKey: LPCWSTR, dwType: DWORD, lpData: LPCWSTR, cbData: DWORD) LSTATUS;
-//pub extern fn RegSetValueExA(hKey: HKEY, lpValueName: LPCSTR, Reserved: DWORD, dwType: DWORD, lpData: ?&const BYTE, cbData: DWORD) LSTATUS;
-//pub extern fn RegSetValueExW(hKey: HKEY, lpValueName: LPCWSTR, Reserved: DWORD, dwType: DWORD, lpData: ?&const BYTE, cbData: DWORD) LSTATUS;
+//pub extern fn RegSetValueExA(hKey: HKEY, lpValueName: LPCSTR, Reserved: DWORD, dwType: DWORD, lpData: ?[*]const BYTE, cbData: DWORD) LSTATUS;
+//pub extern fn RegSetValueExW(hKey: HKEY, lpValueName: LPCWSTR, Reserved: DWORD, dwType: DWORD, lpData: ?[*]const BYTE, cbData: DWORD) LSTATUS;
 //pub extern fn RegUnLoadKeyA(hKey: HKEY, lpSubKey: LPCSTR) LSTATUS;
 //pub extern fn RegUnLoadKeyW(hKey: HKEY, lpSubKey: LPCWSTR) LSTATUS;
 //pub extern fn RegDeleteKeyValueA(hKey: HKEY, lpSubKey: LPCSTR, lpValueName: LPCSTR) LSTATUS;
@@ -14876,7 +15734,7 @@ pub const struct__NETRESOURCEA = extern struct {
     lpProvider: LPSTR,
 };
 pub const NETRESOURCEA = struct__NETRESOURCEA;
-pub const LPNETRESOURCEA = ?&struct__NETRESOURCEA;
+pub const LPNETRESOURCEA = ?*struct__NETRESOURCEA;
 pub const struct__NETRESOURCEW = extern struct {
     dwScope: DWORD,
     dwType: DWORD,
@@ -14888,7 +15746,7 @@ pub const struct__NETRESOURCEW = extern struct {
     lpProvider: LPWSTR,
 };
 pub const NETRESOURCEW = struct__NETRESOURCEW;
-pub const LPNETRESOURCEW = ?&struct__NETRESOURCEW;
+pub const LPNETRESOURCEW = ?*struct__NETRESOURCEW;
 pub const NETRESOURCE = NETRESOURCEA;
 pub const LPNETRESOURCE = LPNETRESOURCEA;
 //pub extern fn WNetAddConnectionA(lpRemoteName: LPCSTR, lpPassword: LPCSTR, lpLocalName: LPCSTR) DWORD;
@@ -14916,7 +15774,7 @@ pub const struct__CONNECTDLGSTRUCTA = extern struct {
     dwDevNum: DWORD,
 };
 pub const CONNECTDLGSTRUCTA = struct__CONNECTDLGSTRUCTA;
-pub const LPCONNECTDLGSTRUCTA = ?&struct__CONNECTDLGSTRUCTA;
+pub const LPCONNECTDLGSTRUCTA = ?*struct__CONNECTDLGSTRUCTA;
 pub const struct__CONNECTDLGSTRUCTW = extern struct {
     cbStructure: DWORD,
     hwndOwner: HWND,
@@ -14925,7 +15783,7 @@ pub const struct__CONNECTDLGSTRUCTW = extern struct {
     dwDevNum: DWORD,
 };
 pub const CONNECTDLGSTRUCTW = struct__CONNECTDLGSTRUCTW;
-pub const LPCONNECTDLGSTRUCTW = ?&struct__CONNECTDLGSTRUCTW;
+pub const LPCONNECTDLGSTRUCTW = ?*struct__CONNECTDLGSTRUCTW;
 pub const CONNECTDLGSTRUCT = CONNECTDLGSTRUCTA;
 pub const LPCONNECTDLGSTRUCT = LPCONNECTDLGSTRUCTA;
 //pub extern fn WNetConnectionDialog1A(lpConnDlgStruct: LPCONNECTDLGSTRUCTA) DWORD;
@@ -14938,7 +15796,7 @@ pub const struct__DISCDLGSTRUCTA = extern struct {
     dwFlags: DWORD,
 };
 pub const DISCDLGSTRUCTA = struct__DISCDLGSTRUCTA;
-pub const LPDISCDLGSTRUCTA = ?&struct__DISCDLGSTRUCTA;
+pub const LPDISCDLGSTRUCTA = ?*struct__DISCDLGSTRUCTA;
 pub const struct__DISCDLGSTRUCTW = extern struct {
     cbStructure: DWORD,
     hwndOwner: HWND,
@@ -14947,7 +15805,7 @@ pub const struct__DISCDLGSTRUCTW = extern struct {
     dwFlags: DWORD,
 };
 pub const DISCDLGSTRUCTW = struct__DISCDLGSTRUCTW;
-pub const LPDISCDLGSTRUCTW = ?&struct__DISCDLGSTRUCTW;
+pub const LPDISCDLGSTRUCTW = ?*struct__DISCDLGSTRUCTW;
 pub const DISCDLGSTRUCT = DISCDLGSTRUCTA;
 pub const LPDISCDLGSTRUCT = LPDISCDLGSTRUCTA;
 //pub extern fn WNetDisconnectDialog1A(lpConnDlgStruct: LPDISCDLGSTRUCTA) DWORD;
@@ -14959,18 +15817,18 @@ pub const LPDISCDLGSTRUCT = LPDISCDLGSTRUCTA;
 //pub extern fn WNetCloseEnum(hEnum: HANDLE) DWORD;
 //pub extern fn WNetGetResourceParentA(lpNetResource: LPNETRESOURCEA, lpBuffer: LPVOID, lpcbBuffer: LPDWORD) DWORD;
 //pub extern fn WNetGetResourceParentW(lpNetResource: LPNETRESOURCEW, lpBuffer: LPVOID, lpcbBuffer: LPDWORD) DWORD;
-//pub extern fn WNetGetResourceInformationA(lpNetResource: LPNETRESOURCEA, lpBuffer: LPVOID, lpcbBuffer: LPDWORD, lplpSystem: ?&LPSTR) DWORD;
-//pub extern fn WNetGetResourceInformationW(lpNetResource: LPNETRESOURCEW, lpBuffer: LPVOID, lpcbBuffer: LPDWORD, lplpSystem: ?&LPWSTR) DWORD;
+//pub extern fn WNetGetResourceInformationA(lpNetResource: LPNETRESOURCEA, lpBuffer: LPVOID, lpcbBuffer: LPDWORD, lplpSystem: ?[*]LPSTR) DWORD;
+//pub extern fn WNetGetResourceInformationW(lpNetResource: LPNETRESOURCEW, lpBuffer: LPVOID, lpcbBuffer: LPDWORD, lplpSystem: ?[*]LPWSTR) DWORD;
 pub const struct__UNIVERSAL_NAME_INFOA = extern struct {
     lpUniversalName: LPSTR,
 };
 pub const UNIVERSAL_NAME_INFOA = struct__UNIVERSAL_NAME_INFOA;
-pub const LPUNIVERSAL_NAME_INFOA = ?&struct__UNIVERSAL_NAME_INFOA;
+pub const LPUNIVERSAL_NAME_INFOA = ?*struct__UNIVERSAL_NAME_INFOA;
 pub const struct__UNIVERSAL_NAME_INFOW = extern struct {
     lpUniversalName: LPWSTR,
 };
 pub const UNIVERSAL_NAME_INFOW = struct__UNIVERSAL_NAME_INFOW;
-pub const LPUNIVERSAL_NAME_INFOW = ?&struct__UNIVERSAL_NAME_INFOW;
+pub const LPUNIVERSAL_NAME_INFOW = ?*struct__UNIVERSAL_NAME_INFOW;
 pub const UNIVERSAL_NAME_INFO = UNIVERSAL_NAME_INFOA;
 pub const LPUNIVERSAL_NAME_INFO = LPUNIVERSAL_NAME_INFOA;
 pub const struct__REMOTE_NAME_INFOA = extern struct {
@@ -14979,14 +15837,14 @@ pub const struct__REMOTE_NAME_INFOA = extern struct {
     lpRemainingPath: LPSTR,
 };
 pub const REMOTE_NAME_INFOA = struct__REMOTE_NAME_INFOA;
-pub const LPREMOTE_NAME_INFOA = ?&struct__REMOTE_NAME_INFOA;
+pub const LPREMOTE_NAME_INFOA = ?*struct__REMOTE_NAME_INFOA;
 pub const struct__REMOTE_NAME_INFOW = extern struct {
     lpUniversalName: LPWSTR,
     lpConnectionName: LPWSTR,
     lpRemainingPath: LPWSTR,
 };
 pub const REMOTE_NAME_INFOW = struct__REMOTE_NAME_INFOW;
-pub const LPREMOTE_NAME_INFOW = ?&struct__REMOTE_NAME_INFOW;
+pub const LPREMOTE_NAME_INFOW = ?*struct__REMOTE_NAME_INFOW;
 pub const REMOTE_NAME_INFO = REMOTE_NAME_INFOA;
 pub const LPREMOTE_NAME_INFO = LPREMOTE_NAME_INFOA;
 //pub extern fn WNetGetUniversalNameA(lpLocalPath: LPCSTR, dwInfoLevel: DWORD, lpBuffer: LPVOID, lpBufferSize: LPDWORD) DWORD;
@@ -15006,7 +15864,7 @@ pub const struct__NETINFOSTRUCT = extern struct {
     dwDrives: DWORD,
 };
 pub const NETINFOSTRUCT = struct__NETINFOSTRUCT;
-pub const LPNETINFOSTRUCT = ?&struct__NETINFOSTRUCT;
+pub const LPNETINFOSTRUCT = ?*struct__NETINFOSTRUCT;
 //pub extern fn WNetGetNetworkInformationA(lpProvider: LPCSTR, lpNetInfoStruct: LPNETINFOSTRUCT) DWORD;
 //pub extern fn WNetGetNetworkInformationW(lpProvider: LPCWSTR, lpNetInfoStruct: LPNETINFOSTRUCT) DWORD;
 //pub extern fn WNetGetLastErrorA(lpError: LPDWORD, lpErrorBuf: LPSTR, nErrorBufSize: DWORD, lpNameBuf: LPSTR, nNameBufSize: DWORD) DWORD;
@@ -15019,7 +15877,7 @@ pub const struct__NETCONNECTINFOSTRUCT = extern struct {
     dwOptDataSize: DWORD,
 };
 pub const NETCONNECTINFOSTRUCT = struct__NETCONNECTINFOSTRUCT;
-pub const LPNETCONNECTINFOSTRUCT = ?&struct__NETCONNECTINFOSTRUCT;
+pub const LPNETCONNECTINFOSTRUCT = ?*struct__NETCONNECTINFOSTRUCT;
 //pub extern fn MultinetGetConnectionPerformanceA(lpNetResource: LPNETRESOURCEA, lpNetConnectInfoStruct: LPNETCONNECTINFOSTRUCT) DWORD;
 //pub extern fn MultinetGetConnectionPerformanceW(lpNetResource: LPNETRESOURCEW, lpNetConnectInfoStruct: LPNETCONNECTINFOSTRUCT) DWORD;
 //pub extern fn uaw_CharUpperW(String: LPUWSTR) LPUWSTR;
@@ -15032,86 +15890,71 @@ pub const LPNETCONNECTINFOSTRUCT = ?&struct__NETCONNECTINFOSTRUCT;
 //pub extern fn uaw_wcslen(String: PCUWSTR) usize;
 //pub extern fn uaw_wcsrchr(String: PCUWSTR, Character: WCHAR) PUWSTR;
 pub fn ua_CharUpperW(String: LPUWSTR) LPUWSTR {
-    {
-        const _tmp = 1;
-        if (@bitCast(@IntType(false, @sizeOf(@typeOf(_tmp)) * 8), _tmp) != 0) {
-            return @ptrCast(LPUWSTR, CharUpperW(@ptrCast(PWSTR, String)));
-        } else {
-            return uaw_CharUpperW(String);
-        }
+    if (1 != 0) {
+        return @ptrCast(LPUWSTR, CharUpperW(@ptrCast(PWSTR, String)));
+    } else {
+        return uaw_CharUpperW(String);
     }
 }
 pub fn ua_lstrcmpW(String1: LPCUWSTR, String2: LPCUWSTR) c_int {
-    if (1 and 1) {
+    if ((1 != 0) and (1 != 0)) {
         return lstrcmpW(@ptrCast(LPCWSTR, String1), @ptrCast(LPCWSTR, String2));
     } else {
         return uaw_lstrcmpW(String1, String2);
     }
 }
 pub fn ua_lstrcmpiW(String1: LPCUWSTR, String2: LPCUWSTR) c_int {
-    if (1 and 1) {
+    if ((1 != 0) and (1 != 0)) {
         return lstrcmpiW(@ptrCast(LPCWSTR, String1), @ptrCast(LPCWSTR, String2));
     } else {
         return uaw_lstrcmpiW(String1, String2);
     }
 }
 pub fn ua_lstrlenW(String: LPCUWSTR) c_int {
-    {
-        const _tmp = 1;
-        if (@bitCast(@IntType(false, @sizeOf(@typeOf(_tmp)) * 8), _tmp) != 0) {
-            return lstrlenW(@ptrCast(PCWSTR, String));
-        } else {
-            return uaw_lstrlenW(String);
-        }
+    if (1 != 0) {
+        return lstrlenW(@ptrCast(PCWSTR, String));
+    } else {
+        return uaw_lstrlenW(String);
     }
 }
-pub const PUWSTR_C = ?&WCHAR;
+pub const PUWSTR_C = ?[*]WCHAR;
 pub fn ua_wcschr(String: PCUWSTR, Character: WCHAR) PUWSTR_C {
-    {
-        const _tmp = 1;
-        if (@bitCast(@IntType(false, @sizeOf(@typeOf(_tmp)) * 8), _tmp) != 0) {
-            return @ptrCast(PUWSTR_C, wcschr(@ptrCast(PCWSTR, String), Character));
-        } else {
-            return @ptrCast(PUWSTR_C, uaw_wcschr(String, Character));
-        }
+    if (1 != 0) {
+        return @ptrCast(PUWSTR_C, wcschr(@ptrCast(PCWSTR, String), Character));
+    } else {
+        return @ptrCast(PUWSTR_C, uaw_wcschr(String, Character));
     }
 }
 pub fn ua_wcsrchr(String: PCUWSTR, Character: WCHAR) PUWSTR_C {
-    {
-        const _tmp = 1;
-        if (@bitCast(@IntType(false, @sizeOf(@typeOf(_tmp)) * 8), _tmp) != 0) {
-            return @ptrCast(PUWSTR_C, wcsrchr(@ptrCast(PCWSTR, String), Character));
-        } else {
-            return @ptrCast(PUWSTR_C, uaw_wcsrchr(String, Character));
-        }
+    if (1 != 0) {
+        return @ptrCast(PUWSTR_C, wcsrchr(@ptrCast(PCWSTR, String), Character));
+    } else {
+        return @ptrCast(PUWSTR_C, uaw_wcsrchr(String, Character));
     }
 }
 pub fn ua_wcscpy(Destination: PUWSTR, Source: PCUWSTR) PUWSTR {
-    if (1 and 1) {
+    if ((1 != 0) and (1 != 0)) {
         return @ptrCast(PUWSTR, wcscpy(@ptrCast(PWSTR, Destination), @ptrCast(PCWSTR, Source)));
     } else {
         return uaw_wcscpy(Destination, Source);
     }
 }
 pub fn ua_wcscpy_s(Destination: PUWSTR, DestinationSize: usize, Source: PCUWSTR) PUWSTR {
-    if (1 and 1) {
+    if ((1 != 0) and (1 != 0)) {
         return if (wcscpy_s(@ptrCast(PWSTR, Destination), DestinationSize, @ptrCast(PCWSTR, Source)) == 0) Destination else null;
     } else {
         return uaw_wcscpy(Destination, Source);
     }
 }
 pub fn ua_wcslen(String: PCUWSTR) usize {
-    {
-        const _tmp = 1;
-        if (@bitCast(@IntType(false, @sizeOf(@typeOf(_tmp)) * 8), _tmp) != 0) {
-            return wcslen(@ptrCast(PCWSTR, String));
-        } else {
-            return uaw_wcslen(String);
-        }
+    if (1 != 0) {
+        return wcslen(@ptrCast(PCWSTR, String));
+    } else {
+        return uaw_wcslen(String);
     }
 }
 pub fn ua_wcsicmp(String1: PCUWSTR, String2: PCUWSTR) c_int {
-    if (1 and 1) {
+    if ((1 != 0) and (1 != 0)) {
         return _wcsicmp(@ptrCast(LPCWSTR, String1), @ptrCast(LPCWSTR, String2));
     } else {
         return uaw_wcsicmp(String1, String2);
@@ -15141,138 +15984,148 @@ pub const struct__SERVICE_CUSTOM_SYSTEM_STATE_CHANGE_DATA_ITEM = extern struct {
     },
 };
 pub const SERVICE_CUSTOM_SYSTEM_STATE_CHANGE_DATA_ITEM = struct__SERVICE_CUSTOM_SYSTEM_STATE_CHANGE_DATA_ITEM;
-pub const LPSERVICE_CUSTOM_SYSTEM_STATE_CHANGE_DATA_ITEM = ?&struct__SERVICE_CUSTOM_SYSTEM_STATE_CHANGE_DATA_ITEM;
+pub const LPSERVICE_CUSTOM_SYSTEM_STATE_CHANGE_DATA_ITEM = ?*struct__SERVICE_CUSTOM_SYSTEM_STATE_CHANGE_DATA_ITEM;
 pub const struct__SERVICE_DESCRIPTIONA = extern struct {
     lpDescription: LPSTR,
 };
 pub const SERVICE_DESCRIPTIONA = struct__SERVICE_DESCRIPTIONA;
-pub const LPSERVICE_DESCRIPTIONA = ?&struct__SERVICE_DESCRIPTIONA;
+pub const LPSERVICE_DESCRIPTIONA = ?*struct__SERVICE_DESCRIPTIONA;
 pub const struct__SERVICE_DESCRIPTIONW = extern struct {
     lpDescription: LPWSTR,
 };
 pub const SERVICE_DESCRIPTIONW = struct__SERVICE_DESCRIPTIONW;
-pub const LPSERVICE_DESCRIPTIONW = ?&struct__SERVICE_DESCRIPTIONW;
+pub const LPSERVICE_DESCRIPTIONW = ?*struct__SERVICE_DESCRIPTIONW;
 pub const SERVICE_DESCRIPTION = SERVICE_DESCRIPTIONA;
 pub const LPSERVICE_DESCRIPTION = LPSERVICE_DESCRIPTIONA;
-pub const SC_ACTION_NONE: c_int = 0;
-pub const SC_ACTION_RESTART: c_int = 1;
-pub const SC_ACTION_REBOOT: c_int = 2;
-pub const SC_ACTION_RUN_COMMAND: c_int = 3;
-pub const SC_ACTION_OWN_RESTART: c_int = 4;
-pub const enum__SC_ACTION_TYPE = c_int;
+pub const SC_ACTION_NONE = enum__SC_ACTION_TYPE.SC_ACTION_NONE;
+pub const SC_ACTION_RESTART = enum__SC_ACTION_TYPE.SC_ACTION_RESTART;
+pub const SC_ACTION_REBOOT = enum__SC_ACTION_TYPE.SC_ACTION_REBOOT;
+pub const SC_ACTION_RUN_COMMAND = enum__SC_ACTION_TYPE.SC_ACTION_RUN_COMMAND;
+pub const SC_ACTION_OWN_RESTART = enum__SC_ACTION_TYPE.SC_ACTION_OWN_RESTART;
+pub const enum__SC_ACTION_TYPE = extern enum {
+    SC_ACTION_NONE = 0,
+    SC_ACTION_RESTART = 1,
+    SC_ACTION_REBOOT = 2,
+    SC_ACTION_RUN_COMMAND = 3,
+    SC_ACTION_OWN_RESTART = 4,
+};
 pub const SC_ACTION_TYPE = enum__SC_ACTION_TYPE;
 pub const struct__SC_ACTION = extern struct {
     Type: SC_ACTION_TYPE,
     Delay: DWORD,
 };
 pub const SC_ACTION = struct__SC_ACTION;
-pub const LPSC_ACTION = ?&struct__SC_ACTION;
+pub const LPSC_ACTION = ?*struct__SC_ACTION;
 pub const struct__SERVICE_FAILURE_ACTIONSA = extern struct {
     dwResetPeriod: DWORD,
     lpRebootMsg: LPSTR,
     lpCommand: LPSTR,
     cActions: DWORD,
-    lpsaActions: ?&SC_ACTION,
+    lpsaActions: ?[*]SC_ACTION,
 };
 pub const SERVICE_FAILURE_ACTIONSA = struct__SERVICE_FAILURE_ACTIONSA;
-pub const LPSERVICE_FAILURE_ACTIONSA = ?&struct__SERVICE_FAILURE_ACTIONSA;
+pub const LPSERVICE_FAILURE_ACTIONSA = ?*struct__SERVICE_FAILURE_ACTIONSA;
 pub const struct__SERVICE_FAILURE_ACTIONSW = extern struct {
     dwResetPeriod: DWORD,
     lpRebootMsg: LPWSTR,
     lpCommand: LPWSTR,
     cActions: DWORD,
-    lpsaActions: ?&SC_ACTION,
+    lpsaActions: ?[*]SC_ACTION,
 };
 pub const SERVICE_FAILURE_ACTIONSW = struct__SERVICE_FAILURE_ACTIONSW;
-pub const LPSERVICE_FAILURE_ACTIONSW = ?&struct__SERVICE_FAILURE_ACTIONSW;
+pub const LPSERVICE_FAILURE_ACTIONSW = ?*struct__SERVICE_FAILURE_ACTIONSW;
 pub const SERVICE_FAILURE_ACTIONS = SERVICE_FAILURE_ACTIONSA;
 pub const LPSERVICE_FAILURE_ACTIONS = LPSERVICE_FAILURE_ACTIONSA;
 pub const struct__SERVICE_DELAYED_AUTO_START_INFO = extern struct {
     fDelayedAutostart: BOOL,
 };
 pub const SERVICE_DELAYED_AUTO_START_INFO = struct__SERVICE_DELAYED_AUTO_START_INFO;
-pub const LPSERVICE_DELAYED_AUTO_START_INFO = ?&struct__SERVICE_DELAYED_AUTO_START_INFO;
+pub const LPSERVICE_DELAYED_AUTO_START_INFO = ?*struct__SERVICE_DELAYED_AUTO_START_INFO;
 pub const struct__SERVICE_FAILURE_ACTIONS_FLAG = extern struct {
     fFailureActionsOnNonCrashFailures: BOOL,
 };
 pub const SERVICE_FAILURE_ACTIONS_FLAG = struct__SERVICE_FAILURE_ACTIONS_FLAG;
-pub const LPSERVICE_FAILURE_ACTIONS_FLAG = ?&struct__SERVICE_FAILURE_ACTIONS_FLAG;
+pub const LPSERVICE_FAILURE_ACTIONS_FLAG = ?*struct__SERVICE_FAILURE_ACTIONS_FLAG;
 pub const struct__SERVICE_SID_INFO = extern struct {
     dwServiceSidType: DWORD,
 };
 pub const SERVICE_SID_INFO = struct__SERVICE_SID_INFO;
-pub const LPSERVICE_SID_INFO = ?&struct__SERVICE_SID_INFO;
+pub const LPSERVICE_SID_INFO = ?*struct__SERVICE_SID_INFO;
 pub const struct__SERVICE_REQUIRED_PRIVILEGES_INFOA = extern struct {
     pmszRequiredPrivileges: LPSTR,
 };
 pub const SERVICE_REQUIRED_PRIVILEGES_INFOA = struct__SERVICE_REQUIRED_PRIVILEGES_INFOA;
-pub const LPSERVICE_REQUIRED_PRIVILEGES_INFOA = ?&struct__SERVICE_REQUIRED_PRIVILEGES_INFOA;
+pub const LPSERVICE_REQUIRED_PRIVILEGES_INFOA = ?*struct__SERVICE_REQUIRED_PRIVILEGES_INFOA;
 pub const struct__SERVICE_REQUIRED_PRIVILEGES_INFOW = extern struct {
     pmszRequiredPrivileges: LPWSTR,
 };
 pub const SERVICE_REQUIRED_PRIVILEGES_INFOW = struct__SERVICE_REQUIRED_PRIVILEGES_INFOW;
-pub const LPSERVICE_REQUIRED_PRIVILEGES_INFOW = ?&struct__SERVICE_REQUIRED_PRIVILEGES_INFOW;
+pub const LPSERVICE_REQUIRED_PRIVILEGES_INFOW = ?*struct__SERVICE_REQUIRED_PRIVILEGES_INFOW;
 pub const SERVICE_REQUIRED_PRIVILEGES_INFO = SERVICE_REQUIRED_PRIVILEGES_INFOA;
 pub const LPSERVICE_REQUIRED_PRIVILEGES_INFO = LPSERVICE_REQUIRED_PRIVILEGES_INFOA;
 pub const struct__SERVICE_PRESHUTDOWN_INFO = extern struct {
     dwPreshutdownTimeout: DWORD,
 };
 pub const SERVICE_PRESHUTDOWN_INFO = struct__SERVICE_PRESHUTDOWN_INFO;
-pub const LPSERVICE_PRESHUTDOWN_INFO = ?&struct__SERVICE_PRESHUTDOWN_INFO;
+pub const LPSERVICE_PRESHUTDOWN_INFO = ?*struct__SERVICE_PRESHUTDOWN_INFO;
 pub const struct__SERVICE_TRIGGER_SPECIFIC_DATA_ITEM = extern struct {
     dwDataType: DWORD,
     cbData: DWORD,
     pData: PBYTE,
 };
 pub const SERVICE_TRIGGER_SPECIFIC_DATA_ITEM = struct__SERVICE_TRIGGER_SPECIFIC_DATA_ITEM;
-pub const PSERVICE_TRIGGER_SPECIFIC_DATA_ITEM = ?&struct__SERVICE_TRIGGER_SPECIFIC_DATA_ITEM;
+pub const PSERVICE_TRIGGER_SPECIFIC_DATA_ITEM = ?*struct__SERVICE_TRIGGER_SPECIFIC_DATA_ITEM;
 pub const struct__SERVICE_TRIGGER = extern struct {
     dwTriggerType: DWORD,
     dwAction: DWORD,
-    pTriggerSubtype: ?&GUID,
+    pTriggerSubtype: ?[*]GUID,
     cDataItems: DWORD,
     pDataItems: PSERVICE_TRIGGER_SPECIFIC_DATA_ITEM,
 };
 pub const SERVICE_TRIGGER = struct__SERVICE_TRIGGER;
-pub const PSERVICE_TRIGGER = ?&struct__SERVICE_TRIGGER;
+pub const PSERVICE_TRIGGER = ?*struct__SERVICE_TRIGGER;
 pub const struct__SERVICE_TRIGGER_INFO = extern struct {
     cTriggers: DWORD,
     pTriggers: PSERVICE_TRIGGER,
     pReserved: PBYTE,
 };
 pub const SERVICE_TRIGGER_INFO = struct__SERVICE_TRIGGER_INFO;
-pub const PSERVICE_TRIGGER_INFO = ?&struct__SERVICE_TRIGGER_INFO;
+pub const PSERVICE_TRIGGER_INFO = ?*struct__SERVICE_TRIGGER_INFO;
 pub const struct__SERVICE_PREFERRED_NODE_INFO = extern struct {
     usPreferredNode: USHORT,
     fDelete: BOOLEAN,
 };
 pub const SERVICE_PREFERRED_NODE_INFO = struct__SERVICE_PREFERRED_NODE_INFO;
-pub const LPSERVICE_PREFERRED_NODE_INFO = ?&struct__SERVICE_PREFERRED_NODE_INFO;
+pub const LPSERVICE_PREFERRED_NODE_INFO = ?*struct__SERVICE_PREFERRED_NODE_INFO;
 pub const struct__SERVICE_TIMECHANGE_INFO = extern struct {
     liNewTime: LARGE_INTEGER,
     liOldTime: LARGE_INTEGER,
 };
 pub const SERVICE_TIMECHANGE_INFO = struct__SERVICE_TIMECHANGE_INFO;
-pub const PSERVICE_TIMECHANGE_INFO = ?&struct__SERVICE_TIMECHANGE_INFO;
+pub const PSERVICE_TIMECHANGE_INFO = ?*struct__SERVICE_TIMECHANGE_INFO;
 pub const struct__SERVICE_LAUNCH_PROTECTED_INFO = extern struct {
     dwLaunchProtected: DWORD,
 };
 pub const SERVICE_LAUNCH_PROTECTED_INFO = struct__SERVICE_LAUNCH_PROTECTED_INFO;
-pub const PSERVICE_LAUNCH_PROTECTED_INFO = ?&struct__SERVICE_LAUNCH_PROTECTED_INFO;
+pub const PSERVICE_LAUNCH_PROTECTED_INFO = ?*struct__SERVICE_LAUNCH_PROTECTED_INFO;
 pub const struct_SC_HANDLE__ = extern struct {
     unused: c_int,
 };
-pub const SC_HANDLE = ?&struct_SC_HANDLE__;
-pub const LPSC_HANDLE = ?&SC_HANDLE;
+pub const SC_HANDLE = ?*struct_SC_HANDLE__;
+pub const LPSC_HANDLE = ?[*]SC_HANDLE;
 pub const struct_SERVICE_STATUS_HANDLE__ = extern struct {
     unused: c_int,
 };
-pub const SERVICE_STATUS_HANDLE = ?&struct_SERVICE_STATUS_HANDLE__;
-pub const SC_STATUS_PROCESS_INFO: c_int = 0;
-pub const enum__SC_STATUS_TYPE = c_int;
+pub const SERVICE_STATUS_HANDLE = ?*struct_SERVICE_STATUS_HANDLE__;
+pub const SC_STATUS_PROCESS_INFO = enum__SC_STATUS_TYPE.SC_STATUS_PROCESS_INFO;
+pub const enum__SC_STATUS_TYPE = extern enum {
+    SC_STATUS_PROCESS_INFO = 0,
+};
 pub const SC_STATUS_TYPE = enum__SC_STATUS_TYPE;
-pub const SC_ENUM_PROCESS_INFO: c_int = 0;
-pub const enum__SC_ENUM_TYPE = c_int;
+pub const SC_ENUM_PROCESS_INFO = enum__SC_ENUM_TYPE.SC_ENUM_PROCESS_INFO;
+pub const enum__SC_ENUM_TYPE = extern enum {
+    SC_ENUM_PROCESS_INFO = 0,
+};
 pub const SC_ENUM_TYPE = enum__SC_ENUM_TYPE;
 pub const struct__SERVICE_STATUS = extern struct {
     dwServiceType: DWORD,
@@ -15284,7 +16137,7 @@ pub const struct__SERVICE_STATUS = extern struct {
     dwWaitHint: DWORD,
 };
 pub const SERVICE_STATUS = struct__SERVICE_STATUS;
-pub const LPSERVICE_STATUS = ?&struct__SERVICE_STATUS;
+pub const LPSERVICE_STATUS = ?*struct__SERVICE_STATUS;
 pub const struct__SERVICE_STATUS_PROCESS = extern struct {
     dwServiceType: DWORD,
     dwCurrentState: DWORD,
@@ -15297,21 +16150,21 @@ pub const struct__SERVICE_STATUS_PROCESS = extern struct {
     dwServiceFlags: DWORD,
 };
 pub const SERVICE_STATUS_PROCESS = struct__SERVICE_STATUS_PROCESS;
-pub const LPSERVICE_STATUS_PROCESS = ?&struct__SERVICE_STATUS_PROCESS;
+pub const LPSERVICE_STATUS_PROCESS = ?*struct__SERVICE_STATUS_PROCESS;
 pub const struct__ENUM_SERVICE_STATUSA = extern struct {
     lpServiceName: LPSTR,
     lpDisplayName: LPSTR,
     ServiceStatus: SERVICE_STATUS,
 };
 pub const ENUM_SERVICE_STATUSA = struct__ENUM_SERVICE_STATUSA;
-pub const LPENUM_SERVICE_STATUSA = ?&struct__ENUM_SERVICE_STATUSA;
+pub const LPENUM_SERVICE_STATUSA = ?*struct__ENUM_SERVICE_STATUSA;
 pub const struct__ENUM_SERVICE_STATUSW = extern struct {
     lpServiceName: LPWSTR,
     lpDisplayName: LPWSTR,
     ServiceStatus: SERVICE_STATUS,
 };
 pub const ENUM_SERVICE_STATUSW = struct__ENUM_SERVICE_STATUSW;
-pub const LPENUM_SERVICE_STATUSW = ?&struct__ENUM_SERVICE_STATUSW;
+pub const LPENUM_SERVICE_STATUSW = ?*struct__ENUM_SERVICE_STATUSW;
 pub const ENUM_SERVICE_STATUS = ENUM_SERVICE_STATUSA;
 pub const LPENUM_SERVICE_STATUS = LPENUM_SERVICE_STATUSA;
 pub const struct__ENUM_SERVICE_STATUS_PROCESSA = extern struct {
@@ -15320,14 +16173,14 @@ pub const struct__ENUM_SERVICE_STATUS_PROCESSA = extern struct {
     ServiceStatusProcess: SERVICE_STATUS_PROCESS,
 };
 pub const ENUM_SERVICE_STATUS_PROCESSA = struct__ENUM_SERVICE_STATUS_PROCESSA;
-pub const LPENUM_SERVICE_STATUS_PROCESSA = ?&struct__ENUM_SERVICE_STATUS_PROCESSA;
+pub const LPENUM_SERVICE_STATUS_PROCESSA = ?*struct__ENUM_SERVICE_STATUS_PROCESSA;
 pub const struct__ENUM_SERVICE_STATUS_PROCESSW = extern struct {
     lpServiceName: LPWSTR,
     lpDisplayName: LPWSTR,
     ServiceStatusProcess: SERVICE_STATUS_PROCESS,
 };
 pub const ENUM_SERVICE_STATUS_PROCESSW = struct__ENUM_SERVICE_STATUS_PROCESSW;
-pub const LPENUM_SERVICE_STATUS_PROCESSW = ?&struct__ENUM_SERVICE_STATUS_PROCESSW;
+pub const LPENUM_SERVICE_STATUS_PROCESSW = ?*struct__ENUM_SERVICE_STATUS_PROCESSW;
 pub const ENUM_SERVICE_STATUS_PROCESS = ENUM_SERVICE_STATUS_PROCESSA;
 pub const LPENUM_SERVICE_STATUS_PROCESS = LPENUM_SERVICE_STATUS_PROCESSA;
 pub const SC_LOCK = LPVOID;
@@ -15337,14 +16190,14 @@ pub const struct__QUERY_SERVICE_LOCK_STATUSA = extern struct {
     dwLockDuration: DWORD,
 };
 pub const QUERY_SERVICE_LOCK_STATUSA = struct__QUERY_SERVICE_LOCK_STATUSA;
-pub const LPQUERY_SERVICE_LOCK_STATUSA = ?&struct__QUERY_SERVICE_LOCK_STATUSA;
+pub const LPQUERY_SERVICE_LOCK_STATUSA = ?*struct__QUERY_SERVICE_LOCK_STATUSA;
 pub const struct__QUERY_SERVICE_LOCK_STATUSW = extern struct {
     fIsLocked: DWORD,
     lpLockOwner: LPWSTR,
     dwLockDuration: DWORD,
 };
 pub const QUERY_SERVICE_LOCK_STATUSW = struct__QUERY_SERVICE_LOCK_STATUSW;
-pub const LPQUERY_SERVICE_LOCK_STATUSW = ?&struct__QUERY_SERVICE_LOCK_STATUSW;
+pub const LPQUERY_SERVICE_LOCK_STATUSW = ?*struct__QUERY_SERVICE_LOCK_STATUSW;
 pub const QUERY_SERVICE_LOCK_STATUS = QUERY_SERVICE_LOCK_STATUSA;
 pub const LPQUERY_SERVICE_LOCK_STATUS = LPQUERY_SERVICE_LOCK_STATUSA;
 pub const struct__QUERY_SERVICE_CONFIGA = extern struct {
@@ -15359,7 +16212,7 @@ pub const struct__QUERY_SERVICE_CONFIGA = extern struct {
     lpDisplayName: LPSTR,
 };
 pub const QUERY_SERVICE_CONFIGA = struct__QUERY_SERVICE_CONFIGA;
-pub const LPQUERY_SERVICE_CONFIGA = ?&struct__QUERY_SERVICE_CONFIGA;
+pub const LPQUERY_SERVICE_CONFIGA = ?*struct__QUERY_SERVICE_CONFIGA;
 pub const struct__QUERY_SERVICE_CONFIGW = extern struct {
     dwServiceType: DWORD,
     dwStartType: DWORD,
@@ -15372,25 +16225,25 @@ pub const struct__QUERY_SERVICE_CONFIGW = extern struct {
     lpDisplayName: LPWSTR,
 };
 pub const QUERY_SERVICE_CONFIGW = struct__QUERY_SERVICE_CONFIGW;
-pub const LPQUERY_SERVICE_CONFIGW = ?&struct__QUERY_SERVICE_CONFIGW;
+pub const LPQUERY_SERVICE_CONFIGW = ?*struct__QUERY_SERVICE_CONFIGW;
 pub const QUERY_SERVICE_CONFIG = QUERY_SERVICE_CONFIGA;
 pub const LPQUERY_SERVICE_CONFIG = LPQUERY_SERVICE_CONFIGA;
-pub const SERVICE_MAIN_FUNCTIONW = extern fn(DWORD, ?&LPWSTR) void;
-pub const SERVICE_MAIN_FUNCTIONA = extern fn(DWORD, ?&LPTSTR) void;
-pub const LPSERVICE_MAIN_FUNCTIONW = ?extern fn(DWORD, ?&LPWSTR) void;
-pub const LPSERVICE_MAIN_FUNCTIONA = ?extern fn(DWORD, ?&LPSTR) void;
+pub const SERVICE_MAIN_FUNCTIONW = extern fn(DWORD, ?[*]LPWSTR) void;
+pub const SERVICE_MAIN_FUNCTIONA = extern fn(DWORD, ?[*]LPTSTR) void;
+pub const LPSERVICE_MAIN_FUNCTIONW = ?extern fn(DWORD, ?[*]LPWSTR) void;
+pub const LPSERVICE_MAIN_FUNCTIONA = ?extern fn(DWORD, ?[*]LPSTR) void;
 pub const struct__SERVICE_TABLE_ENTRYA = extern struct {
     lpServiceName: LPSTR,
     lpServiceProc: LPSERVICE_MAIN_FUNCTIONA,
 };
 pub const SERVICE_TABLE_ENTRYA = struct__SERVICE_TABLE_ENTRYA;
-pub const LPSERVICE_TABLE_ENTRYA = ?&struct__SERVICE_TABLE_ENTRYA;
+pub const LPSERVICE_TABLE_ENTRYA = ?*struct__SERVICE_TABLE_ENTRYA;
 pub const struct__SERVICE_TABLE_ENTRYW = extern struct {
     lpServiceName: LPWSTR,
     lpServiceProc: LPSERVICE_MAIN_FUNCTIONW,
 };
 pub const SERVICE_TABLE_ENTRYW = struct__SERVICE_TABLE_ENTRYW;
-pub const LPSERVICE_TABLE_ENTRYW = ?&struct__SERVICE_TABLE_ENTRYW;
+pub const LPSERVICE_TABLE_ENTRYW = ?*struct__SERVICE_TABLE_ENTRYW;
 pub const SERVICE_TABLE_ENTRY = SERVICE_TABLE_ENTRYA;
 pub const LPSERVICE_TABLE_ENTRY = LPSERVICE_TABLE_ENTRYA;
 pub const HANDLER_FUNCTION = extern fn(DWORD) void;
@@ -15406,7 +16259,7 @@ pub const struct__SERVICE_NOTIFY_1 = extern struct {
     ServiceStatus: SERVICE_STATUS_PROCESS,
 };
 pub const SERVICE_NOTIFY_1 = struct__SERVICE_NOTIFY_1;
-pub const PSERVICE_NOTIFY_1 = ?&struct__SERVICE_NOTIFY_1;
+pub const PSERVICE_NOTIFY_1 = ?*struct__SERVICE_NOTIFY_1;
 pub const struct__SERVICE_NOTIFY_2A = extern struct {
     dwVersion: DWORD,
     pfnNotifyCallback: PFN_SC_NOTIFY_CALLBACK,
@@ -15417,7 +16270,7 @@ pub const struct__SERVICE_NOTIFY_2A = extern struct {
     pszServiceNames: LPSTR,
 };
 pub const SERVICE_NOTIFY_2A = struct__SERVICE_NOTIFY_2A;
-pub const PSERVICE_NOTIFY_2A = ?&struct__SERVICE_NOTIFY_2A;
+pub const PSERVICE_NOTIFY_2A = ?*struct__SERVICE_NOTIFY_2A;
 pub const struct__SERVICE_NOTIFY_2W = extern struct {
     dwVersion: DWORD,
     pfnNotifyCallback: PFN_SC_NOTIFY_CALLBACK,
@@ -15428,13 +16281,13 @@ pub const struct__SERVICE_NOTIFY_2W = extern struct {
     pszServiceNames: LPWSTR,
 };
 pub const SERVICE_NOTIFY_2W = struct__SERVICE_NOTIFY_2W;
-pub const PSERVICE_NOTIFY_2W = ?&struct__SERVICE_NOTIFY_2W;
+pub const PSERVICE_NOTIFY_2W = ?*struct__SERVICE_NOTIFY_2W;
 pub const SERVICE_NOTIFY_2 = SERVICE_NOTIFY_2A;
 pub const PSERVICE_NOTIFY_2 = PSERVICE_NOTIFY_2A;
 pub const SERVICE_NOTIFYA = SERVICE_NOTIFY_2A;
-pub const PSERVICE_NOTIFYA = ?&SERVICE_NOTIFY_2A;
+pub const PSERVICE_NOTIFYA = ?[*]SERVICE_NOTIFY_2A;
 pub const SERVICE_NOTIFYW = SERVICE_NOTIFY_2W;
-pub const PSERVICE_NOTIFYW = ?&SERVICE_NOTIFY_2W;
+pub const PSERVICE_NOTIFYW = ?[*]SERVICE_NOTIFY_2W;
 pub const SERVICE_NOTIFY = SERVICE_NOTIFYA;
 pub const PSERVICE_NOTIFY = PSERVICE_NOTIFYA;
 pub const struct__SERVICE_CONTROL_STATUS_REASON_PARAMSA = extern struct {
@@ -15443,21 +16296,21 @@ pub const struct__SERVICE_CONTROL_STATUS_REASON_PARAMSA = extern struct {
     ServiceStatus: SERVICE_STATUS_PROCESS,
 };
 pub const SERVICE_CONTROL_STATUS_REASON_PARAMSA = struct__SERVICE_CONTROL_STATUS_REASON_PARAMSA;
-pub const PSERVICE_CONTROL_STATUS_REASON_PARAMSA = ?&struct__SERVICE_CONTROL_STATUS_REASON_PARAMSA;
+pub const PSERVICE_CONTROL_STATUS_REASON_PARAMSA = ?*struct__SERVICE_CONTROL_STATUS_REASON_PARAMSA;
 pub const struct__SERVICE_CONTROL_STATUS_REASON_PARAMSW = extern struct {
     dwReason: DWORD,
     pszComment: LPWSTR,
     ServiceStatus: SERVICE_STATUS_PROCESS,
 };
 pub const SERVICE_CONTROL_STATUS_REASON_PARAMSW = struct__SERVICE_CONTROL_STATUS_REASON_PARAMSW;
-pub const PSERVICE_CONTROL_STATUS_REASON_PARAMSW = ?&struct__SERVICE_CONTROL_STATUS_REASON_PARAMSW;
+pub const PSERVICE_CONTROL_STATUS_REASON_PARAMSW = ?*struct__SERVICE_CONTROL_STATUS_REASON_PARAMSW;
 pub const SERVICE_CONTROL_STATUS_REASON_PARAMS = SERVICE_CONTROL_STATUS_REASON_PARAMSA;
 pub const PSERVICE_CONTROL_STATUS_REASON_PARAMS = PSERVICE_CONTROL_STATUS_REASON_PARAMSA;
 pub const struct__SERVICE_START_REASON = extern struct {
     dwReason: DWORD,
 };
 pub const SERVICE_START_REASON = struct__SERVICE_START_REASON;
-pub const PSERVICE_START_REASON = ?&struct__SERVICE_START_REASON;
+pub const PSERVICE_START_REASON = ?*struct__SERVICE_START_REASON;
 //pub extern fn ChangeServiceConfigA(hService: SC_HANDLE, dwServiceType: DWORD, dwStartType: DWORD, dwErrorControl: DWORD, lpBinaryPathName: LPCSTR, lpLoadOrderGroup: LPCSTR, lpdwTagId: LPDWORD, lpDependencies: LPCSTR, lpServiceStartName: LPCSTR, lpPassword: LPCSTR, lpDisplayName: LPCSTR) BOOL;
 //pub extern fn ChangeServiceConfigW(hService: SC_HANDLE, dwServiceType: DWORD, dwStartType: DWORD, dwErrorControl: DWORD, lpBinaryPathName: LPCWSTR, lpLoadOrderGroup: LPCWSTR, lpdwTagId: LPDWORD, lpDependencies: LPCWSTR, lpServiceStartName: LPCWSTR, lpPassword: LPCWSTR, lpDisplayName: LPCWSTR) BOOL;
 //pub extern fn ChangeServiceConfig2A(hService: SC_HANDLE, dwInfoLevel: DWORD, lpInfo: LPVOID) BOOL;
@@ -15498,16 +16351,16 @@ pub const PSERVICE_START_REASON = ?&struct__SERVICE_START_REASON;
 //pub extern fn RegisterServiceCtrlHandlerExW(lpServiceName: LPCWSTR, lpHandlerProc: LPHANDLER_FUNCTION_EX, lpContext: LPVOID) SERVICE_STATUS_HANDLE;
 //pub extern fn SetServiceObjectSecurity(hService: SC_HANDLE, dwSecurityInformation: SECURITY_INFORMATION, lpSecurityDescriptor: PSECURITY_DESCRIPTOR) BOOL;
 //pub extern fn SetServiceStatus(hServiceStatus: SERVICE_STATUS_HANDLE, lpServiceStatus: LPSERVICE_STATUS) BOOL;
-//pub extern fn StartServiceCtrlDispatcherA(lpServiceStartTable: ?&const SERVICE_TABLE_ENTRYA) BOOL;
-//pub extern fn StartServiceCtrlDispatcherW(lpServiceStartTable: ?&const SERVICE_TABLE_ENTRYW) BOOL;
-//pub extern fn StartServiceA(hService: SC_HANDLE, dwNumServiceArgs: DWORD, lpServiceArgVectors: ?&LPCSTR) BOOL;
-//pub extern fn StartServiceW(hService: SC_HANDLE, dwNumServiceArgs: DWORD, lpServiceArgVectors: ?&LPCWSTR) BOOL;
+//pub extern fn StartServiceCtrlDispatcherA(lpServiceStartTable: ?[*]const SERVICE_TABLE_ENTRYA) BOOL;
+//pub extern fn StartServiceCtrlDispatcherW(lpServiceStartTable: ?[*]const SERVICE_TABLE_ENTRYW) BOOL;
+//pub extern fn StartServiceA(hService: SC_HANDLE, dwNumServiceArgs: DWORD, lpServiceArgVectors: ?[*]LPCSTR) BOOL;
+//pub extern fn StartServiceW(hService: SC_HANDLE, dwNumServiceArgs: DWORD, lpServiceArgVectors: ?[*]LPCWSTR) BOOL;
 //pub extern fn UnlockServiceDatabase(ScLock: SC_LOCK) BOOL;
 //pub extern fn NotifyServiceStatusChangeA(hService: SC_HANDLE, dwNotifyMask: DWORD, pNotifyBuffer: PSERVICE_NOTIFYA) DWORD;
 //pub extern fn NotifyServiceStatusChangeW(hService: SC_HANDLE, dwNotifyMask: DWORD, pNotifyBuffer: PSERVICE_NOTIFYW) DWORD;
 //pub extern fn ControlServiceExA(hService: SC_HANDLE, dwControl: DWORD, dwInfoLevel: DWORD, pControlParams: PVOID) BOOL;
 //pub extern fn ControlServiceExW(hService: SC_HANDLE, dwControl: DWORD, dwInfoLevel: DWORD, pControlParams: PVOID) BOOL;
-//pub extern fn QueryServiceDynamicInformation(hServiceStatus: SERVICE_STATUS_HANDLE, dwInfoLevel: DWORD, ppDynamicInfo: ?&PVOID) BOOL;
+//pub extern fn QueryServiceDynamicInformation(hServiceStatus: SERVICE_STATUS_HANDLE, dwInfoLevel: DWORD, ppDynamicInfo: ?[*]PVOID) BOOL;
 pub const SC_EVENT_DATABASE_CHANGE = enum__SC_EVENT_TYPE.SC_EVENT_DATABASE_CHANGE;
 pub const SC_EVENT_PROPERTY_CHANGE = enum__SC_EVENT_TYPE.SC_EVENT_PROPERTY_CHANGE;
 pub const SC_EVENT_STATUS_CHANGE = enum__SC_EVENT_TYPE.SC_EVENT_STATUS_CHANGE;
@@ -15517,12 +16370,12 @@ pub const enum__SC_EVENT_TYPE = extern enum {
     SC_EVENT_STATUS_CHANGE,
 };
 pub const SC_EVENT_TYPE = enum__SC_EVENT_TYPE;
-pub const PSC_EVENT_TYPE = ?&enum__SC_EVENT_TYPE;
+pub const PSC_EVENT_TYPE = ?[*]enum__SC_EVENT_TYPE;
 pub const SC_NOTIFICATION_CALLBACK = extern fn(DWORD, PVOID) void;
-pub const PSC_NOTIFICATION_CALLBACK = ?&SC_NOTIFICATION_CALLBACK;
+pub const PSC_NOTIFICATION_CALLBACK = ?[*]SC_NOTIFICATION_CALLBACK;
 pub const struct__SC_NOTIFICATION_REGISTRATION = @OpaqueType();
-pub const PSC_NOTIFICATION_REGISTRATION = ?&struct__SC_NOTIFICATION_REGISTRATION;
-//pub extern fn SubscribeServiceChangeNotifications(hService: SC_HANDLE, eEventType: SC_EVENT_TYPE, pCallback: PSC_NOTIFICATION_CALLBACK, pCallbackContext: PVOID, pSubscription: ?&PSC_NOTIFICATION_REGISTRATION) DWORD;
+pub const PSC_NOTIFICATION_REGISTRATION = ?*struct__SC_NOTIFICATION_REGISTRATION;
+//pub extern fn SubscribeServiceChangeNotifications(hService: SC_HANDLE, eEventType: SC_EVENT_TYPE, pCallback: PSC_NOTIFICATION_CALLBACK, pCallbackContext: PVOID, pSubscription: ?[*]PSC_NOTIFICATION_REGISTRATION) DWORD;
 //pub extern fn UnsubscribeServiceChangeNotifications(pSubscription: PSC_NOTIFICATION_REGISTRATION) void;
 //pub extern fn WaitServiceState(hService: SC_HANDLE, dwNotify: DWORD, dwTimeout: DWORD, hCancelEvent: HANDLE) DWORD;
 pub const struct__MODEMDEVCAPS = extern struct {
@@ -15548,8 +16401,8 @@ pub const struct__MODEMDEVCAPS = extern struct {
     abVariablePortion: [1]BYTE,
 };
 pub const MODEMDEVCAPS = struct__MODEMDEVCAPS;
-pub const PMODEMDEVCAPS = ?&struct__MODEMDEVCAPS;
-pub const LPMODEMDEVCAPS = ?&struct__MODEMDEVCAPS;
+pub const PMODEMDEVCAPS = ?*struct__MODEMDEVCAPS;
+pub const LPMODEMDEVCAPS = ?*struct__MODEMDEVCAPS;
 pub const struct__MODEMSETTINGS = extern struct {
     dwActualSize: DWORD,
     dwRequiredSize: DWORD,
@@ -15565,27 +16418,27 @@ pub const struct__MODEMSETTINGS = extern struct {
     abVariablePortion: [1]BYTE,
 };
 pub const MODEMSETTINGS = struct__MODEMSETTINGS;
-pub const PMODEMSETTINGS = ?&struct__MODEMSETTINGS;
-pub const LPMODEMSETTINGS = ?&struct__MODEMSETTINGS;
+pub const PMODEMSETTINGS = ?*struct__MODEMSETTINGS;
+pub const LPMODEMSETTINGS = ?*struct__MODEMSETTINGS;
 pub const struct_HIMC__ = extern struct {
     unused: c_int,
 };
-pub const HIMC = ?&struct_HIMC__;
+pub const HIMC = ?*struct_HIMC__;
 pub const struct_HIMCC__ = extern struct {
     unused: c_int,
 };
-pub const HIMCC = ?&struct_HIMCC__;
-pub const LPHKL = ?&HKL;
-pub const LPUINT = ?&UINT;
+pub const HIMCC = ?*struct_HIMCC__;
+pub const LPHKL = ?[*]HKL;
+pub const LPUINT = ?[*]UINT;
 pub const struct_tagCOMPOSITIONFORM = extern struct {
     dwStyle: DWORD,
     ptCurrentPos: POINT,
     rcArea: RECT,
 };
 pub const COMPOSITIONFORM = struct_tagCOMPOSITIONFORM;
-pub const PCOMPOSITIONFORM = ?&struct_tagCOMPOSITIONFORM;
-pub const NPCOMPOSITIONFORM = ?&struct_tagCOMPOSITIONFORM;
-pub const LPCOMPOSITIONFORM = ?&struct_tagCOMPOSITIONFORM;
+pub const PCOMPOSITIONFORM = ?*struct_tagCOMPOSITIONFORM;
+pub const NPCOMPOSITIONFORM = ?*struct_tagCOMPOSITIONFORM;
+pub const LPCOMPOSITIONFORM = ?*struct_tagCOMPOSITIONFORM;
 pub const struct_tagCANDIDATEFORM = extern struct {
     dwIndex: DWORD,
     dwStyle: DWORD,
@@ -15593,9 +16446,9 @@ pub const struct_tagCANDIDATEFORM = extern struct {
     rcArea: RECT,
 };
 pub const CANDIDATEFORM = struct_tagCANDIDATEFORM;
-pub const PCANDIDATEFORM = ?&struct_tagCANDIDATEFORM;
-pub const NPCANDIDATEFORM = ?&struct_tagCANDIDATEFORM;
-pub const LPCANDIDATEFORM = ?&struct_tagCANDIDATEFORM;
+pub const PCANDIDATEFORM = ?*struct_tagCANDIDATEFORM;
+pub const NPCANDIDATEFORM = ?*struct_tagCANDIDATEFORM;
+pub const LPCANDIDATEFORM = ?*struct_tagCANDIDATEFORM;
 pub const struct_tagCANDIDATELIST = extern struct {
     dwSize: DWORD,
     dwStyle: DWORD,
@@ -15606,25 +16459,25 @@ pub const struct_tagCANDIDATELIST = extern struct {
     dwOffset: [1]DWORD,
 };
 pub const CANDIDATELIST = struct_tagCANDIDATELIST;
-pub const PCANDIDATELIST = ?&struct_tagCANDIDATELIST;
-pub const NPCANDIDATELIST = ?&struct_tagCANDIDATELIST;
-pub const LPCANDIDATELIST = ?&struct_tagCANDIDATELIST;
+pub const PCANDIDATELIST = ?*struct_tagCANDIDATELIST;
+pub const NPCANDIDATELIST = ?*struct_tagCANDIDATELIST;
+pub const LPCANDIDATELIST = ?*struct_tagCANDIDATELIST;
 pub const struct_tagREGISTERWORDA = extern struct {
     lpReading: LPSTR,
     lpWord: LPSTR,
 };
 pub const REGISTERWORDA = struct_tagREGISTERWORDA;
-pub const PREGISTERWORDA = ?&struct_tagREGISTERWORDA;
-pub const NPREGISTERWORDA = ?&struct_tagREGISTERWORDA;
-pub const LPREGISTERWORDA = ?&struct_tagREGISTERWORDA;
+pub const PREGISTERWORDA = ?*struct_tagREGISTERWORDA;
+pub const NPREGISTERWORDA = ?*struct_tagREGISTERWORDA;
+pub const LPREGISTERWORDA = ?*struct_tagREGISTERWORDA;
 pub const struct_tagREGISTERWORDW = extern struct {
     lpReading: LPWSTR,
     lpWord: LPWSTR,
 };
 pub const REGISTERWORDW = struct_tagREGISTERWORDW;
-pub const PREGISTERWORDW = ?&struct_tagREGISTERWORDW;
-pub const NPREGISTERWORDW = ?&struct_tagREGISTERWORDW;
-pub const LPREGISTERWORDW = ?&struct_tagREGISTERWORDW;
+pub const PREGISTERWORDW = ?*struct_tagREGISTERWORDW;
+pub const NPREGISTERWORDW = ?*struct_tagREGISTERWORDW;
+pub const LPREGISTERWORDW = ?*struct_tagREGISTERWORDW;
 pub const REGISTERWORD = REGISTERWORDA;
 pub const PREGISTERWORD = PREGISTERWORDA;
 pub const NPREGISTERWORD = NPREGISTERWORDA;
@@ -15640,25 +16493,25 @@ pub const struct_tagRECONVERTSTRING = extern struct {
     dwTargetStrOffset: DWORD,
 };
 pub const RECONVERTSTRING = struct_tagRECONVERTSTRING;
-pub const PRECONVERTSTRING = ?&struct_tagRECONVERTSTRING;
-pub const NPRECONVERTSTRING = ?&struct_tagRECONVERTSTRING;
-pub const LPRECONVERTSTRING = ?&struct_tagRECONVERTSTRING;
+pub const PRECONVERTSTRING = ?*struct_tagRECONVERTSTRING;
+pub const NPRECONVERTSTRING = ?*struct_tagRECONVERTSTRING;
+pub const LPRECONVERTSTRING = ?*struct_tagRECONVERTSTRING;
 pub const struct_tagSTYLEBUFA = extern struct {
     dwStyle: DWORD,
     szDescription: [32]CHAR,
 };
 pub const STYLEBUFA = struct_tagSTYLEBUFA;
-pub const PSTYLEBUFA = ?&struct_tagSTYLEBUFA;
-pub const NPSTYLEBUFA = ?&struct_tagSTYLEBUFA;
-pub const LPSTYLEBUFA = ?&struct_tagSTYLEBUFA;
+pub const PSTYLEBUFA = ?*struct_tagSTYLEBUFA;
+pub const NPSTYLEBUFA = ?*struct_tagSTYLEBUFA;
+pub const LPSTYLEBUFA = ?*struct_tagSTYLEBUFA;
 pub const struct_tagSTYLEBUFW = extern struct {
     dwStyle: DWORD,
     szDescription: [32]WCHAR,
 };
 pub const STYLEBUFW = struct_tagSTYLEBUFW;
-pub const PSTYLEBUFW = ?&struct_tagSTYLEBUFW;
-pub const NPSTYLEBUFW = ?&struct_tagSTYLEBUFW;
-pub const LPSTYLEBUFW = ?&struct_tagSTYLEBUFW;
+pub const PSTYLEBUFW = ?*struct_tagSTYLEBUFW;
+pub const NPSTYLEBUFW = ?*struct_tagSTYLEBUFW;
+pub const LPSTYLEBUFW = ?*struct_tagSTYLEBUFW;
 pub const STYLEBUF = STYLEBUFA;
 pub const PSTYLEBUF = PSTYLEBUFA;
 pub const NPSTYLEBUF = NPSTYLEBUFA;
@@ -15675,9 +16528,9 @@ pub const struct_tagIMEMENUITEMINFOA = extern struct {
     hbmpItem: HBITMAP,
 };
 pub const IMEMENUITEMINFOA = struct_tagIMEMENUITEMINFOA;
-pub const PIMEMENUITEMINFOA = ?&struct_tagIMEMENUITEMINFOA;
-pub const NPIMEMENUITEMINFOA = ?&struct_tagIMEMENUITEMINFOA;
-pub const LPIMEMENUITEMINFOA = ?&struct_tagIMEMENUITEMINFOA;
+pub const PIMEMENUITEMINFOA = ?*struct_tagIMEMENUITEMINFOA;
+pub const NPIMEMENUITEMINFOA = ?*struct_tagIMEMENUITEMINFOA;
+pub const LPIMEMENUITEMINFOA = ?*struct_tagIMEMENUITEMINFOA;
 pub const struct_tagIMEMENUITEMINFOW = extern struct {
     cbSize: UINT,
     fType: UINT,
@@ -15690,9 +16543,9 @@ pub const struct_tagIMEMENUITEMINFOW = extern struct {
     hbmpItem: HBITMAP,
 };
 pub const IMEMENUITEMINFOW = struct_tagIMEMENUITEMINFOW;
-pub const PIMEMENUITEMINFOW = ?&struct_tagIMEMENUITEMINFOW;
-pub const NPIMEMENUITEMINFOW = ?&struct_tagIMEMENUITEMINFOW;
-pub const LPIMEMENUITEMINFOW = ?&struct_tagIMEMENUITEMINFOW;
+pub const PIMEMENUITEMINFOW = ?*struct_tagIMEMENUITEMINFOW;
+pub const NPIMEMENUITEMINFOW = ?*struct_tagIMEMENUITEMINFOW;
+pub const LPIMEMENUITEMINFOW = ?*struct_tagIMEMENUITEMINFOW;
 pub const IMEMENUITEMINFO = IMEMENUITEMINFOA;
 pub const PIMEMENUITEMINFO = PIMEMENUITEMINFOA;
 pub const NPIMEMENUITEMINFO = NPIMEMENUITEMINFOA;
@@ -15705,9 +16558,9 @@ pub const struct_tagIMECHARPOSITION = extern struct {
     rcDocument: RECT,
 };
 pub const IMECHARPOSITION = struct_tagIMECHARPOSITION;
-pub const PIMECHARPOSITION = ?&struct_tagIMECHARPOSITION;
-pub const NPIMECHARPOSITION = ?&struct_tagIMECHARPOSITION;
-pub const LPIMECHARPOSITION = ?&struct_tagIMECHARPOSITION;
+pub const PIMECHARPOSITION = ?*struct_tagIMECHARPOSITION;
+pub const NPIMECHARPOSITION = ?*struct_tagIMECHARPOSITION;
+pub const LPIMECHARPOSITION = ?*struct_tagIMECHARPOSITION;
 pub const IMCENUMPROC = ?extern fn(HIMC, LPARAM) BOOL;
 //pub extern fn ImmInstallIMEA(lpszIMEFileName: LPCSTR, lpszLayoutText: LPCSTR) HKL;
 //pub extern fn ImmInstallIMEW(lpszIMEFileName: LPCWSTR, lpszLayoutText: LPCWSTR) HKL;
@@ -16197,6 +17050,7 @@ pub const DMPAPER_PENV_9_ROTATED = 117;
 pub const ERROR_FILE_SYSTEM_VIRTUALIZATION_INVALID_OPERATION = c_long(385);
 pub const IGNORE = 0;
 pub const SUBLANG_GERMAN_LIECHTENSTEIN = 5;
+pub const __FLT16_MAX_EXP__ = 15;
 pub const InterlockedAndNoFence = _InterlockedAnd;
 pub const JOB_OBJECT_MSG_MINIMUM = 1;
 pub const ERROR_ADDRESS_ALREADY_ASSOCIATED = c_long(1227);
@@ -16637,7 +17491,7 @@ pub const MDM_PROTOCOLID_V110 = 4;
 pub const PROCESS_POWER_THROTTLING_EXECUTION_SPEED = 1;
 pub const RPI_FLAG_SMB2_SHARECAP_SCALEOUT = 32;
 pub const MDIS_ALLCHILDSTYLES = 1;
-pub const __clang_version__ = c"5.0.1 (tags/RELEASE_501/final)";
+pub const __clang_version__ = c"6.0.0 (branches/release_60)";
 pub const __UINT_LEAST8_FMTo__ = c"hho";
 pub const RIDEV_PAGEONLY = 32;
 pub const ERROR_NOTIFICATION_GUID_ALREADY_DEFINED = c_long(309);
@@ -16740,6 +17594,7 @@ pub const IACE_IGNORENOCONTEXT = 32;
 pub const SM_SAMEDISPLAYFORMAT = 81;
 pub const DNS_ERROR_RRL_INVALID_IPV6_PREFIX = c_long(9914);
 pub const SM_CYSMSIZE = 53;
+pub const __FLT16_DIG__ = 3;
 pub const DOCKINFO_UNDOCKED = 1;
 pub const __SIZEOF_LONG__ = 4;
 pub const LANG_ROMANIAN = 24;
@@ -18259,11 +19114,12 @@ pub const _Use_decl_annotations_ = _Use_decl_anno_impl_;
 pub const ERROR_INVALID_NAME = c_long(123);
 pub const DNS_ERROR_RCODE_LAST = DNS_ERROR_RCODE_BADTIME;
 pub const ERROR_CLUSTER_AFFINITY_CONFLICT = c_long(5971);
+pub const __OPENCL_MEMORY_SCOPE_DEVICE = 2;
 pub const IMAGE_ARCHIVE_PAD = c"\n";
 pub const DISCHARGE_POLICY_CRITICAL = 0;
 pub const POWER_CONNECTIVITY_IN_STANDBY_DISABLED = 0;
-pub const PROC_THREAD_ATTRIBUTE_ADDITIVE = 262144;
 pub const SCARD_S_SUCCESS = NO_ERROR;
+pub const PROC_THREAD_ATTRIBUTE_ADDITIVE = 262144;
 pub const ERROR_JOURNAL_ENTRY_DELETED = c_long(1181);
 pub const CC_CIRCLES = 1;
 pub const DMPAPER_LETTER_TRANSVERSE = 54;
@@ -18501,6 +19357,7 @@ pub const KL_NAMELENGTH = 9;
 pub const DOWNLOADFACE = 514;
 pub const RPC_S_NOT_ALL_OBJS_EXPORTED = c_long(1923);
 pub const VK_NAVIGATION_ACCEPT = 142;
+pub const __FLT16_DECIMAL_DIG__ = 5;
 pub const VER_SUITE_BLADE = 1024;
 pub const LANG_SLOVAK = 27;
 pub const SHTDN_REASON_MAJOR_APPLICATION = 262144;
@@ -18755,19 +19612,20 @@ pub const VK_OEM_AX = 225;
 pub const VK_DIVIDE = 111;
 pub const PRODUCT_SERVERRDSH = 175;
 pub const REGDB_E_LAST = c_long(2147746143);
+pub const __OPENCL_MEMORY_SCOPE_SUB_GROUP = 4;
 pub const ERROR_INSTALL_UI_FAILURE = c_long(1621);
 pub const PM_REMOVE = 1;
 pub const DO_PRINTFILE = c_long(1414419024);
 pub const ERROR_VIRUS_INFECTED = c_long(225);
-pub const ERROR_IPSEC_IKE_KERBEROS_ERROR = c_long(13827);
 pub const TOKEN_ADJUST_GROUPS = 64;
 pub const LF_FULLFACESIZE = 64;
-pub const ERROR_CLUSTER_PARAMETER_OUT_OF_BOUNDS = c_long(5913);
+pub const ERROR_IPSEC_IKE_KERBEROS_ERROR = c_long(13827);
 pub const ERROR_IPSEC_IKE_INVALID_HASH_SIZE = c_long(13872);
+pub const ERROR_CLUSTER_PARAMETER_OUT_OF_BOUNDS = c_long(5913);
 pub const ERROR_CLUSTER_FAULT_DOMAIN_INVALID_HIERARCHY = c_long(5995);
-pub const ERROR_VSM_DMA_PROTECTION_NOT_IN_USE = c_long(4561);
 pub const TOKEN_MANDATORY_POLICY_NO_WRITE_UP = 1;
 pub const RC_GDI20_STATE = 32;
+pub const ERROR_VSM_DMA_PROTECTION_NOT_IN_USE = c_long(4561);
 pub const LANG_UIGHUR = 128;
 pub const STATE_SYSTEM_BUSY = 2048;
 pub const MDMSPKR_CALLSETUP = 3;
@@ -18910,6 +19768,7 @@ pub const PAN_CONTRAST_NONE = 2;
 pub const TAPE_DRIVE_RESERVED_BIT = 2147483648;
 pub const ERROR_DS_LOCAL_ERROR = c_long(8251);
 pub const SUBLANG_ARABIC_IRAQ = 2;
+pub const __SEH__ = 1;
 pub const VK_OEM_AUTO = 243;
 pub const ERROR_CS_ENCRYPTION_FILE_NOT_CSE = c_long(6021);
 pub const TRANSACTION_MAXIMUM_OPTION = 1;
@@ -18978,8 +19837,8 @@ pub const SERVICE_CONTROL_SYSTEMLOWRESOURCES = 97;
 pub const SECURITY_CAPABILITY_BASE_RID = c_long(3);
 pub const _Requires_shared_lock_held_ = lock;
 pub const ERROR_DS_SECURITY_CHECKING_ERROR = c_long(8413);
-pub const NONZEROLHND = LMEM_MOVEABLE;
 pub const __FLT_MAX_EXP__ = 128;
+pub const NONZEROLHND = LMEM_MOVEABLE;
 pub const TIMER_QUERY_STATE = 1;
 pub const ERROR_BAD_DRIVER_LEVEL = c_long(119);
 pub const DI_DEFAULTSIZE = 8;
@@ -19336,6 +20195,7 @@ pub const GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS = 4;
 pub const DEVICEFAMILYDEVICEFORM_XBOX_ONE_X_DEVKIT = 33;
 pub const HSHELL_LANGUAGE = 8;
 pub const IMAGE_SCN_MEM_NOT_PAGED = 134217728;
+// Note: Added overlappedwindow
 pub const WS_OVERLAPPEDWINDOW = (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
 pub const WS_TILEDWINDOW = WS_OVERLAPPEDWINDOW;
 pub const ERROR_ALREADY_WIN32 = c_long(719);
@@ -19518,7 +20378,7 @@ pub const COPY_FILE_RESTARTABLE = 2;
 pub const FAST_FAIL_GUARD_ICALL_CHECK_SUPPRESSED = 31;
 pub const IMAGE_FILE_RELOCS_STRIPPED = 1;
 pub const PROTECTION_LEVEL_WINTCB_LIGHT = 0;
-pub const __clang_major__ = 5;
+pub const __clang_major__ = 6;
 pub const IMAGE_SYM_CLASS_UNDEFINED_STATIC = 14;
 pub const LANG_SWAHILI = 65;
 pub const SCRUB_DATA_INPUT_FLAG_SKIP_NON_INTEGRITY_DATA = 4;
@@ -19820,12 +20680,14 @@ pub const REG_FULL_RESOURCE_DESCRIPTOR = c_ulong(9);
 pub const REG_OPENED_EXISTING_KEY = c_long(2);
 pub const REG_LINK = c_ulong(6);
 pub const DISPLAY_DEVICE_REMOVABLE = 32;
+pub const __FLT16_HAS_INFINITY__ = 1;
 pub const DS_FIXEDSYS = c_long(8);
 pub const __GCC_HAVE_SYNC_COMPARE_AND_SWAP_1 = 1;
 pub const MWT_RIGHTMULTIPLY = 3;
 pub const IMAGE_RESOURCE_NAME_IS_STRING = 2147483648;
 pub const SYSTEM_ALARM_ACE_TYPE = 3;
 pub const WriteConsole = WriteConsoleA;
+pub const __OPENCL_MEMORY_SCOPE_ALL_SVM_DEVICES = 3;
 pub const ERROR_REMOTE_STORAGE_MEDIA_ERROR = c_long(4352);
 pub const RPI_SMB2_FLAG_SERVERCAP_PERSISTENT_HANDLES = 16;
 pub const LANG_LITHUANIAN = 39;
@@ -20615,6 +21477,7 @@ pub const ERROR_APP_DATA_NOT_FOUND = c_long(4400);
 pub const PROCESSOR_THROTTLE_ENABLED = 1;
 pub const IMFT_SUBMENU = 4;
 pub const MOUSEEVENTF_VIRTUALDESK = 16384;
+pub const __FLT16_MIN_EXP__ = -14;
 pub const HCBT_MOVESIZE = 0;
 pub const CAL_SABBREVDAYNAME4 = 17;
 pub const APPCOMMAND_VOLUME_DOWN = 9;
@@ -20684,6 +21547,7 @@ pub const IMAGE_REL_AMD64_PAIR = 15;
 pub const VK_END = 35;
 pub const IME_THOTKEY_SYMBOL_TOGGLE = 114;
 pub const RPI_FLAG_SMB2_SHARECAP_CONTINUOUS_AVAILABILITY = 16;
+pub const __FLT16_MAX_10_EXP__ = 4;
 pub const CB_RESETCONTENT = 331;
 pub const VK_GAMEPAD_Y = 198;
 pub const CAL_ICALINTVALUE = 1;
@@ -20890,8 +21754,8 @@ pub const WA_ACTIVE = 1;
 pub const FACILITY_DLS = 153;
 pub const PPM_PERFORMANCE_IMPLEMENTATION_PSTATES = 1;
 pub const IMAGE_REL_ARM_GPREL7 = 7;
-pub const ERROR_SHORT_NAMES_NOT_ENABLED_ON_VOLUME = c_long(305);
 pub const SUBLANG_UIGHUR_PRC = 1;
+pub const ERROR_SHORT_NAMES_NOT_ENABLED_ON_VOLUME = c_long(305);
 pub const MAX_REASON_COMMENT_LEN = 512;
 pub const SERVICE_TRIGGER_TYPE_AGGREGATE = 30;
 pub const FEATURESETTING_PRIVATE_END = 8191;
@@ -21105,7 +21969,7 @@ pub const MNS_CHECKORBMP = 67108864;
 pub const ERROR_LOG_BLOCK_INVALID = c_long(6609);
 pub const LMEM_MODIFY = 128;
 pub const EISCONN = 113;
-pub const __VERSION__ = c"4.2.1 Compatible Clang 5.0.1 (tags/RELEASE_501/final)";
+pub const __VERSION__ = c"4.2.1 Compatible Clang 6.0.0 (branches/release_60)";
 pub const SE_RM_CONTROL_VALID = 16384;
 pub const WM_SYSCOMMAND = 274;
 pub const FORMAT_MESSAGE_IGNORE_INSERTS = 512;
@@ -21952,8 +22816,8 @@ pub const WM_MOVE = 3;
 pub const WM_COMMNOTIFY = 68;
 pub const PSINJECT_ENDPROLOG = 15;
 pub const FILE_MAP_RESERVE = 2147483648;
-pub const FAST_FAIL_INVALID_BUFFER_ACCESS = 28;
 pub const MININT64 = if (@typeId(@typeOf(~MAXINT64)) == @import("builtin").TypeId.Pointer) @ptrCast(INT64, ~MAXINT64) else if (@typeId(@typeOf(~MAXINT64)) == @import("builtin").TypeId.Int) @intToPtr(INT64, ~MAXINT64) else INT64(~MAXINT64);
+pub const FAST_FAIL_INVALID_BUFFER_ACCESS = 28;
 pub const JOB_OBJECT_LIMIT_BREAKAWAY_OK = 2048;
 pub const ERROR_CLUSTER_SYSTEM_CONFIG_CHANGED = c_long(5077);
 pub const __requires_exclusive_lock_held = lock;
@@ -22360,6 +23224,7 @@ pub const ERROR_WX86_ERROR = c_long(540);
 pub const ERROR_CTX_CLIENT_QUERY_TIMEOUT = c_long(7040);
 pub const IMAGE_REL_MIPS_TOKEN = 14;
 pub const PEERDIST_ERROR_SERVICE_UNAVAILABLE = c_long(4065);
+pub const __WINT_MAX__ = 2147483647;
 pub const EnumResourceLanguagesEx = EnumResourceLanguagesExA;
 pub const SECURITY_PROCESS_PROTECTION_LEVEL_APP_RID = c_long(2048);
 pub const VOS__BASE = c_long(0);
@@ -23924,7 +24789,7 @@ pub const EMR_FLATTENPATH = 65;
 pub const DMPAPER_B4 = 12;
 pub const InterlockedBitTestAndReset64NoFence = _interlockedbittestandreset64;
 pub const SYNCHRONIZATION_BARRIER_FLAGS_BLOCK_ONLY = 2;
-pub const __clang_patchlevel__ = 1;
+pub const __clang_patchlevel__ = 0;
 pub const FLASHW_TIMERNOFG = 12;
 pub const IE_DEFAULT = -5;
 pub const GGL_INDEX = 2;
@@ -24047,6 +24912,7 @@ pub const CHECKJPEGFORMAT = 4119;
 pub const DT_WORD_ELLIPSIS = 262144;
 pub const THREAD_BASE_PRIORITY_MIN = -2;
 pub const InterlockedCompareExchangePointerNoFence = _InterlockedCompareExchangePointer;
+pub const __OPENCL_MEMORY_SCOPE_WORK_ITEM = 0;
 pub const ERROR_CLUSTER_GUM_NOT_LOCKER = c_long(5085);
 pub const CTRY_IRAQ = 964;
 pub const ERROR_CLUSTER_NODE_NOT_MEMBER = c_long(5052);
@@ -24157,8 +25023,8 @@ pub const WNNC_NET_QUINCY = 3670016;
 pub const ERROR_RXACT_COMMITTED = c_long(744);
 pub const SPI_GETPENARBITRATIONTYPE = 8224;
 pub const PPM_FIRMWARE_ACPI1C3 = 2;
-pub const RGN_COPY = 5;
 pub const N_BTMASK = 15;
+pub const RGN_COPY = 5;
 pub const ERROR_PROCESS_IS_PROTECTED = c_long(1293);
 pub const VK_DOWN = 40;
 pub const JOB_OBJECT_LIMIT_JOB_WRITE_BYTES = 131072;
@@ -25221,6 +26087,7 @@ pub const DIALOPTION_BILLING = 64;
 pub const MARKPARITY = 3;
 pub const _WIN32_IE_WIN2KSP3 = _WIN32_IE_IE501;
 pub const PIPE_CLIENT_END = 0;
+pub const __FLT16_MIN_10_EXP__ = -13;
 pub const TMPF_TRUETYPE = 4;
 pub const VIF_CANNOTRENAME = c_long(8192);
 pub const RPC_S_SERVER_TOO_BUSY = c_long(1723);
@@ -25279,10 +26146,10 @@ pub const IME_CMODE_HANJACONVERT = 64;
 pub const IsBadStringPtr = IsBadStringPtrA;
 pub const SMB_CCF_APP_INSTANCE_EA_NAME = c"ClusteredApplicationInstance";
 pub const VFFF_ISSHAREDFILE = 1;
+pub const EROFS = 30;
 pub const LANG_BENGALI = 69;
 pub const PROCESSOR_OPTIL = 18767;
 pub const RotateLeft16 = _rotl16;
-pub const EROFS = 30;
 pub const DISPLAYCONFIG_MAXPATH = 1024;
 pub const ERROR_DS_DRA_REF_NOT_FOUND = c_long(8449);
 pub const SETDIBSCALING = 32;
@@ -25421,6 +26288,7 @@ pub const META_POLYLINE = 805;
 pub const SECURITY_RDV_GFX_BASE_RID = c_long(91);
 pub const EMR_GLSRECORD = 102;
 pub const WM_ACTIVATEAPP = 28;
+pub const __FLT16_HAS_DENORM__ = 1;
 pub const ERROR_GEN_FAILURE = c_long(31);
 pub const __UINT_FAST8_FMTX__ = c"hhX";
 pub const DFCS_SCROLLUP = 0;
@@ -25764,8 +26632,8 @@ pub const RI_KEY_TERMSRV_SHADOW = 16;
 pub const FAST_FAIL_INVALID_FIBER_SWITCH = 12;
 pub const SEVERITY_ERROR = 1;
 pub const BS_RADIOBUTTON = c_long(4);
-pub const ERROR_DS_UPN_VALUE_NOT_UNIQUE_IN_FOREST = c_long(8648);
 pub const ERROR_MRM_UNSUPPORTED_FILE_TYPE_FOR_MERGE = c_long(15141);
+pub const ERROR_DS_UPN_VALUE_NOT_UNIQUE_IN_FOREST = c_long(8648);
 pub const PRODUCT_CLUSTER_SERVER = 18;
 pub const STATUS_INTEGER_DIVIDE_BY_ZERO = if (@typeId(@typeOf(c_long(3221225620))) == @import("builtin").TypeId.Pointer) @ptrCast(DWORD, c_long(3221225620)) else if (@typeId(@typeOf(c_long(3221225620))) == @import("builtin").TypeId.Int) @intToPtr(DWORD, c_long(3221225620)) else DWORD(c_long(3221225620));
 pub const __INT_LEAST64_MAX__ = c_longlong(9223372036854775807);
@@ -25859,6 +26727,7 @@ pub const ERROR_KEY_HAS_CHILDREN = c_long(1020);
 pub const ERROR_NON_CSV_PATH = c_long(5950);
 pub const InterlockedAndAffinity = InterlockedAnd64;
 pub const CACHE_S_FIRST = c_long(262512);
+pub const __OPENCL_MEMORY_SCOPE_WORK_GROUP = 1;
 pub const ERROR_MALFORMED_SUBSTITUTION_STRING = c_long(14094);
 pub const ERROR_DS_CANT_REMOVE_ATT_CACHE = c_long(8403);
 pub const WINEVENT_INCONTEXT = 4;
@@ -26012,7 +26881,7 @@ pub const SUBLANG_TAMIL_INDIA = 1;
 pub const FILE_ATTRIBUTE_OFFLINE = 4096;
 pub const EMARCH_ENC_I17_IMM5C_INST_WORD_X = 3;
 pub const TC_RA_ABLE = 8192;
-pub const NULL = if (@typeId(@typeOf(0)) == @import("builtin").TypeId.Pointer) @ptrCast(&void, 0) else if (@typeId(@typeOf(0)) == @import("builtin").TypeId.Int) @intToPtr(&void, 0) else (&void)(0);
+pub const NULL = if (@typeId(@typeOf(0)) == @import("builtin").TypeId.Pointer) @ptrCast([*]void, 0) else if (@typeId(@typeOf(0)) == @import("builtin").TypeId.Int) @intToPtr([*]void, 0) else ([*]void)(0);
 pub const EnumLanguageGroupLocales = EnumLanguageGroupLocalesA;
 pub const CAL_SABBREVMONTHNAME4 = 37;
 pub const LookupPrivilegeDisplayName = LookupPrivilegeDisplayNameA;
@@ -26092,7 +26961,7 @@ pub const SCS_CAP_MAKEREAD = 2;
 pub const PAGE_EXECUTE_READ = 32;
 pub const DMPAPER_A6 = 70;
 pub const ERROR_UNABLE_TO_REMOVE_REPLACED = c_long(1175);
-pub const MAXIMUM_REPARSE_DATA_BUFFER_SIZE = if (@typeId(@typeOf(1024)) == @import("builtin").TypeId.Pointer) @ptrCast(&16, 1024) else if (@typeId(@typeOf(1024)) == @import("builtin").TypeId.Int) @intToPtr(&16, 1024) else (&16)(1024);
+pub const MAXIMUM_REPARSE_DATA_BUFFER_SIZE = if (@typeId(@typeOf(1024)) == @import("builtin").TypeId.Pointer) @ptrCast([*]16, 1024) else if (@typeId(@typeOf(1024)) == @import("builtin").TypeId.Int) @intToPtr([*]16, 1024) else ([*]16)(1024);
 pub const PF_ARM_V8_INSTRUCTIONS_AVAILABLE = 29;
 pub const CF_WAVE = 12;
 pub const __INT_FAST64_MAX__ = c_longlong(9223372036854775807);
@@ -27271,8 +28140,8 @@ pub const FORCEINLINE = __forceinline;
 pub const ERROR_NOT_SAME_DEVICE = c_long(17);
 pub const IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT = 11;
 pub const WGL_FONT_LINES = 0;
-pub const KEY_WOW64_64KEY = 256;
 pub const SECURITY_PACKAGE_BASE_RID = c_long(64);
+pub const KEY_WOW64_64KEY = 256;
 pub const LANG_ROMANSH = 23;
 pub const WNetAddConnection = WNetAddConnectionA;
 pub const ERROR_OBJECT_NOT_EXTERNALLY_BACKED = c_long(342);
@@ -29149,6 +30018,7 @@ pub const FIXED_PITCH = 1;
 pub const WNNC_NET_NDFS = 4456448;
 pub const ERROR_DS_NCNAME_MUST_BE_NC = c_long(8357);
 pub const RegCreateKeyTransacted = RegCreateKeyTransactedA;
+pub const __FLT16_MANT_DIG__ = 11;
 pub const OBJ_PEN = 1;
 pub const ERROR_SYSTEM_TRACE = c_long(150);
 pub const LANG_AZERBAIJANI = 44;
@@ -29334,6 +30204,7 @@ pub const CB_SELECTSTRING = 333;
 pub const SPI_GETFOREGROUNDLOCKTIMEOUT = 8192;
 pub const R2_NOTMERGEPEN = 2;
 pub const S_ALLTHRESHOLD = 2;
+pub const __FLT16_HAS_QUIET_NAN__ = 1;
 pub const SM_CXMINSPACING = 47;
 pub const ERROR_CTX_GRAPHICS_INVALID = c_long(7035);
 pub const EMR_POLYDRAW16 = 92;
@@ -29497,6 +30368,7 @@ pub const SUBLANG_UKRAINIAN_UKRAINE = 1;
 pub const SUBLANG_ENGLISH_SOUTH_AFRICA = 7;
 pub const ERROR_DS_EXISTS_IN_AUX_CLS = c_long(8393);
 // pub const CW_USEDEFAULT = if (@typeId(@typeOf(2147483648)) == @import("builtin").TypeId.Pointer) @ptrCast(int, 2147483648) else if (@typeId(@typeOf(2147483648)) == @import("builtin").TypeId.Int) @intToPtr(int, 2147483648) else int(2147483648);
+// Note: Manual correction
 pub const CW_USEDEFAULT = @bitCast(c_int, c_uint(0x80000000));
 pub const BANDINFO = 24;
 pub const DISPLAY_DEVICE_MIRRORING_DRIVER = 8;
@@ -30664,6 +31536,28 @@ pub const tagSTYLEBUFW = struct_tagSTYLEBUFW;
 pub const tagIMEMENUITEMINFOA = struct_tagIMEMENUITEMINFOA;
 pub const tagIMEMENUITEMINFOW = struct_tagIMEMENUITEMINFOW;
 pub const tagIMECHARPOSITION = struct_tagIMECHARPOSITION;
+
+// Manually added functions
+
+pub extern "gdi32" stdcallcc fn StretchDIBits(hdc: HDC, xDest: c_int, yDest: c_int, DestWidth: c_int, DestHeight: c_int, xSrc: c_int, ySrc: c_int, SrcWidth: c_int, SrcHeight: c_int, lpBits: ?*const c_void, lpbmi: ?*const BITMAPINFO, iUsage: UINT, rop: DWORD) c_int;
+pub extern "user32" stdcallcc fn GetMessageA(lpMsg: LPMSG, hWnd: HWND, wMsgFilterMin: UINT, wMsgFilterMax: UINT) BOOL;
+pub extern "user32" stdcallcc fn TranslateMessage(lpMsg: ?*const MSG) BOOL;
+pub extern "user32" stdcallcc fn DispatchMessageA(lpMsg: ?*const MSG) LRESULT;
+pub extern "user32" stdcallcc fn PeekMessageA(lpMsg: LPMSG, hWnd: HWND, wMsgFilterMin: UINT, wMsgFilterMax: UINT, wRemoveMsg: UINT) BOOL;
+pub extern "user32" stdcallcc fn SendMessageA(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
+pub extern "user32" stdcallcc fn DefWindowProcA(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
+pub extern "user32" stdcallcc fn RegisterClassA(lpWndClass: ?*const WNDCLASSA) ATOM;
+pub extern "user32" stdcallcc fn CreateWindowExA(dwExStyle: DWORD, lpClassName: LPCSTR, lpWindowName: LPCSTR, dwStyle: DWORD, X: c_int, Y: c_int, nWidth: c_int, nHeight: c_int, hWndParent: HWND, hMenu: HMENU, hInstance: HINSTANCE, lpParam: LPVOID) HWND;
+pub extern "user32" stdcallcc fn DestroyWindow(hWnd: HWND) BOOL;
+pub extern "user32" stdcallcc fn ShowWindow(hWnd: HWND, nCmdShow: c_int) BOOL;
+pub extern "user32" stdcallcc fn GetDC(hWnd: HWND) HDC;
+pub extern "user32" stdcallcc fn ReleaseDC(hWnd: HWND, hDC: HDC) c_int;
+pub extern "user32" stdcallcc fn InvalidateRect(hWnd: HWND, lpRect: ?*const RECT, bErase: BOOL) BOOL;
+pub extern "user32" stdcallcc fn ValidateRect(hWnd: HWND, lpRect: ?*const RECT) BOOL;
+pub extern "user32" stdcallcc fn AdjustWindowRect(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL) BOOL;
+pub extern "user32" stdcallcc fn AdjustWindowRectEx(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL, dwExStyle: DWORD) BOOL;
+pub extern "user32" stdcallcc fn AdjustWindowRectExForDpi(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL, dwExStyle: DWORD, dpi: UINT) BOOL;
+pub extern "user32" stdcallcc fn LoadCursorA(hInstance: HINSTANCE, lpCursorName: LPCSTR) HCURSOR;
 
 //Manually added from winuser.h
 pub inline fn MAKEINTRESOURCEA(i: WORD) LPSTR {

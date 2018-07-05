@@ -1,7 +1,5 @@
 const assert = @import("std").debug.assert;
 const mem = @import("std").mem;
-const memory = @import("../memory.zig");
-const Allocator = memory.Allocator;
 
 error NotFound;
 
@@ -12,8 +10,8 @@ pub fn ArrayList(comptime T: type)type {
         allocator: &Allocator,
         
         const Self = this;
-        const EqualityFunc = fn(a: T, b: T)bool;
-        const ComparisonFunc = fn(a: T, b: T)isize;
+        const EqualityFunc = fn(a: T, b: T) bool;
+        const ComparisonFunc = fn(a: T, b: T) isize;
 
         const initial_size = 16;
         const growth_factor = 2;
@@ -30,12 +28,36 @@ pub fn ArrayList(comptime T: type)type {
             self.allocator.free(self.data);
         }
 
+        /// ArrayList takes ownership of the slice passed. The slice must have been
+        /// allocated with `allocator`.
+        /// Deinitialize with `deinit` or use `toOwnedSlice`.
+        pub fn fromOwnedSlice(allocator: &Allocator, slice: []align(A) T) Self {
+            return Self {
+                .items = slice,
+                .len = slice.len,
+                .allocator = allocator,
+            };
+        }
+
+
         pub fn toSlice(self: &const Self)[]T {
             return self.data[0..self.length];
         }
 
         pub fn toSliceConst(self: &const Self)[]const T {
             return self.data[0..self.length];
+        }
+
+        /// The caller owns the returned memory. ArrayList becomes empty.
+        pub fn toOwnedSlice(self: &Self) []align(A) T {
+            const allocator = self.allocator;
+            const result = allocator.alignedShrink(T, A, self.items, self.len);
+            *self = init(allocator);
+            return result;
+        }
+
+        pub fn at(l: &const Self, n: usize) T {
+            return l.toSliceConst()[n];
         }
 
         pub fn last(self: &const Self) T {
@@ -48,12 +70,14 @@ pub fn ArrayList(comptime T: type)type {
             return last_item;
         }
 
-        pub fn append(self: &Self, data: &const T) %void {
-            try insert(self, self.length, data);
+        pub fn popOrNull(self: &Self) ?T {
+            if (self.len == 0)
+                return null;
+            return self.pop();
         }
 
-        pub fn prepend(self: &Self, data: &const T) %void {
-            try insert(self, 0, data);
+        pub fn append(self: &Self, data: &const T) %void {
+            try insert(self, self.length, data);
         }
 
         pub fn insert(self: &Self, index: usize, data: &const T) %void {
@@ -77,11 +101,39 @@ pub fn ArrayList(comptime T: type)type {
                 try self.allocator.alloc(T, new_size);
         }
 
+        pub fn resize(l: &Self, new_len: usize) !void {
+            try l.ensureCapacity(new_len);
+            l.len = new_len;
+        }
+
+        pub fn shrink(l: &Self, new_len: usize) void {
+            assert(new_len <= l.len);
+            l.len = new_len;
+        }
+
+        pub fn ensureCapacity(l: &Self, new_capacity: usize) !void {
+            var better_capacity = l.items.len;
+            if (better_capacity >= new_capacity) return;
+            while (true) {
+                better_capacity += better_capacity / 2 + 8;
+                if (better_capacity >= new_capacity) break;
+            }
+            l.items = try l.allocator.alignedRealloc(T, A, l.items, better_capacity);
+        }
+
+        pub fn addOne(l: &Self) !&T {
+            const new_length = l.len + 1;
+            try l.ensureCapacity(new_length);
+            const result = &l.items[l.len];
+            l.len = new_length;
+            return result;
+        }
+
         pub fn remove(self: &Self, index: usize) %void {
             try remove_range(self, index, 1);
         }
 
-        pub fn remove_range(self: &Self, index: usize, length: usize) %void {
+        pub fn removeRange(self: &Self, index: usize, length: usize) %void {
             if (index > self.length or index + length > self.length) return;
 
             // Move back entries following range
@@ -111,7 +163,14 @@ pub fn ArrayList(comptime T: type)type {
             self.length -= length;
         }
 
-        pub fn indexOf(self: &Self, eqlFunc: EqualityFunc, data: T) %usize {
+        pub fn firstIndex(self: &Self, eqlFunc: EqualityFunc, data: T) %usize {
+            for (self.data[0..self.length]) | item, i | {
+                if(eqlFunc(item, data)) return i;
+            }
+            return error.NotFound;
+        }
+
+        pub fn lastIndex(self: &Self, eqlFunc: EqualityFunc, data: T) %usize {
             for (self.data[0..self.length]) | item, i | {
                 if(eqlFunc(item, data)) return i;
             }
@@ -126,12 +185,12 @@ pub fn ArrayList(comptime T: type)type {
 
 const c = @import("../c.zig");
 
-fn cmp(a: i32, b: i32)isize {
+fn cmp(a: i32, b: i32) isize {
     if (a == b) return isize(0);
     return if(a > b) isize(-1) else isize(1);
 }
 
-fn eql(a: i32, b: i32)bool {
+fn eql(a: i32, b: i32) bool {
     return (a == b); 
 }
 

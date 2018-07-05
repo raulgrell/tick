@@ -14,7 +14,7 @@ var s_window: Window  = undefined;
 var s_gc: GC  = undefined;
 var s_ximage: &XImage = undefined;
 
-pub fn mfb_open(title: []const u8, width: u32, height: u32) error!void
+pub fn open(title: []const u8, width: u32, height: u32) error!void
 {
     s_display = XOpenDisplay(0);
 
@@ -106,8 +106,7 @@ fn processEvents() c_int {
     return 0;
 }
 
-fn update(buffer: []u32) u32
-{
+fn update(buffer: []u32) u32 {
     s_ximage.data = buffer;
 
     XPutImage(s_display, s_window, s_gc, s_ximage, 0, 0, 0, 0, s_width, s_height);

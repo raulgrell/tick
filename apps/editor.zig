@@ -1,25 +1,14 @@
-<<<<<<< HEAD
-=======
+// Based on a tutorial I will reference shortly
+
 const std = @import("std");
 const builtin = @import("builtin");
 
 const is_windows = builtin.os == builtin.Os.windows;
 
->>>>>>> Windows misc changes
 use @cImport({
     @cInclude("ctype.h");
     @cInclude("errno.h");
     @cInclude("stdio.h");
-<<<<<<< HEAD
-    @cInclude("unistd.h");
-    @cInclude("sys/ioctl.h");
-    @cInclude("sys/types.h");
-    @cInclude("termios.h");
-    @cInclude("stdlib.h");
-});
-
-const std = @import("std");
-=======
     @cInclude("stdlib.h");
     if (is_windows) {
 
@@ -31,25 +20,10 @@ const std = @import("std");
     }
 });
 
->>>>>>> Windows misc changes
-
-const EditorConfig = struct {
-    cx: c_int,
-    cy: c_int,
-    rx: c_int,
-    screenrows: c_int,
-    screencols: c_int,
-    row_offset: c_int,
-    col_offset: c_int,
-    num_rows: c_int,
-    row: std.ArrayList(EditorRow),
-    filename: []u8,
-    original_termios: termios
-};
 
 const EditorRow = struct {
-    chars: std.Buffer,
-    render_chars: std.Buffer
+    chars: []u8,
+    render_chars: []u8
 };
 
 const Key = enum(u8) {
@@ -64,9 +38,40 @@ const Key = enum(u8) {
     PageDown,
 };
 
-//
-// Data
-// 
+const EditorContext = struct {
+    cx: c_int,
+    cy: c_int,
+    rx: c_int,
+    screenrows: c_int,
+    screencols: c_int,
+    row_offset: c_int,
+    col_offset: c_int,
+    num_rows: c_int,
+    row: std.ArrayList(EditorRow),
+    filename: []u8,
+    original_termios: termios
+};
+
+var e = EditorContext {
+    .cx = 0,
+    .cy = 0,
+    .rx = 0,
+    .screenrows = 0,
+    .screencols = 0,
+    .row_offset = 0,
+    .col_offset = 0,
+    .num_rows = 0,
+    .row = undefined,
+    .filename = undefined,
+    .original_termios = undefined
+};
+
+
+fn initEditor() void {
+    getWindowSize(&e.screenrows, &e.screencols) catch die(c"getWindowSize");
+    e.row = std.ArrayList(EditorRow).init(std.heap.c_allocator);
+    e.screenrows -= 1;
+}
 
 pub fn main() !void {
     enableRawMode();
@@ -80,31 +85,13 @@ pub fn main() !void {
     }
 }
 
-var e = EditorConfig {
-    .cx = 0,
-    .cy = 0,
-    .rx = 0,
-    .screenrows = 0,
-    .screencols = 0,
-    .row_offset = 0,
-    .col_offset = 0,
-    .num_rows = 0,
-    .row = undefined,
-    .filename = []u8{},
-    .original_termios = undefined
-};
-
-
-fn initEditor() void {
-    getWindowSize(&e.screenrows, &e.screencols) catch die(c"getWindowSize");
-    e.row = std.ArrayList(EditorRow).init(std.heap.c_allocator);
-    e.screenrows -= 1;
-}
-
-
 //
 // Terminal
-//  
+// 
+
+const TerminalContext = struct {
+
+}
 
 fn die(s: &const u8) void {
     clearTerminal();

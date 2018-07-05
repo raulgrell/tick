@@ -8,19 +8,17 @@ const HeapType = enum {
     Max,
 };
 
-pub fn BinaryHeap(comptime T: type)type {
+pub fn BinaryHeap(comptime T: type, comptime heap_type: HeapType) type {
     struct {
         items: []T,
-        // Make heaptype comptime?
-        heap_type: HeapType,
         comparison_func: ComparisonFunc,
         len: usize,
         allocator: &Allocator,
 
         const Self = this;
-        const ComparisonFunc = fn(a: T, b: T)isize;
+        const ComparisonFunc = fn(a: T, b: T) isize;
         
-        pub fn init(heap_type: HeapType, comparison_func: ComparisonFunc, allocator: &Allocator)Self {
+        pub fn init(heap_type: HeapType, comparison_func: ComparisonFunc, allocator: &Allocator) Self {
             Self {
                 .heap_type = heap_type,
                 .comparison_func = comparison_func,
@@ -42,22 +40,17 @@ pub fn BinaryHeap(comptime T: type)type {
                 self.items = try self.allocator.realloc(T, self.items, new_size);
             }
 
-            // Add to the bottom of the heap and start from there 
+            // Add value to the bottom of the heap and percolate to the top of the heap
             var index = self.len;
-            var parent: usize = undefined;
-            // Percolate the value up to the top of the heap 
             while (index > 0) {
-                // The parent index is found by halving the node index 
-                parent = (index - 1) / 2;
-                // Compare the node with its parent 
-                if (cmp(self, self.items[parent], value) < 0) {
-                    // Ordered correctly - insertion is complete 
+                const parent_index = (index - 1) / 2;
+                if (cmp(self, self.items[parent_index], value) < 0) {
+                    // Found correct index
                     break;
                 } else {
-                    // Need to swap this node with its parent 
-                    self.items[index] = self.items[parent];
-                    // Advance up to the parent 
-                    index = parent;
+                    // Swap with parent and advance 
+                    self.items[index] = self.items[parent_index];
+                    index = parent_index;
                 }
             }
             // Save the new value in the final location 
@@ -65,22 +58,18 @@ pub fn BinaryHeap(comptime T: type)type {
             self.len += 1;
         }
 
-        pub fn pop(self: &Self)?T {
+        pub fn pop(self: &Self) ?T {
             if (self.len == 0) return null;
-
-            const result = self.items[0];
-
-            // Remove the last value from the heap 
             self.len -= 1;
 
-            // Percolate the new top value down 
-            var value = self.items[self.len];
+            const result = self.items[0];
+            const value = self.items[self.len];
             var index = usize(0);
             var next_index = usize(0);
-            while (true) : (index = next_index) {
+            while (true) {
                 // Calculate left and right child indices
-                var left = index * 2 + 1;
-                var right = index * 2 + 2;
+                const left = index * 2 + 1;
+                const right = index * 2 + 2;
 
                 if (left < self.len and cmp(self, value, self.items[left]) > 0) {
                     // Left child is less than node, choose smallest
@@ -105,7 +94,7 @@ pub fn BinaryHeap(comptime T: type)type {
             return result;
         }
 
-        fn cmp(self: &Self, data1: T, data2: T)isize {
+        fn cmp(self: &Self, data1: T, data2: T) isize {
             if (self.heap_type == HeapType.Min) {
                 return self.comparison_func(data1, data2);
             } else {

@@ -1,7 +1,5 @@
 const assert = @import("std").debug.assert;
 const mem = @import("std").mem;
-const memory = @import("../memory.zig");
-const Allocator = memory.Allocator;
 
 pub fn Trie(comptime T: type)type {
     struct {
@@ -19,7 +17,7 @@ pub fn Trie(comptime T: type)type {
             next: [256]?&Node,
         };
 
-        pub fn init(allocator: &Allocator)Self {
+        pub fn init(allocator: &Allocator) Self {
             Self {
                 .allocator = allocator,
                 .root_node = null,
@@ -47,13 +45,13 @@ pub fn Trie(comptime T: type)type {
             *list = node;
         }
 
-        fn pop(list: &&Node)&Node {
+        fn pop(list: &&Node) &Node {
             const result = *list;
             (*list).data = result.data;
             return result;
         }
 
-        pub fn insert(self: &Self, key: []u8, value: T) %void {
+        pub fn insert(self: &Self, key: []u8, value: T) !void {
             var node = find_end(trie, key);
             
             // Replace existing value
@@ -154,7 +152,7 @@ pub fn Trie(comptime T: type)type {
             };
         }
 
-        fn find_end(self: &Self, key: []u8)?&Node {
+        fn find_end(self: &Self, key: []u8) ?&Node {
             // Search down the trie until the end of string is reached
             var node = self.root_node;
             for (key) | k | {

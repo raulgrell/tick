@@ -1,5 +1,5 @@
 const std = @import("std");
-const c = @import("windows_lean.zig");
+const c = @import("windows_lean.h.zig");
 
 const SRCCOPY = (c.DWORD)(0x00CC0020); // dest = source
 const IDC_ARROW = c.MAKEINTRESOURCEA(32512);
@@ -11,19 +11,19 @@ var s_width: c_long = undefined;
 var s_height: c_long = undefined;
 var s_hdc: c.HDC = undefined;
 var s_buffer: []u32 = undefined;
-var s_bitmapInfo: &c.BITMAPINFO = undefined;
+var s_bitmapInfo: *c.BITMAPINFO = undefined;
 
 extern fn WndProc(hWnd: c.HWND, message: c.UINT, wParam: c.WPARAM, lParam: c.LPARAM) c.LRESULT {
     var res: c.LRESULT = 0;
     switch (message) {
         c.WM_PAINT => {
             if (s_buffer.len > 0) {
-                _ = c.StretchDIBits(s_hdc, 0, 0, s_width, s_height, 0, 0, s_width, s_height, @ptrCast(&c_void, s_buffer.ptr), s_bitmapInfo, c.DIB_RGB_COLORS, SRCCOPY);
+                _ = c.StretchDIBits(s_hdc, 0, 0, s_width, s_height, 0, 0, s_width, s_height, @ptrCast(*c_void, s_buffer.ptr), s_bitmapInfo, c.DIB_RGB_COLORS, SRCCOPY);
                 _ = c.ValidateRect(hWnd, null);
             }
         },
         c.WM_KEYDOWN => {
-            if ((wParam&0xFF) == 27) 
+            if ((wParam & 0xFF) == 27) 
                 s_close = 1;
         },
         c.WM_CLOSE => {
@@ -36,9 +36,8 @@ extern fn WndProc(hWnd: c.HWND, message: c.UINT, wParam: c.WPARAM, lParam: c.LPA
     return res;
 }
 
-pub fn open(title: []const u8, width: c_long, height: c_long) error!void
-{
-    // Zero
+pub fn open(title: []const u8, width: c_long, height: c_long) error!void {
+    // TODO: Zero this memory
     var rect: c.RECT = undefined;
 
     s_wc.style = c.CS_OWNDC | c.CS_VREDRAW | c.CS_HREDRAW;
@@ -84,16 +83,14 @@ pub fn open(title: []const u8, width: c_long, height: c_long) error!void
     s_hdc = c.GetDC(s_wnd);
 }
 
-pub fn update(buffer: []u32) c_int
-{
+pub fn update(buffer: []u32) c_int {
     s_buffer = buffer;
 
     _ = c.InvalidateRect(s_wnd, null, 0);
     _ = c.SendMessage(s_wnd, c.WM_PAINT, 0, 0);
 
     var msg: c.MSG = undefined;
-    while (c.PeekMessage(&msg, s_wnd, 0, 0, c.PM_REMOVE) != 0)
-    {
+    while (c.PeekMessage(&msg, s_wnd, 0, 0, c.PM_REMOVE) != 0) {
         _ = c.TranslateMessage(&msg);
         _ = c.DispatchMessage(&msg);
     }
@@ -104,8 +101,7 @@ pub fn update(buffer: []u32) c_int
     return 0;
 }
 
-pub fn close() void
-{
+pub fn close() void {
     // s_buffer = 0;
     // free(s_bitmapInfo);
     _ = c.ReleaseDC(s_wnd, s_hdc);

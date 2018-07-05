@@ -1,8 +1,5 @@
 const assert = @import("std").debug.assert;
 const mem = @import("std").mem;
-const memory = @import("../memory.zig");
-
-const Allocator = memory.Allocator;
 
 pub fn AvlTree(comptime K: type, comptime T: type)type {
     struct {
@@ -12,8 +9,8 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
         length: usize,
         
         const Self = this;
-        const EqualityFunc = fn(a: T, b: T)bool;
-        const ComparisonFunc = fn(a: T, b: T)isize;
+        const EqualityFunc = fn(a: T, b: T) bool;
+        const ComparisonFunc = fn(a: T, b: T) isize;
 
         const Side = enum {
             Left,
@@ -27,8 +24,7 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             value: T,
             height: usize,
 
-            // Find what side a node is relative to its parent
-            pub fn side(node: &Node, parent: &Node)Side {
+            pub fn side(node: &Node, parent: &Node) Side {
                 if (??parent.children[usize(Side.Left)] == node) {
                     return Side.Left;
                 } else {
@@ -180,13 +176,13 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             }
         }
 
-        fn rotate(tree: &Self, node: &Node, direction: Side)&Node{
+        fn rotate(tree: &Self, node: &Node, direction: Side) &Node {
             // The child of this node will take its place
             const child_index = usize(direction);
             var new_root = ??node.children[1 - child_index];
 
             // Make new_root the root
-            replace(tree, node, new_root);
+            replace(tree, node, new_root);q\
 
             // Rearrange pointers 
             node.children[1-child_index] = new_root.children[child_index];
@@ -306,7 +302,7 @@ test "AvlTree" {
     const one = %%avl.insert(0, 1);
     const two = %%avl.insert(1, 2);
     const four = %%avl.insert(2, 4);
-    const eight = %%avl.insert(3, 4);
+    const eight = %%avl.insert(3, 8);
 
     assert(??avl.lookup(2) == 4);
     assert(??avl.lookup_node(2) == two);

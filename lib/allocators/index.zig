@@ -74,7 +74,7 @@ pub const ProxyAllocator = struct {
     allocations: usize,
     memory_used: usize,
 
-    fn init(target: &Allocator)ProxyAllocator {
+    fn init(target: &Allocator) ProxyAllocator {
         ProxyAllocator {
             .allocator = Allocator {
                 .allocFn = alloc,
@@ -192,7 +192,6 @@ pub const PoolAllocator = struct {
 
 test "PoolAllocator" {
     var a = %%PoolAllocator.init(S,8192);
-    
     var s_array = %%a.allocator.alloc(S,8);
 
     for (s_array) | *s | {
@@ -356,7 +355,7 @@ pub const FreeListAllocator = struct {
             var total_size = size + adjustment;
 
             //If allocation doesn't fit in this FreeBlock, try the next
-            if(block.size < total_size) {
+            if (block.size < total_size) {
                 prev_free_block = free_block;
                 free_block = block.next;
                 continue;
@@ -460,20 +459,16 @@ pub const FreeListAllocator = struct {
     }
 };
 
-// test "FreeListAllocator" {
-//     var a = %%FreeListAllocator.init(8192);
-    
-//     var s_array = %%a.allocator.alloc(S,8);
-
-//     for (s_array) | *s | {
-//         (*s).s = %%a.allocator.create(S);
-//     }
-
-//     for (s_array) | s | {
-//         a.allocator.destroy(s.s);
-//     }
-
-//     a.allocator.free(s_array);
-// }
+ test "FreeListAllocator" {
+     var a = %%FreeListAllocator.init(8192);
+     var s_array = %%a.allocator.alloc(S,8);
+     for (s_array) | *s | {
+         (*s).s = %%a.allocator.create(S);
+     }
+     for (s_array) | s | {
+         a.allocator.destroy(s.s);
+     }
+     a.allocator.free(s_array);
+ }
 
 const S = struct { s: &S, };

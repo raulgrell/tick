@@ -1,9 +1,9 @@
+use @import("index.zig");
+
 const assert = @import("std").debug.assert;
 const mem = @import("std").mem;
-const memory = @import("../memory.zig");
-const Allocator = memory.Allocator;
 
-pub fn SortedArray(comptime T: type)type {
+pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc) type {
     struct {
         data: []T,
         length: usize,
@@ -12,12 +12,10 @@ pub fn SortedArray(comptime T: type)type {
         allocator: &Allocator,
 
         const Self = this;
-        const EqualityFunc = fn(a: T, b: T)bool;
-        const ComparisonFunc = fn(a: T, b: T)isize;
 
-        pub fn init(eqlFn: EqualityFunc, cmpFn: ComparisonFunc, allocator: &Allocator) Self {
+        pub fn init(allocator: &Allocator) Self {
             Self {
-                .data = []T{},
+                .data = []T {},
                 .length = 0,
                 .eqlFn = eqlFn,
                 .cmpFn = cmpFn,
@@ -29,6 +27,60 @@ pub fn SortedArray(comptime T: type)type {
             self.allocator.free(self.data);
         }
 
+        // TODO
+        pub fn fromOwnedSlice(allocator: &Allocator, slice: []align(A) T) Self {
+            return Self {
+                .items = slice,
+                .len = slice.len,
+                .allocator = allocator,
+            };
+        }
+
+        pub fn toSlice(self: &const Self)[]T {
+            return self.data[0..self.length];
+        }
+
+        pub fn toSliceConst(self: &const Self)[]const T {
+            return self.data[0..self.length];
+        }
+
+        /// The caller owns the returned memory. ArrayList becomes empty.
+        pub fn toOwnedSlice(self: &Self) []align(A) T {
+            const allocator = self.allocator;
+            const result = allocator.alignedShrink(T, A, self.items, self.len);
+            *self = init(allocator);
+            return result;
+        }
+
+        
+        pub fn get(self: &Self, index: usize) ?&T {
+            return if ( index < self.length ) {
+                self.data[index]
+            } else {
+                null
+            }
+        }
+
+        pub fn at(l: &const Self, n: usize) T {
+            return l.toSliceConst()[n];
+        }
+
+        pub fn last(self: &const Self) T {
+            return self.data[self.length];
+        }
+
+        pub fn pop(self: &Self) T {
+            const last_item = self.last();
+            self.length -= 1;
+            return last_item;
+        }
+
+        pub fn popOrNull(self: &Self) ?T {
+            if (self.len == 0)
+                return null;
+            return self.pop();
+        }
+
         pub fn push(self: &Self, data: T) %void {
             var left  = usize(0);
             var right = usize(self.length);
@@ -36,24 +88,20 @@ pub fn SortedArray(comptime T: type)type {
 
             // Binary search
             right = if (right > 1) right else 0;
-
             while (left != right) {
                 index = (left + right) / 2;
 
                 const order = self.cmpFn(data, self.data[index]);
                 if (order < 0) {
-                    // value should be left of index
                     right = index;
                 } else if (order > 0) {
-                    // value should be right of index
                     left = index + 1;
                 } else {
-                    // value should be at index
                     break;
                 }
             }
 
-            // look whether the item should be put before or after the index
+            // Whether the item should be  before or after the index
             if (self.length > 0 and self.cmpFn(data, self.data[index]) > 0) {
                 index += 1;
             }
@@ -74,9 +122,9 @@ pub fn SortedArray(comptime T: type)type {
             self.length += 1;
         }
 
-        pub fn index_of(self: &Self, data: T) %usize {
+        pub fn indexOf(self: &Self, data: T) %usize {
             // Binary search
-            var left = usize(0);
+            var left: usize = 0;
             var right = self.length;
             var index: usize = 0;
 
@@ -108,19 +156,47 @@ pub fn SortedArray(comptime T: type)type {
             self.length = 0;
         }
 
-        pub fn get(self: &Self, index: usize)?&T {
-            return if ( index < self.length ) {
-                self.data[index]
-            } else {
-                null
+        pub fn reserve(self: &Self, new_size: usize) %void {
+            if (self.data.len > new_size) return;
+            self.data = if (self.data.len > 0)
+                try self.allocator.realloc(T, self.data, new_size)
+            else
+                try self.allocator.alloc(T, new_size);
+        }
+
+        pub fn resize(l: &Self, new_len: usize) !void {
+            try l.ensureCapacity(new_len);
+            l.len = new_len;
+        }
+
+        pub fn shrink(l: &Self, new_len: usize) void {
+            assert(new_len <= l.len);
+            l.len = new_len;
+        }
+
+        pub fn ensureCapacity(l: &Self, new_capacity: usize) !void {
+            var better_capacity = l.items.len;
+            if (better_capacity >= new_capacity) return;
+            while (true) {
+                better_capacity += better_capacity / 2 + 8;
+                if (better_capacity >= new_capacity) break;
             }
+            l.items = try l.allocator.alignedRealloc(T, A, l.items, better_capacity);
+        }
+
+        pub fn addOne(l: &Self) !&T {
+            const new_length = l.len + 1;
+            try l.ensureCapacity(new_length);
+            const result = &l.items[l.len];
+            l.len = new_length;
+            return result;
         }
 
         pub fn remove(self: &Self, index: usize) void {
-            remove_range(self, index, 1);
+            removeRange(self, index, 1);
         }
 
-        pub fn remove_range(self: &Self, index: usize, length: usize) void {
+        pub fn removeRange(self: &Self, index: usize, length: usize) void {
             if (index > self.length or index + length > self.length) {
                 return;
             }
@@ -133,8 +209,10 @@ pub fn SortedArray(comptime T: type)type {
             self.length -= length;
         }
 
-        fn first_index( self: &Self, data: T, left: usize, right: usize)usize {
+        fn firstIndex( self: &Self, data: T, left: usize, right: usize)usize {
             var index = left;
+            var left = left_index;
+            var right = right_index;
             while (left < right) {
                 index = (left + right) / 2;
                 const order = self.cmpFn(data, self.data[index]);
@@ -147,8 +225,10 @@ pub fn SortedArray(comptime T: type)type {
             return index;
         }
 
-        fn last_index( self: &Self, data: T, left: usize, right: usize)usize {
+        fn lastIndex( self: &Self, data: T, left_index: usize, right_index: usize) usize {
             var index = right;
+            var left = left_index;
+            var right = right_index;
             while (left < right) {
                 index = (left + right) / 2;
                 const order = self.cmpFn(data, self.data[index]);
@@ -165,29 +245,22 @@ pub fn SortedArray(comptime T: type)type {
 
 const c = @import("../c.zig");
 
-fn comp(a: i32, b: i32)isize {
-    if (a == b) return isize(0);
-    return if(a  > b) isize(1) else isize(-1);
-}
-
-fn eql(a: i32, b: i32)bool {
-    return a == b
-}
-
 test "SortedArray" {
     var list = SortedArray(i32).init(eql, comp, &c.mem.allocator);
     defer list.deinit();
 
     { var i: usize = 0; while (i < 10) : (i += 2) {
-        _ = %%list.push(i32(i + 1));
+        _ = try list.push(i32(i + 1));
     }}
 
     { var i: usize = 1; while (i < 10) : (i += 2) {
-        _ = %%list.push(i32(i + 1));
+        _ = try list.push(i32(i + 1));
     }}
 
     { var i: usize = 0; while (i < 10) : (i += 1) {
         assert(list.data[i] == i32(i + 1));
     }}
+
+
 }
 

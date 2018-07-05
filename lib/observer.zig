@@ -132,7 +132,7 @@ const Client = struct {
     
     const Obs = Observer(Client, Server);
 
-    pub fn make(name: []const u8)Client {
+    pub fn make(name: []const u8) Client {
         var self = Client {
             self.name = name,
             self.watch = watch,
@@ -201,7 +201,6 @@ const Server = struct {
         self.subject.destroy(self.subject);
     }
 
-    // Whenever a Server MEOWS, Clients listen to it. Server is the Subject.
     fn speak(self: &Server) void {
         %%io.warn("My name is: {}. Miiiaaauu\n", self.name);
         self.event = Event.Speak;
