@@ -11,7 +11,7 @@ pub fn assertNoErrorGL() void {
         if (err != c.GL_NO_ERROR) {
             while ( err != c.GL_NO_ERROR ) {
                 const message = getErrorString(err);
-                %%io.warn(c"GL error: %s\n", message);               
+                io.warn(c"GL error: %s\n", message) catch unreachable;
                 err = c.glGetError();
             }
             c.abort();
@@ -21,11 +21,11 @@ pub fn assertNoErrorGL() void {
 
 fn getErrorString(err: c.GLuint)[]const u8 {
     switch ( err ) {
-        c.GL_INVALID_OPERATION             => { return "Invalid Operation"; },            
-        c.GL_INVALID_ENUM                  => { return "Invalid Enum"; },                 
-        c.GL_INVALID_VALUE                 => { return "Invalid Value"; },                
-        c.GL_OUT_OF_MEMORY                 => { return "Out of Memory"; },                
-        c.GL_INVALID_FRAMEBUFFER_OPERATION => { return "Invalid Framebuffer Operation"; }, 
-        else                               => { return "Unknown OpenGL error"; },          
+        c.GL_INVALID_OPERATION             => { return "Invalid Operation"; },
+        c.GL_INVALID_ENUM                  => { return "Invalid Enum"; },
+        c.GL_INVALID_VALUE                 => { return "Invalid Value"; },
+        c.GL_OUT_OF_MEMORY                 => { return "Out of Memory"; },
+        c.GL_INVALID_FRAMEBUFFER_OPERATION => { return "Invalid Framebuffer Operation"; },
+        else                               => { return "Unknown OpenGL error"; },
     }
 }

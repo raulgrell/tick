@@ -58,7 +58,7 @@ const Style = struct {
     text: u32,
 };
 
-pub fn getStyle(state: ControlState)Style {
+pub fn getStyle(state: ControlState) Style {
     return switch(state) {
         ControlState.Static => Style {
             .lines = Theme.FOREGROUND_COLOR,
@@ -103,12 +103,12 @@ pub const Color = struct {
 };
 
 pub const GUI = struct {
-    input: &InputManager,
-    renderer: &IMRenderer,
-    font: &Spritesheet,
-    texture: &Texture,
+    input: *InputManager,
+    renderer: *IMRenderer,
+    font: *Spritesheet,
+    texture: *Texture,
 
-    pub fn init(input: &InputManager, renderer: &IMRenderer, font: &Spritesheet, texture: &Texture) GUI {
+    pub fn init(input: *InputManager, renderer: *IMRenderer, font: *Spritesheet, texture: *Texture) GUI {
         return GUI {
             .input = input,
             .renderer = renderer,
@@ -118,7 +118,7 @@ pub const GUI = struct {
     }
 
     // Label control
-    pub fn Label(self: &GUI, bounds: &const Rectangle, text: []const u8) void {
+    pub fn Label(self: *GUI, bounds: *const Rectangle, text: []const u8) void {
         const text_bounds = self.textBounds(bounds, text);
         const state = init: { if (isCursorColliding(self.input.cursor_position, text_bounds)) {
             if (self.input.buttonDown[c.GLFW_MOUSE_BUTTON_LEFT]) {
@@ -134,7 +134,7 @@ pub const GUI = struct {
         self.draw_centered_text(text, text_bounds, getColor(style.text));
     }
 
-    pub fn Icon(self: &GUI, bounds: &const Rectangle, texture: &Texture) bool {
+    pub fn Icon(self: *GUI, bounds: *const Rectangle, texture: *Texture) bool {
         var clicked = false;
         const state = init: { if (isCursorColliding(self.input.cursor_position, bounds)) {
             if (self.input.buttonDown[c.GLFW_MOUSE_BUTTON_LEFT]) {
@@ -157,7 +157,7 @@ pub const GUI = struct {
     }
     
     // Button control, returns true when clicked
-    pub fn Button(self: &GUI, bounds: &const Rectangle, text: []const u8) bool {
+    pub fn Button(self: *GUI, bounds: *const Rectangle, text: []const u8) bool {
         const text_bounds = self.textBounds(bounds, text);
         
         var clicked = false;
@@ -180,7 +180,7 @@ pub const GUI = struct {
     }
 
     // Toggle Button, returns state
-    pub fn ToggleButton(self: &GUI, bounds: &const Rectangle, text: []const u8, active: bool) bool {
+    pub fn ToggleButton(self: *GUI, bounds: *const Rectangle, text: []const u8, active: bool) bool {
         const text_bounds = self.textBounds(bounds, text);
         var button_active = active;
         const state = init: { if (isCursorColliding(self.input.cursor_position, text_bounds)) {
@@ -207,20 +207,20 @@ pub const GUI = struct {
     }
     
     // Toggle Group control, returns toggled button index
-    pub fn ToggleGroup(self: &GUI, bounds: &const Rectangle, options: [][]const u8, active: &usize) void {
+    pub fn ToggleGroup(self: *GUI, bounds: *const Rectangle, options: [][]const u8, active: *usize) void {
         for (options) | option, i | {
             const button_active = self.ToggleButton( Rectangle {
                 .x = bounds.x + f32(i) * (bounds.width + Theme.PADDING),
                 .y = bounds.y,
                 .width = bounds.width,
                 .height = bounds.height
-            }, option, (i == *active));
-            if (i != *active and button_active) *active = i;
+            }, option, (i == active.*));
+            if (i != active.* and button_active) active.* = i;
         }
     }
     
     // Check Box control, returns true when active
-    pub fn CheckBox(self: &GUI, bounds: &const Rectangle, checked: &bool) void {
+    pub fn CheckBox(self: *GUI, bounds: *const Rectangle, checked: *bool) void {
         const state = init: { if (isCursorColliding(self.input.cursor_position, bounds)) {
             if (self.input.buttonPressed[c.GLFW_MOUSE_BUTTON_LEFT]) {
                 *checked = !(*checked);
@@ -240,7 +240,7 @@ pub const GUI = struct {
     }
     
     // Combo Box, returns selected item index
-    pub fn ComboBox(self: &GUI, bounds: &const Rectangle, options: [][]const u8, active: &usize) void {
+    pub fn ComboBox(self: *GUI, bounds: *const Rectangle, options: [][]const u8, active: *usize) void {
         const COMBOBOX_SELECTOR_WIDTH = 35;
 
         const box_bounds =  Rectangle {
@@ -257,16 +257,16 @@ pub const GUI = struct {
             .height = bounds.height
         };
         
-        *active = if (*active < 0) 0 else if (*active > options.len - 1) options.len - 1 else *active;
+        active.* = if (active.* < 0) 0 else if (active.* > options.len - 1) options.len - 1 else active.*;
         
-        const text_bounds = self.textBounds(box_bounds, options[*active]);
+        const text_bounds = self.textBounds(box_bounds, options[active.*]);
     
         var clicked = false;   
         const state = init: { if (isCursorColliding(self.input.cursor_position, bounds)
                 or isCursorColliding(self.input.cursor_position, selector)) {
             if (self.input.buttonPressed[c.GLFW_MOUSE_BUTTON_LEFT]) {
                 clicked = true;
-                *active = if (*active < options.len - 1) *active + 1 else 0;
+                active.* = if (active.* < options.len - 1) active.* + 1 else 0;
                 break :init ControlState.Pressed;
             } else {
                 break :init ControlState.Focused;
@@ -282,10 +282,10 @@ pub const GUI = struct {
         self.draw_outer(selector, getColor(style.lines));
         self.draw_inner(selector, getColor(style.base ), Theme.BORDER_WIDTH);
         
-        self.draw_centered_text(options[*active], text_bounds, getColor(style.text));
+        self.draw_centered_text(options[active.*], text_bounds, getColor(style.text));
     
         var selection_buffer = [] u8{0} ** 16;
-        const selection_text = std.fmt.bufPrint(selection_buffer[0..], "{}/{}", *active + 1, options.len) catch unreachable;
+        const selection_text = std.fmt.bufPrint(selection_buffer[0..], "{}/{}", active.* + 1, options.len) catch unreachable;
         self.draw_centered_text(
             selection_text,
             selector,
@@ -294,7 +294,7 @@ pub const GUI = struct {
     }
     
     // Slider control, returns selected value
-    pub fn Slider(self: &GUI, bounds: &const Rectangle, min_value: f32, max_value: f32, value: &f32) void {
+    pub fn Slider(self: *GUI, bounds: *const Rectangle, min_value: f32, max_value: f32, value: *f32) void {
         if (*value < min_value) *value = min_value else if (*value > max_value) *value = max_value;
 
         const slider_ratio =  *value / (max_value - min_value);
@@ -325,7 +325,7 @@ pub const GUI = struct {
     }
     
     // Slider Bar control, returns selected value
-    pub fn SliderBar(self: &GUI, bounds: &const Rectangle, min_value: f32, max_value: f32, value: &f32) void {
+    pub fn SliderBar(self: *GUI, bounds: *const Rectangle, min_value: f32, max_value: f32, value: *f32) void {
         const range = (max_value - min_value);
         const slider_ratio = *value / range;
         var slider = Rectangle {
@@ -355,7 +355,7 @@ pub const GUI = struct {
     }
     
     // Progress Bar control, shows current progress value
-    pub fn ProgressBar(self: &GUI, bounds: &const Rectangle, min_value: f32, max_value: f32, value: &f32) void {
+    pub fn ProgressBar(self: *GUI, bounds: *const Rectangle, min_value: f32, max_value: f32, value: *f32) void {
         if (*value < min_value) *value = min_value else if (*value > max_value) *value = max_value;
         const progress_ratio =  *value / (max_value - min_value);
         const progress = Rectangle {
@@ -377,7 +377,7 @@ pub const GUI = struct {
     }
     
     // Spinner control, returns selected value
-    pub fn Spinner(self: &GUI, bounds: &const Rectangle, min_value: i32, max_value: i32, value: &i32) void {  
+    pub fn Spinner(self: *GUI, bounds: *const Rectangle, min_value: i32, max_value: i32, value: *i32) void {  
         const SPINNER_LEFT_BUTTON = 1;
         const SPINNER_RIGHT_BUTTON = 2;
         const SPINNER_BUTTON_WIDTH = 35;
@@ -433,7 +433,7 @@ pub const GUI = struct {
     }
     
     // Text Box control, updates input text
-    pub fn TextBox(self: &GUI, bounds: &const Rectangle, text: []const u8) void {
+    pub fn TextBox(self: *GUI, bounds: *const Rectangle, text: []const u8) void {
         const state = if (isCursorColliding(self.input.cursor_position, bounds))
             ControlState.Focused
         else 
@@ -457,7 +457,7 @@ pub const GUI = struct {
         }
     }
     
-    fn draw_outer(self: &GUI, bounds: &const Rectangle, color: &const Color) void {
+    fn draw_outer(self: *GUI, bounds: *const Rectangle, color: *const Color) void {
         self.renderer.draw_rect(
             self.texture,
             bounds.x,
@@ -467,7 +467,7 @@ pub const GUI = struct {
         );
     }
     
-    fn draw_inner(self: &GUI, bounds: &const Rectangle, color: &const Color, padding: f32 ) void {
+    fn draw_inner(self: *GUI, bounds: *const Rectangle, color: *const Color, padding: f32 ) void {
         self.renderer.draw_rect(
             self.texture,
             bounds.x + padding,
@@ -477,7 +477,7 @@ pub const GUI = struct {
         );
     }  
 
-    fn draw_texture(self: &GUI, texture: &Texture, bounds: &const Rectangle, padding: f32 ) void {
+    fn draw_texture(self: *GUI, texture: *Texture, bounds: *const Rectangle, padding: f32 ) void {
         self.renderer.draw_rect(
             texture,
             bounds.x,
@@ -487,11 +487,11 @@ pub const GUI = struct {
         );
     }
 
-    fn draw_text(self: &GUI, text: []const u8, bounds: &const Rectangle, color: &const Color) void {
+    fn draw_text(self: *GUI, text: []const u8, bounds: *const Rectangle, color: *const Color) void {
         self.renderer.draw_text( self.font, text, bounds.x, bounds.y, 1 );
     }
     
-    fn draw_centered_text(self: &GUI, text: []const u8,  bounds: &const Rectangle, color: &const Color) void {
+    fn draw_centered_text(self: *GUI, text: []const u8,  bounds: *const Rectangle, color: *const Color) void {
         const text_width = textWidth(text, Theme.FONT_WIDTH);
         const text_height = f32(Theme.FONT_HEIGHT);
         self.renderer.draw_text(
@@ -503,7 +503,7 @@ pub const GUI = struct {
         );
     }
     
-    fn textBounds(self: &GUI, bounds: &const Rectangle, text: []const u8)Rectangle {
+    fn textBounds(self: *GUI, bounds: *const Rectangle, text: []const u8)Rectangle {
         const text_width = textWidth(text, Theme.FONT_WIDTH);
         const text_height = f32(Theme.FONT_HEIGHT);
         return Rectangle {
@@ -514,7 +514,7 @@ pub const GUI = struct {
         };
     }
 
-    fn isCursorColliding(point: &const Vec2, rec: &const Rectangle)bool {
+    fn isCursorColliding(point: *const Vec2, rec: *const Rectangle)bool {
         return (
             (point.x >= rec.x) and (point.x <= (rec.x + rec.width)) and
             (point.y >= rec.y) and (point.y <= (rec.y + rec.height))
@@ -537,6 +537,6 @@ fn getColor(hexValue: u32)Color {
 }
 
 // Returns hexadecimal value for a Color
-fn getHex(color: &const Color)int {
+fn getHex(color: *const Color)int {
     return (color.r << 24) | (color.g << 16) | (color.b <<  8) | (color.a);
 }

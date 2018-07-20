@@ -3,10 +3,10 @@ const mem = @import("std").mem;
 
 pub fn RBTree(comptime K: type, comptime T: type)type {
     struct {
-        root_node: ?&Node,
+        root_node: ?*Node,
         length: usize,
         compare_func: ComparisonFunc,
-        allocator: &Allocator,
+        allocator: *Allocator,
 
         const Self = this;
         const EqualityFunc = fn(a: T, b: T)bool;
@@ -21,14 +21,14 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
             Left, // 0
             Right, // 1
 
-            pub inline fn opposite(side: &const NodeSide)NodeSide {
+            pub inline fn opposite(side: *const NodeSide)NodeSide {
                 switch (*side) {
                     NodeSide.Left => NodeSide.Right,
                     NodeSide.Right => NodeSide.Left,
                 }
             }
 
-            pub inline fn index(side: &const NodeSide)usize {
+            pub inline fn index(side: *const NodeSide)usize {
                 return usize(side)
             }
         };
@@ -37,14 +37,14 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
             color: NodeColor,
             key: K,
             value: T,
-            parent: ?&Node,
-            children: [2]?&Node,
+            parent: ?*Node,
+            children: [2]?*Node,
 
-            pub fn child(node: &Node, side: NodeSide)?&Node {
+            pub fn child(node: *Node, side: NodeSide)?*Node {
                 return node.children[usize(side)];
             }
 
-            pub fn side(node: &Node, parent: &Node)NodeSide {
+            pub fn side(node: *Node, parent: *Node)NodeSide {
                 if (parent.children[usize(NodeSide.Left)] != null and ??parent.children[usize(NodeSide.Left)] == node) {
                     return NodeSide.Left;
                 } else {
@@ -52,17 +52,17 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
                 }
             }
 
-            pub fn sibling(node: &Node, parent: &Node)?&Node {
+            pub fn sibling(node: *Node, parent: *Node)?*Node {
                 const node_side = usize(side(node, parent));
                 return parent.children[1 - node_side];
             }
 
-            pub fn uncle(node: &Node, parent: &Node, grandparent: &Node)?&Node {
+            pub fn uncle(node: *Node, parent: *Node, grandparent: *Node)?*Node {
                 return sibling(parent, grandparent);
             }
         };
 
-        pub fn init (compare_func: ComparisonFunc, allocator: &Allocator)Self {
+        pub fn init (compare_func: ComparisonFunc, allocator: *Allocator)Self {
             Self {
                 .root_node = null,
                 .length = 0,
@@ -71,13 +71,13 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
             }
         }
 
-        pub fn deinit(self: &Self) void {
+        pub fn deinit(self: *Self) void {
             if (self.root_node) | n | {
                 self.free_subtree(n);
             }
         }
 
-        pub fn insert(self: &Self, key: K, value: T) %&Node {
+        pub fn insert(self: *Self, key: K, value: T) %&Node {
             var node = try self.allocator.create(Node);
             node.key = key;
             node.value = value;
@@ -86,7 +86,7 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
             node.children[usize(NodeSide.Right)] = null;
 
             // Binary tree insert
-            var parent: ?&Node = null;
+            var parent: ?*Node = null;
             var current = &self.root_node;
             while (*current) | *n | {
                 parent = *n;
@@ -109,7 +109,7 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
             return node;
         }
 
-        pub fn lookup(self: &Self, key: K)?T {
+        pub fn lookup(self: *Self, key: K)?T {
             return if ( lookup_node(self, key) ) | node | {
                 node.value
             } else {
@@ -117,7 +117,7 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
             };
         }
 
-        pub fn lookup_node(self: &Self, key: K)?&Node{
+        pub fn lookup_node(self: *Self, key: K)?*Node{
             var node = self.root_node;
 
             while (node) | n | {
@@ -133,17 +133,17 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
             return null;
         }
 
-        pub fn remove(self: &Self, key: K) %void {
-            var node = lookup_node(self, key) ?? return error.NotFound;
+        pub fn remove(self: *Self, key: K) !void {
+            var node = lookup_node(self, key) orelse return error.NotFound;
             remove_node(self, node);
         }
 
-        pub fn remove_node(self: &Self, node: &Node) %void {
+        pub fn remove_node(self: *Self, node: *Node) !void {
 
         }
 
         // Insert case 1: New node at root, must always be black.
-        fn insert_case1(self: &Self, node: &Node) void {
+        fn insert_case1(self: *Self, node: *Node) void {
             if (node.parent) | p | {
                 // Not root
                 insert_case2(self, node, p);
@@ -156,7 +156,7 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
         // Insert case 2: If the parent of the new node is red, this
         // conflicts with the red-black tree conditions, as both children
         // of every red node are black.
-        fn insert_case2(self: &Self, node: &Node, parent: &Node) void {
+        fn insert_case2(self: *Self, node: *Node, parent: *Node) void {
             if (parent.color != NodeColor.Black) {
                 // New node must have a grandparent (parent is red, and root node is always black).
                 const grandparent = (??parent.parent);
@@ -166,7 +166,7 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
 
         // Insert case 3: If the parent and uncle are both red, repaint them
         // both black and repaint the grandparent red. 
-        fn insert_case3(self: &Self, node: &Node, parent: &Node, grandparent: &Node) void {
+        fn insert_case3(self: *Self, node: *Node, parent: *Node, grandparent: *Node) void {
             var uncle = Node.uncle(node, parent, grandparent);
             if (uncle != null and (??uncle).color == NodeColor.Red) {
                 parent.color = NodeColor.Black;
@@ -191,8 +191,8 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
         //        \                            /
         //         R  <- node                 R
 
-        fn insert_case4(self: &Self, node: &Node) void {
-            var next_node: &Node = undefined;
+        fn insert_case4(self: *Self, node: *Node) void {
+            var next_node: *Node = undefined;
             // Note that at this point, by implication from case 3, we know
             // that the parent is red, but the uncle is black.  We therefore
             // only need to examine what side the node is on relative
@@ -223,7 +223,7 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
         //          /   \                       /   \
         //       N/R      ?                   ?      U/B
 
-        fn insert_case5(self: &Self, node: &Node) void {
+        fn insert_case5(self: *Self, node: *Node) void {
             var parent = (??node.parent);
             var grandparent = (??parent.parent);
 
@@ -238,7 +238,7 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
             grandparent.color = NodeColor.Red;
         }
 
-        fn replace(self: &Self, a: &Node, b: ?&Node) void {
+        fn replace(self: *Self, a: *Node, b: ?*Node) void {
             if (b) | node | {
                 node.parent = a.parent;
             }
@@ -251,7 +251,7 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
             }
         }
 
-        fn rotate(self: &Self, node: &Node, dir: NodeSide)&Node {
+        fn rotate(self: *Self, node: *Node, dir: NodeSide)&Node {
             // Replace with child. For a left rotation, it is the right child, and vice versa.
             const direction = usize(dir);
             var new_root = node.children[1 - direction];
@@ -269,7 +269,7 @@ pub fn RBTree(comptime K: type, comptime T: type)type {
             return (??new_root);
         }
 
-        fn free_subtree(self: &Self, node: ?&Node) void {
+        fn free_subtree(self: *Self, node: ?*Node) void {
             if (node) | n | {
                 self.free_subtree(n.children[usize(NodeSide.Left)]);
                 self.free_subtree(n.children[usize(NodeSide.Right)]);

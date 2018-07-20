@@ -3,8 +3,8 @@ const mem = @import("std").mem;
 
 pub fn AvlTree(comptime K: type, comptime T: type)type {
     struct {
-        allocator: &Allocator,
-        root_node: ?&Node,
+        allocator: *Allocator,
+        root_node: ?*Node,
         compare_func: ComparisonFunc,
         length: usize,
         
@@ -18,13 +18,13 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
         };
 
         const Node = struct {
-            children: [2]?&Node,
-            parent: ?&Node,
+            children: [2]?*Node,
+            parent: ?*Node,
             key: K,
             value: T,
             height: usize,
 
-            pub fn side(node: &Node, parent: &Node) Side {
+            pub fn side(node: *Node, parent: *Node) Side {
                 if (??parent.children[usize(Side.Left)] == node) {
                     return Side.Left;
                 } else {
@@ -33,7 +33,7 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             }
         };
 
-        pub fn init(compare_func: ComparisonFunc, allocator: &Allocator)Self {
+        pub fn init(compare_func: ComparisonFunc, allocator: *Allocator)Self {
             Self {
                 .allocator = allocator,
                 .root_node = null,
@@ -42,15 +42,15 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             }
         }
 
-        pub fn deinit(tree: &Self) void {
+        pub fn deinit(tree: *Self) void {
             if (tree.root_node) | node | {
                 free_subtree(tree, node);
             }
         }
 
-        pub fn insert(tree: &Self, key: K, value: T) %&Node {
+        pub fn insert(tree: *Self, key: K, value: T) %&Node {
             var current = &tree.root_node;
-            var previous_node: ?&Node = null;
+            var previous_node: ?*Node = null;
 
             while (*current) | cur | {
                 previous_node = cur;
@@ -78,12 +78,12 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             return new_node;
         }
 
-        pub fn lookup(tree: &Self, key: K)?T {
-            var node = lookup_node(tree, key) ?? return null;
+        pub fn lookup(tree: *Self, key: K)?T {
+            var node = lookup_node(tree, key) orelse return null;
             return node.value;
         }
 
-        pub fn lookup_node(tree: &Self, key: K)?&Node {
+        pub fn lookup_node(tree: *Self, key: K)?*Node {
             var node = tree.root_node;
             while (node) | n | {
                 const diff = tree.compare_func(key, n.key);
@@ -99,13 +99,13 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             return null;
         }
 
-        pub fn remove(tree: &Self, key: K) %void {
+        pub fn remove(tree: *Self, key: K) !void {
             var node = try lookup_node(tree, key);
             remove_node(tree, node);
         }
 
-        pub fn remove_node(tree: &Self, node: &Node) void {
-            var start: &Node;
+        pub fn remove_node(tree: *Self, node: *Node) void {
+            var start: *Node;
             var swap_node = node_get_replacement(tree, node);
             if (swap_node) | s | {
                 // Start rebalancing from the parent of the swap node.
@@ -134,14 +134,14 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             balance_to_root(tree, start);
         }
 
-        pub fn to_array(tree: &Self)[]T {
+        pub fn to_array(tree: *Self)[]T {
             var array = tree.allocator.alloc(T, tree.length);
             var index = 0;
             to_array_add_subtree(tree.root_node, array, &index);
             return array;
         }
 
-        fn free_subtree(tree: &Self, node: ?&Node) void {
+        fn free_subtree(tree: *Self, node: ?*Node) void {
             if (node) | n | {
                 free_subtree(tree, n.children[usize(Side.Left)]);
                 free_subtree(tree, n.children[usize(Side.Right)]);
@@ -149,7 +149,7 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             }
         }
 
-        fn update_height(node: &Node) void {
+        fn update_height(node: *Node) void {
             var left_subtree = node.children[usize(Side.Left)];
             var right_subtree = node.children[usize(Side.Right)];
             var left_height = subtree_height(left_subtree);
@@ -162,7 +162,7 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             }
         }
 
-        fn replace(tree: &Self, a: &Node, b: ?&Node) void {
+        fn replace(tree: *Self, a: *Node, b: ?*Node) void {
             if (b) | n | {
                 n.parent = a.parent;
             }
@@ -176,7 +176,7 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             }
         }
 
-        fn rotate(tree: &Self, node: &Node, direction: Side) &Node {
+        fn rotate(tree: *Self, node: *Node, direction: Side) &Node {
             // The child of this node will take its place
             const child_index = usize(direction);
             var new_root = ??node.children[1 - child_index];
@@ -202,14 +202,14 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             return new_root;
         }
 
-        fn node_balance(tree: &Self, node: &Node)&Node {
+        fn node_balance(tree: *Self, node: *Node)&Node {
             const left_subtree = node.children[usize(Side.Left)];
             const right_subtree = node.children[usize(Side.Right)];
 
             const diff = isize(subtree_height(right_subtree)) - isize(subtree_height(left_subtree));
             if (diff >= 2) {
                 // Right bias
-                var child = right_subtree ?? unreachable;
+                var child = right_subtree orelse unreachable;
 
                 if (subtree_height(child.children[usize(Side.Right)]) < subtree_height(child.children[usize(Side.Left)])) {
                     // Left bias, must be rotated right
@@ -220,7 +220,7 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
                 *node = *rotate(tree, node, Side.Left);
             } else if (diff <= -2) {
                 // Left bias
-                var child = left_subtree ?? unreachable;
+                var child = left_subtree orelse unreachable;
 
                 if (subtree_height(child.children[usize(Side.Left)]) < subtree_height(child.children[usize(Side.Right)])) {
                     // Right bias, must be rotated left
@@ -236,7 +236,7 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             return node;
         }
 
-        fn balance_to_root(tree: &Self, node: ?&Node) void {
+        fn balance_to_root(tree: *Self, node: ?*Node) void {
             var current = node;
             while (current) | cur | {
                 current = node_balance(tree, cur);
@@ -244,7 +244,7 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             }
         }
 
-        fn node_get_replacement(tree: &Self, node: &Node)?&Node {
+        fn node_get_replacement(tree: *Self, node: *Node)?*Node {
             var left_subtree = node.children[usize(Side.Left)];
             var right_subtree = node.children[usize(Side.Right)];
 
@@ -271,14 +271,14 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             return result;
         }
 
-        fn to_array_add_subtree(subtree: &Node, array: []T, index: usize) void {
+        fn to_array_add_subtree(subtree: *Node, array: []T, index: usize) void {
             to_array_add_subtree(subtree.children[usize(Side.Left)], array, index);
             array[*index] = subtree.key;
             *index += 1;
             to_array_add_subtree(subtree.children[usize(Side.Right)], array, index);
         }
 
-        fn subtree_height(node: ?&Node)usize {
+        fn subtree_height(node: ?*Node)usize {
             return if (node) | n | {
                 n.height
             } else {
@@ -299,10 +299,10 @@ test "AvlTree" {
     var avl = AvlTree(i32, i32).init(cmp, &c.mem.allocator);
     defer avl.deinit();
 
-    const one = %%avl.insert(0, 1);
-    const two = %%avl.insert(1, 2);
-    const four = %%avl.insert(2, 4);
-    const eight = %%avl.insert(3, 8);
+    const one = avl.insert(0, 1) catch unreachable;
+    const two = avl.insert(1, 2) catch unreachable;
+    const four = avl.insert(2, 4) catch unreachable;
+    const eight = avl.insert(3, 8) catch unreachable;
 
     assert(??avl.lookup(2) == 4);
     assert(??avl.lookup_node(2) == two);

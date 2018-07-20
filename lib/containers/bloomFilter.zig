@@ -6,7 +6,7 @@ error DisjointFilter;
 
 pub fn BloomFilter(comptime T: type)type {
     struct {
-        allocator: &Allocator,
+        allocator: *Allocator,
         hash_func: HashFunc,
         table: []u8,
         table_size: usize,
@@ -15,7 +15,7 @@ pub fn BloomFilter(comptime T: type)type {
         const Self = this;
         const HashFunc = fn(data: T)usize;
 
-        pub fn init(table_size: usize, hash_func: HashFunc, num_functions: usize, allocator: &Allocator) %Self {
+        pub fn init(table_size: usize, hash_func: HashFunc, num_functions: usize, allocator: *Allocator) %Self {
             if (num_functions > salts.len) return error.TooManyFunctions;
             Self {
                 .allocator = allocator,
@@ -26,11 +26,11 @@ pub fn BloomFilter(comptime T: type)type {
             }
         }
 
-        pub fn deinit(self: &Self) void {
+        pub fn deinit(self: *Self) void {
             self.allocator.free(self.table);
         }
 
-        pub fn insert(self: &Self, value: T) void {
+        pub fn insert(self: *Self, value: T) void {
             const hash = self.hash_func(value);
 
             { var i = usize(0); while(i < self.num_functions) : ( i += 1 ) {
@@ -45,7 +45,7 @@ pub fn BloomFilter(comptime T: type)type {
             }}
         }
 
-        pub fn query(self: &Self, value: T)bool {
+        pub fn query(self: *Self, value: T)bool {
             const hash = self.hash_func(value);
             // Multiple XORs with salts
             { var i = usize(0); while(i<self.num_functions) : ( i += 1 ) {
@@ -66,17 +66,17 @@ pub fn BloomFilter(comptime T: type)type {
             return true;
         }
 
-        pub fn read(self: &Self, array: []u8) void {
+        pub fn read(self: *Self, array: []u8) void {
             const array_size = (self.table_size + 7) / 8;
             mem.copy(array, self.table, array_size);
         }
 
-        pub fn load(self: &Self, array: []u8) void {
+        pub fn load(self: *Self, array: []u8) void {
             const array_size = (self.table_size + 7) / 8;
             mem.copy(self.table, array, array_size);
         }
 
-        pub fn make_union(filter1: &Self, filter2: &Self) %Self {
+        pub fn make_union(filter1: *Self, filter2: *Self) %Self {
             // TODO: Check filter equivalence... Make this comptime?
             // if (filter1.table_size != filter2.table_size
             //         or filter1.num_functions != filter2.num_functions
@@ -97,7 +97,7 @@ pub fn BloomFilter(comptime T: type)type {
             return result;
         }
 
-        pub fn make_intersection(filter1: &Self, filter2: &Self) %Self {
+        pub fn make_intersection(filter1: *Self, filter2: *Self) %Self {
             // TODO: Check filter equivalence at type level (comptime?)
             // if (filter1.table_size != filter2.table_size
             //         or filter1.num_functions != filter2.num_functions
@@ -147,7 +147,7 @@ fn hsh(a: usize)usize {
 }
 
 test "BloomFilter" {
-    var filter = %%BloomFilter(usize).init(32, hsh, 3, &c.mem.allocator);
+    var filter = BloomFilter(usize).init(32, hsh, 3, &c.mem.allocator) catch unreachable;
     defer filter.deinit();
 
     filter.insert(usize(1));
@@ -158,14 +158,14 @@ test "BloomFilter" {
     assert(filter.query(2));
     assert(!filter.query(5));
 
-    var other = %%BloomFilter(usize).init(32, hsh, 3, &c.mem.allocator);
+    var other = BloomFilter(usize).init(32, hsh, 3, &c.mem.allocator) catch unreachable;
     defer other.deinit();
 
     other.insert(usize(3));
     other.insert(usize(4));
     other.insert(usize(5));
 
-    var u = %%filter.make_union(&other);
+    var u = filter.make_union(&other) catch unreachable;
 
     assert(u.query(1));
     assert(u.query(2));
@@ -173,7 +173,7 @@ test "BloomFilter" {
     assert(u.query(4));
     assert(u.query(5));
 
-    var i = %%filter.make_intersection(&other);
+    var i = filter.make_intersection(&other) catch unreachable;
 
     assert(i.query(3));
 

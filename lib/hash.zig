@@ -1,7 +1,7 @@
-const StringHashFunction = fn(str: []const u8 )usize;
+const StringHashFunction = fn(str: []const u8 ) usize;
 
 @setRuntimeSafety(false);
-pub fn RSHash(str: []const u8)usize {
+pub fn RSHash(str: []const u8) usize {
     const b  = usize(378551);
     var a    = usize(63689);
     var hash = usize(0);
@@ -12,7 +12,7 @@ pub fn RSHash(str: []const u8)usize {
     return hash;
 }
 
-pub fn JSHash(str: []const u8)usize {
+pub fn JSHash(str: []const u8) usize {
     var hash = usize(1315423911);
     for (str) | c, i | {
         hash ^= ((hash << 5) + (c) + (hash >> 2));
@@ -20,7 +20,7 @@ pub fn JSHash(str: []const u8)usize {
     return hash;
 }
 
-pub fn PJWHash(str: []const u8)usize {
+pub fn PJWHash(str: []const u8) usize {
     const BitsInUnsignedInt = usize(@sizeOf(usize) * 8);
     const ThreeQuarters     = usize(BitsInUnsignedInt * 3 / 4);
     const OneEighth         = usize(BitsInUnsignedInt / 8);
@@ -39,7 +39,7 @@ pub fn PJWHash(str: []const u8)usize {
     return hash;
 }
 
-pub fn ELFHash(str: []const u8)usize {
+pub fn ELFHash(str: []const u8) usize {
     var hash = usize(0);
     var x    = usize(0);
     for (str) | c, i | {
@@ -53,7 +53,7 @@ pub fn ELFHash(str: []const u8)usize {
     return hash;
 }
 
-pub fn BKDRHash(str: []const u8)usize {
+pub fn BKDRHash(str: []const u8) usize {
     const seed = usize(131); // 31 131 1313 13131 131313 etc..
     var hash = usize(0);
     for (str) | c, i | {
@@ -62,7 +62,7 @@ pub fn BKDRHash(str: []const u8)usize {
     return hash;
 }
 
-pub fn SDBMHash(str: []const u8)usize {
+pub fn SDBMHash(str: []const u8) usize {
     var hash = usize(0);
     for (str) | c, i | {
         hash = (c) + (hash << 6) + (hash << 16) - hash;
@@ -70,7 +70,7 @@ pub fn SDBMHash(str: []const u8)usize {
     return hash;
 }
 
-pub fn DJBHash(str: []const u8)usize {
+pub fn DJBHash(str: []const u8) usize {
     var hash = usize(5381);
     for (str) | c, i | {
         hash = ((hash << 5) + hash) + (c);
@@ -78,7 +78,7 @@ pub fn DJBHash(str: []const u8)usize {
     return hash;
 }
 
-pub fn DEKHash(str: []const u8)usize {
+pub fn DEKHash(str: []const u8) usize {
     var hash = usize(str.len);
     for (str) | c, i | {
         hash = ((hash << 5) ^ (hash >> 27)) ^ (c);
@@ -86,7 +86,7 @@ pub fn DEKHash(str: []const u8)usize {
     return hash;
 }
 
-pub fn BPHash(str: []const u8)usize {
+pub fn BPHash(str: []const u8) usize {
     var hash = usize(0);
     for (str) | c, i | {
         hash = hash << 7 ^ (c);
@@ -94,7 +94,7 @@ pub fn BPHash(str: []const u8)usize {
     return hash;
 }
 
-pub fn FNVHash(str: []const u8)usize {
+pub fn FNVHash(str: []const u8) usize {
     const fnv_prime = usize(0x811C9DC5);
     var hash      = usize(0);
     for (str) | c, i | {
@@ -104,7 +104,7 @@ pub fn FNVHash(str: []const u8)usize {
     return hash;
 }
 
-pub fn APHash(str: []const u8)usize {
+pub fn APHash(str: []const u8) usize {
     var hash = usize(0xAAAAAAAA);
     for (str) | c, i | {
         hash ^= if ((i & 1) == 0) {
@@ -120,15 +120,15 @@ pub fn APHash(str: []const u8)usize {
 const io = @import("std").io;
 
 test "Hash" {
-    %%io.warn("{}\n", RSHash("Test"));
-    %%io.warn("{}\n", JSHash("Test"));
-    %%io.warn("{}\n", PJWHash("Test"));
-    %%io.warn("{}\n", ELFHash("Test"));
-    %%io.warn("{}\n", BKDRHash("Test"));
-    %%io.warn("{}\n", SDBMHash("Test"));
-    %%io.warn("{}\n", DJBHash("Test"));
-    %%io.warn("{}\n", DEKHash("Test"));
-    %%io.warn("{}\n", BPHash("Test"));
-    %%io.warn("{}\n", FNVHash("Test"));
-    %%io.warn("{}\n", APHash("Test"));
+    io.warn("{}\n", RSHash("Test")) catch unreachable;
+    io.warn("{}\n", JSHash("Test")) catch unreachable;
+    io.warn("{}\n", PJWHash("Test")) catch unreachable;
+    io.warn("{}\n", ELFHash("Test")) catch unreachable;
+    io.warn("{}\n", BKDRHash("Test")) catch unreachable;
+    io.warn("{}\n", SDBMHash("Test")) catch unreachable;
+    io.warn("{}\n", DJBHash("Test")) catch unreachable;
+    io.warn("{}\n", DEKHash("Test")) catch unreachable;
+    io.warn("{}\n", BPHash("Test")) catch unreachable;
+    io.warn("{}\n", FNVHash("Test")) catch unreachable;
+    io.warn("{}\n", APHash("Test")) catch unreachable;
 }

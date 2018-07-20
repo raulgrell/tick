@@ -19,10 +19,10 @@ const WINDOW_WIDTH  = 640;
 const WINDOW_HEIGHT = 360;
 
 pub const API = struct {
-    init:     fn(app: &App) void,
-    update:   fn(app: &App, delta_time: f32) %void,
-    draw:     fn(app: &App) void,
-    deinit:   fn(app: &App) void,
+    init:     fn(app: *App) void,
+    update:   fn(app: *App, delta_time: f32) !void,
+    draw:     fn(app: *App) void,
+    deinit:   fn(app: *App) void,
 };
 
 pub const App = struct {
@@ -35,7 +35,7 @@ pub const App = struct {
 
         // Window
         app.window.init(WINDOW_WIDTH, WINDOW_HEIGHT);
-        app.window.setWindowPointer(@ptrCast(&const u8, app));
+        app.window.setWindowPointer(@ptrCast(*const u8, app));
 
         // Cursor
         app.window.setCustomCursor();
@@ -52,13 +52,13 @@ pub const App = struct {
 
         // Audio
         try app.audio.init();
-        // %%app.audio.open();
-        // %%app.audio.start();
+        // app.audio.open() catch unreachable;
+        // app.audio.start() catch unreachable;
 
         return app;
     }
 
-    pub fn run (app: &App, api: &const API) void {
+    pub fn run (app: *App, api: *const API) void {
         api.init(app);
 
         var current_ticks: f32 = 0.0;
@@ -106,10 +106,10 @@ pub const InputManager = struct {
     const KeyMods = struct {
         mods: u8,
 
-        fn controlDown(self: &KeyMods)bool { return (self.mods & GLFW_MOD_CONTROL) and GLFW_MOD_CONTROL; } 
-        fn shiftDown(self: &KeyMods)  bool { return (self.mods & GLFW_MOD_SHIFT)   and GLFW_MOD_SHIFT; } 
-        fn altDown(self: &KeyMods)    bool { return (self.mods & GLFW_MOD_ALT)     and GLFW_MOD_ALT; } 
-        fn superDown(self: &KeyMods)  bool { return (self.mods & GLFW_MOD_SUPER)   and GLFW_MOD_SUPER; }
+        fn controlDown(self: *KeyMods)bool { return (self.mods & GLFW_MOD_CONTROL) and GLFW_MOD_CONTROL; } 
+        fn shiftDown(self: *KeyMods)  bool { return (self.mods & GLFW_MOD_SHIFT)   and GLFW_MOD_SHIFT; } 
+        fn altDown(self: *KeyMods)    bool { return (self.mods & GLFW_MOD_ALT)     and GLFW_MOD_ALT; } 
+        fn superDown(self: *KeyMods)  bool { return (self.mods & GLFW_MOD_SUPER)   and GLFW_MOD_SUPER; }
     };
 
     pub fn create() InputManager {
@@ -127,12 +127,12 @@ pub const InputManager = struct {
         };
     }
 
-    pub fn init(self: &InputManager) void {
+    pub fn init(self: *InputManager) void {
         self.clearKeys();
         self.clearMouseButtons();
     }
 
-    pub fn update(self: &InputManager) void {
+    pub fn update(self: *InputManager) void {
         { var i: usize = 0; while(i < MAX_KEYS) : (i += 1) {
             self.keyPressed[i] = self.keyDown[i] and !self.prevKeyState[i];
         }}
@@ -144,13 +144,13 @@ pub const InputManager = struct {
         std.mem.copy(bool, self.prevButtonState[0..], self.buttonDown[0..]);
     }
     
-    pub fn clearKeys(self: &InputManager) void {
+    pub fn clearKeys(self: *InputManager) void {
         for (self.keyDown)         | *k | *k = false;
         for (self.prevKeyState)    | *k | *k = false;
         for (self.keyPressed)      | *k | *k = false;
     }
 
-    pub fn clearMouseButtons(self: &InputManager) void {
+    pub fn clearMouseButtons(self: *InputManager) void {
         for (self.buttonDown)      | *k | *k = false;
         for (self.prevButtonState) | *k | *k = false;
         for (self.buttonPressed)   | *k | *k = false;

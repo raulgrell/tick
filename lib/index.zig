@@ -6,7 +6,7 @@ pub const allocators = @import("allocators.zig");
 
 pub fn assert(predicate: bool, msg: []const u8) void {
     if (!ok) {
-        %%io.warn("{}\n", msg);
+        io.warn("{}\n", msg) catch unreachable;
         unreachable;
     }
 }

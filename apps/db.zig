@@ -74,7 +74,7 @@ fn do_meta_command(input: []const u8) MetaCommandResult {
     return MetaCommandResult.Unrecognized;
 }
 
-fn prepare_statement(input: []const u8, statement: &Statement) PrepareResult {
+fn prepare_statement(input: []const u8, statement: *Statement) PrepareResult {
     if (std.mem.eql(u8, input, "select")) {
         statement.T = StatementType.Select;
         return PrepareResult.Success;
@@ -86,7 +86,7 @@ fn prepare_statement(input: []const u8, statement: &Statement) PrepareResult {
     return PrepareResult.Unrecognized;
 }
 
-fn execute_statement(statement: &Statement) void {
+fn execute_statement(statement: *Statement) void {
     switch(statement.T) {
         StatementType.Insert => {
             std.debug.warn("Inserting\n");

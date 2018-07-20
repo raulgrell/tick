@@ -1,27 +1,11 @@
 use @import("../system/index.zig");
 
-const io = std.io;
+const std_io = std.io;
 const math = std.math;
 
-const AudioCallback = fn(os: ?&c.SoundIoOutStream, frame_count_min: c_int, frame_count_max: c_int);
+//const AudioCallback = fn(os: ?*c.SoundIoOutStream, frame_count_min: c_int, frame_count_max: c_int);
 
-error NoMem;
-error InitAudioBackend;
-error SystemResources;
-error OpeningDevice;
-error NoSuchDevice;
-error Invalid;
-error BackendUnavailable;
-error Streaming;
-error IncompatibleDevice;
-error NoSuchClient;
-error IncompatibleBackend;
-error BackendDisconnected;
-error Interrupted;
-error Underflow;
-error EncodingString;
-
-fn sio_err(err: c_int) %void {
+fn sio_err(err: c_int) !void {
     switch (c.SoundIoError(err)) {
         c.SoundIoError.None => {},
         c.SoundIoError.NoMem => error.NoMem,
@@ -45,9 +29,9 @@ fn sio_err(err: c_int) %void {
 
 var seconds_offset = f32(0.0);
 
-extern fn write_callback(os: ?&c.SoundIoOutStream, frame_count_min: c_int, frame_count_max: c_int) void {
+extern fn write_callback(os: ?*c.SoundIoOutStream, frame_count_min: c_int, frame_count_max: c_int) void {
     const outstream = ??os;
-    const layout: &c.SoundIoChannelLayout = &outstream.layout;
+    const layout: *c.SoundIoChannelLayout = &outstream.layout;
     const float_sample_rate = f32(outstream.sample_rate);
     const seconds_per_frame = 1.0 / float_sample_rate;
     
@@ -55,9 +39,9 @@ extern fn write_callback(os: ?&c.SoundIoOutStream, frame_count_min: c_int, frame
 
     while (frames_left > 0) {
         var frame_count = frames_left;
-        var areas: &c.SoundIoChannelArea = undefined;
+        var areas: *c.SoundIoChannelArea = undefined;
 
-        sio_err(c.soundio_outstream_begin_write(outstream, @ptrCast(&?&c.SoundIoChannelArea, &areas), &frame_count)) catch |err| {
+        sio_err(c.soundio_outstream_begin_write(outstream, @ptrCast(&?*c.SoundIoChannelArea, &areas), &frame_count)) catch |err| {
             panic("write failed: {}", @errorName(err));
         };
 
@@ -88,13 +72,13 @@ extern fn write_callback(os: ?&c.SoundIoOutStream, frame_count_min: c_int, frame
 }
 
 pub const AudioEngine = struct {
-    sound_io: &c.SoundIo,
-    device: &c.SoundIoDevice,
-    outstream: &c.SoundIoOutStream,
+    sound_io: *c.SoundIo,
+    device: *c.SoundIoDevice,
+    outstream: *c.SoundIoOutStream,
     audio_callback: AudioCallback,
 
-    fn init(self: &AudioEngine) %void {
-        const soundio = c.soundio_create() ?? {
+    fn init(self: *AudioEngine) !void {
+        const soundio = c.soundio_create() orelse {
             panic("could not create soundio object: out of memory");
         };
 
@@ -109,11 +93,11 @@ pub const AudioEngine = struct {
             panic("no output device found");
         }
 
-        const device = c.soundio_get_output_device(soundio, default_output_index) ?? {
+        const device = c.soundio_get_output_device(soundio, default_output_index) orelse {
             panic("could not get output device {}: out of memory", default_output_index);
         };
 
-        const outstream = c.soundio_outstream_create(device) ?? {
+        const outstream = c.soundio_outstream_create(device) orelse {
             panic("could not create outstream: out of memory");
         };
         
@@ -122,11 +106,11 @@ pub const AudioEngine = struct {
         self.outstream = outstream;
     }
 
-    fn setAudioCallback(self: &AudioEngine, cb: AudioCallback) void {
+    fn setAudioCallback(self: *AudioEngine, cb: AudioCallback) void {
         self.audio_callback = cb;
     }
 
-    fn open(self: &AudioEngine) %void {
+    fn open(self: *AudioEngine) !void {
         self.outstream.format = c.SoundIoFormat(usize(c.SoundIoFormatFloat32NE));
         self.outstream.write_callback = write_callback;
 
@@ -135,27 +119,27 @@ pub const AudioEngine = struct {
         };
 
         if (self.outstream.layout_error != 0)
-            %%io.warn("unable to set channel layout: {}\n", self.outstream.layout_error);
+            std_io.warn("unable to set channel layout: {}\n", self.outstream.layout_error) catch unreachable;
     }
 
-    fn start(self: &AudioEngine) %void {
+    fn start(self: *AudioEngine) !void {
         sio_err(c.soundio_outstream_start(self.outstream)) catch |err| {
             panic("unable to start stream: {}", @errorName(err));
         };
     }
 
-    fn update(self: &AudioEngine) void {
+    fn update(self: *AudioEngine) void {
         // Blocks
         // c.soundio_wait_events(self.sound_io);
     }
 
-    fn stop(self: &AudioEngine) void {
+    fn stop(self: *AudioEngine) void {
     }
 
-    fn close(self: &AudioEngine) void {
+    fn close(self: *AudioEngine) void {
     }
 
-    pub fn destroy(self: &AudioEngine) void {
+    pub fn destroy(self: *AudioEngine) void {
         c.soundio_outstream_destroy(self.outstream);
         c.soundio_device_unref(self.device);
         c.soundio_destroy(self.soundio);
@@ -167,7 +151,7 @@ const Wave = struct {
     sampleRate: usize,    // Frequency (samples per second)
     sampleSize: usize,    // Bit depth (bits per sample): 8, 16, 32 (24 not supported)
     channels: usize,      // Number of channels (1-mono, 2-stereo)
-    data: &u8,            // Buffer data pointer
+    data: *u8,            // Buffer data pointer
 };
 
 const Sound = struct {

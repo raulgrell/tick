@@ -9,23 +9,23 @@ const quat = @import("quat.zig");
 
 // Vectors
 
-pub const Vec2 = vec.Vec2T(f32); 
-pub const Vec3 = vec.Vec3T(f32); 
+pub const Vec2 = vec.Vec2T(f32);
+pub const Vec3 = vec.Vec3T(f32);
 pub const Vec4 = vec.Vec4T(f32);
 
-pub const UVec2 = vec.Vec2T(u32); 
-pub const UVec3 = vec.Vec3T(u32); 
+pub const UVec2 = vec.Vec2T(u32);
+pub const UVec3 = vec.Vec3T(u32);
 pub const UVec4 = vec.Vec4T(u32);
 
-pub fn vec2(x: f32, y: f32)Vec2 {
+pub fn vec2(x: f32, y: f32) Vec2 {
     return Vec2 { .x = x, .y = y };
 }
 
-pub fn vec3(x: f32, y: f32, z: f32)Vec3 {
+pub fn vec3(x: f32, y: f32, z: f32) Vec3 {
     return Vec3 {.x = x, .y = y, .z = z };
 }
 
-pub fn vec4(x: f32, y: f32, z: f32, w: f32)Vec4 {
+pub fn vec4(x: f32, y: f32, z: f32, w: f32) Vec4 {
     return Vec4 {.x = x, .y = y, .z = z, .w = w };
 }
 

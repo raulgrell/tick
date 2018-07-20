@@ -14,7 +14,7 @@ pub const PrimitiveShader = struct {
     uniform_mvp: c.GLint,
     uniform_color: c.GLint,
 
-    pub fn init()PrimitiveShader {
+    pub fn init() PrimitiveShader {
         var self: PrimitiveShader = undefined;
         self.program = ShaderProgram.init(
             \\#version 330 core
@@ -44,19 +44,19 @@ pub const PrimitiveShader = struct {
         return self;
     }
 
-    pub fn destroy(self: &PrimitiveShader) void {
+    pub fn destroy(self: *PrimitiveShader) void {
         self.program.destroy();
     }
 };
 
 pub const StripRenderer = struct {
-    shader: &PrimitiveShader,
+    shader: *PrimitiveShader,
     vao: c.GLuint,
     projection: Mat4,
     rectangleBuffer: c.GLuint,
     triangleBuffer: c.GLuint,
 
-    fn init(s: &PrimitiveShader, fb_width: usize, fb_height: usize)StripRenderer {
+    fn init(s: *PrimitiveShader, fb_width: usize, fb_height: usize) StripRenderer {
         var r = StripRenderer {
             .shader = s,
             .vao = 0,
@@ -89,23 +89,23 @@ pub const StripRenderer = struct {
         return r;
     }
 
-    fn begin (self: &StripRenderer) void {
+    fn begin (self: *StripRenderer) void {
         c.glBindVertexArray(r.vao);
         self.shader.program.bind();
     }
 
-    fn end(self: &StripRenderer) void {
+    fn end(self: *StripRenderer) void {
         self.shader.program.unbind();
         c.glBindVertexArray(0);        
     }
 
-    pub fn submit(self: &StripRenderer, color: &const Vec4, x: f32, y: f32, w: f32, h: f32) void {
+    pub fn submit(self: *StripRenderer, color: *const Vec4, x: f32, y: f32, w: f32, h: f32) void {
         const model = Mat4.diagonal(1).translate(x, y, 0.0).scale(w, h, 0.0);
         const mvp = self.projection.mul(model);
         self.submitMvp(color, mvp);
     }
 
-    pub fn submitMvp(self: &StripRenderer, color: &const Vec4, mvp: &const Mat4) void {
+    pub fn submitMvp(self: *StripRenderer, color: *const Vec4, mvp: *const Mat4) void {
         self.shader.program.setUniform_vec4(r.shader.uniform_color, color);
         self.shader.program.setUniform_mat4(r.shader.uniform_mvp, mvp);
 
@@ -123,7 +123,7 @@ pub const StripRenderer = struct {
         c.glDrawArrays(c.GL_TRIANGLE_STRIP, 0, 4);
     }
 
-    fn destroy(self: &StripRenderer) void {
+    fn destroy(self: *StripRenderer) void {
         if (r.vao != 0) c.glDeleteVertexArrays(1, &r.vao);
         if (r.rectangleBuffer != 0) c.glDeleteBuffers(1, &r.rectangleBuffer);
         if (r.triangleBuffer != 0) c.glDeleteBuffers(1, &r.triangleBuffer);
@@ -134,7 +134,7 @@ var s_indices: [MAX_INDICES]c.GLuint = undefined;
 var s_vertices: [MAX_VERTICES]Vertex = undefined;
 
 pub const LineRenderer = struct {
-    shader: &PrimitiveShader,
+    shader: *PrimitiveShader,
     vao: c.GLuint,
     vbo: c.GLuint,
     ibo: c.GLuint,
@@ -145,7 +145,7 @@ pub const LineRenderer = struct {
     numIndices: c_uint,
     numElements: c_int,
 
-    pub fn init(s: &PrimitiveShader, fb_width: usize, fb_height: usize)LineRenderer {
+    pub fn init(s: *PrimitiveShader, fb_width: usize, fb_height: usize) LineRenderer {
         var r = LineRenderer {
             .shader = s,
             .vao = 0,
@@ -195,11 +195,11 @@ pub const LineRenderer = struct {
         return r;
     }
 
-    pub fn begin (self: &LineRenderer) void {
+    pub fn begin (self: *LineRenderer) void {
         c.glBindVertexArray(self.vao);
     }
 
-    pub fn end(self: &LineRenderer) void {
+    pub fn end(self: *LineRenderer) void {
         c.glBindBuffer(c.GL_ARRAY_BUFFER, self.vbo);
         c.glBufferData(c.GL_ARRAY_BUFFER, self.numVertices * @sizeOf(Vertex), @intToPtr(&c_void, 0), c.GL_DYNAMIC_DRAW);
         c.glBufferSubData(c.GL_ARRAY_BUFFER, 0, self.numVertices * @sizeOf(Vertex), @ptrCast(&c_void, self.vertices.ptr));
@@ -217,7 +217,7 @@ pub const LineRenderer = struct {
         debug.assertNoErrorGL();
     }
 
-    pub fn drawLine(self: &LineRenderer, colour: &const Vec4, a: &const Vec3, b: &const Vec3) void {
+    pub fn drawLine(self: *LineRenderer, colour: *const Vec4, a: *const Vec3, b: *const Vec3) void {
         const i = self.numVertices;
 
         self.vertices[i].position = *a;
@@ -235,7 +235,7 @@ pub const LineRenderer = struct {
         self.numIndices += 2;
     }
 
-    pub fn drawPolygon(self: &LineRenderer, colour: &const Vec4, center: &const Vec3, radius: f32, angle: f32, numSides: c_int) void {
+    pub fn drawPolygon(self: *LineRenderer, colour: *const Vec4, center: *const Vec3, radius: f32, angle: f32, numSides: c_int) void {
         const vertexOffset = self.numVertices;
 
         var i = 0;
@@ -261,7 +261,7 @@ pub const LineRenderer = struct {
         self.numIndices += numSides * 2;
     }
 
-    pub fn render(self: &LineRenderer) void {
+    pub fn render(self: *LineRenderer) void {
         self.shader.program.bind();
         self.shader.program.setUniform_mat4(r.shader.uniform_mvp,  &r.projection);
 
@@ -275,7 +275,7 @@ pub const LineRenderer = struct {
         debug.assertNoErrorGL();
     }
 
-    pub fn destroy(self: &LineRenderer) void {
+    pub fn destroy(self: *LineRenderer) void {
         if (r.vao != 0) c.glDeleteVertexArrays(1, &r.vao);
         if (r.vbo != 0) c.glDeleteBuffers(1, &r.vbo);
         if (r.ibo != 0) c.glDeleteBuffers(1, &r.ibo);
@@ -285,7 +285,7 @@ pub const LineRenderer = struct {
 const Polygon = struct {
     vertices: ArrayList(Vertex),
 
-    fn rectangle(rect: &const Rectangle, color: &const Colour) Polygon {
+    fn rectangle(rect: *const Rectangle, color: *const Colour) Polygon {
         self.setPos(rect.getPos());
 
         self.vertices.resize(4);
@@ -307,7 +307,7 @@ const Polygon = struct {
         self.vertices[3].setColor(color);
     }
 
-    fn regular(center_position: Vec2, radius: f32, color: &const Color, num_verts: usize) Polygon {
+    fn regular(center_position: Vec2, radius: f32, color: *const Color, num_verts: usize) Polygon {
         self.setPos(center_position);
 
         if(num_verts == -1) {
@@ -373,7 +373,7 @@ const Polygon = struct {
         return self.getTransform().getMatrix();
     }
 
-    fn render(renderer: &Renderer) void {
+    fn render(renderer: *Renderer) void {
         renderer.submit(this);
     }
 };

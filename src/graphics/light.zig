@@ -16,12 +16,12 @@ const Lighting = struct {
         self.lights.deinit();
     }
 
-    pub fn add(light: &Light) &Light {
+    pub fn add(light: *Light) *Light {
         self.lights.append(light);
         return light;
     }
 
-    pub fn remove(light: &Light) void {
+    pub fn remove(light: *Light) void {
         self.lights.remove(light);
     }
 };
@@ -34,7 +34,7 @@ const Light = struct {
     intensity: f32,
     size: f32,
 
-    pub fn init(direction: &const Vec3, color: &const Vec4, intensity: f32, size: usize)Light {
+    pub fn init(direction: *const Vec3, color: *const Vec4, intensity: f32, size: usize)Light {
         return Light {
             .color = color,
             .position = vec3(0, 0, 0),
@@ -45,13 +45,13 @@ const Light = struct {
         };
     }
 
-    pub fn draw(self: &Light, r: &BatchRenderer) void {
+    pub fn draw(self: *Light, r: *BatchRenderer) void {
         const destRect = vec4(self.position.x, self.position.y, self.size, self.size );
         const uvRect = vec4(-1.0, -1.0, 2.0, 2.0);
         r.submit(destRect, uvRect, 0, 0, self.colour, 0);
     }
 
-    pub fn render(self: Light, r: &LightRenderer) void {
+    pub fn render(self: Light, r: *LightRenderer) void {
         lr.submit(self.position, self.size, self.colour);
     }
 };
@@ -101,7 +101,7 @@ pub const LightShader = struct {
         return self;
     }
 
-    pub fn destroy(self: &LightShader) void {
+    pub fn destroy(self: *LightShader) void {
         self.program.destroy();
     }
 };
@@ -136,7 +136,7 @@ const ColourRGB = struct {
     }
 };
 
-pub fn RGBtoINT(color: &const ColourRGB)u32 {
+pub fn RGBtoINT(color: *const ColourRGB)u32 {
     return 65536 * color.r + 256 * color.g + color.b;
 }
 
@@ -155,7 +155,7 @@ const Material = struct {
     emission: Colour,
     shininess: f32,
 
-    pub fn apply(self: &Material) void {
+    pub fn apply(self: *Material) void {
         c.glMaterialfv(c.GL_FRONT, c.GL_AMBIENT, self.ambient.rgba);
         c.glMaterialfv(c.GL_FRONT, c.GL_DIFFUSE, self.diffuse.rgba);
         c.glMaterialfv(c.GL_FRONT, c.GL_SPECULAR, self.specular.rgba);

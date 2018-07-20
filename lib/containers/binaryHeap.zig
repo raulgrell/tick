@@ -13,12 +13,12 @@ pub fn BinaryHeap(comptime T: type, comptime heap_type: HeapType) type {
         items: []T,
         comparison_func: ComparisonFunc,
         len: usize,
-        allocator: &Allocator,
+        allocator: *Allocator,
 
         const Self = this;
         const ComparisonFunc = fn(a: T, b: T) isize;
         
-        pub fn init(heap_type: HeapType, comparison_func: ComparisonFunc, allocator: &Allocator) Self {
+        pub fn init(heap_type: HeapType, comparison_func: ComparisonFunc, allocator: *Allocator) Self {
             Self {
                 .heap_type = heap_type,
                 .comparison_func = comparison_func,
@@ -28,12 +28,12 @@ pub fn BinaryHeap(comptime T: type, comptime heap_type: HeapType) type {
             }
         }
 
-        pub fn deinit(self: &Self) void {
+        pub fn deinit(self: *Self) void {
             self.allocator.free(self.items);
         }
 
-        pub fn insert(self: &Self, value: T) %void {
-            var values: &T = undefined;
+        pub fn insert(self: *Self, value: T) !void {
+            var values: *T = undefined;
 
             if (self.len + 1 > self.items.len) {
                 const new_size = (self.items.len + 2) *  2;
@@ -58,7 +58,7 @@ pub fn BinaryHeap(comptime T: type, comptime heap_type: HeapType) type {
             self.len += 1;
         }
 
-        pub fn pop(self: &Self) ?T {
+        pub fn pop(self: *Self) ?T {
             if (self.len == 0) return null;
             self.len -= 1;
 
@@ -94,7 +94,7 @@ pub fn BinaryHeap(comptime T: type, comptime heap_type: HeapType) type {
             return result;
         }
 
-        fn cmp(self: &Self, data1: T, data2: T) isize {
+        fn cmp(self: *Self, data1: T, data2: T) isize {
             if (self.heap_type == HeapType.Min) {
                 return self.comparison_func(data1, data2);
             } else {
@@ -116,7 +116,7 @@ test "BinaryHeap" {
     defer heap.deinit();
 
     { var i: usize = 0; while (i < 10) : (i += 1) {
-        %%heap.insert(i32(i + 1));
+        heap.insert(i32(i + 1)) catch unreachable;
     }}
 
     const top = ??heap.pop();

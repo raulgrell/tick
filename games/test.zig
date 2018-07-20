@@ -130,7 +130,7 @@ fn restartGame() void {
     _= warn("Restart Game\n");
 }
 
-pub fn init(app: &core.App) void {
+pub fn init(app: *core.App) void {
     GAME_DATA.font = Spritesheet.init(FONT_PNG, FONT_CHAR_WIDTH, FONT_CHAR_HEIGHT) catch {
         panic("Unable to load spritesheet");
     };
@@ -178,7 +178,7 @@ pub fn init(app: &core.App) void {
     AGENT_CONTROLLER.addNew(agent.Agent.init(level_center.xyz().cast(f32), DIMENSIONS_AGENT, 2, &GAME_DATA.noise));
 }   
 
-pub fn update(app: &core.App, deltaTime: f32) %void {
+pub fn update(app: *core.App, deltaTime: f32) !void {
     if(app.input.keyPressed[c.GLFW_KEY_P]) togglePause();
     if(app.input.keyPressed[c.GLFW_KEY_R]) restartGame();
 
@@ -195,7 +195,7 @@ pub fn update(app: &core.App, deltaTime: f32) %void {
     PF_PLAYER.update(&LEVEL, deltaTime);
 }
 
-pub fn draw(app: &core.App) void {
+pub fn draw(app: *core.App) void {
     const cursor = app.input.cursor_position;
     
     CAMERA.update();
@@ -282,6 +282,6 @@ pub fn draw(app: &core.App) void {
     if (GAME_DATA.gui_combobox_active > 0) warn("{}", GAME_DATA.gui_combobox_active);
 }
 
-pub fn deinit(app: &core.App) void {
+pub fn deinit(app: *core.App) void {
 
 }

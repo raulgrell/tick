@@ -46,22 +46,22 @@ pub const Camera = struct {
         };
     }
 
-    pub fn getAspectRatio(self: &const Camera)f32 { 
+    pub fn getAspectRatio(self: *const Camera)f32 { 
         return f32(self.fb_width) / f32(self.fb_height);
     }
 
-    pub fn offsetPosition(self: &Camera, offset: &const Vec2) void {
+    pub fn offsetPosition(self: *Camera, offset: *const Vec2) void {
         self.position.offset(offset);
         self.needs_update = true;
     }
 
-    pub fn offsetScale(self: &Camera, offset: f32) void {
+    pub fn offsetScale(self: *Camera, offset: f32) void {
         self.scale += offset;
         if ( self.scale < 0.001) self.scale = 0.001;
         self.needs_update = true;
     }
 
-    pub fn convertScreenToWorld(self: &Camera, screen_coords: &const Vec2)Vec3 {
+    pub fn convertScreenToWorld(self: *Camera, screen_coords: *const Vec2)Vec3 {
         var worldCoords = vec3(
             screen_coords.x,
             self.fb_height - screen_coords.y, // Invert Y direction
@@ -77,7 +77,7 @@ pub const Camera = struct {
         return worldCoords;
     }
 
-    pub fn isBoxInView(self: &Camera, position: &const Vec2, dimenstions: &const Vec2)bool {
+    pub fn isBoxInView(self: *Camera, position: *const Vec2, dimenstions: *const Vec2)bool {
         const scaled_screen = vec2(self.fb_width / self.scale, self.fb_height / self.scale);
 
         const min_distance_x = (dimensions.x + scaled_screen.x) / 2.0;
@@ -92,7 +92,7 @@ pub const Camera = struct {
         return (xDepth > 0 or yDepth > 0);
     }
 
-    pub fn update(self: &Camera) void {
+    pub fn update(self: *Camera) void {
         if (self.needs_update) return;
 
         const translation = vec3(
@@ -109,21 +109,21 @@ pub const Camera = struct {
         self.needs_update = false;
     }
 
-    pub fn translate(self: &Camera, translation: &const Vec3) void {
+    pub fn translate(self: *Camera, translation: *const Vec3) void {
         self.position.offset(translation);
     }
     
-    pub fn rotate(self: &Camera, rotation: &const Vec3) void {
+    pub fn rotate(self: *Camera, rotation: *const Vec3) void {
         self.rotation.offset(rotation);
     }
 };
 
 pub const Scene2D = struct {
-    renderer: &BatchRenderer,
-    camera: &Camera,
+    renderer: *BatchRenderer,
+    camera: *Camera,
     agents: ArrayList(Agent),
 
-    pub fn create(self: &Scene2D, width: usize, height: usize)Scene2D {
+    pub fn create(self: *Scene2D, width: usize, height: usize)Scene2D {
         const aspect = f32(width) / f32(height);
 
         self.camera = Camera.orthographic(
@@ -134,19 +134,19 @@ pub const Scene2D = struct {
         self.renderer.setCamera(self.camera);
     }
 
-    pub fn destroy(self: &Scene2D) void {
+    pub fn destroy(self: *Scene2D) void {
         self.agents.deinit();
     }
 
-    pub fn addAgent(self: &Scene2D, agent: &Agent) void {
+    pub fn addAgent(self: *Scene2D, agent: *Agent) void {
         self.agents.append(agent);
     }
 
-    pub fn update(self: &Scene2D) void {
+    pub fn update(self: *Scene2D) void {
         for (self.agents.toSlice) | *agent, i | agent.update();
     }
 
-    pub fn render(self: &Scene2D) void {
+    pub fn render(self: *Scene2D) void {
         self.camera.update();
 
         self.renderer.begin();
@@ -162,45 +162,45 @@ pub const Scene2D = struct {
 };
 
 const Scene3D = struct {
-    renderer: &BatchRenderer,
-    camera: &Camera,
+    renderer: *BatchRenderer,
+    camera: *Camera,
     agents: ArrayList(Agent),
     lights: ArrayList(Light),
 
-    pub fn create(camera: &Camera)Scene3D {
+    pub fn create(camera: *Camera)Scene3D {
         self.camera(camera);
     }
 
-    pub fn destroy(self: &Scene3D)Scene3D {
+    pub fn destroy(self: *Scene3D)Scene3D {
         for (self.agents) | agent, i | self.agents[i].destroy();
 
         self.agents.clear();
         self.camera.destroy();
     }
 
-    pub fn addAgent(self: &Scene3D, agent: &Agent) void {
-        agent.getComponent(TransformComponent) ?? {
+    pub fn addAgent(self: *Scene3D, agent: *Agent) void {
+        agent.getComponent(TransformComponent) orelse {
             agent.addComponent(TransformComponent.create(Mat4.Identity()));
         };
         self.agents.append(agent);
     }
 
-    pub fn pushLight(self: &Scene3D, light: &Light) void {
+    pub fn pushLight(self: *Scene3D, light: *Light) void {
         self.lights.append(light);
     }
 
-    pub fn popLight(self: &Scene3D)&Light {
+    pub fn popLight(self: *Scene3D)&Light {
         const result = self.lights.back();
         self.lights.pop_back();
         return result;
     }
 
-    pub fn setCamera(self: &Scene3D, camera: &Camera) void {
+    pub fn setCamera(self: *Scene3D, camera: *Camera) void {
         self.camera = camera;
         self.camera.focus();
     }
 
-    pub fn render(self: &Scene3D, renderer: &Renderer) void {
+    pub fn render(self: *Scene3D, renderer: *Renderer) void {
         self.camera.update();
 
         renderer.begin();
@@ -223,12 +223,12 @@ const Scene3D = struct {
 const MAX_LAYERS = 4;
 
 const Layer = struct {
-    window: &Window,
-    renderer: &BatchRenderer,
-    scene: &Scene,
+    window: *Window,
+    renderer: *BatchRenderer,
+    scene: *Scene,
     projection_matrix: mat4,
     visible: bool,
-    renderables: []&Texture,
+    renderables: []*Texture,
 
     pub fn add() void {
     }
@@ -270,18 +270,18 @@ const Layer = struct {
 const Stack = struct {
     layers: [MAX_LAYERS]Layer,
 
-    pub fn pushLayer(self: &Stack, layer: &Layer) void {
+    pub fn pushLayer(self: *Stack, layer: *Layer) void {
         layers.append(layer);
         layer.Init();
     }
 
-    pub fn popLayer(self: &Stack)&Layer {
-        const layer: &Layer = layers.back();
+    pub fn popLayer(self: *Stack)&Layer {
+        const layer: *Layer = layers.back();
         layers.pop_back();
         return layer;
     }
 
-    pub fn removeLayer(self: &Stack, layer: &Layer)&Layer {
+    pub fn removeLayer(self: *Stack, layer: *Layer)&Layer {
         for ( layers ) | l |{
             if ( l == layer ) {
                 layers.erase(layers.begin() + i);
@@ -291,19 +291,19 @@ const Stack = struct {
         return layer;
     }
 
-    pub fn onEvent(self: &Stack, event: Event) void {
+    pub fn onEvent(self: *Stack, event: Event) void {
         for ( layers ) | l | l.onEvent(event);
     }
 
-    pub fn onTick(self: &Stack) void {
+    pub fn onTick(self: *Stack) void {
         for ( layers ) | l | l.onTick();
     }
 
-    pub fn onUpdate(self: &Stack) void {
+    pub fn onUpdate(self: *Stack) void {
         for (layers ) | l | l.onUpdate();
     }
 
-    pub fn onRender(self: &Stack) void {
+    pub fn onRender(self: *Stack) void {
         for ( layers ) | l | {
             if ( l.visible ) l.onRender();
         }
@@ -321,15 +321,15 @@ const Group = struct {
         };
     }
 
-    pub fn deinit(self: &Group) void {
+    pub fn deinit(self: *Group) void {
         self.textures.deinit();
     }
 
-    pub fn add(self: &Group, texture: &Texture) void {
+    pub fn add(self: *Group, texture: *Texture) void {
         self.textures.append(renderable);
     }
 
-    pub fn draw(self: &Group, renderer: &IMRenderer) void {
+    pub fn draw(self: *Group, renderer: *IMRenderer) void {
         renderer.pushTransform(self.transform);
         for (self.textures) | t, i | {
             t.draw(renderer);
@@ -337,7 +337,7 @@ const Group = struct {
         renderer.popTransform();
     }
 
-    pub fn submit(self: &Group, renderer: &BatchRenderer) void {
+    pub fn submit(self: *Group, renderer: *BatchRenderer) void {
         renderer.pushTransform(self.transform);
         for (self.textures) | t, i | {
             t.submit(renderer);
@@ -352,7 +352,7 @@ pub const Level = struct {
     start: Vec2,
     end: Vec2,
 
-    pub fn init(level_data: []const []const u8, tile_dimensions: &const Vec3)Level {
+    pub fn init(level_data: []const []const u8, tile_dimensions: *const Vec3)Level {
         var self = Level {
             .tile_dimensions = tile_dimensions.xy(),
             .level_data = undefined,
@@ -383,25 +383,25 @@ pub const Level = struct {
         return self;
     }
 
-    pub fn getSize(self: &const Level)UVec2 {
+    pub fn getSize(self: *const Level)UVec2 {
         return UVec2.init(self.level_data[0].len, self.level_data.len);
     }
 
-    pub fn getCenter(self: &const Level)Vec2 {
+    pub fn getCenter(self: *const Level)Vec2 {
         const x = f32(self.level_data[0].len / 2) * self.tile_dimensions.x;
         const y = f32(self.level_data.len / 2) * self.tile_dimensions.y;
         return Vec2.init(x, y);
     }
 
-    pub fn getWidth(self: &const Level)usize {
+    pub fn getWidth(self: *const Level)usize {
         return self.level_data[0].len; 
     }
     
-    pub fn getHeight(self: &const Level)usize {
+    pub fn getHeight(self: *const Level)usize {
         return self.level_data.len; 
     }
 
-    pub fn draw(self: &const Level, renderer: &IMRenderer, tile_map: []?Texture) void {
+    pub fn draw(self: *const Level, renderer: *IMRenderer, tile_map: []?Texture) void {
         const uvRect = vec4(0.0, 0.0, 1.0, 1.0);
         const dimensions = self.tile_dimensions;
         for (self.level_data) |line, row| {
@@ -415,10 +415,10 @@ pub const Level = struct {
         }
     }
 
-    pub fn save(file_path: []const u8, player: &TopDownPlayer, boxes: &ArrayList(Box), lights: &ArrayList(Light)) void {
+    pub fn save(file_path: []const u8, player: *TopDownPlayer, boxes: *ArrayList(Box), lights: *ArrayList(Light)) void {
     }
 
-    pub fn load(file_path: []const u8, player: &TopDownPlayer, boxes: &ArrayList(Box), lights: &ArrayList(Light)) void {
+    pub fn load(file_path: []const u8, player: *TopDownPlayer, boxes: *ArrayList(Box), lights: *ArrayList(Light)) void {
     }
 };
 
@@ -429,7 +429,7 @@ pub fn Tiles(comptime C: u32, comptime R: u32) type {
 
         const Self = this;
 
-        fn renderTiles(self: &Self, position: &const Vec2, tile_size: f32, renderer: &StripRenderer) void {
+        fn renderTiles(self: *Self, position: *const Vec2, tile_size: f32, renderer: *StripRenderer) void {
             for (self.tiles) |row, y| {
                 for (row) |tile, x| {
                     switch (tile) {

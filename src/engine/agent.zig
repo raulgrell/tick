@@ -17,15 +17,15 @@ pub const Agent = struct {
     velocity: Vec3,
     direction: Vec3,
     color: Vec4,
-    texture: &Texture,
+    texture: *Texture,
     speed: f32,
     mass: f32,
     radius: f32,
     // Spatial Partitioning
-    owner_cell: ?&Cell,
+    owner_cell: ?*Cell,
     cell_array_index: ?usize,
 
-    pub fn init(position: &const Vec3, dimensions: &const Vec3, speed: f32, agent_texture: &Texture) Agent {
+    pub fn init(position: *const Vec3, dimensions: *const Vec3, speed: f32, agent_texture: *Texture) Agent {
         return Agent {
             .position = *position,
             .dimensions = *dimensions,
@@ -41,30 +41,30 @@ pub const Agent = struct {
         };
     }
 
-    pub fn draw(self: &const Agent,  r: &IMRenderer) void {
+    pub fn draw(self: *const Agent,  r: *IMRenderer) void {
         r.draw_rect(self.texture, self.position.x, self.position.y, self.dimensions.x, self.dimensions.y);
     }
 
-    pub fn submit(self: &const Agent,  r: &BatchRenderer) void {
+    pub fn submit(self: *const Agent,  r: *BatchRenderer) void {
         const destRect = Vec4(self.position.x, self.position.y, self.dimensions.x, self.dimensions.y);
         const uvRect = Vec4(0.0, 0.0, 1.0, 1.0);
         r.submit(destRect, uvRect, self.textureID, 1.0, self.colour, self.direction);
     }
 
-    pub fn drawDebug(self: &const Agent, r: &LineRenderer) void {
+    pub fn drawDebug(self: *const Agent, r: *LineRenderer) void {
         const radius = self.dimensions.x / 2.0;
         const center = self.position + ( radius );
         r.drawCircle(center, ColourRGBA(255, 255, 255, 255), radius);
     }
 
-    pub fn getAngle(self: &const Agent) f32 {
+    pub fn getAngle(self: *const Agent) f32 {
         const right = vec3(1.0, 0.0);
         const angle = math.acos(right.dot(self.direction));
         return if(self.direction.y > 0.0) angle else -angle;
     }
 
     // Circular Collision
-    pub fn collideWithAgent(self: &Agent, other: &Agent) bool {
+    pub fn collideWithAgent(self: *Agent, other: *Agent) bool {
         const MIN_DISTANCE = AGENT_RADIUS * 2.0;
 
         const self_center = self.position.add(self.dimensions.mul_scalar(0.5).xy());
@@ -85,7 +85,7 @@ pub const Agent = struct {
     }
 
     // Axis Alligned Bounding Box Collision
-    pub fn collideWithTile(self: &Agent, tile_position: &const Vec2, tile_dimensions: &const Vec2) void {
+    pub fn collideWithTile(self: *Agent, tile_position: *const Vec2, tile_dimensions: *const Vec2) void {
         const min_distance_x = self.dimensions.x / 2 + tile_dimensions.x / 2;
         const min_distance_y = self.dimensions.y / 2 + tile_dimensions.y / 2;
 
@@ -111,7 +111,7 @@ pub const Agent = struct {
         }
     }
     
-    pub fn collideWithLevel(self: &Agent, level: &Level) bool {
+    pub fn collideWithLevel(self: *Agent, level: *Level) bool {
         var collision_positions = ArrayList(Vec2).init(&c.mem);
 
         checkTilePosition(level, &collision_positions, self.position.x, self.position.y);
@@ -129,7 +129,7 @@ pub const Agent = struct {
     }
 
 
-    fn checkTilePosition(level: &Level, collision_positions: &ArrayList(Vec2), x: f32, y: f32) void {
+    fn checkTilePosition(level: *Level, collision_positions: *ArrayList(Vec2), x: f32, y: f32) void {
         const corner_position = UVec2.init(
             u32(math.floor(x / level.tile_dimensions.x)),
             u32(math.floor(y / level.tile_dimensions.y))
@@ -152,11 +152,11 @@ pub const Agent = struct {
 };
 
 pub const ImpulsePlayer = struct {
-    agent: &Agent,
-    input: &InputManager,
-    camera: &Camera,
+    agent: *Agent,
+    input: *InputManager,
+    camera: *Camera,
 
-    pub fn init(agent: &Agent, input_manager: &InputManager, camera: &Camera) ImpulsePlayer {
+    pub fn init(agent: *Agent, input_manager: *InputManager, camera: *Camera) ImpulsePlayer {
         return ImpulsePlayer {
             .agent = agent,
             .input = input_manager,
@@ -164,7 +164,7 @@ pub const ImpulsePlayer = struct {
         };
     }
 
-    pub fn update(self: &ImpulsePlayer, level: &Level, delta_time: f32) void {
+    pub fn update(self: *ImpulsePlayer, level: *Level, delta_time: f32) void {
         if(self.input.keyPressed[c.GLFW_KEY_UP]) self.agent.velocity.y = -self.agent.speed * delta_time;
         if(self.input.keyPressed[c.GLFW_KEY_DOWN]) self.agent.velocity.y = self.agent.speed * delta_time;
         if(self.input.keyPressed[c.GLFW_KEY_LEFT]) self.agent.velocity.x = -self.agent.speed * delta_time;
@@ -192,11 +192,11 @@ pub const ImpulsePlayer = struct {
 };
 
 pub const TopDownPlayer = struct {
-    agent: &Agent,
-    input: &InputManager,
-    camera: &Camera,
+    agent: *Agent,
+    input: *InputManager,
+    camera: *Camera,
 
-    pub fn init(agent: &Agent, input_manager: &InputManager, camera: &Camera)  TopDownPlayer {
+    pub fn init(agent: *Agent, input_manager: *InputManager, camera: *Camera)  TopDownPlayer {
         return TopDownPlayer {
             .agent = agent,
             .input = input_manager,
@@ -204,7 +204,7 @@ pub const TopDownPlayer = struct {
         };
     }
     
-    pub fn update(self: &TopDownPlayer, level: &Level, delta_time: f32) void {
+    pub fn update(self: *TopDownPlayer, level: *Level, delta_time: f32) void {
         if(self.input.keyDown[c.GLFW_KEY_W]) self.agent.position.y -= self.agent.speed * delta_time;
         if(self.input.keyDown[c.GLFW_KEY_S]) self.agent.position.y += self.agent.speed * delta_time;
         if(self.input.keyDown[c.GLFW_KEY_A]) self.agent.position.x -= self.agent.speed * delta_time;
@@ -214,11 +214,11 @@ pub const TopDownPlayer = struct {
 };
 
 pub const MousePlayer = struct {
-    agent: &Agent,
-    input: &InputManager,
-    camera: &Camera,
+    agent: *Agent,
+    input: *InputManager,
+    camera: *Camera,
 
-    pub fn init(agent: &Agent, input_manager: &InputManager, camera: &Camera)  MousePlayer {
+    pub fn init(agent: *Agent, input_manager: *InputManager, camera: *Camera)  MousePlayer {
         return MousePlayer {
             .agent = agent,
             .input = input_manager,
@@ -226,7 +226,7 @@ pub const MousePlayer = struct {
         };
     }
     
-    pub fn update(self: &MousePlayer, level: &Level, delta_time: f32) void {
+    pub fn update(self: *MousePlayer, level: *Level, delta_time: f32) void {
         if(self.input.buttonDown[c.GLFW_MOUSE_BUTTON_LEFT]) {
             const mouse_direction = self.input.cursor_position.sub(self.agent.position.xy()).normalize();
             self.agent.position.offset(mouse_direction.mul_scalar(self.agent.speed).xyz());
@@ -273,31 +273,31 @@ pub const Grid = struct {
         return g;
     }
 
-    pub fn add(self: &Grid, agent: &Agent) void {
+    pub fn add(self: *Grid, agent: *Agent) void {
         var cell = self.getCellAt(agent.position.xy());
         self.addToCell(agent, cell);
     }
 
-    pub fn addToCell(self: &Grid, agent: &Agent, cell: &Cell) void {
+    pub fn addToCell(self: *Grid, agent: *Agent, cell: *Cell) void {
         cell.agents.append(agent) catch unreachable;
         agent.owner_cell = cell;
         agent.cell_array_index = cell.agents.length - 1;
     }
 
-    pub fn getCellAt(self: &Grid, pos: &const Vec2) &Cell {
+    pub fn getCellAt(self: *Grid, pos: *const Vec2) &Cell {
         var x = usize(pos.x / self.cellSize);
         var y = usize(pos.y / self.cellSize);
         return self.getCell(x, y);
     }
 
-    pub fn getCell(self: &Grid, x: usize, y: usize) &Cell {
+    pub fn getCell(self: *Grid, x: usize, y: usize) &Cell {
         const col = if ( x < 0 ) 0 else if ( x >= self.columns ) self.columns - 1 else x;
         const row = if ( y < 0 ) 0 else if ( y >= self.rows ) self.rows - 1 else y;
 
         return self.cells.data[row * self.columns + col];
     }
 
-    pub fn removeFromCell(self: &Grid, agent: &Agent) void {
+    pub fn removeFromCell(self: *Grid, agent: *Agent) void {
         if (agent.owner_cell) | cell | {
             var agents = cell.agents;
             agents.data[??agent.cell_array_index] = agents.last();
@@ -324,22 +324,22 @@ pub const Controller = struct {
         };
     }
 
-    pub fn add(self: &Controller, agent: &Agent) void {
+    pub fn add(self: *Controller, agent: *Agent) void {
         self.agents.append(agent) catch unreachable;
     }
 
-    pub fn addNew(self: &Controller, agent: &const Agent) void {
+    pub fn addNew(self: *Controller, agent: *const Agent) void {
         var new_agent = c.mem.init(Agent, agent) catch unreachable;
         self.agents.append(new_agent) catch unreachable;
     }
 
-    pub fn draw(self: &const Controller, renderer: &IMRenderer) void {
+    pub fn draw(self: *const Controller, renderer: *IMRenderer) void {
         for (self.agents.toSlice()) | agent, i | {
             agent.draw(renderer);
         }
     }
 
-    pub fn update(self: &Controller, level: &Level, delta_time: f32) void {
+    pub fn update(self: *Controller, level: *Level, delta_time: f32) void {
         const friction = f32(0.02);
         const gravity = vec2(0, 0.1);
 
@@ -377,7 +377,7 @@ pub const Controller = struct {
         updateCollisions(&self.grid);
     }
 
-    fn updateCollisions(grid: &Grid) void {
+    fn updateCollisions(grid: *Grid) void {
         for ( grid.cells.toSlice() ) | cell, i | {
             const x = i % grid.columns;
             const y = i / grid.columns;
@@ -395,13 +395,13 @@ pub const Controller = struct {
         }
     }
 
-    fn checkCollisions(agent: &Agent, check: &ArrayList(&Agent), startingIndex: usize) void {
+    fn checkCollisions(agent: *Agent, check: *ArrayList(&Agent), startingIndex: usize) void {
         for ( check.toSlice() ) | other | {
             checkCollision(agent, other);
         }
     }
 
-    fn checkCollision(agent1: &Agent, agent2: &Agent) void {
+    fn checkCollision(agent1: *Agent, agent2: *Agent) void {
         // We add radius since position is the top left corner
         const dist_vec = agent2.position.sub(agent1.position);
         const dist_vec_direction = dist_vec.normalize();
@@ -427,9 +427,9 @@ pub const Controller = struct {
 };
 
 const AgentRenderer = struct {
-    program: ?&ShaderProgram,
+    program: ?*ShaderProgram,
 
-    pub fn render(self: &AgentRenderer, renderer: &BatchRenderer, agents: &const ArrayList(&Agent), proj_matrix: &const Mat4 ) void {
+    pub fn render(self: *AgentRenderer, renderer: *BatchRenderer, agents: *const ArrayList(&Agent), proj_matrix: *const Mat4 ) void {
         // Lazily initialize the program
         if (self.program == null) {
             self.program = c.mem.create(ShaderProgram);
@@ -483,5 +483,5 @@ pub const ActionList = struct {
 
 pub const Action = struct {
     name: []const u8,
-    action_func: fn(agent: &Agent) void,
+    action_func: fn(agent: *Agent) void,
 };

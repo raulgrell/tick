@@ -6,9 +6,7 @@ pub const lib = @import("lib");
 
 pub const c = @import("c.zig");
 pub const debug = @import("debug.zig");
-pub const asset = @import("asset.zig");
-
-const ArrayList = lib.ArrayList;
+pub const io = @import("io.zig");
 
 const MountPoints = std.HashMap(String, ArrayList(String));
 
@@ -18,7 +16,7 @@ pub const VFS = struct {
     mount_points: MountPoints,
 
     pub fn init() void {
-        vft_instance = vfs_instance ?? VFS {
+        vft_instance = vfs_instance orelse VFS {
             .mount_points = MountPoints.init()
         };
         return &vfs_instance;
@@ -37,7 +35,7 @@ pub const VFS = struct {
         if (mount_points.get(path)) | list | list.clear();
     }
 
-    pub fn resolve(path: []const u8) %[]const u8 {
+    pub fn resolve(path: []const u8) ![]const u8 {
         if (path[0] != '/') {
             return if (c.fileExists(path)) path else error.NotFound;
         }
@@ -59,19 +57,20 @@ pub const VFS = struct {
         return false;
     }
 
-    pub fn readFile(path: []const u8) %[]u8 {
-       return if (resolve(path)) | physical_path | c.readFile(physical_path) else error.NotFound;
+    pub fn readFile(path: []const u8) ![]u8 {
+       return if (resolve(path)) | physical_path | io.readFile(physical_path) else error.NotFound;
     }
 
-    pub fn readTextFile(path: []const u8) %[]const u8 {
-        return if (resolve(path)) | physical_path | c.readTextFile(physical_path) else error.NotFound;
+    pub fn readTextFile(path: []const u8) ![]const u8 {
+        return if (resolve(path)) | physical_path | io.readTextFile(physical_path) else error.NotFound;
     }
 
-    pub fn writeFile(path: []const u8, buffer: []u8) %void {
-        return if (resolve(path)) | physical_path | c.writeFile(physical_path, buffer) else error.NotFound;
+    pub fn writeFile(path: []const u8, buffer: []u8) !void {
+        return if (resolve(path)) | physical_path | io.writeFile(physical_path, buffer) else error.NotFound;
     }
 
-    pub fn writeTextFile(path: []const u8, text: []const u8) %void {
-        return if (resolve(path)) | physical_path | c.writeTextFile(physical_path, text) else error.NotFound;
+    pub fn writeTextFile(path: []const u8, text: []const u8) !void {
+        return if (resolve(path)) | physical_path | io.writeTextFile(physical_path, text) else error.NotFound;
     }
 };
+

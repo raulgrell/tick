@@ -7,8 +7,6 @@ use @import("window.zig");
 const InputManager = @import("index.zig").InputManager;
 const State = @import("../../games/live.zig").State;
 
-const io = std.io;
-
 const TARGET_FPS       = 60.0;
 const TARGET_FRAMETIME = 1.0 / TARGET_FPS;
 const MAX_DELTA_TIME   = 1.0;
@@ -18,36 +16,36 @@ const WINDOW_WIDTH  = 640;
 const WINDOW_HEIGHT = 360;
 
 pub const API = struct {
-    init:     fn(app: &App)&State,
-    update:   fn(app: &App, state: &State, delta_time: f32) %void,
-    draw:     fn(app: &App, state: &State) void,
-    reload:   fn(state: &State) void,
-    unload:   fn(state: &State) void,
-    deinit:   fn(state: &State) void,
+    init:     fn(app: *App)&State,
+    update:   fn(app: *App, state: *State, delta_time: f32) !void,
+    draw:     fn(app: *App, state: *State) void,
+    reload:   fn(state: *State) void,
+    unload:   fn(state: *State) void,
+    deinit:   fn(state: *State) void,
 };
 
 const Game = struct {
-    handle: ?&c_void,
+    handle: ?*c_void,
     id: c.ino_t,
-    api: ?&API,
-    state: ?&State,
+    api: ?*API,
+    state: ?*State,
 
-    pub fn load(path: &const u8, name: &const u8, game: &Game, app: &App) void {
+    pub fn load(path: *const u8, name: *const u8, game: *Game, app: *App) void {
         var attr: c.struct_stat = undefined;
         if (c.stat(path, &attr) != 0) return;
         if (game.id == attr.st_ino) return;
         if (game.handle) | handle | {
-            var state = game.state ?? panic("load: No State");
+            var state = game.state orelse panic("load: No State");
             if (game.api) | api | api.unload(state);
             _ = c.dlclose(handle);
         }
-        var game_handle: ?&c_void = c.dlopen(path, c.RTLD_NOW);
+        var game_handle: ?*c_void = c.dlopen(path, c.RTLD_NOW);
         if (game_handle) | handle | {
             game.handle = handle;
             game.id = attr.st_ino;
-            var game_api = @ptrCast(?&API, @alignCast(@alignOf(API), c.dlsym(handle, name)));
+            var game_api = @ptrCast(?*API, @alignCast(@alignOf(API), c.dlsym(handle, name)));
             if ( game_api ) | api | {
-                const game_state = game.state ?? api.init(app);
+                const game_state = game.state orelse api.init(app);
                 game.api = api;
                 game.state = game_state;
                 api.reload(game_state);
@@ -64,10 +62,10 @@ const Game = struct {
         }
     }
     
-    pub fn unload(game: &Game) void {
+    pub fn unload(game: *Game) void {
         if (game.handle) | handle | {
-            const api = game.api ?? panic("unload: No API");
-            const state = game.state ?? panic("unload: No State");
+            const api = game.api orelse panic("unload: No API");
+            const state = game.state orelse panic("unload: No State");
             api.deinit(state);
             game.state = null;
             _ = c.dlclose(handle);
@@ -90,7 +88,7 @@ pub const App = struct {
 
         // Window
         app.window.init(WINDOW_WIDTH, WINDOW_HEIGHT);
-        app.window.setWindowPointer(@ptrCast(&const u8, app));
+        app.window.setWindowPointer(@ptrCast(*const u8, app));
 
         app.window.setCustomCursor();
         app.window.setCursorMode(CursorMode.Window);
@@ -104,14 +102,14 @@ pub const App = struct {
         app.input.init();
 
         // Audio
-        // %%app.audio.init();
-        // %%app.audio.open();
-        // %%app.audio.start();
+        // app.audio.init() catch unreachable;
+        // app.audio.open() catch unreachable;
+        // app.audio.start() catch unreachable;
 
         return app;
     }
 
-    pub fn run (app: &App) void {
+    pub fn run (app: *App) void {
         var game_lib = Game {
             .handle = null,
             .id = 0,
@@ -127,8 +125,8 @@ pub const App = struct {
             Game.load(c"./zig-cache/libgame.so", c"GAME", &game_lib, app);
 
             if (game_lib.handle) | handle | {
-                const api = game_lib.api ?? panic("loop: No API");
-                const state = game_lib.state ?? panic("loop: No state");
+                const api = game_lib.api orelse panic("loop: No API");
+                const state = game_lib.state orelse panic("loop: No state");
 
                 // Tick
                 const new_ticks: f32 = (f32)(c.glfwGetTime());

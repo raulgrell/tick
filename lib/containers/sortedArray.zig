@@ -9,11 +9,11 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
         length: usize,
         eqlFn: EqualityFunc,
         cmpFn: ComparisonFunc,
-        allocator: &Allocator,
+        allocator: *Allocator,
 
         const Self = this;
 
-        pub fn init(allocator: &Allocator) Self {
+        pub fn init(allocator: *Allocator) Self {
             Self {
                 .data = []T {},
                 .length = 0,
@@ -23,12 +23,12 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             }
         }
 
-        pub fn deinit(self: &Self) void {
+        pub fn deinit(self: *Self) void {
             self.allocator.free(self.data);
         }
 
         // TODO
-        pub fn fromOwnedSlice(allocator: &Allocator, slice: []align(A) T) Self {
+        pub fn fromOwnedSlice(allocator: *Allocator, slice: []align(A) T) Self {
             return Self {
                 .items = slice,
                 .len = slice.len,
@@ -36,16 +36,16 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             };
         }
 
-        pub fn toSlice(self: &const Self)[]T {
+        pub fn toSlice(self: *const Self)[]T {
             return self.data[0..self.length];
         }
 
-        pub fn toSliceConst(self: &const Self)[]const T {
+        pub fn toSliceConst(self: *const Self)[]const T {
             return self.data[0..self.length];
         }
 
         /// The caller owns the returned memory. ArrayList becomes empty.
-        pub fn toOwnedSlice(self: &Self) []align(A) T {
+        pub fn toOwnedSlice(self: *Self) []align(A) T {
             const allocator = self.allocator;
             const result = allocator.alignedShrink(T, A, self.items, self.len);
             *self = init(allocator);
@@ -53,7 +53,7 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
         }
 
         
-        pub fn get(self: &Self, index: usize) ?&T {
+        pub fn get(self: *Self, index: usize) ?*T {
             return if ( index < self.length ) {
                 self.data[index]
             } else {
@@ -61,27 +61,27 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             }
         }
 
-        pub fn at(l: &const Self, n: usize) T {
+        pub fn at(l: *const Self, n: usize) T {
             return l.toSliceConst()[n];
         }
 
-        pub fn last(self: &const Self) T {
+        pub fn last(self: *const Self) T {
             return self.data[self.length];
         }
 
-        pub fn pop(self: &Self) T {
+        pub fn pop(self: *Self) T {
             const last_item = self.last();
             self.length -= 1;
             return last_item;
         }
 
-        pub fn popOrNull(self: &Self) ?T {
+        pub fn popOrNull(self: *Self) ?T {
             if (self.len == 0)
                 return null;
             return self.pop();
         }
 
-        pub fn push(self: &Self, data: T) %void {
+        pub fn push(self: *Self, data: T) !void {
             var left  = usize(0);
             var right = usize(self.length);
             var index = usize(0);
@@ -122,7 +122,7 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             self.length += 1;
         }
 
-        pub fn indexOf(self: &Self, data: T) %usize {
+        pub fn indexOf(self: *Self, data: T) %usize {
             // Binary search
             var left: usize = 0;
             var right = self.length;
@@ -152,11 +152,11 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             return error.NotFound;
         }
 
-        pub fn clear(self: &Self) void {
+        pub fn clear(self: *Self) void {
             self.length = 0;
         }
 
-        pub fn reserve(self: &Self, new_size: usize) %void {
+        pub fn reserve(self: *Self, new_size: usize) !void {
             if (self.data.len > new_size) return;
             self.data = if (self.data.len > 0)
                 try self.allocator.realloc(T, self.data, new_size)
@@ -164,17 +164,17 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
                 try self.allocator.alloc(T, new_size);
         }
 
-        pub fn resize(l: &Self, new_len: usize) !void {
+        pub fn resize(l: *Self, new_len: usize) !void {
             try l.ensureCapacity(new_len);
             l.len = new_len;
         }
 
-        pub fn shrink(l: &Self, new_len: usize) void {
+        pub fn shrink(l: *Self, new_len: usize) void {
             assert(new_len <= l.len);
             l.len = new_len;
         }
 
-        pub fn ensureCapacity(l: &Self, new_capacity: usize) !void {
+        pub fn ensureCapacity(l: *Self, new_capacity: usize) !void {
             var better_capacity = l.items.len;
             if (better_capacity >= new_capacity) return;
             while (true) {
@@ -184,7 +184,7 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             l.items = try l.allocator.alignedRealloc(T, A, l.items, better_capacity);
         }
 
-        pub fn addOne(l: &Self) !&T {
+        pub fn addOne(l: *Self) !&T {
             const new_length = l.len + 1;
             try l.ensureCapacity(new_length);
             const result = &l.items[l.len];
@@ -192,11 +192,11 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             return result;
         }
 
-        pub fn remove(self: &Self, index: usize) void {
+        pub fn remove(self: *Self, index: usize) void {
             removeRange(self, index, 1);
         }
 
-        pub fn removeRange(self: &Self, index: usize, length: usize) void {
+        pub fn removeRange(self: *Self, index: usize, length: usize) void {
             if (index > self.length or index + length > self.length) {
                 return;
             }
@@ -209,7 +209,7 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             self.length -= length;
         }
 
-        fn firstIndex( self: &Self, data: T, left: usize, right: usize)usize {
+        fn firstIndex( self: *Self, data: T, left: usize, right: usize)usize {
             var index = left;
             var left = left_index;
             var right = right_index;
@@ -225,7 +225,7 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             return index;
         }
 
-        fn lastIndex( self: &Self, data: T, left_index: usize, right_index: usize) usize {
+        fn lastIndex( self: *Self, data: T, left_index: usize, right_index: usize) usize {
             var index = right;
             var left = left_index;
             var right = right_index;

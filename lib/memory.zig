@@ -20,7 +20,7 @@ pub const Memory = struct {
         return Memory { .bytes = bytes, .used = 0, .allocations = 0, };
     }
 
-    pub fn deinit(comptime self: &Memory) [self.bytes.len]u8 {
+    pub fn deinit(comptime self: *Memory) [self.bytes.len]u8 {
         const old = self.bytes;
         self.bytes = []u8{};
         self.used = 0;
@@ -28,7 +28,7 @@ pub const Memory = struct {
         return old;
     }
     
-    pub fn replace(comptime self: &Memory, bytes: []u8) [self.bytes.len]u8 {
+    pub fn replace(comptime self: *Memory, bytes: []u8) [self.bytes.len]u8 {
         const old = self.bytes;
         self.bytes = []u8{};
         self.used = 0;
@@ -58,15 +58,15 @@ test "Memory" {
 }
 
 pub const InitAllocator = struct {
-    allocator: &Allocator;
+    allocator: *Allocator;
     
-    fn init(self: &Allocator, comptime T: type, data: &const T) %&T {
+    fn init(self: *Allocator, comptime T: type, data: *const T) %&T {
         var object = try self.create(T);
         *object = *data;
         return object;
     }
 
-    fn init_array(self: &Allocator, comptime T: type, n: usize, data: &const T) %[]T {
+    fn init_array(self: *Allocator, comptime T: type, n: usize, data: *const T) ![]T {
         var array = try self.alloc(T, n);
         for (array) | *object | {
             *object = *data;
@@ -88,15 +88,15 @@ pub fn Cursor(comptime T: type) type {
             };
         }
 
-        pub fn peek(self: &Self) T {
+        pub fn peek(self: *Self) T {
             return if (self.data.len > 0) self.data[0] else unreachable;
         }
 
-        pub fn advance(self: &Self) void {
+        pub fn advance(self: *Self) void {
             if (self.data.len > 0) self.data = self.data[1..];
         }
 
-        pub fn next(self: &Self) T {
+        pub fn next(self: *Self) T {
             if (self.data.len > 0) {
                 const t = self.data[0];
                 self.data = self.data[1..];
@@ -107,13 +107,13 @@ pub fn Cursor(comptime T: type) type {
             }
         }
 
-        pub fn seek(self: &Self, item: T) void {
+        pub fn seek(self: *Self, item: T) void {
             while(self.data.len > 0 and self.data[0] != item) {
                 self.data = self.data[1..];
             }
         }
 
-        pub fn match(self: &Self, item: T) bool {
+        pub fn match(self: *Self, item: T) bool {
             if (self.data.len > 0 and self.data[0] == item) {
                 self.data = self.data[1..];
                 return true;

@@ -4,10 +4,6 @@ const FileInStream = std.io.FileInStream;
 const FileOutStream = std.io.FileOutStream;
 
 pub fn main() !void {
-
-}
-
-pub fn getIo() {
     var stdin_file = try std.io.getStdIn();
     var stdin = FileInStream.init(&stdin_file);
 

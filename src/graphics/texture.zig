@@ -3,7 +3,7 @@ const tick = @import("../tick.zig");
 use tick.math;
 
 use tick.system;
-use tick.system.asset;
+use tick.system.io;
 
 use tick.graphics;
 use tick.graphics.shader;
@@ -75,7 +75,7 @@ pub const TextureShader = struct {
         return self;
     }
 
-    pub fn destroy(self: &TextureShader) void {
+    pub fn destroy(self: *TextureShader) void {
         self.program.destroy();
     }
 };
@@ -99,23 +99,23 @@ pub const RenderBatch = struct {
 };
 
 var s_glyphs: [MAX_GLYPHS]Glyph = undefined;
-var s_glyph_pointers: [MAX_GLYPHS]&const Glyph = undefined;
+var s_glyph_pointers: [MAX_GLYPHS]*const Glyph = undefined;
 var s_batches: [MAX_GLYPHS]RenderBatch = undefined;
 
 pub const BatchRenderer = struct {
-    shader: &TextureShader,
+    shader: *TextureShader,
     vao: c.GLuint,
     vbo: c.GLuint,
     ibo: c.GLuint,
     glyphs: []Glyph,
-    glyphPointers: []&const Glyph,
+    glyphPointers: []*const Glyph,
     numGlyphs: usize,
     renderBatches: []RenderBatch,
     numBatches: usize,
     sortType: GlyphSortType,
     projection: Mat4,
     
-    pub fn init(s: &TextureShader, fb_width: usize, fb_height: usize)BatchRenderer {
+    pub fn init(s: *TextureShader, fb_width: usize, fb_height: usize)BatchRenderer {
         var r = BatchRenderer {
             .shader = s,
             .vao = 0,
@@ -172,24 +172,24 @@ pub const BatchRenderer = struct {
         return r;
     }
 
-    pub fn begin(r: &BatchRenderer) void {
+    pub fn begin(r: *BatchRenderer) void {
         c.glBindVertexArray(r.vao);
         r.numGlyphs = 0;
     }
 
     pub fn submit(
-            r: &BatchRenderer,
-            destRect: &const Vec4,
-            uvRect: &const Vec4,
-            glyph_texture: &const Texture,
+            r: *BatchRenderer,
+            destRect: *const Vec4,
+            uvRect: *const Vec4,
+            glyph_texture: *const Texture,
             depth: f32,
-            colour: &const Vec4,
+            colour: *const Vec4,
             angle: f32) void {
         r.glyphs[r.numGlyphs] = Glyph.init(destRect, uvRect, glyph_texture, depth, colour);
         r.numGlyphs += 1;
     }
 
-    pub fn end(r: &BatchRenderer) void {
+    pub fn end(r: *BatchRenderer) void {
         // Set up all pointers for fast sorting
         for (r.glyphs[0..r.numGlyphs]) | *g, i | {
             r.glyphPointers[i] = g;
@@ -199,7 +199,7 @@ pub const BatchRenderer = struct {
         debug.assertNoErrorGL();
     }
 
-    pub fn render(r: &BatchRenderer) void {
+    pub fn render(r: *BatchRenderer) void {
         r.shader.program.bind();
         r.shader.program.setUniform_mat4(r.shader.uniform_mvp,  &r.projection);
 
@@ -217,17 +217,17 @@ pub const BatchRenderer = struct {
         debug.assertNoErrorGL();
     }
 
-    pub fn destroy(r: &BatchRenderer) void {
+    pub fn destroy(r: *BatchRenderer) void {
         if (r.vao != 0) c.glDeleteVertexArrays(1, &r.vao);
         if (r.vbo != 0) c.glDeleteBuffers(1, &r.vbo);
         if (r.ibo != 0) c.glDeleteBuffers(1, &r.ibo);
     }
 
-    fn sortGlyphs(r: &BatchRenderer) void {
+    fn sortGlyphs(r: *BatchRenderer) void {
         
     }
 
-    fn createRenderBatches(r: &BatchRenderer) void {
+    fn createRenderBatches(r: *BatchRenderer) void {
         var vertices: [MAX_VERTICES]Vertex = undefined;
         if (r.numGlyphs == 0) return;
 
@@ -293,7 +293,7 @@ pub const BatchRenderer = struct {
 };
 
 pub const IMRenderer = struct {
-    shader: &TextureShader,
+    shader: *TextureShader,
     vao: c.GLuint,
     projection: Mat4,
     rectangleBuffer: c.GLuint,
@@ -301,7 +301,7 @@ pub const IMRenderer = struct {
     triangleBuffer: c.GLuint,
     triangleUV: c.GLuint,
 
-    fn init(s: &TextureShader, fb_width: usize, fb_height: usize)IMRenderer {
+    fn init(s: *TextureShader, fb_width: usize, fb_height: usize)IMRenderer {
         var r = IMRenderer {
             .shader = s,
             .vao = 0,
@@ -354,17 +354,17 @@ pub const IMRenderer = struct {
         return r;
     }
 
-    fn begin (r: &IMRenderer) void {
+    fn begin (r: *IMRenderer) void {
         c.glBindVertexArray(r.vao);
         r.shader.program.bind();
     }
 
-    fn end(r: &IMRenderer) void {
+    fn end(r: *IMRenderer) void {
         r.shader.program.unbind();
         c.glBindVertexArray(0);        
     }
 
-    pub fn draw_rect(r: &IMRenderer, rect_texture: &Texture, x: f32, y: f32, w: f32, h: f32) void {
+    pub fn draw_rect(r: *IMRenderer, rect_texture: *Texture, x: f32, y: f32, w: f32, h: f32) void {
         const model = Mat4.diagonal(1).translate(x, y, 0.0).scale(w, h, 0.0);
         const mvp = r.projection.mul(model);
         r.shader.program.setUniform_mat4(r.shader.uniform_mvp, mvp);
@@ -383,7 +383,7 @@ pub const IMRenderer = struct {
         c.glDrawArrays(c.GL_TRIANGLE_STRIP, 0, 4);
     }
 
-    fn draw_text(r: &IMRenderer, s: &Spritesheet, string: []const u8, left: f32, top: f32, size: f32) void {
+    fn draw_text(r: *IMRenderer, s: *Spritesheet, string: []const u8, left: f32, top: f32, size: f32) void {
         for (string) |col, i| {
             if (col <= '~') {
                 const char_left = left + f32(i * s.width) * size;
@@ -396,13 +396,13 @@ pub const IMRenderer = struct {
         }
     }
 
-    fn draw_sprite(r: &IMRenderer, s: &Sprite, left: f32, top: f32, width: f32, height: f32) void {
+    fn draw_sprite(r: *IMRenderer, s: *Sprite, left: f32, top: f32, width: f32, height: f32) void {
         const model = Mat4.diagonal(1).translate(left, top, 0.0).scale(width, height, 0.0);
         const mvp = r.projection.mul(model);
         s.draw(r.shader, mvp);
     }
 
-    fn destroy(r: &IMRenderer) void {
+    fn destroy(r: *IMRenderer) void {
         if (r.vao != 0)             c.glDeleteVertexArrays(1, &r.vao);
         if (r.rectangleBuffer != 0) c.glDeleteBuffers(1, &r.rectangleBuffer);
         if (r.rectangleUV != 0)     c.glDeleteBuffers(1, &r.rectangleUV);
@@ -416,10 +416,10 @@ pub const Glyph = struct {
     topLeft: Vertex,
     topRight: Vertex,
     bottomRight: Vertex,
-    texture: &const Texture,
+    texture: *const Texture,
     depth: f32,
 
-    fn init(destRect: &const Vec4, uvRect: &const Vec4, glyph_texture: &const Texture, depth: f32, colour: &const Vec4)Glyph {
+    fn init(destRect: *const Vec4, uvRect: *const Vec4, glyph_texture: *const Texture, depth: f32, colour: *const Vec4)Glyph {
         const tlv = Vertex {
             .position = vec3(destRect.x, destRect.y, 0),
             .colour = *colour,
@@ -511,7 +511,7 @@ pub const Texture = struct {
     id: c.GLuint,
     path: []const u8,
 
-    pub fn init(compressed_bytes: []const u8) %Texture {
+    pub fn init(compressed_bytes: []const u8) !Texture {
         var t: Texture = undefined;
         t.img = try PngImage.create(compressed_bytes);
 
@@ -533,16 +533,16 @@ pub const Texture = struct {
         return t;
     }
 
-    pub fn bind(t: &Texture) void {
+    pub fn bind(t: *Texture) void {
         c.glActiveTexture(c.GL_TEXTURE0 + t.id);
         c.glBindTexture(c.GL_TEXTURE_2D, t.id);
     }
 
-    pub fn unbind(t: &Texture) void {
+    pub fn unbind(t: *Texture) void {
         c.glBindTexture(c.GL_TEXTURE_2D, 0);
     }
     
-    pub fn deinit(t: &Texture) void {
+    pub fn deinit(t: *Texture) void {
         c.glDeleteTextures(1, &t.id);
         t.img.destroy();
     }

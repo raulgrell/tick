@@ -1,74 +1,68 @@
 
 // Draw a pixel
-const DrawPixel = fn(Vec2 position, Color color);                                                                                 
-// Draw a line 
-const DrawLine = fn(Vec2 startPos, Vec2 endPos, float thick, Color color);                                                        
+const DrawPixel = fn(position: Vec2, color: Color);
+// Draw a line
+const DrawLine = fn(startPos: Vec2, endPos: Vec2, thick: f32, color: Color);
 // Draw line using cubic-bezier curves in-out
-const DrawLineBezier = fn(Vec2 startPos, Vec2 endPos, float thick, Color color);                                                  
+const DrawLineBezier = fn(startPos: Vec2, endPos: Vec2, thick: f32, color: Color);
 // Draw a color-filled circle
-const DrawCircle = fn(Vec2 center, float radius, Color color);                                                                    
+const DrawCircle = fn(center: Vec2, radius: f32, color: Color);
 // Draw a gradient-filled circle
-const DrawCircleGradient = fn(Vec2 center, float radius, Color colorCenter, Color colorEdge);                                     
+const DrawCircleGradient = fn(center: Vec2, radius: f32, colorCenter: Color, colorEdge: Color);
 // Draw circle outline
-const DrawCircleLines = fn(Vec2 center, float radius, Color color);                                                               
+const DrawCircleLines = fn(center: Vec2, radius: f32, color: Color);
 // Draw a color-filled rectangle
-const DrawRectangle = fn(Rectangle rec, Color color);                                                                             
+const DrawRectangle = fn(rec: Rectangle, color: Color);
 // Draw a transformed, filled rectangle
-const DrawRectangleTransform = fn(Rectangle rec, Vec2 origin, float rotation, Color color);                                       
+const DrawRectangleTransform = fn(rec: Rectangle, origin: Vec2, rotation: f32, color: Color);
 // Draw a color-filled rectangle
-const DrawRectangle = fn(Vec2 position, Vec2 dimensions, Color color);                                                            
+const DrawRectangle = fn(position: Vec2, dimensions: Vec2, color: Color);
 // Draw rectangle outline
-const DrawRectangleLines = fn(Vec2 position, Vec2 dimensions, Color color);                                                       
+const DrawRectangleLines = fn(position: Vec2, dimensions: Vec2, color: Color);
 // Draw a gradient-filled rectangle
-const DrawRectangleGradient = (Vec2 position, Vec2 dimensions, Color colorTop, Color colorBottom);                                
+const DrawRectangleGradient = (position: Vec2, dimensions: Vec2, colorTop: Color, colorBottom: Color);
 // Draw a triangle
-const DrawTriangle = fn(Vec2 v1, Vec2 v2, Vec2 v3, Color color);                                                                  
+const DrawTriangle = fn(v1: Vec2, v2: Vec2, v3: Vec2, color: Color);
 // Draw triangle outline
-const DrawTriangleOutline = fn(Vec2 v1, Vec2 v2, Vec2 v3, Color color);                                                           
+const DrawTriangleOutline = fn(v1: Vec2, v2: Vec2, v3: Vec2, color: Color);
 // Draw a regular polygon of n sides
-const DrawPolygon = (Vec2 center, int sides, float radius, float rotation, Color color);                                          
+const DrawPolygon = (center: Vec2, sides: i32, radius: f32, rotation: f32, color: Color);
 // Draw a closed polygon defined by points
-const DrawPolygonPoints = fn(points: []const Vec2, Color color);                                                                  
+const DrawPolygonPoints = fn(points: []const Vec2, color: Color);
 // Draw polygon Outline defined by lines
-const DrawPolygonLines = fn(points: []const Vec2, Color color);                                                                   
+const DrawPolygonLines = fn(points: []const Vec2, color: Color);
 // Draw a Texture2D
-const DrawTexture = fn(Texture2D texture, int posX, int posY, Color tint);                                                        
-// Draw a Texture2D with position defined as Vector2
-const DrawTextureV = fn(Texture2D texture, Vector2 position, Color tint);                                                         
-// Draw a Texture2D with extended parameters
-const DrawTextureEx = fn(Texture2D texture, Vector2 position, float rotation, float scale, Color tint);                           
+const DrawTextureEx = fn(texture: Texture2D, position: Vec2, rotation: f32, scale: f32, tint: Color);
 // Draw a part of a texture (defined by a rectangle)
-const DrawTextureRec = fn(Texture2D texture, Rectangle sourceRec, Vector2 position, Color tint);                                  
+const DrawTextureRect = fn(texture: Texture2D, Rectangle sourceRec, position: Vec2, tint: Color);
 // Draw a part of a texture (defined by a rectangle) with 'pro' parameters
-const DrawTexturePro = fn(Texture2D texture, Rectangle sourceRec, Rectangle destRec, Vector2 origin, float rotation, Color tint);
+const DrawTextureFrom = fn(texture: Texture2D, Rectangle sourceRec, Rectangle destRec, origin: Vec2, rotation: f32, tint: Color);
 
 // 3D
 
 // Draw a line in 3D world space
-const DrawLine3D = fn(startPos: &const Vec3, endPos: &const Vec3, Color color);                                                   
+const DrawLine3D = fn(startPos: *const Vec3, endPos: *const Vec3, color: Color);
 // Draw a circle in 3D world space
-const DrawCircle3D = fn(center: &const Vec3, float radius, rotationAxis: &const Vec3, float rotationAngle, Color color);          
+const DrawCircle3D = fn(center: *const Vec3, radius: f32, rotationAxis: *const Vec3, rotationAngle: f32, color: Color);
 // Draw cube (Vector version)
-const DrawCube = fn(position: &const Vec3, size: &const Vec3, Color color);                                                       
+const DrawCube = fn(position: *const Vec3, size: *const Vec3, color: Color);
 // Draw cube wires
-const DrawCubeWires = fn(position: &const Vec3, size: &const Vec3, Color color);                                                  
+const DrawCubeWires = fn(position: *const Vec3, size: *const Vec3, color: Color);
 // Draw cube
-const DrawCubeTexture = fn(Texture2D texture, position: &const Vec3, size: &const Vec3, Color color);                             
+const DrawCubeTexture = fn(texture: Texture2D, position: *const Vec3, size: *const Vec3, color: Color);
 // Draw sphere
-const DrawSphere = fn(centerPos: &const Vec3, float radius, Color color);                                                         
+const DrawSphere = fn(centerPos: *const Vec3, radius: f32, color: Color);
 // Draw sphere with extended parameters
-const DrawSphereEx = fn(centerPos: &const Vec3, float radius, int rings, int slices, Color color);                                
+const DrawSphereEx = fn(centerPos: *const Vec3, radius: f32, rings: i32, slices: i32, color: Color);
 // Draw sphere wires
-const DrawSphereWires = fn(centerPos: &const Vec3, float radius, int rings, int slices, Color color);                             
+const DrawSphereWires = fn(centerPos: *const Vec3, radius: f32, rings: i32, slices: i32, color: Color);
 // Draw a cylinder
-const DrawCylinder = fn(position: &const Vec3, float radiusTop, float radiusBottom, float height, int sides, Color color);        
+const DrawCylinder = fn(position: *const Vec3, radiusTop: f32, radiusBottom: f32, height: f32, sides: i32, color: Color);
 // Draw a wired cylinder
-const DrawCylinderWires = fn(position: &const Vec3, float radiusTop, float radiusBottom, float height, int sides, Color color);   
+const DrawCylinderWires = fn(position: *const Vec3, radiusTop: f32, radiusBottom: f32, height: f32, sides: i32, color: Color);
 // Draw a plane
-const DrawPlane = fn(centerPos: &const Vec3, Vector2 size, Color color);                                                          
+const DrawPlane = fn(centerPos: *const Vec3, size: Vec2, color: Color);
 // Draw a ray line
-const DrawRay = fn(Ray ray, Color color);                                                                                         
+const DrawRay = fn(Ray ray, color: Color);
 // Draw a grid centered at (0, 0, 0)
-const DrawGrid = fn(int slices, float spacing);                                                                                   
-// Draw gizmo
-const DrawGizmo = fn(position: &const Vec3);                                                                                      
+const DrawGrid = fn(slices: i32, spacing: f32);

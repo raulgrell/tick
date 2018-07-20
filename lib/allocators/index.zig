@@ -23,15 +23,15 @@ pub const LinearAllocator = struct {
         };
     }
 
-    fn deinit(self: &LinearAllocator) void {
+    fn deinit(self: *LinearAllocator) void {
         Memory.unmap(self.bytes);
     }
 
-    fn clear(self: &LinearAllocator) void {
+    fn clear(self: *LinearAllocator) void {
         self.current_pos = 0;
     }
 
-    fn alloc(allocator: &Allocator, size: usize, alignment: u8) %[]u8 {
+    fn alloc(allocator: *Allocator, size: usize, alignment: u8) ![]u8 {
         assert(align.isPowerOfTwo(alignment));
         const self = @fieldParentPtr(LinearAllocator, "allocator", allocator);
         const adjustment = align.forwardAdjustment(self.current_pos, alignment);
@@ -45,24 +45,24 @@ pub const LinearAllocator = struct {
         return self.bytes[aligned_address..end_address];
     }
 
-    fn realloc(allocator: &Allocator, old_mem: []u8, new_size: usize, alignment: u8) %[]u8  {
+    fn realloc(allocator: *Allocator, old_mem: []u8, new_size: usize, alignment: u8) ![]u8  {
         const result = try alloc(allocator, new_size, alignment);
         std_mem.copy(u8, result, old_mem);
         return result;
     }
 
-    fn free(allocator: &Allocator, old_mem:[]u8 ) void {
+    fn free(allocator: *Allocator, old_mem:[]u8 ) void {
         // Use clear instead
     }
 };
 
 test "LinearAllocator" {
-    var a = %%LinearAllocator.init(1024);
+    var a = LinearAllocator.init(1024) catch unreachable;
 
-    var s_array = %%a.allocator.alloc(S,8);
+    var s_array = a.allocator.alloc(S,8) catch unreachable;
 
     { var i = usize(0); while(i < 16) : (i += 1) {
-        s_array[i % 8].s = %%a.allocator.create(S);
+        s_array[i % 8].s = a.allocator.create(S) catch unreachable;
     }}
 
     a.clear()
@@ -70,11 +70,11 @@ test "LinearAllocator" {
 
 pub const ProxyAllocator = struct {
     allocator: Allocator,
-    target: &Allocator,
+    target: *Allocator,
     allocations: usize,
     memory_used: usize,
 
-    fn init(target: &Allocator) ProxyAllocator {
+    fn init(target: *Allocator) ProxyAllocator {
         ProxyAllocator {
             .allocator = Allocator {
                 .allocFn = alloc,
@@ -87,7 +87,7 @@ pub const ProxyAllocator = struct {
         }
     }
 
-    fn alloc(allocator: &Allocator, size: usize, alignment: u8) %[]u8 {
+    fn alloc(allocator: *Allocator, size: usize, alignment: u8) ![]u8 {
         const self = @fieldParentPtr(LinearAllocator, "allocator", allocator);
         self.allocations += 1;
         // const mem = self.allocator.memory.used;
@@ -96,11 +96,11 @@ pub const ProxyAllocator = struct {
         return object;
     }
 
-    fn realloc(a: &Allocator, old_mem: []u8, new_size: usize, alignment: u8) %[]u8 {
+    fn realloc(a: *Allocator, old_mem: []u8, new_size: usize, alignment: u8) ![]u8 {
         return error.Invalid;
     }
 
-    fn free(a: &Allocator, old_mem: []u8)-> void {
+    fn free(a: *Allocator, old_mem: []u8)-> void {
         const self = @fieldParentPtr(LinearAllocator, "allocator", allocator);
         self.allocations -= 1;
         // const mem = self.allocator.memory.used;
@@ -110,12 +110,12 @@ pub const ProxyAllocator = struct {
 };
 
 test "Proxy Allocator" {
-    var a = %%LinearAllocator.init(1024);
+    var a = LinearAllocator.init(1024) catch unreachable;
 
-    var s_array = %%a.allocator.alloc(S,8);
+    var s_array = a.allocator.alloc(S,8) catch unreachable;
 
     { var i = usize(0); while(i < 16) : (i += 1) {
-        s_array[i % 8].s = %%a.allocator.create(S);
+        s_array[i % 8].s = a.allocator.create(S) catch unreachable;
     }}
 
     a.clear()
@@ -127,7 +127,7 @@ pub const PoolAllocator = struct {
     memory_used: usize,
     objectSize: usize,
     objectAlignment: u8,
-    objectPool: &usize,
+    objectPool: *usize,
 
     fn init(comptime T: type, size: usize) %PoolAllocator {
         assert(@sizeOf(T) >= @sizeOf(usize));
@@ -161,11 +161,11 @@ pub const PoolAllocator = struct {
         return self;
     }
 
-    fn deinit(self: &PoolAllocator) void {
+    fn deinit(self: *PoolAllocator) void {
         Memory.unmap(self.bytes);
     }
 
-    fn alloc(a: &Allocator, size: usize, alignment: u8) %[]u8 {
+    fn alloc(a: *Allocator, size: usize, alignment: u8) ![]u8 {
         const self = @fieldParentPtr(PoolAllocator, "allocator", a);
 
         if (self.memory_used + size >= self.data.len) {
@@ -178,11 +178,11 @@ pub const PoolAllocator = struct {
         return ([]u8)(@intToPtr(&usize, alloc_ptr)[0..size]);
     }
 
-    fn realloc(a: &Allocator, old_mem: []u8, new_size: usize, alignment: u8) %[]u8 {
+    fn realloc(a: *Allocator, old_mem: []u8, new_size: usize, alignment: u8) ![]u8 {
         return error.Invalid;
     }
 
-    fn free(a: &Allocator, old_mem: []u8) void {
+    fn free(a: *Allocator, old_mem: []u8) void {
         const self = @fieldParentPtr(PoolAllocator, "allocator", a);
         *@ptrCast(&usize, old_mem.ptr) = (usize)(*self.objectPool);
         self.objectPool = @ptrCast(&usize, old_mem.ptr);
@@ -191,11 +191,11 @@ pub const PoolAllocator = struct {
 };
 
 test "PoolAllocator" {
-    var a = %%PoolAllocator.init(S,8192);
-    var s_array = %%a.allocator.alloc(S,8);
+    var a = PoolAllocator.init(S,8192) catch unreachable;
+    var s_array = a.allocator.alloc(S,8) catch unreachable;
 
     for (s_array) | *s | {
-        (*s).s = %%a.allocator.create(S);
+        (*s).s = a.allocator.create(S) catch unreachable;
     }
 
     for (s_array) | s | {
@@ -232,17 +232,17 @@ pub const StackAllocator = struct {
         };
     }
 
-    fn deinit(self: &StackAllocator) void {
+    fn deinit(self: *StackAllocator) void {
         Memory.unmap(self.bytes);
     }
     
-    pub fn clear(s: &StackAllocator) void {
+    pub fn clear(s: *StackAllocator) void {
         s.allocations = 0;
         s.curr_address = 0;
         s.prev_address = 0;
     }
 
-    fn alloc(a: &Allocator, size: usize, alignment: u8) %[]u8 {
+    fn alloc(a: *Allocator, size: usize, alignment: u8) ![]u8 {
         const self = @fieldParentPtr(StackAllocator, "allocator", a);
         const adjustment = align.forwardAdjustmentHeader(
             self.curr_address,
@@ -267,11 +267,11 @@ pub const StackAllocator = struct {
         return self.data[aligned_pos .. aligned_pos + size];
     }
 
-    fn realloc(a: &Allocator, old_mem: []u8, new_size: usize, alignment: u8) %[]u8 {
+    fn realloc(a: *Allocator, old_mem: []u8, new_size: usize, alignment: u8) ![]u8 {
         return error.Invalid
     }
 
-    fn free(a: &Allocator, old_mem: []u8) void {
+    fn free(a: *Allocator, old_mem: []u8) void {
         const self = @fieldParentPtr(StackAllocator, "allocator", a);
         // assert( (usize)(&old_mem[0]) == self.prev_address );
 
@@ -283,12 +283,12 @@ pub const StackAllocator = struct {
 };
 
 test "StackAllocator" {
-    var a = %%StackAllocator.init(1024);
+    var a = StackAllocator.init(1024) catch unreachable;
 
-    var s_array = %%a.allocator.alloc(S,8);
+    var s_array = a.allocator.alloc(S,8) catch unreachable;
 
     for (s_array) | *s | {
-        (*s).s = %%a.allocator.create(S);
+        (*s).s = a.allocator.create(S) catch unreachable;
     }
 
     for (s_array) | s | {
@@ -306,7 +306,7 @@ pub const FreeListAllocator = struct {
     data: []u8,
     allocations: usize,
     mem_used: usize,
-    free_blocks: ?&FreeBlock,
+    free_blocks: ?*FreeBlock,
 
     const AllocationHeader = struct {
         size: usize,
@@ -315,7 +315,7 @@ pub const FreeListAllocator = struct {
 
     const FreeBlock = struct {
         size: usize,
-        next: ?&FreeBlock,
+        next: ?*FreeBlock,
     };
 
     fn init(size: usize) %FreeListAllocator {
@@ -340,15 +340,15 @@ pub const FreeListAllocator = struct {
         return self;
     }
 
-    fn deinit(self: &FreeListAllocator) void {
+    fn deinit(self: *FreeListAllocator) void {
         Memory.unmap(self.bytes);
     }
 
-    fn alloc(a: &Allocator, size: usize, alignment: u8) %[]u8 {
+    fn alloc(a: *Allocator, size: usize, alignment: u8) ![]u8 {
         const self = @fieldParentPtr(FreeListAllocator, "allocator", a);
 
-        var prev_free_block: ?&FreeBlock = null;
-        var free_block     : ?&FreeBlock = self.free_blocks;
+        var prev_free_block: ?*FreeBlock = null;
+        var free_block     : ?*FreeBlock = self.free_blocks;
 
         while(free_block) | block | {  
             const adjustment = align.forwardAdjustmentHeader((usize)(free_block), alignment, @sizeOf(AllocationHeader));
@@ -404,11 +404,11 @@ pub const FreeListAllocator = struct {
         return error.NoMem
     }
 
-    fn realloc(a: &Allocator, old_mem: []u8, new_size: usize, alignment: u8) %[]u8 {
+    fn realloc(a: *Allocator, old_mem: []u8, new_size: usize, alignment: u8) ![]u8 {
         return error.Invalid
     }
 
-    fn free(a: &Allocator, old_mem: []u8) void {
+    fn free(a: *Allocator, old_mem: []u8) void {
         const self = @fieldParentPtr(FreeListAllocator, "allocator", a);
         const header = @intToPtr(&AllocationHeader, (usize)(old_mem.ptr) - @sizeOf(AllocationHeader));
 
@@ -416,8 +416,8 @@ pub const FreeListAllocator = struct {
         const block_size  = header.size;
         const block_end   = block_start + block_size;
 
-        var prev_free_block: ?&FreeBlock = null;
-        var free_block: ?&FreeBlock = self.free_blocks;
+        var prev_free_block: ?*FreeBlock = null;
+        var free_block: ?*FreeBlock = self.free_blocks;
 
         while (free_block) | block | {
             if( (usize)(free_block) >= block_end )
@@ -460,10 +460,10 @@ pub const FreeListAllocator = struct {
 };
 
  test "FreeListAllocator" {
-     var a = %%FreeListAllocator.init(8192);
-     var s_array = %%a.allocator.alloc(S,8);
+     var a = FreeListAllocator.init(8192) catch unreachable;
+     var s_array = a.allocator.alloc(S,8) catch unreachable;
      for (s_array) | *s | {
-         (*s).s = %%a.allocator.create(S);
+         (*s).s = a.allocator.create(S) catch unreachable;
      }
      for (s_array) | s | {
          a.allocator.destroy(s.s);
@@ -471,4 +471,4 @@ pub const FreeListAllocator = struct {
      a.allocator.free(s_array);
  }
 
-const S = struct { s: &S, };
+const S = struct { s: *S, };

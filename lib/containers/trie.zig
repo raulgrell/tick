@@ -4,8 +4,8 @@ const mem = @import("std").mem;
 pub fn Trie(comptime T: type)type {
     struct {
         length: usize,
-        allocator: &Allocator,
-        root_node: ?&&Node,
+        allocator: *Allocator,
+        root_node: ?*&Node,
 
         const Self = this;
         const EqualityFunc = fn(a: T, b: T)bool;
@@ -14,10 +14,10 @@ pub fn Trie(comptime T: type)type {
         const Node = struct {
             data: T,
             ref_count: usize,
-            next: [256]?&Node,
+            next: [256]?*Node,
         };
 
-        pub fn init(allocator: &Allocator) Self {
+        pub fn init(allocator: *Allocator) Self {
             Self {
                 .allocator = allocator,
                 .root_node = null,
@@ -25,12 +25,12 @@ pub fn Trie(comptime T: type)type {
             }
         }
 
-        pub fn deinit(self: &Self) void {
+        pub fn deinit(self: *Self) void {
             if (self.root_node) | r | {
                 push(r, *r);
             }
 
-            var free_list: ?&Node = null;
+            var free_list: ?*Node = null;
             while (free_list) | *f | {
                 const node = pop(f);
                 // Add all node's children
@@ -40,18 +40,18 @@ pub fn Trie(comptime T: type)type {
             }
         }
 
-        fn push(list: &&Node, node: &Node) void {
+        fn push(list: *&Node, node: *Node) void {
             node.data = (*list).data;
             *list = node;
         }
 
-        fn pop(list: &&Node) &Node {
+        fn pop(list: *&Node) &Node {
             const result = *list;
             (*list).data = result.data;
             return result;
         }
 
-        pub fn insert(self: &Self, key: []u8, value: T) !void {
+        pub fn insert(self: *Self, key: []u8, value: T) !void {
             var node = find_end(trie, key);
             
             // Replace existing value
@@ -88,7 +88,7 @@ pub fn Trie(comptime T: type)type {
             }
         }
 
-        pub fn remove(self: &Self, key: []u8) %void {
+        pub fn remove(self: *Self, key: []u8) !void {
             var node = find_end(trie, key);
             if (node != null and node.data != null) {
                 node.data = null;
@@ -136,7 +136,7 @@ pub fn Trie(comptime T: type)type {
             }
         }
 
-        pub fn lookup(self: &Self, key: []u8) T {
+        pub fn lookup(self: *Self, key: []u8) T {
             return if ( find_end(trie, key) ) | node | {
                 node.data
             } else {
@@ -144,7 +144,7 @@ pub fn Trie(comptime T: type)type {
             }
         }
 
-        pub fn num_entries(self: &Self)usize {
+        pub fn num_entries(self: *Self)usize {
             return if ( self.root_node ) | node | {
                 node.ref_count
             } else {
@@ -152,7 +152,7 @@ pub fn Trie(comptime T: type)type {
             };
         }
 
-        fn find_end(self: &Self, key: []u8) ?&Node {
+        fn find_end(self: *Self, key: []u8) ?*Node {
             // Search down the trie until the end of string is reached
             var node = self.root_node;
             for (key) | k | {
@@ -167,7 +167,7 @@ pub fn Trie(comptime T: type)type {
             return node;
         }
 
-        fn insert_rollback(self: &Self, key: []u8) void {
+        fn insert_rollback(self: *Self, key: []u8) void {
             var node = self.root_node;
             var prev_ptr = &self.root_node;
             var p = key;

@@ -1,15 +1,4 @@
 use @cImport({
-    // @cInclude("stdio.h");
-    // @cInclude("stdlib.h");
-    // @cInclude("stdint.h");
-    // @cInclude("stdarg.h");
-    // @cInclude("string.h");
-    // @cInclude("math.h");
-    // @cInclude("assert.h");
-    // @cInclude("math.h");
-    // @cInclude("limits.h");
-    // @cInclude("time.h");
-
     // // GL
     // @cInclude("epoxy/gl.h");
     // @cInclude("GLFW/glfw3.h");
@@ -57,7 +46,7 @@ use @cImport({
 // };
 
 // const NK_GLFW = struct {
-//     win: &GLFWwindow,
+//     win: *GLFWwindow,
 //     width: c_int,
 //     height: c_int,
 //     display_width: c_int,
@@ -103,7 +92,7 @@ use @cImport({
 //         \\}
 //     ;
 
-//     var dev: &device = &glfw.ogl;
+//     var dev: *device = &glfw.ogl;
 //     nk_buffer_init_default(&dev.cmds);
 //     dev.prog = glCreateProgram();
 //     dev.vert_shdr = glCreateShader(GL_VERTEX_SHADER);
@@ -158,9 +147,9 @@ use @cImport({
 //     glBindVertexArray(0);
 // }
 
-// pub fn device_upload_atlas(image: &void, width: c_int, height: c_int) -> void
+// pub fn device_upload_atlas(image: *void, width: c_int, height: c_int) -> void
 // {
-//     const dev: &device = &glfw.ogl;
+//     const dev: *device = &glfw.ogl;
 //     glGenTextures(1, &dev.font_tex);
 //     glBindTexture(GL_TEXTURE_2D, dev.font_tex);
 //     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -170,7 +159,7 @@ use @cImport({
 
 // pub fn device_destroy() -> void
 // {
-//     const dev: &device = &glfw.ogl;
+//     const dev: *device = &glfw.ogl;
 //     glDetachShader(dev.prog, dev.vert_shdr);
 //     glDetachShader(dev.prog, dev.frag_shdr);
 //     glDeleteShader(dev.vert_shdr);
@@ -184,7 +173,7 @@ use @cImport({
 
 // pub fn render(AA: nk_anti_aliasing, max_vertex_buffer: c_int, max_element_buffer: c_int) -> void
 // {
-//     const dev: &device = &glfw.ogl;
+//     const dev: *device = &glfw.ogl;
 //     const ortho = [4][4]GLfloat{
 //         [4]GLfloat{2.0, 0.0, 0.0, 0.0},
 //         [4]GLfloat{0.0,-2.0, 0.0, 0.0},
@@ -210,10 +199,10 @@ use @cImport({
 //     glViewport(0,0,(GLsizei)(glfw.display_width),(GLsizei)(glfw.display_height));
 //     {
 //         // convert from command queue into draw list and draw to screen
-//         const cmd: &nk_draw_command = undefined;
-//         const vertices: &void = undefined;
-//         const elements: &void = undefined;
-//         const offset : &nk_draw_index = undefined;
+//         const cmd: *nk_draw_command = undefined;
+//         const vertices: *void = undefined;
+//         const elements: *void = undefined;
+//         const offset : *nk_draw_index = undefined;
 
 //         // allocate vertex and element buffer
 //         glBindVertexArray(dev.vao);
@@ -282,14 +271,14 @@ use @cImport({
 //     glDisable(GL_SCISSOR_TEST);
 // }
 
-// pub fn char_callback(win: &GLFWwindow, codepoint: c_uint) -> void {
+// pub fn char_callback(win: *GLFWwindow, codepoint: c_uint) -> void {
 //     if (glfw.text_len < TEXT_MAX) {
 //         glfw.text[glfw.text_len] = codepoint;
 //         text.len += 1;
 //     }
 // }
 
-// pub fn scroll_callback(win: &GLFWwindow, xoff: f64, yoff: f64) -> void {
+// pub fn scroll_callback(win: *GLFWwindow, xoff: f64, yoff: f64) -> void {
 //     glfw.scroll.x += f32(xoff);
 //     glfw.scroll.y += f32(yoff);
 // }
@@ -297,7 +286,7 @@ use @cImport({
 
 // const DOUBLE_CLICK_MIN = 0.02;
 // const DOUBLE_CLICK_MAX = 0.2;
-// pub fn mouse_button_callback(win: &GLFWwindow, button: c_int, action: c_int, mods: c_int) {
+// pub fn mouse_button_callback(win: *GLFWwindow, button: c_int, action: c_int, mods: c_int) {
 //     var x: f32 = undefined;
 //     var y: f32 = undefined;
 //     if (button != GLFW_MOUSE_BUTTON_LEFT) return;
@@ -312,7 +301,7 @@ use @cImport({
 //     } else glfw.is_double_click_down = nk_false;
 // }
 
-// pub fn clipbard_paste(usr: nk_handle, edit: &nk_text_edit) -> void {
+// pub fn clipbard_paste(usr: nk_handle, edit: *nk_text_edit) -> void {
 //     if (glfwGetClipboardString(glfw.win)) | text |
 //         nk_textedit_paste(edit, text, nk_strlen(text));
 // }
@@ -327,7 +316,7 @@ use @cImport({
 //     glfwSetClipboardString(glfw.win, str);
 // }
 
-// pub fn init(win: &GLFWwindow, init_state: InitState) -> &nk_context {
+// pub fn init(win: *GLFWwindow, init_state: InitState) -> &nk_context {
 //     glfw.win = win;
 //     if (init_state == INSTALL_CALLBACKS) {
 //         glfwSetScrollCallback(win, scroll_callback);
@@ -346,7 +335,7 @@ use @cImport({
 //     return &glfw.ctx;
 // }
 
-// pub fn font_stash_begin(atlas: &nk_font_atlas) -> void {
+// pub fn font_stash_begin(atlas: *nk_font_atlas) -> void {
 //     nk_font_atlas_init_default(&glfw.atlas);
 //     nk_font_atlas_begin(&glfw.atlas);
 //     *atlas = &glfw.atlas;
@@ -365,8 +354,8 @@ use @cImport({
 
 // pub fn new_frame() -> void
 // {
-//     const ctx: &nk_context = &glfw.ctx;
-//     const win: &GLFWwindow = glfw.win;
+//     const ctx: *nk_context = &glfw.ctx;
+//     const win: *GLFWwindow = glfw.win;
 
 //     glfwGetWindowSize(win, &glfw.width, &glfw.height);
 //     glfwGetFramebufferSize(win, &glfw.display_width, &glfw.display_height);
@@ -1664,10 +1653,10 @@ fn error_callback(e: c_int, d: ?&const u8) {
 pub fn main() -> %void {
     
     // // Platform
-    // var win: &GLFWwindow = undefined;
+    // var win: *GLFWwindow = undefined;
     // var width: c_int = 0;
     // var height: c_int = 0;
-    // var ctx: &nk_context = undefined;
+    // var ctx: *nk_context = undefined;
     // var background: nk_color = undefined;
 
     // // GLFW
@@ -1693,9 +1682,9 @@ pub fn main() -> %void {
 
     // ctx = init(win, INSTALL_CALLBACKS);
     // {
-    //     var atlas: &nk_font_atlas;
+    //     var atlas: *nk_font_atlas;
     //     font_stash_begin(&atlas);
-    //     const clean: &nk_font = nk_font_atlas_add_from_file(atlas, "data/ProggyClean.ttf", 12, 0);
+    //     const clean: *nk_font = nk_font_atlas_add_from_file(atlas, "data/ProggyClean.ttf", 12, 0);
     //     font_stash_end();
     //     nk_style_load_all_cursors(ctx, atlas.cursors);
     //     nk_style_set_font(ctx, &clean.handle);
@@ -1766,15 +1755,15 @@ pub fn main() -> %void {
 }
 
 
-// pub fn init(app: &core.App) {
+// pub fn init(app: *core.App) {
 // }   
 
-// pub fn update(app: &core.App, deltaTime: f32) -> %void {
+// pub fn update(app: *core.App, deltaTime: f32) -> %void {
 // }
 
-// pub fn draw(app: &core.App) {
+// pub fn draw(app: *core.App) {
 // }
 
-// pub fn deinit(app: &core.App) {
+// pub fn deinit(app: *core.App) {
 
 // }

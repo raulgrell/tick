@@ -61,7 +61,7 @@ pub const State = struct {
     tile_map: [256]?Texture,
 };
 
-fn init(app: &App) &State {
+fn init(app: *App) &State {
     var state = c.mem.create(State) catch panic("cannot create state");
 
     state.font = Spritesheet.init(FONT_PNG, FONT_CHAR_WIDTH, FONT_CHAR_HEIGHT) catch {
@@ -101,7 +101,7 @@ fn init(app: &App) &State {
     return state;
 }
 
-fn update(app: &App, state: &State, deltaTime: f32) %void {
+fn update(app: *App, state: *State, deltaTime: f32) !void {
     // Update cursor
     state.cursor_position = app.input.cursor_position;
     
@@ -118,7 +118,7 @@ fn update(app: &App, state: &State, deltaTime: f32) %void {
     state.player_mouse.update(&state.level, deltaTime);
 }
 
-fn draw(app: &App, state: &State) void {
+fn draw(app: *App, state: *State) void {
     // Update camera
     state.camera.update();
     
@@ -132,17 +132,17 @@ fn draw(app: &App, state: &State) void {
     state.im_renderer.end();
 }
 
-fn reload(state: &State) void {
+fn reload(state: *State) void {
     state.level = Level.init(LEVEL_DATA[0..], HOT.DIMENSIONS_TILE);
     state.player_agent = agent.Agent.init(state.level.start.xyz(), HOT.DIMENSIONS_AGENT, HOT.SPEED_AGENT, &state.noise.texture);
     warn("reload\n");
 }
 
-fn unload(state: &State) void {
+fn unload(state: *State) void {
     warn("unload\n");
 }
 
-fn deinit(state: &State) void {
+fn deinit(state: *State) void {
     c.mem.destroy(state);
     warn("deinit\n");
 }

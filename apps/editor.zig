@@ -91,9 +91,9 @@ pub fn main() !void {
 
 const TerminalContext = struct {
 
-}
+};
 
-fn die(s: &const u8) void {
+fn die(s: *const u8) void {
     clearTerminal();
     perror(s);
     exit(1);
@@ -172,10 +172,10 @@ fn readKey() u8 {
     }
 }
 
-fn getWindowSize(rows: &c_int, cols: &c_int) !void {
+fn getWindowSize(rows: *c_int, cols: *c_int) !void {
     var ws: winsize = undefined;
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 or ws.ws_col == 0) {
-        if (write(STDOUT_FILENO, @ptrCast(&const c_void, c"\x1b[999C\x1b[999B"), 12) != 12)
+        if (write(STDOUT_FILENO, @ptrCast(*const c_void, c"\x1b[999C\x1b[999B"), 12) != 12)
             return error.WindowSizeInvalid;
         try getCursorPosition(rows, cols);
     } else {
@@ -184,12 +184,12 @@ fn getWindowSize(rows: &c_int, cols: &c_int) !void {
     }
 }
 
-fn getCursorPosition(rows: &c_int, cols: &c_int) !void {
+fn getCursorPosition(rows: *c_int, cols: *c_int) !void {
     var buf = []u8 {0} ** 32;
     var i = usize(0);
     var c = u8(0);
 
-    if (write(STDOUT_FILENO, @ptrCast(&const c_void, c"\x1b[6n"), 4) != 4)
+    if (write(STDOUT_FILENO, @ptrCast(*const c_void, c"\x1b[6n"), 4) != 4)
         return error.CursorPositionInvalid;
 
     while (i < buf.len - 1) : (i += 1) {
@@ -206,8 +206,8 @@ fn getCursorPosition(rows: &c_int, cols: &c_int) !void {
 }
 
 fn clearTerminal() void {
-  _ = write(STDOUT_FILENO, @ptrCast(&const c_void, c"\x1b[2J"), 4);
-  _ = write(STDOUT_FILENO, @ptrCast(&const c_void, c"\x1b[H"), 3);
+  _ = write(STDOUT_FILENO, @ptrCast(*const c_void, c"\x1b[2J"), 4);
+  _ = write(STDOUT_FILENO, @ptrCast(*const c_void, c"\x1b[H"), 3);
 }
 
 fn ctrlKey(key: u8) u8 {
@@ -264,7 +264,7 @@ fn editorAppendRow(row: []const u8) !void {
 
 const TAB_SIZE = 4;
 
-fn editorUpdateRow(row: &EditorRow) !void {
+fn editorUpdateRow(row: *EditorRow) !void {
     const row_chars = row.chars.toSliceConst();
 
     var tabs: usize = 0;
@@ -294,7 +294,7 @@ fn editorUpdateRow(row: &EditorRow) !void {
     }
 }
 
-fn editorRowCxtoRx(row: &EditorRow, cx: c_int) c_int {
+fn editorRowCxtoRx(row: *EditorRow, cx: c_int) c_int {
     var rx: c_int = 0;
     for(row.chars.toSliceConst()) | c, i | {
         if (c == '\t') rx += (TAB_SIZE - 1) - (@mod(rx, TAB_SIZE));
@@ -364,12 +364,12 @@ fn editorRefreshScreen() !void {
 
     try ab.append("\x1b[?25h");
     
-    _ = write(STDOUT_FILENO, @ptrCast(&const c_void, ab.list.items.ptr), ab.list.len);
+    _ = write(STDOUT_FILENO, @ptrCast(*const c_void, ab.list.items.ptr), ab.list.len);
 
     ab.deinit();
 }
 
-fn editorDrawRows(ab: &std.Buffer) !void {
+fn editorDrawRows(ab: *std.Buffer) !void {
     var row_index: c_uint = 0;
 
     while(row_index < c_uint(e.screenrows)) : (row_index += 1) {
@@ -395,7 +395,7 @@ fn editorDrawRows(ab: &std.Buffer) !void {
     }
 }
 
-fn editorDrawStatusBar(ab: &std.Buffer) !void {
+fn editorDrawStatusBar(ab: *std.Buffer) !void {
     try ab.append("\x1b[7m");
 
     var status_buffer: [80]u8 = undefined;

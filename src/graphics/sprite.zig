@@ -3,7 +3,7 @@ const tick = @import("../tick.zig");
 use tick.math;
 
 use tick.system;
-use tick.system.asset;
+use tick.system.io;
 
 use tick.graphics.texture;
 
@@ -12,7 +12,7 @@ pub const Sprite = struct {
     vertex_buffer: c.GLuint,
     uv_buffer: c.GLuint,
 
-    pub fn init(compressed_bytes: []const u8) %Sprite {
+    pub fn init(compressed_bytes: []const u8) !Sprite {
         
         var s = Sprite {
             .texture = try Texture.init(compressed_bytes),
@@ -49,7 +49,7 @@ pub const Sprite = struct {
         return s;
     }
 
-    pub fn draw(s: &Sprite, shader: &TextureShader, mvp: &const Mat4) void {
+    pub fn draw(s: *Sprite, shader: *TextureShader, mvp: *const Mat4) void {
         shader.program.bind();
         shader.program.setUniform_mat4(shader.uniform_mvp, mvp);
         shader.program.setUniform_int(shader.uniform_tex, c.GLint(s.texture.id));
@@ -76,7 +76,7 @@ pub const Spritesheet = struct {
     vertex_buffer: c.GLuint,
     tex_coord_buffers: []c.GLuint,
 
-    pub fn init(compressed_bytes: []const u8, w: usize, h: usize) %Spritesheet {
+    pub fn init(compressed_bytes: []const u8, w: usize, h: usize) !Spritesheet {
         var s: Spritesheet = undefined;
 
         s.img = try PngImage.create(compressed_bytes);
@@ -141,7 +141,7 @@ pub const Spritesheet = struct {
         return s;
     }
 
-    pub fn draw(s: &Spritesheet, shader: &TextureShader, index: usize, mvp: &const Mat4) void {
+    pub fn draw(s: *Spritesheet, shader: *TextureShader, index: usize, mvp: *const Mat4) void {
         shader.program.bind();
         shader.program.setUniform_mat4(shader.uniform_mvp, mvp);
         shader.program.setUniform_int(shader.uniform_tex, c.GLint(s.texture_id));
@@ -160,7 +160,7 @@ pub const Spritesheet = struct {
         c.glDrawArrays(c.GL_TRIANGLE_STRIP, 0, 4);
     }
     
-    pub fn deinit(s: &Spritesheet) void {
+    pub fn deinit(s: *Spritesheet) void {
         c.glDeleteBuffers(c.GLint(s.tex_coord_buffers.len), &s.tex_coord_buffers[0]);
         mem.free(c.GLuint, s.tex_coord_buffers);
         c.glDeleteBuffers(1, &s.vertex_buffer);
@@ -175,7 +175,7 @@ const Frame = struct {
     pos_offset: Vec2,
     frame_time: float,
 
-    fn init(rect: &const Rectangle, pos: &const Vec2, time: f32)Frame {
+    fn init(rect: *const Rectangle, pos: *const Vec2, time: f32)Frame {
         return Frame {
             .src_rect = rect,
             .pos_offset = pos,
@@ -191,7 +191,7 @@ const SpriteUnit = struct {
     angle: f32,
     verts: []Vertex2D,
     frames: []Frame,
-    texture: &Texture,
+    texture: *Texture,
     current_frame: usize,
     animation_speed: f32,
     time: f32,
@@ -212,7 +212,7 @@ const SpriteUnit = struct {
         };
     }
 
-    fn create(pos: &const Vec2, scale: &const Vec2, angle: f32, origin: &const Vec2, size: &const Vec2, file_path: []const u8, src_rect: &const Rectangle) void {
+    fn create(pos: *const Vec2, scale: *const Vec2, angle: f32, origin: *const Vec2, size: *const Vec2, file_path: []const u8, src_rect: *const Rectangle) void {
         self.pos = pos;
         self.scale = scale;
         self.angle = angle;
@@ -261,7 +261,7 @@ const SpriteUnit = struct {
         }
     }
 
-    fn addFrame(src_rect: &const Rectangle, pos_offset: &const Vec2, frame_time: f32) void {
+    fn addFrame(src_rect: *const Rectangle, pos_offset: *const Vec2, frame_time: f32) void {
         const uv = Rectangle {
             .x = src_rect.x / self.texture.width,
             .y = (self.texture.height - (src_rect.y + src_rect.height)) / self.texture.height,
@@ -272,7 +272,7 @@ const SpriteUnit = struct {
         self.frames.emplace_back(uv, pos_offset, frame_time);
     }
 
-    fn createFrames(src_rect: &const Rectangle, rows: usize, cols: usize, animationTime: f32, padding: f32) void {
+    fn createFrames(src_rect: *const Rectangle, rows: usize, cols: usize, animationTime: f32, padding: f32) void {
         self.frames.clear();
         self.frames.reserve(rows * cols);
 
@@ -322,7 +322,7 @@ const SpriteUnit = struct {
         }
     }
 
-    fn render(renderer: &BatchRenderer) void {
+    fn render(renderer: *BatchRenderer) void {
         renderer.submit(this);
     }
 
@@ -358,7 +358,7 @@ const SpriteUnit = struct {
             and self.time >= self.frames[self.current_frame].frame_time * self.animation_speed);
     }
 
-    fn resetVerticies(size: &const Vec2) void {
+    fn resetVerticies(size: *const Vec2) void {
         //set up vertex data in object(local) space
         self.verts.clear();
         self.verts.resize(4);

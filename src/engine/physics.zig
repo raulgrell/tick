@@ -30,7 +30,7 @@ const Polygon = struct {
     normals: [MAX_VERTICES]Vec2,
     transform: Mat2,
 
-    fn CreatePolygon(radius: f32, sides: usize)Polygon {
+    fn CreatePolygon(radius: f32, sides: usize) Polygon {
         var data = Polygon {
             .vertex_count = sides,
             .vertices = undefined,
@@ -55,7 +55,7 @@ const Polygon = struct {
     }
 
     // Creates a rectangle polygon shape based on a min and max positions
-    fn CreateRectanglePolygon(pos: Vec2, size: Vec2)Polygon {
+    fn CreateRectanglePolygon(pos: Vec2, size: Vec2) Polygon {
         var data = Polygon {
             .vertex_count = 4,
             .vertices = undefined,
@@ -88,13 +88,13 @@ const PhysicsShapeType = enum {
         radius: f32,
     },
     Polygon: struct {
-        vertex_data: &Polygon
+        vertex_data: *Polygon
     }
 };
 
 const PhysicsShape = struct {
-    body: &PhysicsBody,                 // Shape physics body reference
-    type: &PhysicsShapeType,            // Physics shape type (circle or polygon)
+    body: *PhysicsBody,                 // Shape physics body reference
+    type: *PhysicsShapeType,            // Physics shape type (circle or polygon)
 
     // Returns the extreme point along a direction within a polygon
     fn GetSupport(shape: PhysicsShape, dir: Vec2)Vec2 {
@@ -116,7 +116,7 @@ const PhysicsShape = struct {
     }
 
     // Finds polygon shapes axis least penetration
-    fn FindAxisLeastPenetration(face_index: &usize, shapeA: PhysicsShape, shapeB: PhysicsShape)float {
+    fn FindAxisLeastPenetration(face_index: *usize, shapeA: PhysicsShape, shapeB: PhysicsShape)float {
         const bestDistance = -FLT_MAX;
         var bestIndex: usize = 0;
 
@@ -157,7 +157,7 @@ const PhysicsShape = struct {
     }
 
     // Finds two polygon shapes incident face
-    fn FindIncidentFace(v0: &Vec2, v1: &Vec2, ref: PhysicsShape, inc: PhysicsShape, index: usize) void {
+    fn FindIncidentFace(v0: *Vec2, v1: *Vec2, ref: PhysicsShape, inc: PhysicsShape, index: usize) void {
         const refData = ref.vertexData;
         const incData = inc.vertexData;
 
@@ -189,7 +189,7 @@ const PhysicsShape = struct {
     }
 
     // Calculates clipping based on a normal and two faces
-    fn Clip(normal: Vec2, clip: f32, faceA: &Vec2, faceB: &Vec2)usize {
+    fn Clip(normal: Vec2, clip: f32, faceA: *Vec2, faceB: *Vec2)usize {
         var sp = 0;
         var out = [2]Vec2 { *faceA, *faceB };
 
@@ -248,11 +248,11 @@ const PhysicsBody = struct {
     freezeOrient: bool,                // Physics rotation constraint
     shape: PhysicsShape,               // Physics body shape information (type, radius, vertices, normals)
 
-    pub fn Circle(pos: &const Vec2, radius: f32, density: f32)PhysicsBody {
+    pub fn Circle(pos: *const Vec2, radius: f32, density: f32)PhysicsBody {
         return Polygon(pos, radius, CIRCLE_VERTICES, density);
     }
 
-    pub fn Rectangle(pos: &const Vec2, width: f32, height: f32, density: f32)PhysicsBody {
+    pub fn Rectangle(pos: *const Vec2, width: f32, height: f32, density: f32)PhysicsBody {
         var new_body: PhysicsBody = undefined;
         
         new_body.id = newId;
@@ -323,7 +323,7 @@ const PhysicsBody = struct {
     }
 
     // Creates a new polygon physics body with generic parameters
-    pub fn Polygon(pos: &const Vec2, width: f32, height: f32, density: f32)PhysicsBody  {
+    pub fn Polygon(pos: *const Vec2, width: f32, height: f32, density: f32)PhysicsBody  {
         var new_body: PhysicsBody = undefined;
 
         // Initialize new body with generic values
@@ -459,7 +459,7 @@ const PhysicsBody = struct {
     }
 
     // Returns a physics body of the bodies pool at a specific index
-    pub fn GetPhysicsBody(index: usize) %PhysicsBody {
+    pub fn GetPhysicsBody(index: usize) !PhysicsBody {
         if (index < physicsBodiesCount) {
             return bodies[index];
         } else {
@@ -468,7 +468,7 @@ const PhysicsBody = struct {
     }
 
     // Returns the physics body shape type (PhysicsShapeType.Circle or PhysicsShapeType.Polygon)
-    pub fn GetPhysicsShape(index: usize) %PhysicsShapeType {
+    pub fn GetPhysicsShape(index: usize) !PhysicsShapeType {
         if (index < physicsBodiesCount) {
             return bodies[index].shape.type;
         } else {
@@ -1156,7 +1156,7 @@ pub const World = struct {
     }
 
     // Returns the barycenter of a triangle given by 3 points
-    fn TriangleBarycenter(v1: &const Vec2, v2: &const Vec2, v3: &const Vec2)Vec2 {
+    fn TriangleBarycenter(v1: *const Vec2, v2: *const Vec2, v3: *const Vec2)Vec2 {
         return Vec2 {
             .x = (v1.x + v2.x + v3.x)/3,
             .y = (v1.y + v2.y + v3.y)/3

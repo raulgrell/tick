@@ -9,16 +9,16 @@ error ListenerFail;
 
 pub fn Observer(comptime T: type, comptime S: type) type {
     struct {
-        impl: &T,
-        destroy: fn(observer: &Self),
+        impl: *T,
+        destroy: fn(observer: *Self),
         notify: Notify,
         notifyImpl: NotifyImpl,
 
         const Self = this;
-        const Notify = fn(observer: &Self, event: Event, subject: &S);
-        const NotifyImpl = fn(impl: &const T, event: Event, subject: &S);
+        const Notify = fn(observer: *Self, event: Event, subject: *S);
+        const NotifyImpl = fn(impl: *const T, event: Event, subject: *S);
 
-        pub fn make(impl: &T, notifyImpl: NotifyImpl) Self {
+        pub fn make(impl: *T, notifyImpl: NotifyImpl) Self {
             Self {
                 .impl = impl,
                 .destroy = destroy,
@@ -27,8 +27,8 @@ pub fn Observer(comptime T: type, comptime S: type) type {
             }
         }
 
-        pub fn create(impl: &T, notifyImpl: NotifyImpl) &Self {
-            var self = %%c.mem.allocator.create(Self);
+        pub fn create(impl: *T, notifyImpl: NotifyImpl) &Self {
+            var self = c.mem.allocator.create(Self) catch unreachable;
             self.impl = impl;
             self.destroy = destroy;
             self.notify = notify;
@@ -36,11 +36,11 @@ pub fn Observer(comptime T: type, comptime S: type) type {
             return self;
         }
 
-        fn destroy(self: &Self) void {
+        fn destroy(self: *Self) void {
             c.mem.allocator.destroy(self);
         }
 
-        fn notify(self: &Self, event: Event, subject: &S) void {
+        fn notify(self: *Self, event: Event, subject: *S) void {
             self.notifyImpl(self.impl, event, subject);
         }
     }
@@ -48,9 +48,9 @@ pub fn Observer(comptime T: type, comptime S: type) type {
 
 pub fn Subject(comptime S: type, comptime T: type) type {
     struct {
-        impl: &T,
+        impl: *T,
         event: Event,
-        observers: [MAX_OBSERVERS]?&Obs,
+        observers: [MAX_OBSERVERS]?*Obs,
         destroy: fn(&Self),
         register: fn(&Self, &Obs) %usize,
         unregister: fn(&Self, &Obs) %usize,
@@ -59,7 +59,7 @@ pub fn Subject(comptime S: type, comptime T: type) type {
         const Self = this;
         const Obs = Observer(S, T);
         
-        pub fn make(impl: &T, event: Event) &Self {
+        pub fn make(impl: *T, event: Event) &Self {
             Self {
                 .impl = impl,
                 .destroy = destroy,
@@ -70,8 +70,8 @@ pub fn Subject(comptime S: type, comptime T: type) type {
             }
         }
 
-        pub fn create(impl: &T, event: Event) &Self {
-            var self = %%c.mem.allocator.create(Self);
+        pub fn create(impl: *T, event: Event) &Self {
+            var self = c.mem.allocator.create(Self) catch unreachable;
             self.impl = impl;
             self.destroy = destroy;
             self.event = event;
@@ -81,11 +81,11 @@ pub fn Subject(comptime S: type, comptime T: type) type {
             return self;
         }
 
-        fn destroy(self: &Self) void {
+        fn destroy(self: *Self) void {
             c.mem.allocator.destroy(self);
         }
 
-        fn registerObserver(self: &Self, observer: &Obs) %usize {
+        fn registerObserver(self: *Self, observer: *Obs) %usize {
             var i = usize(0);
             while( i < MAX_OBSERVERS) : (i += 1) {
                 if (self.observers[i] == null) {
@@ -96,10 +96,10 @@ pub fn Subject(comptime S: type, comptime T: type) type {
             return error.ObserverFail;
         }
 
-        fn unregisterObserver(self: &Self, observer: &Obs) %usize {
+        fn unregisterObserver(self: *Self, observer: *Obs) %usize {
             var i = usize(0);
             while( i < MAX_OBSERVERS) : (i += 1) {
-                var pObserver = self.observers[i] ?? return error.ObserverFail;
+                var pObserver = self.observers[i] orelse return error.ObserverFail;
                 if (observer == pObserver) {
                     self.observers[i] = null;
                     return i;
@@ -108,7 +108,7 @@ pub fn Subject(comptime S: type, comptime T: type) type {
             return error.ObserverFail;
         }
 
-        fn notifyObservers(self: &Self) void {
+        fn notifyObservers(self: *Self) void {
             var i = usize(0);
             while( i < MAX_OBSERVERS) : (i += 1) {
                 if (self.observers[i]) | o | {
@@ -128,7 +128,7 @@ const Client = struct {
     watch: fn(&Client, &Server),
     destroy: fn(&Client),
     
-    observer: &Obs,
+    observer: *Obs,
     
     const Obs = Observer(Client, Server);
 
@@ -143,7 +143,7 @@ const Client = struct {
     }
     
     pub fn create(name: []const u8)&Client {
-        var self = %%c.mem.allocator.create(Client);
+        var self = c.mem.allocator.create(Client) catch unreachable;
         self.name = name;
         self.watch = watch;
         self.destroy = destroy;
@@ -151,21 +151,21 @@ const Client = struct {
         return self;
     }
 
-    fn destroy(self: &Client) void {
+    fn destroy(self: *Client) void {
         self.observer.destroy(self.observer);
     }
 
-    fn watch(self: &Client, other: &Server) void {
+    fn watch(self: *Client, other: *Server) void {
         const i = other.subject.registerObserver(self.observer);
-        %%io.warn("{} watching {} ({})\n", self.name, other.name, i);
+        io.warn("{} watching {} ({})\n", self.name, other.name, i) catch unreachable;
     }
 
-    fn handleEvent(self: &const Client, other: &Server) void {
-        %%io.warn("{} just heard {}\n", self.name, other.name);
+    fn handleEvent(self: *const Client, other: *Server) void {
+        io.warn("{} just heard {}\n", self.name, other.name) catch unreachable;
     }
 
     // Observer Method called upon the receiption of an incoming event.
-    fn notify(self: &const Client, event: Event, subject: &Server) void {
+    fn notify(self: *const Client, event: Event, subject: *Server) void {
         handleEvent(self, subject);
     }
 };
@@ -180,14 +180,14 @@ const Server = struct {
     destroy: fn(&Server),
     speak: fn(&Server),
 
-    subject: &Sub,
+    subject: *Sub,
 
     const Self = this;
     const Obs = Observer(Client, Server);
     const Sub = Subject(Client, Server);
     
     pub fn create(name: []const u8)&Server {
-        var self = %%c.mem.allocator.create(Server);
+        var self = c.mem.allocator.create(Server) catch unreachable;
         self.name = name;
         self.destroy = destroy;
         self.speak = speak;
@@ -197,21 +197,21 @@ const Server = struct {
         return self;
     }
 
-    fn destroy(self: &const Server) void {
+    fn destroy(self: *const Server) void {
         self.subject.destroy(self.subject);
     }
 
-    fn speak(self: &Server) void {
-        %%io.warn("My name is: {}. Miiiaaauu\n", self.name);
+    fn speak(self: *Server) void {
+        io.warn("My name is: {}. Miiiaaauu\n", self.name) catch unreachable;
         self.event = Event.Speak;
         self.subject.notify(self.subject);
     }
 
-    fn registerObserver(self: &Sub, observer: &Obs) %usize {
+    fn registerObserver(self: *Sub, observer: *Obs) %usize {
         return self.register(self, observer);
     }
 
-    fn unregisterObserver(self: &Sub, observer: &Obs) %usize {
+    fn unregisterObserver(self: *Sub, observer: *Obs) %usize {
         return self.unregister(self, observer);
     }
 };

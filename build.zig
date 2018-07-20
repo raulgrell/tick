@@ -1,10 +1,10 @@
 const Builder = @import("std").build.Builder;
 const builtin = @import("builtin");
 
-pub fn build(b: &Builder) void {
+pub fn build(b: *Builder) void {
     // Get options
     const mode = b.standardReleaseOptions();
-    const windows = b.option(bool, "windows", "create windows build") ?? false;
+    const windows = b.option(bool, "windows", "create windows build") orelse false;
 
     // Environment
     b.addCIncludePath("deps");
