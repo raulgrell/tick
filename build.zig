@@ -25,31 +25,6 @@ pub fn build(b: *Builder) void {
     }
 
     //
-    // Statically Linked Executable
-    //
-    var dist_exe = b.addExecutable("dist", "platform/run.zig");
-    dist_exe.addPackagePath("lib", "lib/index.zig");
-    dist_exe.addObject(glad);
-
-    dist_exe.setBuildMode(mode);
-    if (windows) {
-        dist_exe.setTarget(builtin.Arch.x86_64, builtin.Os.windows, builtin.Environ.gnu);
-    }
-
-    dist_exe.linkSystemLibrary("c");
-    dist_exe.linkSystemLibrary("m");
-    dist_exe.linkSystemLibrary("z");
-    dist_exe.linkSystemLibrary("dl");
-    dist_exe.linkSystemLibrary("glfw");
-    dist_exe.linkSystemLibrary("png");
-    dist_exe.linkSystemLibrary("soundio");
-    b.installArtifact(dist_exe);
-
-    const dist_command = b.addCommand(".", b.env_map, [][]const u8{dist_exe.getOutputPath()});
-    dist_command.step.dependOn(&glad.step);
-    dist_command.step.dependOn(&dist_exe.step);
-
-    //
     // Dynamically Linked, Hot Reloading
     //
     var dev_exe = b.addExecutable("dev", "platform/dev.zig");
@@ -74,6 +49,32 @@ pub fn build(b: *Builder) void {
     dev_command.step.dependOn(&glad.step);
     dev_command.step.dependOn(&dev_exe.step);
     dev_command.step.dependOn(&game_lib.step);
+
+    //
+    // Statically Linked Executable
+    //
+    var dist_exe = b.addExecutable("dist", "platform/run.zig");
+    dist_exe.addPackagePath("lib", "lib/index.zig");
+    dist_exe.addObject(glad);
+
+    dist_exe.setBuildMode(mode);
+    if (windows) {
+        dist_exe.setTarget(builtin.Arch.x86_64, builtin.Os.windows, builtin.Environ.gnu);
+    }
+
+    dist_exe.linkSystemLibrary("c");
+    dist_exe.linkSystemLibrary("m");
+    dist_exe.linkSystemLibrary("z");
+    dist_exe.linkSystemLibrary("dl");
+    dist_exe.linkSystemLibrary("glfw");
+    dist_exe.linkSystemLibrary("png");
+    dist_exe.linkSystemLibrary("soundio");
+    b.installArtifact(dist_exe);
+
+    const dist_command = b.addCommand(".", b.env_map, [][]const u8{dist_exe.getOutputPath()});
+    dist_command.step.dependOn(&glad.step);
+    dist_command.step.dependOn(&dist_exe.step);
+
 
     //
     // Commands

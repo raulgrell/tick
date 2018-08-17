@@ -11,3 +11,6 @@ pub fn SmallVector(comptime T: type, comptime S: size)type {
     }
 }
 
+pub fn SmallString() type {
+    
+}

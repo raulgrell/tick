@@ -260,7 +260,5 @@ test "SortedArray" {
     { var i: usize = 0; while (i < 10) : (i += 1) {
         assert(list.data[i] == i32(i + 1));
     }}
-
-
 }
 

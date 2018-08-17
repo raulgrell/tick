@@ -1,3 +1,9 @@
-zig-cache/
-todo/
 .vscode/
+todo/
+
+// Zig artifacts
+zig-cache/
+
+// Windows artifacts
+*.exe
+*.pdb

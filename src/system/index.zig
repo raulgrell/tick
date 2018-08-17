@@ -37,7 +37,7 @@ pub const VFS = struct {
 
     pub fn resolve(path: []const u8) ![]const u8 {
         if (path[0] != '/') {
-            return if (c.fileExists(path)) path else error.NotFound;
+            return if (io.fileExists(path)) path else error.NotFound;
         }
 
         var dirs = mem.split(path, '/');
@@ -49,7 +49,7 @@ pub const VFS = struct {
 
         for (mount_points.get(virtualDir)) | physical_path | {
             const path = physical_path + rem;
-            if (c.fileExists(path)) {
+            if (io.fileExists(path)) {
                 physical_path = path;
                 return true;
             }
@@ -58,19 +58,19 @@ pub const VFS = struct {
     }
 
     pub fn readFile(path: []const u8) ![]u8 {
-       return if (resolve(path)) | physical_path | io.readFile(physical_path) else error.NotFound;
+        return io.readFile(try resolve(path));
     }
 
     pub fn readTextFile(path: []const u8) ![]const u8 {
-        return if (resolve(path)) | physical_path | io.readTextFile(physical_path) else error.NotFound;
+        return io.readFile(try resolve(path));
     }
 
     pub fn writeFile(path: []const u8, buffer: []u8) !void {
-        return if (resolve(path)) | physical_path | io.writeFile(physical_path, buffer) else error.NotFound;
+        return io.writeFile(try resolve(path), buffer);
     }
 
     pub fn writeTextFile(path: []const u8, text: []const u8) !void {
-        return if (resolve(path)) | physical_path | io.writeTextFile(physical_path, text) else error.NotFound;
+        return io.writeTextFile(try resolve(path), text);
     }
 };
 
