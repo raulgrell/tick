@@ -1,9 +1,9 @@
 .vscode/
 todo/
 
-// Zig artifacts
+# Zig artifacts
 zig-cache/
 
-// Windows artifacts
+# Windows artifacts
 *.exe
 *.pdb
