@@ -1,10 +1,8 @@
 const std = @import("std");
-const allocator = std.debug.global_allocator;
+const allocator = std.heap.c_allocator;
 
 const VM = @import("./vm.zig").VM;
 const REPL = @import("./repl.zig").REPL;
-
-const DEBUG_TRACE = true;
 
 const example_file = @embedFile("../example/script.zag");
 
@@ -17,7 +15,7 @@ pub fn pass(args: []const []const u8) i32 {
 
 pub fn main() error!void {
     var args_it = std.os.args();
-    var args_list = std.ArrayList([]const u8).init(std.debug.global_allocator);
+    var args_list = std.ArrayList([]const u8).init(allocator);
     defer args_list.deinit();
 
     while (args_it.next(allocator)) | arg | {

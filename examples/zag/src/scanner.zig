@@ -1,6 +1,35 @@
 const std = @import("std");
 
-const keywords = @import("./grammar.zig").keywords;
+const Keyword = struct {
+    token_type: TokenType,
+    name: []const u8
+};
+
+fn keyword(token_type: TokenType, name: []const u8) Keyword {
+    return Keyword {
+        .token_type = token_type,
+        .name = name
+    };
+}
+
+pub const keywords = []Keyword {
+    keyword(TokenType.And, "and"),
+    keyword(TokenType.Class, "class"),
+    keyword(TokenType.Else, "else"),
+    keyword(TokenType.False, "false"),
+    keyword(TokenType.Fn, "fn"),
+    keyword(TokenType.For, "for"),
+    keyword(TokenType.If, "if"),
+    keyword(TokenType.Nil, "nil"),
+    keyword(TokenType.Or, "or"),
+    keyword(TokenType.Print, "print"),
+    keyword(TokenType.Return, "return"),
+    keyword(TokenType.Super, "super"),
+    keyword(TokenType.This, "this"),
+    keyword(TokenType.True, "true"),
+    keyword(TokenType.Var, "var"),
+    keyword(TokenType.While, "while")
+};
 
 pub const Token = struct {
     token_type: TokenType,
@@ -188,19 +217,16 @@ pub const Scanner = struct {
 
     fn readNumber(self: *Scanner) !Token {
         while (isDigit(self.peek())) _ = self.advance();
-        // Look for a fractional part.
         if (self.peek() == '.' and isDigit(self.peekNext())) {
-            // Consume the "."
+            // Consume the "." and the fractional part
             _ = self.advance();
             while (isDigit(self.peek())) _ = self.advance();
-            return self.makeLiteral(TokenType.Number, self.start[0..self.current]);
         }
-
-        return error.InvalidNumber;
+        return self.makeLiteral(TokenType.Number, try readDouble(self.start[0..self.current]));
     }
 
-    fn readDouble(number: []const u8) f64 {
-        return 42;
+    fn readDouble(number: []const u8) ![]const u8 {
+        return if (number.len > 0) number else error.InvalidNumber;
     }
 
     fn printError(line: usize, message: []const u8) void {

@@ -7,7 +7,7 @@ const TokenType = @import("./scanner.zig").TokenType;
 const Scanner = @import("./scanner.zig").Scanner;
 const Value = @import("./value.zig").Value;
 
-const Parser = struct {
+pub const Parser = struct {
     current: Token,
     previous: Token,
     hadError: bool,
@@ -49,44 +49,44 @@ const Parser = struct {
     }
 };
 
+pub const ParseRule = struct {
+    prefix: ?ParseFn,
+    infix: ?ParseFn,
+    precedence: Precedence
+};
+
+pub const ParseFn = fn(self: *Compiler) void;
+
+pub const Precedence = packed enum(u8) {
+    None,
+    Assignment,  // =
+    Or,          // or
+    And,         // and
+    Equality,    // == !=
+    Comparison,  // < > <= >=
+    Term,        // + -
+    Factor,      // * /
+    Unary,       // ! - +
+    Call,        // . () []
+    Primary,
+
+    fn next(current: Precedence) Precedence {
+        return @intToEnum(Precedence, @enumToInt(current) + 1);
+    }
+};
+
+fn makeRule(_: TokenType, prefix: ?ParseFn, infix: ?ParseFn, precedence: Precedence) ParseRule {
+    return ParseRule {
+        .prefix = prefix,
+        .infix = infix,
+        .precedence = precedence
+    };
+}
+
 pub const Compiler = struct {
     parser: Parser,
     scanner: Scanner,
     current_chunk: *Chunk,
-
-    const ParseRule = struct {
-        prefix: ?ParseFn,
-        infix: ?ParseFn,
-        precedence: Precedence
-    };
-
-    const Precedence = packed enum(u8) {
-        None,
-        Assignment,  // =
-        Or,          // or
-        And,         // and
-        Equality,    // == !=
-        Comparison,  // < > <= >=
-        Term,        // + -
-        Factor,      // * /
-        Unary,       // ! - +
-        Call,        // . () []
-        Primary,
-
-        fn next(current: Precedence) Precedence {
-            return @intToEnum(Precedence, @enumToInt(current) + 1);
-        }
-    };
-
-    fn makeRule(comptime _: TokenType, prefix: ?ParseFn, infix: ?ParseFn, precedence: Precedence) ParseRule {
-        return ParseRule {
-            .prefix = prefix,
-            .infix = infix,
-            .precedence = precedence
-        };
-    }
-
-    const ParseFn = fn(self: *Compiler) void;
 
     const rules = []ParseRule {
         makeRule(TokenType.LeftParen,    grouping, null,   Precedence.Call),
@@ -115,7 +115,7 @@ pub const Compiler = struct {
         makeRule(TokenType.Class,        null,     null,   Precedence.None),
         makeRule(TokenType.Else,         null,     null,   Precedence.None),
         makeRule(TokenType.False,        literal,  null,   Precedence.None),
-        makeRule(TokenType.Fn,          null,     null,   Precedence.None),
+        makeRule(TokenType.Fn,           null,     null,   Precedence.None),
         makeRule(TokenType.For,          null,     null,   Precedence.None),
         makeRule(TokenType.If,           null,     null,   Precedence.None),
         makeRule(TokenType.Nil,          literal,  null,   Precedence.None),
@@ -173,7 +173,7 @@ pub const Compiler = struct {
         self.parser.errorAtCurrent(message);
     }
 
-    fn currentChunk(self: *Compiler) *Chunk {
+    fn currentChunk(self: *const Compiler) *Chunk {
         return self.current_chunk;
     }
 
@@ -272,7 +272,7 @@ pub const Compiler = struct {
     }
 
     fn emitByte(self: *Compiler, byte: u8) void {
-        Chunk.write(self.currentChunk(), byte, self.parser.previous.line) catch unreachable;
+        self.currentChunk().write(byte, self.parser.previous.line) catch unreachable;
     }
 
     fn emitBytes(self: *Compiler, byte1: u8, byte2: u8) void {

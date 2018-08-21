@@ -9,7 +9,6 @@ const TokenRule = struct {
     token_type: TokenType,
     name: []const u8,
     rule: ParseRule,
- 
 };
 
 fn Symbol() ParseRule {
