@@ -1,7 +1,7 @@
 const assert = @import("std").debug.assert;
 const mem = @import("std").mem;
 
-pub fn AvlTree(comptime K: type, comptime T: type)type {
+pub fn AvlTree(comptime K: type, comptime T: type) type {
     struct {
         allocator: *Allocator,
         root_node: ?*Node,
@@ -9,8 +9,6 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
         length: usize,
         
         const Self = this;
-        const EqualityFunc = fn(a: T, b: T) bool;
-        const ComparisonFunc = fn(a: T, b: T) isize;
 
         const Side = enum {
             Left,
@@ -33,7 +31,7 @@ pub fn AvlTree(comptime K: type, comptime T: type)type {
             }
         };
 
-        pub fn init(compare_func: ComparisonFunc, allocator: *Allocator)Self {
+        pub fn init(compare_func: ComparisonFunc, allocator: *Allocator) Self {
             Self {
                 .allocator = allocator,
                 .root_node = null,

@@ -24,7 +24,7 @@ pub fn Queue(comptime T: type)type{
         }
 
         pub fn deinit(self: *Self) void {
-            while (!is_empty(self)) pop_head(self);
+            while (self.head != null) pop_head(self);
         }
 
         pub fn push_head(self: *Self, data: T) !void {
@@ -34,41 +34,11 @@ pub fn Queue(comptime T: type)type{
             new_entry.next = self.head;
 
             if (self.head) | h | {
-                // New entry replaces current head
                 h.prev = new_entry;
                 self.head = new_entry;
             } else {
-                // Previously empty, only one element
                 self.head = new_entry;
                 self.tail = new_entry;
-            }
-        }
-
-        pub fn pop_head(self: *Self) ?T {
-            if (is_empty(self)) return null;
-
-            // Unlink the first entry from the head of the queue
-            const entry = self.head orelse return null;
-            const result = entry.data;
-
-            self.head = entry.next;
-            if (self.head) | h | {
-                // New head has no previous entry
-                h.prev = null;
-            } else {
-                // Removed last element
-                self.tail = null;
-            }
-
-            self.allocator.destroy(entry);
-            return result;
-        }
-
-        pub fn peek_head(self: *Self) ?T {
-            if (self.head) | h | {
-                return h.data;
-            } else {
-                return null;
             }
         }
 
@@ -82,38 +52,48 @@ pub fn Queue(comptime T: type)type{
                 t.next = new_entry;
                 self.tail = new_entry;
             } else {
-                // Previously empty, contains only new_entry
                 self.head = new_entry;
                 self.tail = new_entry;
             }
         }
 
-        pub fn pop_tail(self: *Self) ?T {
-            if (self.tail) | t | {
-                const result = t.data;
-                defer self.allocator.destroy(t);
-
-                if (t.prev) | p | {
-                    p.next = null;
-                    self.tail = p;
-                } else {
-                    self.head = null;
-                    self.tail = null;
-                }
-
-                return result;
+        pub fn pop_head(self: *Self) ?T {
+            const entry = self.head orelse return null;
+            const result = entry.data;
+            self.head = entry.next;
+            if (self.head) | h | {
+                h.prev = null;
             } else {
-                return null;
+                self.tail = null;
             }
 
+            self.allocator.destroy(entry);
+            return result;
+        }
+
+        pub fn pop_tail(self: *Self) ?T {
+            var t = self.tail orelse return null;
+            defer self.allocator.destroy(t);
+
+            const result = t.data;
+
+            if (t.prev) | p | {
+                p.next = null;
+                self.tail = p;
+            } else {
+                self.head = null;
+                self.tail = null;
+            }
+
+            return result;
         }
 
         pub fn peek_tail(self: *Self) ?T {
-            if (self.tail) | t | {
-                return t.data;
-            } else {
-                return null;
-            }
+            return if (self.tail) | t |  t.data else null;
+        }
+
+        pub fn peek_head(self: *Self) ?T {
+            return if (self.head) | h | h.data else null;
         }
 
         pub fn is_empty(self: *Self) bool {

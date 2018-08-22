@@ -14,8 +14,6 @@ pub fn BinomialHeap(comptime T: type, comptime heap_type: HeapType) type {
         roots: []BinomialTree,
         
         const Self = this;
-        const EqualityFunc = fn(a: T, b: T)bool;
-        const ComparisonFunc = fn(a: T, b: T)isize;
 
         const BinomialTree = struct {
             value: T,

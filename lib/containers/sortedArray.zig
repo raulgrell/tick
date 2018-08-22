@@ -3,22 +3,20 @@ use @import("index.zig");
 const assert = @import("std").debug.assert;
 const mem = @import("std").mem;
 
-pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc) type {
+
+
+pub fn SortedArray(comptime T: type, comptime eql_fn: EqualityFunc, comptime cmp_fn: ComparisonFunc) type {
     struct {
         data: []T,
         length: usize,
-        eqlFn: EqualityFunc,
-        cmpFn: ComparisonFunc,
         allocator: *Allocator,
 
         const Self = this;
 
         pub fn init(allocator: *Allocator) Self {
             Self {
-                .data = []T {},
+                .data = []T{},
                 .length = 0,
-                .eqlFn = eqlFn,
-                .cmpFn = cmpFn,
                 .allocator = allocator,
             }
         }
@@ -36,11 +34,11 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             };
         }
 
-        pub fn toSlice(self: *const Self)[]T {
+        pub fn toSlice(self: *const Self) []T {
             return self.data[0..self.length];
         }
 
-        pub fn toSliceConst(self: *const Self)[]const T {
+        pub fn toSliceConst(self: *const Self) []const T {
             return self.data[0..self.length];
         }
 
@@ -51,14 +49,9 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             *self = init(allocator);
             return result;
         }
-
         
         pub fn get(self: *Self, index: usize) ?*T {
-            return if ( index < self.length ) {
-                self.data[index]
-            } else {
-                null
-            }
+            return if ( index < self.length ) self.data[index] else null;
         }
 
         pub fn at(l: *const Self, n: usize) T {
@@ -76,22 +69,17 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
         }
 
         pub fn popOrNull(self: *Self) ?T {
-            if (self.len == 0)
-                return null;
-            return self.pop();
+            return if (self.len == 0) self.pop() else null;
         }
 
         pub fn push(self: *Self, data: T) !void {
-            var left  = usize(0);
-            var right = usize(self.length);
             var index = usize(0);
-
-            // Binary search
-            right = if (right > 1) right else 0;
+            var left  = usize(0);
+            var right = if (self.length > 1) self.length else 0;
             while (left != right) {
                 index = (left + right) / 2;
 
-                const order = self.cmpFn(data, self.data[index]);
+                const order = cmp_fn(data, self.data[index]);
                 if (order < 0) {
                     right = index;
                 } else if (order > 0) {
@@ -102,7 +90,7 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             }
 
             // Whether the item should be  before or after the index
-            if (self.length > 0 and self.cmpFn(data, self.data[index]) > 0) {
+            if (self.length > 0 and cmp_fn(data, self.data[index]) > 0) {
                 index += 1;
             }
 
@@ -112,18 +100,15 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
                 self.data = try self.allocator.realloc(T, self.data, newsize)
             }
 
-            // move all other elements
-            _ = memory.move(T,
+            std.mem.copyBackwards(T,
                     self.data[index + 1 .. self.length + 1],
                     self.data[index .. self.length]);
 
-            // push entry
             self.data[index] = data;
             self.length += 1;
         }
 
-        pub fn indexOf(self: *Self, data: T) %usize {
-            // Binary search
+        pub fn indexOf(self: *Self, data: T) !usize {
             var left: usize = 0;
             var right = self.length;
             var index: usize = 0;
@@ -133,7 +118,7 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             while (left != right) {
                 index = (left + right) / 2;
 
-                const order = self.cmpFn(data, self.data[index]);
+                const order = cmp_fn(data, self.data[index]);
                 if (order < 0) {
                     right = index;
                 } else if (order > 0) {
@@ -144,7 +129,7 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
                     right = last_index(self, data, index, right);
                     index = left;
                     while (index <= right) : (index += 1) {
-                        if (self.eqlFn(data, self.data[index])) return index;
+                        if (self.eql_fn(data, self.data[index])) return index;
                     }
                     return error.NotFound;
                 }
@@ -201,8 +186,7 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
                 return;
             }
 
-            // move entries back
-            _ = memory.move(T,
+            std.mem.copy(T,
                     self.data[index - length .. self.length - length],
                     self.data[index .. self.length]);
 
@@ -215,7 +199,7 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             var right = right_index;
             while (left < right) {
                 index = (left + right) / 2;
-                const order = self.cmpFn(data, self.data[index]);
+                const order = cmp_fn(data, self.data[index]);
                 if (order > 0) {
                     left = index + 1;
                 } else {
@@ -231,7 +215,7 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
             var right = right_index;
             while (left < right) {
                 index = (left + right) / 2;
-                const order = self.cmpFn(data, self.data[index]);
+                const order = cmp_fn(data, self.data[index]);
                 if (order <= 0) {
                     left = index + 1;
                 } else {
@@ -246,7 +230,7 @@ pub fn SortedArray(comptime T: type, eqlFn: EqualityFunc, cmpFn: ComparisonFunc)
 const c = @import("../c.zig");
 
 test "SortedArray" {
-    var list = SortedArray(i32).init(eql, comp, &c.mem.allocator);
+    var list = SortedArray(i32, eql, comp).init(&c.mem.allocator);
     defer list.deinit();
 
     { var i: usize = 0; while (i < 10) : (i += 2) {

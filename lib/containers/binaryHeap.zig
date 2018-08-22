@@ -16,7 +16,6 @@ pub fn BinaryHeap(comptime T: type, comptime heap_type: HeapType) type {
         allocator: *Allocator,
 
         const Self = this;
-        const ComparisonFunc = fn(a: T, b: T) isize;
         
         pub fn init(heap_type: HeapType, comparison_func: ComparisonFunc, allocator: *Allocator) Self {
             Self {

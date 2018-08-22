@@ -34,10 +34,8 @@ pub fn BloomFilter(comptime T: type)type {
             const hash = self.hash_func(value);
 
             { var i = usize(0); while(i < self.num_functions) : ( i += 1 ) {
-                // Generate a unique hash
                 const subhash = hash ^ salts[i];
                 const index = subhash % self.table_size;
-                // Insert into table.
                 const byte_index = index / 8;
                 const bit_index = index % 8;
                 const b = (u8) (1 << (bit_index));
@@ -45,24 +43,20 @@ pub fn BloomFilter(comptime T: type)type {
             }}
         }
 
-        pub fn query(self: *Self, value: T)bool {
+        pub fn query(self: *Self, value: T) bool {
             const hash = self.hash_func(value);
-            // Multiple XORs with salts
-            { var i = usize(0); while(i<self.num_functions) : ( i += 1 ) {
-                // Generate a unique hash
+            var i = usize(0);
+            while (i < self.num_functions) : ( i += 1 ) {
                 const subhash = hash ^ salts[i];
                 const index = subhash % self.table_size;
-                // Insert into table.
                 const byte_index = index / 8;
                 const bit_index = index % 8;
                 const b = self.table[byte_index];
                 const bit = 1 << (bit_index);
-                // If bit not set, value not present.
                 if ((b & bit) == 0) {
                     return false;
                 }
-            }}
-            // All bits were set, value may be present
+            }
             return true;
         }
 
