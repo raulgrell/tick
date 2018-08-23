@@ -51,7 +51,7 @@ const VM = struct {
 
   pub fn collect(self: *VM) void {
     const num_objects = self.num_objects;
-    for (self.stack.toSliceConst()) |obj| mark(obj);
+    for (self.stack.toSlice()) |obj| mark(obj);
     self.sweep();
     self.max_objects = self.num_objects * 2;
     std.debug.warn("\nCollected {} objects, {} remaining.\n", num_objects - self.num_objects, self.num_objects);
@@ -112,8 +112,9 @@ const VM = struct {
     var object = &self.first_object;
     while (object.*) |obj| {
       if (!obj.marked) {
-        object.* = obj.next;
-        self.allocator.destroy(obj);
+        const unreached = obj;
+        object.* = unreached.next;
+        self.allocator.destroy(unreached);
         self.num_objects -= 1;
       } else {
         obj.marked = false;

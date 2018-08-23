@@ -5,6 +5,14 @@ const c = @import("c.zig");
 
 pub const is_on = if (builtin.mode == builtin.Mode.ReleaseFast) c.GL_FALSE else c.GL_TRUE;
 
+
+pub fn assert(predicate: bool, msg: []const u8) void {
+    if (!ok) {
+        io.warn("{}\n", msg) catch unreachable;
+        unreachable;
+    }
+}
+
 pub fn assertNoErrorGL() void {
     if (builtin.mode == builtin.Mode.ReleaseFast) {
         var err = c.glGetError();

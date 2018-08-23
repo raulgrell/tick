@@ -22,12 +22,23 @@ pub const Chunk = struct {
         self.constants.deinit();
     }
 
+    pub fn destroy(self: *Chunk) void {
+        self.code.len = 0;
+        self.constants.len = 0;
+        self.lines.len = 0;
+    }
+
+    pub fn addConstant(self: *Chunk, value: Value) u8 {
+        self.constants.append(value) catch unreachable;
+        return @intCast(u8, self.constants.len - 1);
+    }
+
     pub fn write(self: *Chunk, byte: u8, line: usize) !void {
         try self.code.append(byte);
         try self.lines.append(line);
     }
 
-    pub fn disassemble(chunk: *Chunk, name: []const u8) !void {
+    pub fn disassemble(chunk: *Chunk, name: []const u8) void {
         std.debug.warn("== {} ==\n", name);
         var i = usize(0);
         while (i < chunk.code.len) {
@@ -35,7 +46,7 @@ pub const Chunk = struct {
         }
     }
 
-   pub fn disassembleInstruction(chunk: *Chunk, offset: usize) usize {
+   fn disassembleInstruction(chunk: *Chunk, offset: usize) usize {
         std.debug.warn("{} | ", offset);
 
         const instruction = chunk.code.at(offset);
@@ -59,16 +70,6 @@ pub const Chunk = struct {
                 return offset + 1;
             }
         }
-    }
-
-    pub fn addConstant(self: *Chunk, value: Value) u8 {
-        self.constants.append(value) catch unreachable;
-        return @intCast(u8, self.constants.len - 1);
-    }
-
-    pub fn destroy(self: *Chunk) void {
-        self.code.len = 0;
-        self.constants.len = 0;
     }
 
     fn constantInstruction(name: []const u8, chunk: *Chunk, offset: usize) usize {

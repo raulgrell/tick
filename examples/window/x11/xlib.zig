@@ -1,3 +1,17 @@
+// missing symbols
+
+fn XDestroyImage(ximage: *XImage) void {
+    _ = ximage.f.destroy_image.?(ximage);
+}
+
+pub const KEY_FUNCTION = 0xFF;
+pub const KEY_ESC = 0x1B;
+pub const CWBackPixmap: u32 = 1 << 0; 
+pub const CWBackPixel: u32 = 1 << 1;
+pub const CWBorderPixmap: u32 = 1 << 2;
+pub const CWBorderPixel: u32 = 1 << 3;
+pub const CWBackingStore: u32 = 1 << 6;
+
 // alias so that at the call site it can look
 // like X.Foo() instead of X.XFoo()
 
@@ -5,30 +19,52 @@ pub const AllocClassHint = XAllocClassHint;
 pub const AllocSizeHints = XAllocSizeHints;
 pub const AllocWMHints = XAllocWMHints;
 pub const BlackPixel = XBlackPixel;
+pub const ClearWindow = XClearWindow;
+pub const CloseDisplay = XCloseDisplay;
+pub const CreateGC = XCreateGC;
+pub const CreateImage = XCreateImage;
+pub const CreateWindow = XCreateWindow;
 pub const CreateSimpleWindow = XCreateSimpleWindow;
 pub const DefaultScreen = XDefaultScreen;
+pub const DefaultDepth = XDefaultDepth;
+pub const DefaultGC = XDefaultGC;
+pub const DefaultRootWindow = XDefaultRootWindow;
+pub const DefaultVisual = XDefaultVisual;
+pub const DestroyImage = XDestroyImage;
+pub const DestroyWindow = XDestroyWindow;
 pub const DisplayHeight = XDisplayHeight;
 pub const DisplayWidth = XDisplayWidth;
-pub const OpenDisplay = XOpenDisplay;
-pub const RootWindow = XRootWindow;
-pub const StringListToTextProperty = XStringListToTextProperty;
-pub const TextProperty = XTextProperty;
-pub const CloseDisplay = XCloseDisplay;
-pub const WhitePixel = XWhitePixel;
-pub const SetWMProperties = XSetWMProperties;
-pub const SelectInput = XSelectInput;
-pub const LoadQueryFont = XLoadQueryFont;
+pub const DrawString = XDrawString;
+pub const Event = XEvent;
+pub const Flush = XFlush;
+pub const Free = XFree;
+pub const FreeGC = XFreeGC;
 pub const GCValues = XGCValues;
-pub const CreateGC = XCreateGC;
+pub const Image = XImage;
+pub const ListPixmapFormats = XListPixmapFormats;
+pub const LoadQueryFont = XLoadQueryFont;
+pub const LookupKeysym = XLookupKeysym;
+pub const MapWindow = XMapWindow;
+pub const MapRaised = XMapRaised;
+pub const NextEvent = XNextEvent;
+pub const OpenDisplay = XOpenDisplay;
+pub const Pending = XPending;
+pub const PutImage = XPutImage;
+pub const PixmapFormatValues = XPixmapFormatValues;
+pub const RootWindow = XRootWindow;
+pub const SelectInput = XSelectInput;
 pub const SetFont = XSetFont;
 pub const SetForeground = XSetForeground;
-pub const MapWindow = XMapWindow;
-pub const Event = XEvent;
-pub const NextEvent = XNextEvent;
+pub const SetWMProperties = XSetWMProperties;
+pub const SetWindowAttributes = XSetWindowAttributes;
+pub const SetWMNormalHints = XSetWMNormalHints;
+pub const SizeHints = XSizeHints;
+pub const StoreName = XStoreName;
+pub const StringListToTextProperty = XStringListToTextProperty;
+pub const TextProperty = XTextProperty;
 pub const TextWidth = XTextWidth;
-pub const DrawString = XDrawString;
-pub const FreeGC = XFreeGC;
 pub const UnloadFont = XUnloadFont;
+pub const WhitePixel = XWhitePixel;
 
 pub const PPosition = 1 << 2;
 pub const PSize = 1 << 3;
@@ -237,7 +273,7 @@ pub const XWindowAttributes = extern struct {
     your_event_mask: c_long,
     do_not_propagate_mask: c_long,
     override_redirect: c_int,
-    screen: ?[*]Screen,
+    screen: ?*Screen,
 };
 pub const XHostAddress = extern struct {
     family: c_int,
@@ -251,12 +287,12 @@ pub const XServerInterpretedAddress = extern struct {
     value: ?[*]u8,
 };
 pub const struct_funcs = extern struct {
-    create_image: ?extern fn (?*struct__XDisplay, ?[*]Visual, c_uint, c_int, c_int, ?[*]u8, c_uint, c_uint, c_int, c_int) ?[*]struct__XImage,
-    destroy_image: ?extern fn (?[*]struct__XImage) c_int,
-    get_pixel: ?extern fn (?[*]struct__XImage, c_int, c_int) c_ulong,
-    put_pixel: ?extern fn (?[*]struct__XImage, c_int, c_int, c_ulong) c_int,
-    sub_image: ?extern fn (?[*]struct__XImage, c_int, c_int, c_uint, c_uint) ?[*]struct__XImage,
-    add_pixel: ?extern fn (?[*]struct__XImage, c_long) c_int,
+    create_image: ?extern fn (?*struct__XDisplay, ?[*]Visual, c_uint, c_int, c_int, ?[*]u8, c_uint, c_uint, c_int, c_int) ?*struct__XImage,
+    destroy_image: ?extern fn (?*struct__XImage) c_int,
+    get_pixel: ?extern fn (?*struct__XImage, c_int, c_int) c_ulong,
+    put_pixel: ?extern fn (?*struct__XImage, c_int, c_int, c_ulong) c_int,
+    sub_image: ?extern fn (?*struct__XImage, c_int, c_int, c_uint, c_uint) ?*struct__XImage,
+    add_pixel: ?extern fn (?*struct__XImage, c_long) c_int,
 };
 pub const struct__XImage = extern struct {
     width: c_int,
@@ -368,7 +404,7 @@ pub const _XPrivDisplay = ?[*]extern struct {
     bitmap_pad: c_int,
     bitmap_bit_order: c_int,
     nformats: c_int,
-    pixmap_format: ?[*]ScreenFormat,
+    pixmap_format: ?*ScreenFormat,
     private8: c_int,
     release: c_int,
     private9: ?*struct__XPrivate,
@@ -1056,11 +1092,11 @@ pub extern "X11" fn XDeleteModifiermapEntry(arg0: ?[*]XModifierKeymap, arg1: Key
 pub extern "X11" fn XGetModifierMapping(arg0: ?*Display) ?[*]XModifierKeymap;
 pub extern "X11" fn XInsertModifiermapEntry(arg0: ?[*]XModifierKeymap, arg1: KeyCode, arg2: c_int) ?[*]XModifierKeymap;
 pub extern "X11" fn XNewModifiermap(arg0: c_int) ?[*]XModifierKeymap;
-pub extern "X11" fn XCreateImage(arg0: ?*Display, arg1: ?[*]Visual, arg2: c_uint, arg3: c_int, arg4: c_int, arg5: ?[*]u8, arg6: c_uint, arg7: c_uint, arg8: c_int, arg9: c_int) ?[*]XImage;
-pub extern "X11" fn XInitImage(arg0: ?[*]XImage) c_int;
-pub extern "X11" fn XGetImage(arg0: ?*Display, arg1: Drawable, arg2: c_int, arg3: c_int, arg4: c_uint, arg5: c_uint, arg6: c_ulong, arg7: c_int) ?[*]XImage;
-pub extern "X11" fn XGetSubImage(arg0: ?*Display, arg1: Drawable, arg2: c_int, arg3: c_int, arg4: c_uint, arg5: c_uint, arg6: c_ulong, arg7: c_int, arg8: ?[*]XImage, arg9: c_int, arg10: c_int) ?[*]XImage;
-pub extern "X11" fn XOpenDisplay(arg0: ?[*]const u8) ?*Display;
+pub extern "X11" fn XCreateImage(arg0: ?*Display, arg1: ?*Visual, arg2: c_uint, arg3: c_int, arg4: c_int, arg5: ?[*]u8, arg6: c_uint, arg7: c_uint, arg8: c_int, arg9: c_int) ?*XImage;
+pub extern "X11" fn XInitImage(arg0: ?*XImage) c_int;
+pub extern "X11" fn XGetImage(arg0: ?*Display, arg1: Drawable, arg2: c_int, arg3: c_int, arg4: c_uint, arg5: c_uint, arg6: c_ulong, arg7: c_int) ?*XImage;
+pub extern "X11" fn XGetSubImage(arg0: ?*Display, arg1: Drawable, arg2: c_int, arg3: c_int, arg4: c_uint, arg5: c_uint, arg6: c_ulong, arg7: c_int, arg8: ?*XImage, arg9: c_int, arg10: c_int) ?*XImage;
+pub extern "X11" fn XOpenDisplay(arg0: ?*const u8) ?*Display;
 pub extern "X11" fn XrmInitialize() void;
 pub extern "X11" fn XFetchBytes(arg0: ?*Display, arg1: ?[*]c_int) ?[*]u8;
 pub extern "X11" fn XFetchBuffer(arg0: ?*Display, arg1: ?[*]c_int, arg2: c_int) ?[*]u8;
@@ -1087,7 +1123,7 @@ pub extern "X11" fn XCreateBitmapFromData(arg0: ?*Display, arg1: Drawable, arg2:
 pub extern "X11" fn XCreatePixmapFromBitmapData(arg0: ?*Display, arg1: Drawable, arg2: ?[*]u8, arg3: c_uint, arg4: c_uint, arg5: c_ulong, arg6: c_ulong, arg7: c_uint) Pixmap;
 pub extern "X11" fn XCreateSimpleWindow(arg0: ?*Display, arg1: Window, arg2: c_int, arg3: c_int, arg4: c_uint, arg5: c_uint, arg6: c_uint, arg7: c_ulong, arg8: c_ulong) Window;
 pub extern "X11" fn XGetSelectionOwner(arg0: ?*Display, arg1: Atom) Window;
-pub extern "X11" fn XCreateWindow(arg0: ?*Display, arg1: Window, arg2: c_int, arg3: c_int, arg4: c_uint, arg5: c_uint, arg6: c_uint, arg7: c_int, arg8: c_uint, arg9: ?[*]Visual, arg10: c_ulong, arg11: ?[*]XSetWindowAttributes) Window;
+pub extern "X11" fn XCreateWindow(arg0: ?*Display, arg1: Window, arg2: c_int, arg3: c_int, arg4: c_uint, arg5: c_uint, arg6: c_uint, arg7: c_int, arg8: c_uint, arg9: ?*Visual, arg10: c_ulong, arg11: ?*XSetWindowAttributes) Window;
 pub extern "X11" fn XListInstalledColormaps(arg0: ?*Display, arg1: Window, arg2: ?[*]c_int) ?[*]Colormap;
 pub extern "X11" fn XListFonts(arg0: ?*Display, arg1: ?[*]const u8, arg2: c_int, arg3: ?[*]c_int) ?[*](?[*]u8);
 pub extern "X11" fn XListFontsWithInfo(arg0: ?*Display, arg1: ?[*]const u8, arg2: c_int, arg3: ?[*]c_int, arg4: ?[*](?[*]XFontStruct)) ?[*](?[*]u8);
@@ -1096,15 +1132,15 @@ pub extern "X11" fn XListExtensions(arg0: ?*Display, arg1: ?[*]c_int) ?[*](?[*]u
 pub extern "X11" fn XListProperties(arg0: ?*Display, arg1: Window, arg2: ?[*]c_int) ?[*]Atom;
 pub extern "X11" fn XListHosts(arg0: ?*Display, arg1: ?[*]c_int, arg2: ?[*]c_int) ?[*]XHostAddress;
 pub extern "X11" fn XKeycodeToKeysym(arg0: ?*Display, arg1: KeyCode, arg2: c_int) KeySym;
-pub extern "X11" fn XLookupKeysym(arg0: ?[*]XKeyEvent, arg1: c_int) KeySym;
+pub extern "X11" fn XLookupKeysym(arg0: ?*XKeyEvent, arg1: c_int) KeySym;
 pub extern "X11" fn XGetKeyboardMapping(arg0: ?*Display, arg1: KeyCode, arg2: c_int, arg3: ?[*]c_int) ?[*]KeySym;
 pub extern "X11" fn XStringToKeysym(arg0: ?[*]const u8) KeySym;
 pub extern "X11" fn XMaxRequestSize(arg0: ?*Display) c_long;
 pub extern "X11" fn XExtendedMaxRequestSize(arg0: ?*Display) c_long;
 pub extern "X11" fn XResourceManagerString(arg0: ?*Display) ?[*]u8;
-pub extern "X11" fn XScreenResourceString(arg0: ?[*]Screen) ?[*]u8;
+pub extern "X11" fn XScreenResourceString(arg0: ?*Screen) ?[*]u8;
 pub extern "X11" fn XDisplayMotionBufferSize(arg0: ?*Display) c_ulong;
-pub extern "X11" fn XVisualIDFromVisual(arg0: ?[*]Visual) VisualID;
+pub extern "X11" fn XVisualIDFromVisual(arg0: ?*Visual) VisualID;
 pub extern "X11" fn XInitThreads() c_int;
 pub extern "X11" fn XLockDisplay(arg0: ?*Display) void;
 pub extern "X11" fn XUnlockDisplay(arg0: ?*Display) void;
@@ -1114,32 +1150,32 @@ pub extern "X11" fn XFindOnExtensionList(arg0: ?[*](?[*]XExtData), arg1: c_int) 
 pub extern "X11" fn XEHeadOfExtensionList(arg0: XEDataObject) ?[*](?[*]XExtData);
 pub extern "X11" fn XRootWindow(arg0: ?*Display, arg1: c_int) Window;
 pub extern "X11" fn XDefaultRootWindow(arg0: ?*Display) Window;
-pub extern "X11" fn XRootWindowOfScreen(arg0: ?[*]Screen) Window;
-pub extern "X11" fn XDefaultVisual(arg0: ?*Display, arg1: c_int) ?[*]Visual;
-pub extern "X11" fn XDefaultVisualOfScreen(arg0: ?[*]Screen) ?[*]Visual;
+pub extern "X11" fn XRootWindowOfScreen(arg0: ?*Screen) Window;
+pub extern "X11" fn XDefaultVisual(arg0: ?*Display, arg1: c_int) ?*Visual;
+pub extern "X11" fn XDefaultVisualOfScreen(arg0: ?*Screen) ?*Visual;
 pub extern "X11" fn XDefaultGC(arg0: ?*Display, arg1: c_int) GC;
-pub extern "X11" fn XDefaultGCOfScreen(arg0: ?[*]Screen) GC;
+pub extern "X11" fn XDefaultGCOfScreen(arg0: ?*Screen) GC;
 pub extern "X11" fn XBlackPixel(arg0: ?*Display, arg1: c_int) c_ulong;
 pub extern "X11" fn XWhitePixel(arg0: ?*Display, arg1: c_int) c_ulong;
 pub extern "X11" fn XAllPlanes() c_ulong;
-pub extern "X11" fn XBlackPixelOfScreen(arg0: ?[*]Screen) c_ulong;
-pub extern "X11" fn XWhitePixelOfScreen(arg0: ?[*]Screen) c_ulong;
+pub extern "X11" fn XBlackPixelOfScreen(arg0: ?*Screen) c_ulong;
+pub extern "X11" fn XWhitePixelOfScreen(arg0: ?*Screen) c_ulong;
 pub extern "X11" fn XNextRequest(arg0: ?*Display) c_ulong;
 pub extern "X11" fn XLastKnownRequestProcessed(arg0: ?*Display) c_ulong;
 pub extern "X11" fn XServerVendor(arg0: ?*Display) ?[*]u8;
 pub extern "X11" fn XDisplayString(arg0: ?*Display) ?[*]u8;
 pub extern "X11" fn XDefaultColormap(arg0: ?*Display, arg1: c_int) Colormap;
-pub extern "X11" fn XDefaultColormapOfScreen(arg0: ?[*]Screen) Colormap;
-pub extern "X11" fn XDisplayOfScreen(arg0: ?[*]Screen) ?*Display;
-pub extern "X11" fn XScreenOfDisplay(arg0: ?*Display, arg1: c_int) ?[*]Screen;
-pub extern "X11" fn XDefaultScreenOfDisplay(arg0: ?*Display) ?[*]Screen;
-pub extern "X11" fn XEventMaskOfScreen(arg0: ?[*]Screen) c_long;
-pub extern "X11" fn XScreenNumberOfScreen(arg0: ?[*]Screen) c_int;
+pub extern "X11" fn XDefaultColormapOfScreen(arg0: ?*Screen) Colormap;
+pub extern "X11" fn XDisplayOfScreen(arg0: ?*Screen) ?*Display;
+pub extern "X11" fn XScreenOfDisplay(arg0: ?*Display, arg1: c_int) ?*Screen;
+pub extern "X11" fn XDefaultScreenOfDisplay(arg0: ?*Display) ?*Screen;
+pub extern "X11" fn XEventMaskOfScreen(arg0: ?*Screen) c_long;
+pub extern "X11" fn XScreenNumberOfScreen(arg0: ?*Screen) c_int;
 pub const XErrorHandler = ?extern fn (?*Display, ?[*]XErrorEvent) c_int;
 pub extern "X11" fn XSetErrorHandler(arg0: XErrorHandler) XErrorHandler;
 pub const XIOErrorHandler = ?extern fn (?*Display) c_int;
 pub extern "X11" fn XSetIOErrorHandler(arg0: XIOErrorHandler) XIOErrorHandler;
-pub extern "X11" fn XListPixmapFormats(arg0: ?*Display, arg1: ?[*]c_int) ?[*]XPixmapFormatValues;
+pub extern "X11" fn XListPixmapFormats(arg0: ?*Display, arg1: ?*c_int) ?[*]XPixmapFormatValues;
 pub extern "X11" fn XListDepths(arg0: ?*Display, arg1: c_int, arg2: ?[*]c_int) ?[*]c_int;
 pub extern "X11" fn XReconfigureWMWindow(arg0: ?*Display, arg1: Window, arg2: c_int, arg3: c_uint, arg4: ?[*]XWindowChanges) c_int;
 pub extern "X11" fn XGetWMProtocols(arg0: ?*Display, arg1: Window, arg2: ?[*](?[*]Atom), arg3: ?[*]c_int) c_int;
@@ -1167,7 +1203,7 @@ pub extern "X11" fn XBell(arg0: ?*Display, arg1: c_int) c_int;
 pub extern "X11" fn XBitmapBitOrder(arg0: ?*Display) c_int;
 pub extern "X11" fn XBitmapPad(arg0: ?*Display) c_int;
 pub extern "X11" fn XBitmapUnit(arg0: ?*Display) c_int;
-pub extern "X11" fn XCellsOfScreen(arg0: ?[*]Screen) c_int;
+pub extern "X11" fn XCellsOfScreen(arg0: ?*Screen) c_int;
 pub extern "X11" fn XChangeActivePointerGrab(arg0: ?*Display, arg1: c_uint, arg2: Cursor, arg3: Time) c_int;
 pub extern "X11" fn XChangeGC(arg0: ?*Display, arg1: GC, arg2: c_ulong, arg3: ?[*]XGCValues) c_int;
 pub extern "X11" fn XChangeKeyboardControl(arg0: ?*Display, arg1: c_ulong, arg2: ?[*]XKeyboardControl) c_int;
@@ -1194,14 +1230,14 @@ pub extern "X11" fn XCopyArea(arg0: ?*Display, arg1: Drawable, arg2: Drawable, a
 pub extern "X11" fn XCopyGC(arg0: ?*Display, arg1: GC, arg2: c_ulong, arg3: GC) c_int;
 pub extern "X11" fn XCopyPlane(arg0: ?*Display, arg1: Drawable, arg2: Drawable, arg3: GC, arg4: c_int, arg5: c_int, arg6: c_uint, arg7: c_uint, arg8: c_int, arg9: c_int, arg10: c_ulong) c_int;
 pub extern "X11" fn XDefaultDepth(arg0: ?*Display, arg1: c_int) c_int;
-pub extern "X11" fn XDefaultDepthOfScreen(arg0: ?[*]Screen) c_int;
+pub extern "X11" fn XDefaultDepthOfScreen(arg0: ?*Screen) c_int;
 pub extern "X11" fn XDefaultScreen(arg0: ?*Display) c_int;
 pub extern "X11" fn XDefineCursor(arg0: ?*Display, arg1: Window, arg2: Cursor) c_int;
 pub extern "X11" fn XDeleteProperty(arg0: ?*Display, arg1: Window, arg2: Atom) c_int;
 pub extern "X11" fn XDestroyWindow(arg0: ?*Display, arg1: Window) c_int;
 pub extern "X11" fn XDestroySubwindows(arg0: ?*Display, arg1: Window) c_int;
-pub extern "X11" fn XDoesBackingStore(arg0: ?[*]Screen) c_int;
-pub extern "X11" fn XDoesSaveUnders(arg0: ?[*]Screen) c_int;
+pub extern "X11" fn XDoesBackingStore(arg0: ?*Screen) c_int;
+pub extern "X11" fn XDoesSaveUnders(arg0: ?*Screen) c_int;
 pub extern "X11" fn XDisableAccessControl(arg0: ?*Display) c_int;
 pub extern "X11" fn XDisplayCells(arg0: ?*Display, arg1: c_int) c_int;
 pub extern "X11" fn XDisplayHeight(arg0: ?*Display, arg1: c_int) c_int;
@@ -1267,8 +1303,8 @@ pub extern "X11" fn XGrabKey(arg0: ?*Display, arg1: c_int, arg2: c_uint, arg3: W
 pub extern "X11" fn XGrabKeyboard(arg0: ?*Display, arg1: Window, arg2: c_int, arg3: c_int, arg4: c_int, arg5: Time) c_int;
 pub extern "X11" fn XGrabPointer(arg0: ?*Display, arg1: Window, arg2: c_int, arg3: c_uint, arg4: c_int, arg5: c_int, arg6: Window, arg7: Cursor, arg8: Time) c_int;
 pub extern "X11" fn XGrabServer(arg0: ?*Display) c_int;
-pub extern "X11" fn XHeightMMOfScreen(arg0: ?[*]Screen) c_int;
-pub extern "X11" fn XHeightOfScreen(arg0: ?[*]Screen) c_int;
+pub extern "X11" fn XHeightMMOfScreen(arg0: ?*Screen) c_int;
+pub extern "X11" fn XHeightOfScreen(arg0: ?*Screen) c_int;
 pub extern "X11" fn XIfEvent(arg0: ?*Display, arg1: ?[*]XEvent, arg2: ?extern fn (?*Display, ?[*]XEvent, XPointer) c_int, arg3: XPointer) c_int;
 pub extern "X11" fn XImageByteOrder(arg0: ?*Display) c_int;
 pub extern "X11" fn XInstallColormap(arg0: ?*Display, arg1: Colormap) c_int;
@@ -1280,8 +1316,8 @@ pub extern "X11" fn XMapRaised(arg0: ?*Display, arg1: Window) c_int;
 pub extern "X11" fn XMapSubwindows(arg0: ?*Display, arg1: Window) c_int;
 pub extern "X11" fn XMapWindow(arg0: ?*Display, arg1: Window) c_int;
 pub extern "X11" fn XMaskEvent(arg0: ?*Display, arg1: c_long, arg2: ?[*]XEvent) c_int;
-pub extern "X11" fn XMaxCmapsOfScreen(arg0: ?[*]Screen) c_int;
-pub extern "X11" fn XMinCmapsOfScreen(arg0: ?[*]Screen) c_int;
+pub extern "X11" fn XMaxCmapsOfScreen(arg0: ?*Screen) c_int;
+pub extern "X11" fn XMinCmapsOfScreen(arg0: ?*Screen) c_int;
 pub extern "X11" fn XMoveResizeWindow(arg0: ?*Display, arg1: Window, arg2: c_int, arg3: c_int, arg4: c_uint, arg5: c_uint) c_int;
 pub extern "X11" fn XMoveWindow(arg0: ?*Display, arg1: Window, arg2: c_int, arg3: c_int) c_int;
 pub extern "X11" fn XNextEvent(arg0: *Display, arg1: *XEvent) c_int;
@@ -1291,11 +1327,11 @@ pub extern "X11" fn XParseGeometry(arg0: ?[*]const u8, arg1: ?[*]c_int, arg2: ?[
 pub extern "X11" fn XPeekEvent(arg0: ?*Display, arg1: ?[*]XEvent) c_int;
 pub extern "X11" fn XPeekIfEvent(arg0: ?*Display, arg1: ?[*]XEvent, arg2: ?extern fn (?*Display, ?[*]XEvent, XPointer) c_int, arg3: XPointer) c_int;
 pub extern "X11" fn XPending(arg0: ?*Display) c_int;
-pub extern "X11" fn XPlanesOfScreen(arg0: ?[*]Screen) c_int;
+pub extern "X11" fn XPlanesOfScreen(arg0: ?*Screen) c_int;
 pub extern "X11" fn XProtocolRevision(arg0: ?*Display) c_int;
 pub extern "X11" fn XProtocolVersion(arg0: ?*Display) c_int;
 pub extern "X11" fn XPutBackEvent(arg0: ?*Display, arg1: ?[*]XEvent) c_int;
-pub extern "X11" fn XPutImage(arg0: ?*Display, arg1: Drawable, arg2: GC, arg3: ?[*]XImage, arg4: c_int, arg5: c_int, arg6: c_int, arg7: c_int, arg8: c_uint, arg9: c_uint) c_int;
+pub extern "X11" fn XPutImage(arg0: ?*Display, arg1: Drawable, arg2: GC, arg3: ?*XImage, arg4: c_int, arg5: c_int, arg6: c_int, arg7: c_int, arg8: c_uint, arg9: c_uint) c_int;
 pub extern "X11" fn XQLength(arg0: ?*Display) c_int;
 pub extern "X11" fn XQueryBestCursor(arg0: ?*Display, arg1: Drawable, arg2: c_uint, arg3: c_uint, arg4: ?[*]c_uint, arg5: ?[*]c_uint) c_int;
 pub extern "X11" fn XQueryBestSize(arg0: ?*Display, arg1: c_int, arg2: Drawable, arg3: c_uint, arg4: c_uint, arg5: ?[*]c_uint, arg6: ?[*]c_uint) c_int;
@@ -1386,8 +1422,8 @@ pub extern "X11" fn XUnmapSubwindows(arg0: ?*Display, arg1: Window) c_int;
 pub extern "X11" fn XUnmapWindow(arg0: ?*Display, arg1: Window) c_int;
 pub extern "X11" fn XVendorRelease(arg0: ?*Display) c_int;
 pub extern "X11" fn XWarpPointer(arg0: ?*Display, arg1: Window, arg2: Window, arg3: c_int, arg4: c_int, arg5: c_uint, arg6: c_uint, arg7: c_int, arg8: c_int) c_int;
-pub extern "X11" fn XWidthMMOfScreen(arg0: ?[*]Screen) c_int;
-pub extern "X11" fn XWidthOfScreen(arg0: ?[*]Screen) c_int;
+pub extern "X11" fn XWidthMMOfScreen(arg0: ?*Screen) c_int;
+pub extern "X11" fn XWidthOfScreen(arg0: ?*Screen) c_int;
 pub extern "X11" fn XWindowEvent(arg0: ?*Display, arg1: Window, arg2: c_long, arg3: ?[*]XEvent) c_int;
 pub extern "X11" fn XWriteBitmapFile(arg0: ?*Display, arg1: ?[*]const u8, arg2: Pixmap, arg3: c_uint, arg4: c_uint, arg5: c_int, arg6: c_int) c_int;
 pub extern "X11" fn XSupportsLocale() c_int;
@@ -1536,7 +1572,7 @@ pub const XComposeStatus = struct__XComposeStatus;
 pub const struct__XRegion = @OpaqueType();
 pub const Region = ?*struct__XRegion;
 pub const XVisualInfo = extern struct {
-    visual: ?[*]Visual,
+    visual: ?*Visual,
     visualid: VisualID,
     screen: c_int,
     depth: c_int,
@@ -1608,7 +1644,7 @@ pub extern "X11" fn XSetWMClientMachine(arg0: ?*Display, arg1: Window, arg2: ?[*
 pub extern "X11" fn XSetWMHints(arg0: ?*Display, arg1: Window, arg2: ?[*]XWMHints) c_int;
 pub extern "X11" fn XSetWMIconName(arg0: ?*Display, arg1: Window, arg2: ?[*]XTextProperty) void;
 pub extern "X11" fn XSetWMName(arg0: ?*Display, arg1: Window, arg2: ?[*]XTextProperty) void;
-pub extern "X11" fn XSetWMNormalHints(arg0: ?*Display, arg1: Window, arg2: ?[*]XSizeHints) void;
+pub extern "X11" fn XSetWMNormalHints(arg0: ?*Display, arg1: Window, arg2: ?*XSizeHints) void;
 pub extern "X11" fn XSetWMProperties(
     arg0: *Display,
     arg1: Window,

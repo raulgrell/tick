@@ -11,14 +11,14 @@ pub const Parser = struct {
     current: Token,
     previous: Token,
     hadError: bool,
-    inPanic: bool,
+    hadPanic: bool,
 
     pub fn create() Parser {
         return Parser {
             .current = undefined,
             .previous = undefined,
             .hadError = false,
-            .inPanic = false
+            .hadPanic = false
         };
     }
 
@@ -31,8 +31,8 @@ pub const Parser = struct {
     }
 
     fn errorAt(self: *Parser, token: *Token, message: []const u8) void {
-        if (self.inPanic) return;
-        self.inPanic = true;
+        if (self.hadPanic) return;
+        self.hadPanic = true;
 
         std.debug.warn("[line {}] Error", token.line);
 
@@ -72,6 +72,10 @@ pub const Precedence = packed enum(u8) {
 
     fn next(current: Precedence) Precedence {
         return @intToEnum(Precedence, @enumToInt(current) + 1);
+    }
+
+    fn isLowerThan(current: Precedence, other: Precedence) bool {
+        return @enumToInt(current) <= @enumToInt(other);
     }
 };
 
@@ -141,25 +145,25 @@ pub const Compiler = struct {
 
     pub fn compile(self: *Compiler, source: []const u8, chunk: *Chunk) bool {
         self.scanner.init(source);
-        _ = self.scanner.advance();
-
         self.current_chunk = chunk;
         self.parser.hadError = false;
-        self.parser.inPanic = false;
+        self.parser.hadPanic = false;
 
-        self.expression();
+        self.advance();
+        self.parseExpression();
         self.consume(TokenType.EOF, "Expect end of expression.");
-
         self.end();
 
         return !self.parser.hadError;
     }
 
-    fn advance(self: *Compiler) !void {
+    fn advance(self: *Compiler) void {
         self.parser.previous = self.parser.current;
 
         while (true) {
-            self.parser.current = try self.scanner.scanToken();
+            self.parser.current = self.scanner.scanToken();
+            if (true) std.debug.warn("Scanned {}\n", @tagName(self.parser.current.token_type));
+            if (self.parser.current.token_type != TokenType.Error) break;
             self.parser.errorAtCurrent(self.parser.current.lexeme);
         }
     }
@@ -177,34 +181,43 @@ pub const Compiler = struct {
         return self.current_chunk;
     }
 
-    fn expression(self: *Compiler) void {
+    fn parseExpression(self: *Compiler) void {
        self.parsePrecedence(Precedence.Assignment);
     }
 
     fn parsePrecedence(self: *Compiler, precedence: Precedence) void {
         _ = self.advance();
-        const prefixRule = getRule(self.parser.previous.token_type).prefix.?;
-        prefixRule(self);
 
-        while (@enumToInt(precedence) <= @enumToInt(getRule(self.parser.current.token_type).precedence)) {
+        const parsePrefix = getRule(self.parser.previous.token_type).prefix;
+        std.debug.warn("Parsing Prefix {}, Precedence {}\n", @tagName(self.parser.previous.token_type), @tagName(precedence));
+        
+        if (parsePrefix == null) {
+            self.parser.errorAtCurrent("Expect expression");
+            return;
+        }
+
+        parsePrefix.?(self);
+
+        while (precedence.isLowerThan(getRule(self.parser.current.token_type).precedence)) {
             _ = self.advance();
-            const infixRule = getRule(self.parser.previous.token_type).infix.?;
-            infixRule(self);
+            const parseInfix = getRule(self.parser.previous.token_type).infix.?;
+            parseInfix(self);
         }
     }
 
     fn getRule(token_type: TokenType) *const ParseRule {
-        return &rules[@enumToInt(token_type)];
+        const rule = &rules[@enumToInt(token_type)];
+        return rule;
     }
 
     fn grouping(self: *Compiler) void {
-        self.expression();
+        self.parseExpression();
         self.consume(TokenType.RightParen, "Expect ')' after expression.");
     }
 
     fn number(self: *Compiler) void {
-        const value = 2; //strtod(self.parser.previous.lexeme, null);
-        self.emitConstant(Value { .Number = value });
+        const value = std.fmt.parseUnsigned(u8, self.parser.previous.lexeme, 10) catch unreachable;
+        self.emitConstant(Value { .Number = @intToFloat(f64, value) });
     }
 
     fn unary(self: *Compiler) void {
@@ -256,6 +269,9 @@ pub const Compiler = struct {
 
     fn end(self: *Compiler) void {
         self.emitReturn();
+        if(!self.parser.hadError) {
+            self.currentChunk().disassemble("Chunk");
+        }
     }
 
     fn emitReturn(self: *Compiler) void {

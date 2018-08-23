@@ -1,14 +1,14 @@
 const std = @import("std");
 const math = std.math;
-const X = @import("../src/x11.zig");
+const X = @import("../x11/xlib.zig");
 const cstr = std.cstr;
 const assert = std.debug.assert;
 
 pub fn main() !void {
-    const size_hints = X.AllocSizeHints() ?? return error.OutOfMemory;
-    const wm_hints = X.AllocWMHints() ?? return error.OutOfMemory;
-    const class_hints = X.AllocClassHint() ?? return error.OutOfMemory;
-    const display = X.OpenDisplay(null) ?? return error.OutOfMemory;
+    const size_hints = X.AllocSizeHints() orelse return error.OutOfMemory;
+    const wm_hints = X.AllocWMHints() orelse return error.OutOfMemory;
+    const class_hints = X.AllocClassHint() orelse return error.OutOfMemory;
+    const display = X.OpenDisplay(null) orelse return error.OutOfMemory;
     defer assert(X.CloseDisplay(display) == 0);
 
     const screen_num = X.DefaultScreen(display);
@@ -64,7 +64,7 @@ pub fn main() !void {
         X.ExposureMask | X.KeyPressMask | X.ButtonPressMask | X.StructureNotifyMask,
     );
 
-    const font_info = X.LoadQueryFont(display, c"9x15") ?? return error.OutOfMemory;
+    const font_info = X.LoadQueryFont(display, c"*") orelse return error.NoFont;
     defer _ = X.UnloadFont(display, font_info.fid);
 
     var values: X.GCValues = undefined;
@@ -87,25 +87,25 @@ pub fn main() !void {
                 if (report.xexpose.count != 0)
                     continue;
 
-                const length = u32(X.TextWidth(font_info, message, c_int(cstr.len(message))));
+                const length = @intCast(u32, X.TextWidth(font_info, message, @intCast(c_int, cstr.len(message))));
                 const msg_x = (width - length) / 2;
 
-                const font_height = u32(font_info.ascent) + u32(font_info.descent);
+                const font_height = @intCast(u32, font_info.ascent) + @intCast(u32, font_info.descent);
                 const msg_y = (height + font_height) / 2;
 
                 assert(X.DrawString(
                     display,
                     win,
                     gc,
-                    c_int(msg_x),
-                    c_int(msg_y),
+                    @intCast(c_int, msg_x),
+                    @intCast(c_int, msg_y),
                     message,
-                    c_int(cstr.len(message)),
+                    @intCast(c_int, cstr.len(message)),
                 ) == 0);
             },
             X.ConfigureNotify => {
-                width = u32(report.xconfigure.width);
-                height = u32(report.xconfigure.height);
+                width = @intCast(u32, report.xconfigure.width);
+                height = @intCast(u32, report.xconfigure.height);
             },
             else => {},
         }

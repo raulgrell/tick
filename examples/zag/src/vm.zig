@@ -46,7 +46,7 @@ pub const VM = struct {
 
         self.chunk = &chunk;
         self.ip = self.chunk.code.toSlice().ptr;
-
+        
         try self.run();
     }
 

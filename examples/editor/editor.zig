@@ -1,4 +1,5 @@
-// Based on a tutorial I will reference shortly
+// Based on a tutorial based on kilo by antirez
+// TODO: find link
 
 const std = @import("std");
 const builtin = @import("builtin");
@@ -42,8 +43,8 @@ const EditorContext = struct {
     cx: c_int,
     cy: c_int,
     rx: c_int,
-    screenrows: c_int,
-    screencols: c_int,
+    screen_rows: c_int,
+    screen_cols: c_int,
     row_offset: c_int,
     col_offset: c_int,
     num_rows: c_int,
@@ -56,8 +57,8 @@ var e = EditorContext {
     .cx = 0,
     .cy = 0,
     .rx = 0,
-    .screenrows = 0,
-    .screencols = 0,
+    .screen_rows = 0,
+    .screen_cols = 0,
     .row_offset = 0,
     .col_offset = 0,
     .num_rows = 0,
@@ -68,9 +69,9 @@ var e = EditorContext {
 
 
 fn initEditor() void {
-    getWindowSize(&e.screenrows, &e.screencols) catch die(c"getWindowSize");
+    getWindowSize(&e.screen_rows, &e.screen_cols) catch die(c"getWindowSize");
     e.row = std.ArrayList(EditorRow).init(std.heap.c_allocator);
-    e.screenrows -= 1;
+    e.screen_rows -= 1;
 }
 
 pub fn main() !void {
@@ -126,7 +127,7 @@ fn readKey() u8 {
     var nread: isize = 0;
     var c : u8 = undefined;
     while (nread != 1) : (nread = read(STDIN_FILENO, @ptrCast(&c_void, &c), 1)) {
-        if(nread == -1 and *std.c._errno() != EAGAIN) die(c"read");
+        if(nread == -1 and std.c._errno().* != EAGAIN) die(c"read");
     }
 
     if (c == '\x1b') {
@@ -193,7 +194,7 @@ fn getCursorPosition(rows: *c_int, cols: *c_int) !void {
         return error.CursorPositionInvalid;
 
     while (i < buf.len - 1) : (i += 1) {
-        if (read(STDIN_FILENO, @ptrCast(&c_void, &c), 1) != 1) break;
+        if (read(STDIN_FILENO, @ptrCast(*c_void, &c), 1) != 1) break;
         if (buf[i] == 'R') break;
     }
 
@@ -223,7 +224,12 @@ fn editorOpen(filename: []const u8) !void {
         e.filename = try std.mem.dupe(std.heap.c_allocator, u8, filename);
     }
 
-    var file = try std.os.File.openRead(std.heap.c_allocator, filename);
+    var file = std.os.File.openRead(filename) catch |err| {
+        std.debug.warn("Unable to open file: {}\n", @errorName(err));
+        return err;
+    };
+    defer file.close();
+
     var file_stream = std.io.FileInStream.init(&file);
     const file_in = &file_stream.stream;
 
@@ -242,8 +248,6 @@ fn editorOpen(filename: []const u8) !void {
         const line = input_buffer.toSliceConst();
         try editorAppendRow(line);
     }
-
-    file.close();
 }
 
 //
@@ -326,11 +330,11 @@ fn editorProcessKeypress() void {
             if (c == u8(Key.PageUp)) {
                 e.cy = e.row_offset;
             } else {
-                e.cy = e.row_offset + e.screenrows - 1;
+                e.cy = e.row_offset + e.screen_rows - 1;
                 if (e.cy > e.num_rows) e.cy = e.num_rows;
             }
 
-            var times = e.screenrows;
+            var times = e.screen_rows;
             while (times > 0) : (times -= 1) {
                 editorMoveCursor(if (c == u8(Key.PageUp))
                     u8(Key.ArrowUp) else u8(Key.ArrowDown));
@@ -372,12 +376,12 @@ fn editorRefreshScreen() !void {
 fn editorDrawRows(ab: *std.Buffer) !void {
     var row_index: c_uint = 0;
 
-    while(row_index < c_uint(e.screenrows)) : (row_index += 1) {
+    while(row_index < c_uint(e.screen_rows)) : (row_index += 1) {
         const file_row = row_index + c_uint(e.row_offset);
         if (file_row >= c_uint(e.num_rows)) {
-            if (e.num_rows == 0 and row_index == c_uint(e.screenrows) / 3) {
+            if (e.num_rows == 0 and row_index == c_uint(e.screen_rows) / 3) {
                 const greeting = "Welcome to Zed";
-                var padding = (c_uint(e.screencols) - greeting.len) / 2;
+                var padding = (c_uint(e.screen_cols) - greeting.len) / 2;
                 if (padding > 0) try ab.append("~");
                 while (padding > 0) : (padding -= 1) try ab.append(" ");
                 try ab.append(greeting);
@@ -386,7 +390,7 @@ fn editorDrawRows(ab: *std.Buffer) !void {
             }
         } else {
             const line = e.row.at(file_row).render_chars.toSliceConst();
-            const draw_length = std.math.min( std.math.max(line.len - c_uint(e.col_offset), c_uint(0)), c_uint(e.screencols));
+            const draw_length = std.math.min( std.math.max(line.len - c_uint(e.col_offset), c_uint(0)), c_uint(e.screen_cols));
             try ab.append(line[c_uint(e.col_offset) .. draw_length]);
         }
 
@@ -414,10 +418,10 @@ fn editorDrawStatusBar(ab: *std.Buffer) !void {
             e.num_rows);
 
     var len: usize = status_text.len;
-    try ab.append(status_buffer[0 .. std.math.min(len, usize(e.screencols))]);
+    try ab.append(status_buffer[0 .. std.math.min(len, usize(e.screen_cols))]);
 
-    while (len < c_uint(e.screencols)) {
-        if(e.screencols - c_int(len) == c_int(right_text.len)) {
+    while (len < c_uint(e.screen_cols)) {
+        if(e.screen_cols - c_int(len) == c_int(right_text.len)) {
             try ab.append(right_text);
             break;
         } else {
@@ -471,14 +475,14 @@ fn editorScroll() void {
     if (e.cy < e.row_offset) {
         e.row_offset = e.cy;
     }
-    if (e.cy >= e.row_offset + e.screenrows) {
-        e.row_offset = e.cy - e.screenrows + 1;
+    if (e.cy >= e.row_offset + e.screen_rows) {
+        e.row_offset = e.cy - e.screen_rows + 1;
     }
 
     if (e.cx < e.col_offset) {
         e.col_offset = e.rx;
     }
-    if (e.cx >= e.col_offset + e.screencols) {
-        e.col_offset = e.rx - e.screencols + 1;
+    if (e.cx >= e.col_offset + e.screen_cols) {
+        e.col_offset = e.rx - e.screen_cols + 1;
     }
 }

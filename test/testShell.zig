@@ -13,10 +13,13 @@ const builtin_fn = []fn(args: []const []const u8) i32 {
     shell_exit
 };
 
-pub fn main() !void {
-    var stdin_file = try std.io.getStdIn();
-    var stdin = FileInStream.init(&stdin_file);
+const builtin = @import("builtin");
+const std = @import("std");
+const io = std.io;
+const fmt = std.fmt;
+const os = std.os;
 
+pub fn main() !void {
     var stdout_file = try std.io.getStdOut();
     var stdout = FileOutStream.init(&stdout_file);
 
@@ -27,9 +30,16 @@ pub fn main() !void {
     
     while (status > 0) {
         try stdout_file.write("> ");
-        
-        var line = try stdin.stream.readUntilDelimiterAlloc(std.debug.global_allocator, '\n', 256);
 
+        var line_buf: [255]u8 = undefined;
+        const line = io.readLineSlice(line_buf[0..]) catch |err| switch (err) {
+            error.InputTooLong => {
+                try stdout.print("Input too long.\n");
+                continue;
+            },
+            error.EndOfFile, error.StdInUnavailable => return err,
+        };
+        
         var args_iterator = std.mem.split(line, " \t\r\n");
         while (args_iterator.next()) | arg | {
             try arg_list.append(arg);

@@ -4,7 +4,7 @@ const allocator = std.heap.c_allocator;
 const VM = @import("./vm.zig").VM;
 const REPL = @import("./repl.zig").REPL;
 
-const example_file = @embedFile("../example/script.zag");
+const example_file = @embedFile("../example/script.zag") ++ []u8 {0};
 
 const builtin_str = []const []const u8 { "pass", };
 const builtin_fn = []const fn(args: []const []const u8) i32 { pass };
@@ -25,8 +25,10 @@ pub fn main() error!void {
     var vm = VM.create();
     defer vm.destroy();
 
-    const result = vm.interpret(example_file);
+    std.debug.warn("{}\n", example_file);
 
+    try vm.interpret(example_file);
+    
     // switch(args_list.len) {
     //     1 => try runRepl(&vm),
     //     2 => try runFile(&vm, args_list.at(1)),

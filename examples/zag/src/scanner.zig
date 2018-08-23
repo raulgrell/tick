@@ -77,10 +77,11 @@ pub const Scanner = struct {
         self.line = 1;
     }
 
-    pub fn scanToken(self: *Scanner) !Token {
+    pub fn scanToken(self: *Scanner) Token {
         self.skipWhitespace();
-
         self.start = self.start[self.current..];
+        self.current = 0;
+
         if (self.isAtEnd()) return self.makeToken(TokenType.EOF);
 
         const c = self.advance();
@@ -112,14 +113,18 @@ pub const Scanner = struct {
                 } else if (isAlpha(c)) {
                     return self.readIdentifier();
                 }
-                printError(self.line, "Unexpected character");
-                return error.UnexpectedCharacter;
+                return self.makeError("Unexpected character");
+                //return error.UnexpectedCharacter;
             }
         }
     }
 
     pub fn makeToken(self: Scanner, token_type: TokenType) Token {
         return Token.create(token_type, self.start[0..self.current], self.line);
+    }
+
+    pub fn makeError(self: Scanner, message: []const u8) Token {
+        return Token.create(TokenType.Error, message, self.line);
     }
 
     pub fn makeLiteral(self: Scanner, token_type: TokenType, literal: []const u8) Token {
@@ -131,8 +136,9 @@ pub const Scanner = struct {
     }
 
     fn advance(self: *Scanner) u8 {
+        const current = self.start[self.current];
         self.current += 1;
-        return self.start[self.current - 1];
+        return current;
     }
 
     fn peek(self: *Scanner) u8 {
@@ -196,7 +202,7 @@ pub const Scanner = struct {
         return TokenType.Identifier;
     }
 
-    fn readString(self: *Scanner) !Token {
+    fn readString(self: *Scanner) Token {
         while (self.peek() != '"' and !self.isAtEnd()) {
             if (self.peek() == '\n') self.line += 1;
             _ = self.advance();
@@ -204,8 +210,8 @@ pub const Scanner = struct {
 
         // Unterminated string
         if (self.isAtEnd()) {
-            printError(self.line, "Unterminated string.");
-            return error.UnterminatedString;
+            return self.makeError("Unterminated string.");
+            // return error.UnterminatedString;
         }
 
         // The closing ".
@@ -215,21 +221,13 @@ pub const Scanner = struct {
         return self.makeLiteral(TokenType.String, self.start[1..self.current - 1]);
     }
 
-    fn readNumber(self: *Scanner) !Token {
+    fn readNumber(self: *Scanner) Token {
         while (isDigit(self.peek())) _ = self.advance();
         if (self.peek() == '.' and isDigit(self.peekNext())) {
             // Consume the "." and the fractional part
             _ = self.advance();
             while (isDigit(self.peek())) _ = self.advance();
         }
-        return self.makeLiteral(TokenType.Number, try readDouble(self.start[0..self.current]));
-    }
-
-    fn readDouble(number: []const u8) ![]const u8 {
-        return if (number.len > 0) number else error.InvalidNumber;
-    }
-
-    fn printError(line: usize, message: []const u8) void {
-        std.debug.warn("Error: {} on line {}\n", message, line);
+        return self.makeLiteral(TokenType.Number, self.start[0..self.current]);
     }
 };

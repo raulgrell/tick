@@ -1,10 +1,12 @@
 const std = @import("std");
-const c = @import("windows_lean.h.zig");
+const allocator = std.heap.c_allocator;
+
+const c = @import("libs/windows_lean.h.zig");
 
 const SRCCOPY = (c.DWORD)(0x00CC0020); // dest = source
 const IDC_ARROW = c.MAKEINTRESOURCEA(32512);
 
-var s_close = u32(0);
+var s_close = false;
 var s_wc: c.WNDCLASS = undefined;
 var s_wnd: c.HWND = undefined;
 var s_width: c_long = undefined;
@@ -24,10 +26,10 @@ extern fn WndProc(hWnd: c.HWND, message: c.UINT, wParam: c.WPARAM, lParam: c.LPA
         },
         c.WM_KEYDOWN => {
             if ((wParam & 0xFF) == 27) 
-                s_close = 1;
+                s_close = true;
         },
         c.WM_CLOSE => {
-            s_close = 1;
+            s_close = true;
         },
         else => {
             res = c.DefWindowProc(hWnd, message, wParam, lParam);
@@ -69,7 +71,7 @@ pub fn open(title: []const u8, width: c_long, height: c_long) error!void {
 
     _ = c.ShowWindow(s_wnd, c.SW_NORMAL);
 
-    s_bitmapInfo = try std.debug.global_allocator.create(c.tagBITMAPINFO);
+    s_bitmapInfo = try allocator(c.tagBITMAPINFO);
     s_bitmapInfo.bmiHeader.biSize = @sizeOf(c.BITMAPINFOHEADER);
     s_bitmapInfo.bmiHeader.biPlanes = 1;
     s_bitmapInfo.bmiHeader.biBitCount = 32;
