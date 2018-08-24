@@ -7,7 +7,7 @@ const HEIGHT: u32 = 600;
 var s_buffer = []u32 {0} ** (WIDTH * HEIGHT);
 
 pub fn main() error!void {
-    try platform_fb.open("Framebuffer Test", WIDTH, HEIGHT);
+    try platform_fb.open("Framebuffer Test\x00", WIDTH, HEIGHT);
 
     var x: usize = 0;
 

@@ -10039,7 +10039,7 @@ pub const PBITMAPV5HEADER = ?[*]extern struct {
 pub const struct_tagBITMAPINFO = extern struct {
     bmiHeader: BITMAPINFOHEADER,
     // NOTE: Changed array to array-ptr
-    bmiColors: [*]RGBQUAD,
+    bmiColors: [4]RGBQUAD,
 };
 pub const BITMAPINFO = struct_tagBITMAPINFO;
 pub const LPBITMAPINFO = ?*struct_tagBITMAPINFO;
@@ -10047,7 +10047,7 @@ pub const PBITMAPINFO = ?*struct_tagBITMAPINFO;
 pub const struct_tagBITMAPCOREINFO = extern struct {
     bmciHeader: BITMAPCOREHEADER,
     // NOTE: Changed array to array-ptr
-    bmciColors: [*]RGBTRIPLE,
+    bmciColors: [3]RGBTRIPLE,
 };
 pub const BITMAPCOREINFO = struct_tagBITMAPCOREINFO;
 pub const LPBITMAPCOREINFO = ?*struct_tagBITMAPCOREINFO;
