@@ -1,27 +1,99 @@
-// Utility
-const std = @import("std");
-
-pub fn uiInitDefault(size: usize) !uiInitOptions {
-    var options = uiInitOptions { .Size = size };
-    var err = uiInit(&options);
-    if (err != null) {
-        std.debug.warn("error initializing libui: {}", err);
-        uiFreeInitError(err);
-        return error.InitFailed;
-    }
-    return options;
-}
-
-pub fn uiControlCast(control: var) *uiControl {
-    return @ptrCast(*uiControl, @alignCast(4, control));
-}
-
-// UI
+pub const ptrdiff_t = c_long;
+pub const wchar_t = c_int;
+pub const max_align_t = extern struct {
+    __clang_max_align_nonce1: c_longlong,
+    __clang_max_align_nonce2: c_longdouble,
+};
+pub const __u_char = u8;
+pub const __u_short = c_ushort;
+pub const __u_int = c_uint;
+pub const __u_long = c_ulong;
+pub const __int8_t = i8;
+pub const __uint8_t = u8;
+pub const __int16_t = c_short;
+pub const __uint16_t = c_ushort;
+pub const __int32_t = c_int;
+pub const __uint32_t = c_uint;
+pub const __int64_t = c_long;
+pub const __uint64_t = c_ulong;
+pub const __int_least8_t = __int8_t;
+pub const __uint_least8_t = __uint8_t;
+pub const __int_least16_t = __int16_t;
+pub const __uint_least16_t = __uint16_t;
+pub const __int_least32_t = __int32_t;
+pub const __uint_least32_t = __uint32_t;
+pub const __int_least64_t = __int64_t;
+pub const __uint_least64_t = __uint64_t;
+pub const __quad_t = c_long;
+pub const __u_quad_t = c_ulong;
+pub const __intmax_t = c_long;
+pub const __uintmax_t = c_ulong;
+pub const __dev_t = c_ulong;
+pub const __uid_t = c_uint;
+pub const __gid_t = c_uint;
+pub const __ino_t = c_ulong;
+pub const __ino64_t = c_ulong;
+pub const __mode_t = c_uint;
+pub const __nlink_t = c_ulong;
+pub const __off_t = c_long;
+pub const __off64_t = c_long;
+pub const __pid_t = c_int;
+pub const __fsid_t = extern struct {
+    __val: [2]c_int,
+};
+pub const __clock_t = c_long;
+pub const __rlim_t = c_ulong;
+pub const __rlim64_t = c_ulong;
+pub const __id_t = c_uint;
+pub const __time_t = c_long;
+pub const __useconds_t = c_uint;
+pub const __suseconds_t = c_long;
+pub const __daddr_t = c_int;
+pub const __key_t = c_int;
+pub const __clockid_t = c_int;
+pub const __timer_t = ?*c_void;
+pub const __blksize_t = c_long;
+pub const __blkcnt_t = c_long;
+pub const __blkcnt64_t = c_long;
+pub const __fsblkcnt_t = c_ulong;
+pub const __fsblkcnt64_t = c_ulong;
+pub const __fsfilcnt_t = c_ulong;
+pub const __fsfilcnt64_t = c_ulong;
+pub const __fsword_t = c_long;
+pub const __ssize_t = c_long;
+pub const __syscall_slong_t = c_long;
+pub const __syscall_ulong_t = c_ulong;
+pub const __loff_t = __off64_t;
+pub const __caddr_t = ?[*]u8;
+pub const __intptr_t = c_long;
+pub const __socklen_t = c_uint;
+pub const __sig_atomic_t = c_int;
+pub const int_least8_t = __int_least8_t;
+pub const int_least16_t = __int_least16_t;
+pub const int_least32_t = __int_least32_t;
+pub const int_least64_t = __int_least64_t;
+pub const uint_least8_t = __uint_least8_t;
+pub const uint_least16_t = __uint_least16_t;
+pub const uint_least32_t = __uint_least32_t;
+pub const uint_least64_t = __uint_least64_t;
+pub const int_fast8_t = i8;
+pub const int_fast16_t = c_long;
+pub const int_fast32_t = c_long;
+pub const int_fast64_t = c_long;
+pub const uint_fast8_t = u8;
+pub const uint_fast16_t = c_ulong;
+pub const uint_fast32_t = c_ulong;
+pub const uint_fast64_t = c_ulong;
+pub const intmax_t = __intmax_t;
+pub const uintmax_t = __uintmax_t;
+pub const uiForEach = c_uint;
+pub const uiForEachContinue = 0;
+pub const uiForEachStop = 1;
 pub const struct_uiInitOptions = extern struct {
     Size: usize,
 };
 pub const uiInitOptions = struct_uiInitOptions;
-pub extern fn uiInit(options: ?*uiInitOptions) ?[*]const u8;
+pub extern fn uiInit(options: ?[*]uiInitOptions) ?[*]const u8;
 pub extern fn uiUninit() void;
 pub extern fn uiFreeInitError(err: ?[*]const u8) void;
 pub extern fn uiMain() void;
@@ -32,43 +104,39 @@ pub extern fn uiQueueMain(f: ?extern fn(?*c_void) void, data: ?*c_void) void;
 pub extern fn uiTimer(milliseconds: c_int, f: ?extern fn(?*c_void) c_int, data: ?*c_void) void;
 pub extern fn uiOnShouldQuit(f: ?extern fn(?*c_void) c_int, data: ?*c_void) void;
 pub extern fn uiFreeText(text: ?[*]u8) void;
-
-// Control
 pub const uiControl = struct_uiControl;
 pub const struct_uiControl = extern struct {
     Signature: u32,
     OSSignature: u32,
     TypeSignature: u32,
-    Destroy: ?extern fn(?*uiControl) void,
-    Handle: ?extern fn(?*uiControl) usize,
-    Parent: ?extern fn(?*uiControl) ?*uiControl,
-    SetParent: ?extern fn(?*uiControl, ?*uiControl) void,
-    Toplevel: ?extern fn(?*uiControl) c_int,
-    Visible: ?extern fn(?*uiControl) c_int,
-    Show: ?extern fn(?*uiControl) void,
-    Hide: ?extern fn(?*uiControl) void,
-    Enabled: ?extern fn(?*uiControl) c_int,
-    Enable: ?extern fn(?*uiControl) void,
-    Disable: ?extern fn(?*uiControl) void,
+    Destroy: ?extern fn(?[*]uiControl) void,
+    Handle: ?extern fn(?[*]uiControl) usize,
+    Parent: ?extern fn(?[*]uiControl) ?[*]uiControl,
+    SetParent: ?extern fn(?[*]uiControl, ?[*]uiControl) void,
+    Toplevel: ?extern fn(?[*]uiControl) c_int,
+    Visible: ?extern fn(?[*]uiControl) c_int,
+    Show: ?extern fn(?[*]uiControl) void,
+    Hide: ?extern fn(?[*]uiControl) void,
+    Enabled: ?extern fn(?[*]uiControl) c_int,
+    Enable: ?extern fn(?[*]uiControl) void,
+    Disable: ?extern fn(?[*]uiControl) void,
 };
-pub extern fn uiControlDestroy(arg0: ?*uiControl) void;
-pub extern fn uiControlHandle(arg0: ?*uiControl) usize;
-pub extern fn uiControlParent(arg0: ?*uiControl) ?*uiControl;
-pub extern fn uiControlSetParent(arg0: ?*uiControl, arg1: ?*uiControl) void;
-pub extern fn uiControlToplevel(arg0: ?*uiControl) c_int;
-pub extern fn uiControlVisible(arg0: ?*uiControl) c_int;
-pub extern fn uiControlShow(arg0: ?*uiControl) void;
-pub extern fn uiControlHide(arg0: ?*uiControl) void;
-pub extern fn uiControlEnabled(arg0: ?*uiControl) c_int;
-pub extern fn uiControlEnable(arg0: ?*uiControl) void;
-pub extern fn uiControlDisable(arg0: ?*uiControl) void;
-pub extern fn uiAllocControl(n: usize, OSsig: u32, typesig: u32, typenamestr: ?[*]const u8) ?*uiControl;
-pub extern fn uiFreeControl(arg0: ?*uiControl) void;
-pub extern fn uiControlVerifySetParent(arg0: ?*uiControl, arg1: ?*uiControl) void;
-pub extern fn uiControlEnabledToUser(arg0: ?*uiControl) c_int;
+pub extern fn uiControlDestroy(arg0: ?[*]uiControl) void;
+pub extern fn uiControlHandle(arg0: ?[*]uiControl) usize;
+pub extern fn uiControlParent(arg0: ?[*]uiControl) ?[*]uiControl;
+pub extern fn uiControlSetParent(arg0: ?[*]uiControl, arg1: ?[*]uiControl) void;
+pub extern fn uiControlToplevel(arg0: ?[*]uiControl) c_int;
+pub extern fn uiControlVisible(arg0: ?[*]uiControl) c_int;
+pub extern fn uiControlShow(arg0: ?[*]uiControl) void;
+pub extern fn uiControlHide(arg0: ?[*]uiControl) void;
+pub extern fn uiControlEnabled(arg0: ?[*]uiControl) c_int;
+pub extern fn uiControlEnable(arg0: ?[*]uiControl) void;
+pub extern fn uiControlDisable(arg0: ?[*]uiControl) void;
+pub extern fn uiAllocControl(n: usize, OSsig: u32, typesig: u32, typenamestr: ?[*]const u8) ?[*]uiControl;
+pub extern fn uiFreeControl(arg0: ?[*]uiControl) void;
+pub extern fn uiControlVerifySetParent(arg0: ?[*]uiControl, arg1: ?[*]uiControl) void;
+pub extern fn uiControlEnabledToUser(arg0: ?[*]uiControl) c_int;
 pub extern fn uiUserBugCannotSetParentOnToplevel(type_0: ?[*]const u8) void;
-
-// Window
 pub const struct_uiWindow = @OpaqueType();
 pub const uiWindow = struct_uiWindow;
 pub extern fn uiWindowTitle(w: ?*uiWindow) ?[*]u8;
@@ -81,30 +149,24 @@ pub extern fn uiWindowOnContentSizeChanged(w: ?*uiWindow, f: ?extern fn(?*uiWind
 pub extern fn uiWindowOnClosing(w: ?*uiWindow, f: ?extern fn(?*uiWindow, ?*c_void) c_int, data: ?*c_void) void;
 pub extern fn uiWindowBorderless(w: ?*uiWindow) c_int;
 pub extern fn uiWindowSetBorderless(w: ?*uiWindow, borderless: c_int) void;
-pub extern fn uiWindowSetChild(w: ?*uiWindow, child: ?*uiControl) void;
+pub extern fn uiWindowSetChild(w: ?*uiWindow, child: ?[*]uiControl) void;
 pub extern fn uiWindowMargined(w: ?*uiWindow) c_int;
 pub extern fn uiWindowSetMargined(w: ?*uiWindow, margined: c_int) void;
 pub extern fn uiNewWindow(title: ?[*]const u8, width: c_int, height: c_int, hasMenubar: c_int) ?*uiWindow;
-
-// Button
 pub const struct_uiButton = @OpaqueType();
 pub const uiButton = struct_uiButton;
 pub extern fn uiButtonText(b: ?*uiButton) ?[*]u8;
 pub extern fn uiButtonSetText(b: ?*uiButton, text: ?[*]const u8) void;
 pub extern fn uiButtonOnClicked(b: ?*uiButton, f: ?extern fn(?*uiButton, ?*c_void) void, data: ?*c_void) void;
 pub extern fn uiNewButton(text: ?[*]const u8) ?*uiButton;
-
-// Box
 pub const struct_uiBox = @OpaqueType();
 pub const uiBox = struct_uiBox;
-pub extern fn uiBoxAppend(b: ?*uiBox, child: ?*uiControl, stretchy: c_int) void;
+pub extern fn uiBoxAppend(b: ?*uiBox, child: ?[*]uiControl, stretchy: c_int) void;
 pub extern fn uiBoxDelete(b: ?*uiBox, index: c_int) void;
 pub extern fn uiBoxPadded(b: ?*uiBox) c_int;
 pub extern fn uiBoxSetPadded(b: ?*uiBox, padded: c_int) void;
 pub extern fn uiNewHorizontalBox() ?*uiBox;
 pub extern fn uiNewVerticalBox() ?*uiBox;
-
-// Checkbox
 pub const struct_uiCheckbox = @OpaqueType();
 pub const uiCheckbox = struct_uiCheckbox;
 pub extern fn uiCheckboxText(c: ?*uiCheckbox) ?[*]u8;
@@ -113,8 +175,6 @@ pub extern fn uiCheckboxOnToggled(c: ?*uiCheckbox, f: ?extern fn(?*uiCheckbox, ?
 pub extern fn uiCheckboxChecked(c: ?*uiCheckbox) c_int;
 pub extern fn uiCheckboxSetChecked(c: ?*uiCheckbox, checked: c_int) void;
 pub extern fn uiNewCheckbox(text: ?[*]const u8) ?*uiCheckbox;
-
-// Entry
 pub const struct_uiEntry = @OpaqueType();
 pub const uiEntry = struct_uiEntry;
 pub extern fn uiEntryText(e: ?*uiEntry) ?[*]u8;
@@ -125,65 +185,49 @@ pub extern fn uiEntrySetReadOnly(e: ?*uiEntry, readonly: c_int) void;
 pub extern fn uiNewEntry() ?*uiEntry;
 pub extern fn uiNewPasswordEntry() ?*uiEntry;
 pub extern fn uiNewSearchEntry() ?*uiEntry;
-
-// Label
 pub const struct_uiLabel = @OpaqueType();
 pub const uiLabel = struct_uiLabel;
 pub extern fn uiLabelText(l: ?*uiLabel) ?[*]u8;
 pub extern fn uiLabelSetText(l: ?*uiLabel, text: ?[*]const u8) void;
 pub extern fn uiNewLabel(text: ?[*]const u8) ?*uiLabel;
-
-// Tab
 pub const struct_uiTab = @OpaqueType();
 pub const uiTab = struct_uiTab;
-pub extern fn uiTabAppend(t: ?*uiTab, name: ?[*]const u8, c: ?*uiControl) void;
-pub extern fn uiTabInsertAt(t: ?*uiTab, name: ?[*]const u8, before: c_int, c: ?*uiControl) void;
+pub extern fn uiTabAppend(t: ?*uiTab, name: ?[*]const u8, c: ?[*]uiControl) void;
+pub extern fn uiTabInsertAt(t: ?*uiTab, name: ?[*]const u8, before: c_int, c: ?[*]uiControl) void;
 pub extern fn uiTabDelete(t: ?*uiTab, index: c_int) void;
 pub extern fn uiTabNumPages(t: ?*uiTab) c_int;
 pub extern fn uiTabMargined(t: ?*uiTab, page: c_int) c_int;
 pub extern fn uiTabSetMargined(t: ?*uiTab, page: c_int, margined: c_int) void;
 pub extern fn uiNewTab() ?*uiTab;
-
-// Group
 pub const struct_uiGroup = @OpaqueType();
 pub const uiGroup = struct_uiGroup;
 pub extern fn uiGroupTitle(g: ?*uiGroup) ?[*]u8;
 pub extern fn uiGroupSetTitle(g: ?*uiGroup, title: ?[*]const u8) void;
-pub extern fn uiGroupSetChild(g: ?*uiGroup, c: ?*uiControl) void;
+pub extern fn uiGroupSetChild(g: ?*uiGroup, c: ?[*]uiControl) void;
 pub extern fn uiGroupMargined(g: ?*uiGroup) c_int;
 pub extern fn uiGroupSetMargined(g: ?*uiGroup, margined: c_int) void;
 pub extern fn uiNewGroup(title: ?[*]const u8) ?*uiGroup;
-
-// Spinbox
 pub const struct_uiSpinbox = @OpaqueType();
 pub const uiSpinbox = struct_uiSpinbox;
 pub extern fn uiSpinboxValue(s: ?*uiSpinbox) c_int;
 pub extern fn uiSpinboxSetValue(s: ?*uiSpinbox, value: c_int) void;
 pub extern fn uiSpinboxOnChanged(s: ?*uiSpinbox, f: ?extern fn(?*uiSpinbox, ?*c_void) void, data: ?*c_void) void;
 pub extern fn uiNewSpinbox(min: c_int, max: c_int) ?*uiSpinbox;
-
-// Slider
 pub const struct_uiSlider = @OpaqueType();
 pub const uiSlider = struct_uiSlider;
 pub extern fn uiSliderValue(s: ?*uiSlider) c_int;
 pub extern fn uiSliderSetValue(s: ?*uiSlider, value: c_int) void;
 pub extern fn uiSliderOnChanged(s: ?*uiSlider, f: ?extern fn(?*uiSlider, ?*c_void) void, data: ?*c_void) void;
 pub extern fn uiNewSlider(min: c_int, max: c_int) ?*uiSlider;
-
-// ProgressBar
 pub const struct_uiProgressBar = @OpaqueType();
 pub const uiProgressBar = struct_uiProgressBar;
 pub extern fn uiProgressBarValue(p: ?*uiProgressBar) c_int;
 pub extern fn uiProgressBarSetValue(p: ?*uiProgressBar, n: c_int) void;
 pub extern fn uiNewProgressBar() ?*uiProgressBar;
-
-// Separator
 pub const struct_uiSeparator = @OpaqueType();
 pub const uiSeparator = struct_uiSeparator;
 pub extern fn uiNewHorizontalSeparator() ?*uiSeparator;
 pub extern fn uiNewVerticalSeparator() ?*uiSeparator;
-
-// Combobox
 pub const struct_uiCombobox = @OpaqueType();
 pub const uiCombobox = struct_uiCombobox;
 pub extern fn uiComboboxAppend(c: ?*uiCombobox, text: ?[*]const u8) void;
@@ -191,8 +235,6 @@ pub extern fn uiComboboxSelected(c: ?*uiCombobox) c_int;
 pub extern fn uiComboboxSetSelected(c: ?*uiCombobox, n: c_int) void;
 pub extern fn uiComboboxOnSelected(c: ?*uiCombobox, f: ?extern fn(?*uiCombobox, ?*c_void) void, data: ?*c_void) void;
 pub extern fn uiNewCombobox() ?*uiCombobox;
-
-// EditableCombobox
 pub const struct_uiEditableCombobox = @OpaqueType();
 pub const uiEditableCombobox = struct_uiEditableCombobox;
 pub extern fn uiEditableComboboxAppend(c: ?*uiEditableCombobox, text: ?[*]const u8) void;
@@ -200,8 +242,6 @@ pub extern fn uiEditableComboboxText(c: ?*uiEditableCombobox) ?[*]u8;
 pub extern fn uiEditableComboboxSetText(c: ?*uiEditableCombobox, text: ?[*]const u8) void;
 pub extern fn uiEditableComboboxOnChanged(c: ?*uiEditableCombobox, f: ?extern fn(?*uiEditableCombobox, ?*c_void) void, data: ?*c_void) void;
 pub extern fn uiNewEditableCombobox() ?*uiEditableCombobox;
-
-// RadioButtons
 pub const struct_uiRadioButtons = @OpaqueType();
 pub const uiRadioButtons = struct_uiRadioButtons;
 pub extern fn uiRadioButtonsAppend(r: ?*uiRadioButtons, text: ?[*]const u8) void;
@@ -210,8 +250,6 @@ pub extern fn uiRadioButtonsSetSelected(r: ?*uiRadioButtons, n: c_int) void;
 pub extern fn uiRadioButtonsOnSelected(r: ?*uiRadioButtons, f: ?extern fn(?*uiRadioButtons, ?*c_void) void, data: ?*c_void) void;
 pub extern fn uiNewRadioButtons() ?*uiRadioButtons;
 pub const struct_tm = @OpaqueType();
-
-// DateTimePicker
 pub const struct_uiDateTimePicker = @OpaqueType();
 pub const uiDateTimePicker = struct_uiDateTimePicker;
 pub extern fn uiDateTimePickerTime(d: ?*uiDateTimePicker, time: ?*struct_tm) void;
@@ -220,8 +258,6 @@ pub extern fn uiDateTimePickerOnChanged(d: ?*uiDateTimePicker, f: ?extern fn(?*u
 pub extern fn uiNewDateTimePicker() ?*uiDateTimePicker;
 pub extern fn uiNewDatePicker() ?*uiDateTimePicker;
 pub extern fn uiNewTimePicker() ?*uiDateTimePicker;
-
-// MultilineEntry
 pub const struct_uiMultilineEntry = @OpaqueType();
 pub const uiMultilineEntry = struct_uiMultilineEntry;
 pub extern fn uiMultilineEntryText(e: ?*uiMultilineEntry) ?[*]u8;
@@ -232,8 +268,6 @@ pub extern fn uiMultilineEntryReadOnly(e: ?*uiMultilineEntry) c_int;
 pub extern fn uiMultilineEntrySetReadOnly(e: ?*uiMultilineEntry, readonly: c_int) void;
 pub extern fn uiNewMultilineEntry() ?*uiMultilineEntry;
 pub extern fn uiNewNonWrappingMultilineEntry() ?*uiMultilineEntry;
-
-// MenuItem
 pub const struct_uiMenuItem = @OpaqueType();
 pub const uiMenuItem = struct_uiMenuItem;
 pub extern fn uiMenuItemEnable(m: ?*uiMenuItem) void;
@@ -241,8 +275,6 @@ pub extern fn uiMenuItemDisable(m: ?*uiMenuItem) void;
 pub extern fn uiMenuItemOnClicked(m: ?*uiMenuItem, f: ?extern fn(?*uiMenuItem, ?*uiWindow, ?*c_void) void, data: ?*c_void) void;
 pub extern fn uiMenuItemChecked(m: ?*uiMenuItem) c_int;
 pub extern fn uiMenuItemSetChecked(m: ?*uiMenuItem, checked: c_int) void;
-
-// Menu
 pub const struct_uiMenu = @OpaqueType();
 pub const uiMenu = struct_uiMenu;
 pub extern fn uiMenuAppendItem(m: ?*uiMenu, name: ?[*]const u8) ?*uiMenuItem;
@@ -256,8 +288,6 @@ pub extern fn uiOpenFile(parent: ?*uiWindow) ?[*]u8;
 pub extern fn uiSaveFile(parent: ?*uiWindow) ?[*]u8;
 pub extern fn uiMsgBox(parent: ?*uiWindow, title: ?[*]const u8, description: ?[*]const u8) void;
 pub extern fn uiMsgBoxError(parent: ?*uiWindow, title: ?[*]const u8, description: ?[*]const u8) void;
-
-// Drawing
 pub const struct_uiArea = @OpaqueType();
 pub const uiArea = struct_uiArea;
 pub const uiAreaHandler = struct_uiAreaHandler;
@@ -404,8 +434,6 @@ pub extern fn uiDrawTransform(c: ?*uiDrawContext, m: ?[*]uiDrawMatrix) void;
 pub extern fn uiDrawClip(c: ?*uiDrawContext, path: ?*uiDrawPath) void;
 pub extern fn uiDrawSave(c: ?*uiDrawContext) void;
 pub extern fn uiDrawRestore(c: ?*uiDrawContext) void;
-
-// Attributes
 pub const struct_uiAttribute = @OpaqueType();
 pub const uiAttribute = struct_uiAttribute;
 pub extern fn uiFreeAttribute(a: ?*uiAttribute) void;
@@ -534,8 +562,6 @@ pub extern fn uiFontButtonFont(b: ?*uiFontButton, desc: ?[*]uiFontDescriptor) vo
 pub extern fn uiFontButtonOnChanged(b: ?*uiFontButton, f: ?extern fn(?*uiFontButton, ?*c_void) void, data: ?*c_void) void;
 pub extern fn uiNewFontButton() ?*uiFontButton;
 pub extern fn uiFreeFontButtonFont(desc: ?[*]uiFontDescriptor) void;
-
-// Input
 pub const uiModifierCtrl = 1;
 pub const uiModifierAlt = 2;
 pub const uiModifierShift = 4;
@@ -579,19 +605,15 @@ pub const uiExtKeyNAdd = 36;
 pub const uiExtKeyNSubtract = 37;
 pub const uiExtKeyNMultiply = 38;
 pub const uiExtKeyNDivide = 39;
-
-// ColorButton
 pub const struct_uiColorButton = @OpaqueType();
 pub const uiColorButton = struct_uiColorButton;
 pub extern fn uiColorButtonColor(b: ?*uiColorButton, r: ?[*]f64, g: ?[*]f64, bl: ?[*]f64, a: ?[*]f64) void;
 pub extern fn uiColorButtonSetColor(b: ?*uiColorButton, r: f64, g: f64, bl: f64, a: f64) void;
 pub extern fn uiColorButtonOnChanged(b: ?*uiColorButton, f: ?extern fn(?*uiColorButton, ?*c_void) void, data: ?*c_void) void;
 pub extern fn uiNewColorButton() ?*uiColorButton;
-
-// Form
 pub const struct_uiForm = @OpaqueType();
 pub const uiForm = struct_uiForm;
-pub extern fn uiFormAppend(f: ?*uiForm, label: ?[*]const u8, c: ?*uiControl, stretchy: c_int) void;
+pub extern fn uiFormAppend(f: ?*uiForm, label: ?[*]const u8, c: ?[*]uiControl, stretchy: c_int) void;
 pub extern fn uiFormDelete(f: ?*uiForm, index: c_int) void;
 pub extern fn uiFormPadded(f: ?*uiForm) c_int;
 pub extern fn uiFormSetPadded(f: ?*uiForm, padded: c_int) void;
@@ -606,24 +628,18 @@ pub const uiAtLeading = 0;
 pub const uiAtTop = 1;
 pub const uiAtTrailing = 2;
 pub const uiAtBottom = 3;
-
-// Grid
 pub const struct_uiGrid = @OpaqueType();
 pub const uiGrid = struct_uiGrid;
-pub extern fn uiGridAppend(g: ?*uiGrid, c: ?*uiControl, left: c_int, top: c_int, xspan: c_int, yspan: c_int, hexpand: c_int, halign: uiAlign, vexpand: c_int, valign: uiAlign) void;
-pub extern fn uiGridInsertAt(g: ?*uiGrid, c: ?*uiControl, existing: ?*uiControl, at: uiAt, xspan: c_int, yspan: c_int, hexpand: c_int, halign: uiAlign, vexpand: c_int, valign: uiAlign) void;
+pub extern fn uiGridAppend(g: ?*uiGrid, c: ?[*]uiControl, left: c_int, top: c_int, xspan: c_int, yspan: c_int, hexpand: c_int, halign: uiAlign, vexpand: c_int, valign: uiAlign) void;
+pub extern fn uiGridInsertAt(g: ?*uiGrid, c: ?[*]uiControl, existing: ?[*]uiControl, at: uiAt, xspan: c_int, yspan: c_int, hexpand: c_int, halign: uiAlign, vexpand: c_int, valign: uiAlign) void;
 pub extern fn uiGridPadded(g: ?*uiGrid) c_int;
 pub extern fn uiGridSetPadded(g: ?*uiGrid, padded: c_int) void;
 pub extern fn uiNewGrid() ?*uiGrid;
-
-// Image
 pub const struct_uiImage = @OpaqueType();
 pub const uiImage = struct_uiImage;
 pub extern fn uiNewImage(width: f64, height: f64) ?*uiImage;
 pub extern fn uiFreeImage(i: ?*uiImage) void;
 pub extern fn uiImageAppend(i: ?*uiImage, pixels: ?*c_void, pixelWidth: c_int, pixelHeight: c_int, byteStride: c_int) void;
-
-// Table
 pub const struct_uiTableValue = @OpaqueType();
 pub const uiTableValue = struct_uiTableValue;
 pub extern fn uiFreeTableValue(v: ?*uiTableValue) void;
@@ -675,101 +691,6 @@ pub extern fn uiTableAppendCheckboxTextColumn(t: ?*uiTable, name: ?[*]const u8, 
 pub extern fn uiTableAppendProgressBarColumn(t: ?*uiTable, name: ?[*]const u8, progressModelColumn: c_int) void;
 pub extern fn uiTableAppendButtonColumn(t: ?*uiTable, name: ?[*]const u8, buttonModelColumn: c_int, buttonClickableModelColumn: c_int) void;
 pub extern fn uiNewTable(params: ?[*]uiTableParams) ?*uiTable;
-
-// ForEach
-pub const uiForEach = c_uint;
-pub const uiForEachContinue = 0;
-pub const uiForEachStop = 1;
-
-// Internal
-pub const ptrdiff_t = c_long;
-pub const wchar_t = c_int;
-pub const max_align_t = extern struct {
-    __clang_max_align_nonce1: c_longlong,
-    __clang_max_align_nonce2: c_longdouble,
-};
-pub const __u_char = u8;
-pub const __u_short = c_ushort;
-pub const __u_int = c_uint;
-pub const __u_long = c_ulong;
-pub const __int8_t = i8;
-pub const __uint8_t = u8;
-pub const __int16_t = c_short;
-pub const __uint16_t = c_ushort;
-pub const __int32_t = c_int;
-pub const __uint32_t = c_uint;
-pub const __int64_t = c_long;
-pub const __uint64_t = c_ulong;
-pub const __int_least8_t = __int8_t;
-pub const __uint_least8_t = __uint8_t;
-pub const __int_least16_t = __int16_t;
-pub const __uint_least16_t = __uint16_t;
-pub const __int_least32_t = __int32_t;
-pub const __uint_least32_t = __uint32_t;
-pub const __int_least64_t = __int64_t;
-pub const __uint_least64_t = __uint64_t;
-pub const __quad_t = c_long;
-pub const __u_quad_t = c_ulong;
-pub const __intmax_t = c_long;
-pub const __uintmax_t = c_ulong;
-pub const __dev_t = c_ulong;
-pub const __uid_t = c_uint;
-pub const __gid_t = c_uint;
-pub const __ino_t = c_ulong;
-pub const __ino64_t = c_ulong;
-pub const __mode_t = c_uint;
-pub const __nlink_t = c_ulong;
-pub const __off_t = c_long;
-pub const __off64_t = c_long;
-pub const __pid_t = c_int;
-pub const __fsid_t = extern struct {
-    __val: [2]c_int,
-};
-pub const __clock_t = c_long;
-pub const __rlim_t = c_ulong;
-pub const __rlim64_t = c_ulong;
-pub const __id_t = c_uint;
-pub const __time_t = c_long;
-pub const __useconds_t = c_uint;
-pub const __suseconds_t = c_long;
-pub const __daddr_t = c_int;
-pub const __key_t = c_int;
-pub const __clockid_t = c_int;
-pub const __timer_t = ?*c_void;
-pub const __blksize_t = c_long;
-pub const __blkcnt_t = c_long;
-pub const __blkcnt64_t = c_long;
-pub const __fsblkcnt_t = c_ulong;
-pub const __fsblkcnt64_t = c_ulong;
-pub const __fsfilcnt_t = c_ulong;
-pub const __fsfilcnt64_t = c_ulong;
-pub const __fsword_t = c_long;
-pub const __ssize_t = c_long;
-pub const __syscall_slong_t = c_long;
-pub const __syscall_ulong_t = c_ulong;
-pub const __loff_t = __off64_t;
-pub const __caddr_t = ?[*]u8;
-pub const __intptr_t = c_long;
-pub const __socklen_t = c_uint;
-pub const __sig_atomic_t = c_int;
-pub const int_least8_t = __int_least8_t;
-pub const int_least16_t = __int_least16_t;
-pub const int_least32_t = __int_least32_t;
-pub const int_least64_t = __int_least64_t;
-pub const uint_least8_t = __uint_least8_t;
-pub const uint_least16_t = __uint_least16_t;
-pub const uint_least32_t = __uint_least32_t;
-pub const uint_least64_t = __uint_least64_t;
-pub const int_fast8_t = i8;
-pub const int_fast16_t = c_long;
-pub const int_fast32_t = c_long;
-pub const int_fast64_t = c_long;
-pub const uint_fast8_t = u8;
-pub const uint_fast16_t = c_ulong;
-pub const uint_fast32_t = c_ulong;
-pub const uint_fast64_t = c_ulong;
-pub const intmax_t = __intmax_t;
-pub const uintmax_t = __uintmax_t;
 pub const __GCC_ATOMIC_TEST_AND_SET_TRUEVAL = 1;
 pub const _STDC_PREDEF_H = 1;
 pub const __FLT16_MAX_EXP__ = 15;
@@ -1024,6 +945,7 @@ pub const __FLT_HAS_INFINITY__ = 1;
 pub const __k8 = 1;
 pub const __FSWORD_T_TYPE = __SYSCALL_SLONG_TYPE;
 pub const __DADDR_T_TYPE = __S32_TYPE;
+pub const NULL = if (@typeId(@typeOf(0)) == @import("builtin").TypeId.Pointer) @ptrCast([*]void, 0) else if (@typeId(@typeOf(0)) == @import("builtin").TypeId.Int) @intToPtr([*]void, 0) else ([*]void)(0);
 pub const __OFF_T_TYPE = __SYSCALL_SLONG_TYPE;
 pub const __UINT8_FMTx__ = c"hhx";
 pub const __INTMAX_C_SUFFIX__ = L;
