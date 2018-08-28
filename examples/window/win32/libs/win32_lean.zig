@@ -1,3 +1,69 @@
+// Manually added functions
+pub extern "gdi32" stdcallcc fn StretchDIBits(hdc: HDC, xDest: c_int, yDest: c_int, DestWidth: c_int, DestHeight: c_int, xSrc: c_int, ySrc: c_int, SrcWidth: c_int, SrcHeight: c_int, lpBits: ?*const c_void, lpbmi: ?*const BITMAPINFO, iUsage: UINT, rop: DWORD) c_int;
+pub extern "user32" stdcallcc fn GetMessageA(lpMsg: LPMSG, hWnd: HWND, wMsgFilterMin: UINT, wMsgFilterMax: UINT) BOOL;
+pub extern "user32" stdcallcc fn TranslateMessage(lpMsg: ?*const MSG) BOOL;
+pub extern "user32" stdcallcc fn DispatchMessageA(lpMsg: ?*const MSG) LRESULT;
+pub extern "user32" stdcallcc fn PeekMessageA(lpMsg: LPMSG, hWnd: HWND, wMsgFilterMin: UINT, wMsgFilterMax: UINT, wRemoveMsg: UINT) BOOL;
+pub extern "user32" stdcallcc fn SendMessageA(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
+pub extern "user32" stdcallcc fn DefWindowProcA(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
+pub extern "user32" stdcallcc fn RegisterClassA(lpWndClass: ?*const WNDCLASSA) ATOM;
+pub extern "user32" stdcallcc fn CreateWindowExA(dwExStyle: DWORD, lpClassName: LPCSTR, lpWindowName: LPCSTR, dwStyle: DWORD, X: c_int, Y: c_int, nWidth: c_int, nHeight: c_int, hWndParent: HWND, hMenu: HMENU, hInstance: HINSTANCE, lpParam: LPVOID) HWND;
+pub extern "user32" stdcallcc fn DestroyWindow(hWnd: HWND) BOOL;
+pub extern "user32" stdcallcc fn ShowWindow(hWnd: HWND, nCmdShow: c_int) BOOL;
+pub extern "user32" stdcallcc fn GetDC(hWnd: HWND) HDC;
+pub extern "user32" stdcallcc fn ReleaseDC(hWnd: HWND, hDC: HDC) c_int;
+pub extern "user32" stdcallcc fn InvalidateRect(hWnd: HWND, lpRect: ?*const RECT, bErase: BOOL) BOOL;
+pub extern "user32" stdcallcc fn ValidateRect(hWnd: HWND, lpRect: ?*const RECT) BOOL;
+pub extern "user32" stdcallcc fn AdjustWindowRect(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL) BOOL;
+pub extern "user32" stdcallcc fn AdjustWindowRectEx(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL, dwExStyle: DWORD) BOOL;
+pub extern "user32" stdcallcc fn AdjustWindowRectExForDpi(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL, dwExStyle: DWORD, dpi: UINT) BOOL;
+pub extern "user32" stdcallcc fn LoadCursorA(hInstance: HINSTANCE, lpCursorName: LPCSTR) HCURSOR;
+
+//Manually added from winuser.h
+pub inline fn MAKEINTRESOURCEA(comptime i: WORD) LPSTR {
+    //return LPSTR(ULONG_PTR(WORD(i)));
+    //LPSTR is a nullable type and crashes
+    //compiler with intToPtr
+    return @intToPtr(LPSTR.Child, i);
+}
+pub inline fn MAKEINTRESOURCEW(comptime i: WORD) LPWSTR {
+    //LPWSTR(ULONG_PTR(WORD(i)));
+    return @intToPtr(LPWSTR.Child, i);
+}
+
+// Window
+pub const WS_OVERLAPPEDWINDOW = (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
+
+// Standard Cursor IDs
+pub const IDC_ARROW = MAKEINTRESOURCE(32512);
+pub const IDC_IBEAM = MAKEINTRESOURCE(32513);
+pub const IDC_WAIT = MAKEINTRESOURCE(32514);
+pub const IDC_CROSS = MAKEINTRESOURCE(32515);
+pub const IDC_UPARROW = MAKEINTRESOURCE(32516);
+pub const IDC_SIZE = MAKEINTRESOURCE(32640);  // OBSOLETE: use IDC_SIZEALL */
+pub const IDC_ICON = MAKEINTRESOURCE(32641);  // OBSOLETE: use IDC_ARROW */
+pub const IDC_SIZENWSE = MAKEINTRESOURCE(32642);
+pub const IDC_SIZENESW = MAKEINTRESOURCE(32643);
+pub const IDC_SIZEWE = MAKEINTRESOURCE(32644);
+pub const IDC_SIZENS = MAKEINTRESOURCE(32645);
+pub const IDC_SIZEALL = MAKEINTRESOURCE(32646);
+pub const IDC_NO = MAKEINTRESOURCE(32648); //not in win3.1 */
+//#if(WINVER >= 0x0500)
+pub const IDC_HAND = MAKEINTRESOURCE(32649);
+//#endif // WINVER >= 0x0500 */
+pub const IDC_APPSTARTING = MAKEINTRESOURCE(32650); //not in win3.1 */
+//#if(WINVER >= 0x0400)
+pub const IDC_HELP = MAKEINTRESOURCE(32651);
+//#endif // WINVER >= 0x0400 */
+
+//#if(WINVER >= 0x0606)
+pub const IDC_PIN = MAKEINTRESOURCE(32671);
+pub const IDC_PERSON = MAKEINTRESOURCE(32672);
+//#endif // WINVER >= 0x0606 */
+
+
+// win32.h
+
 pub const va_list = ?[*]u8;
 //pub extern fn __va_start(arg0: ?[*](?[*]u8)) void;
 pub const ptrdiff_t = c_longlong;
@@ -20195,8 +20261,6 @@ pub const GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS = 4;
 pub const DEVICEFAMILYDEVICEFORM_XBOX_ONE_X_DEVKIT = 33;
 pub const HSHELL_LANGUAGE = 8;
 pub const IMAGE_SCN_MEM_NOT_PAGED = 134217728;
-// Note: Added overlappedwindow
-pub const WS_OVERLAPPEDWINDOW = (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
 pub const WS_TILEDWINDOW = WS_OVERLAPPEDWINDOW;
 pub const ERROR_ALREADY_WIN32 = c_long(719);
 pub const PROCESSOR_HITACHI_SH3E = 10004;
@@ -31536,65 +31600,3 @@ pub const tagSTYLEBUFW = struct_tagSTYLEBUFW;
 pub const tagIMEMENUITEMINFOA = struct_tagIMEMENUITEMINFOA;
 pub const tagIMEMENUITEMINFOW = struct_tagIMEMENUITEMINFOW;
 pub const tagIMECHARPOSITION = struct_tagIMECHARPOSITION;
-
-// Manually added functions
-
-pub extern "gdi32" stdcallcc fn StretchDIBits(hdc: HDC, xDest: c_int, yDest: c_int, DestWidth: c_int, DestHeight: c_int, xSrc: c_int, ySrc: c_int, SrcWidth: c_int, SrcHeight: c_int, lpBits: ?*const c_void, lpbmi: ?*const BITMAPINFO, iUsage: UINT, rop: DWORD) c_int;
-pub extern "user32" stdcallcc fn GetMessageA(lpMsg: LPMSG, hWnd: HWND, wMsgFilterMin: UINT, wMsgFilterMax: UINT) BOOL;
-pub extern "user32" stdcallcc fn TranslateMessage(lpMsg: ?*const MSG) BOOL;
-pub extern "user32" stdcallcc fn DispatchMessageA(lpMsg: ?*const MSG) LRESULT;
-pub extern "user32" stdcallcc fn PeekMessageA(lpMsg: LPMSG, hWnd: HWND, wMsgFilterMin: UINT, wMsgFilterMax: UINT, wRemoveMsg: UINT) BOOL;
-pub extern "user32" stdcallcc fn SendMessageA(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
-pub extern "user32" stdcallcc fn DefWindowProcA(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) LRESULT;
-pub extern "user32" stdcallcc fn RegisterClassA(lpWndClass: ?*const WNDCLASSA) ATOM;
-pub extern "user32" stdcallcc fn CreateWindowExA(dwExStyle: DWORD, lpClassName: LPCSTR, lpWindowName: LPCSTR, dwStyle: DWORD, X: c_int, Y: c_int, nWidth: c_int, nHeight: c_int, hWndParent: HWND, hMenu: HMENU, hInstance: HINSTANCE, lpParam: LPVOID) HWND;
-pub extern "user32" stdcallcc fn DestroyWindow(hWnd: HWND) BOOL;
-pub extern "user32" stdcallcc fn ShowWindow(hWnd: HWND, nCmdShow: c_int) BOOL;
-pub extern "user32" stdcallcc fn GetDC(hWnd: HWND) HDC;
-pub extern "user32" stdcallcc fn ReleaseDC(hWnd: HWND, hDC: HDC) c_int;
-pub extern "user32" stdcallcc fn InvalidateRect(hWnd: HWND, lpRect: ?*const RECT, bErase: BOOL) BOOL;
-pub extern "user32" stdcallcc fn ValidateRect(hWnd: HWND, lpRect: ?*const RECT) BOOL;
-pub extern "user32" stdcallcc fn AdjustWindowRect(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL) BOOL;
-pub extern "user32" stdcallcc fn AdjustWindowRectEx(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL, dwExStyle: DWORD) BOOL;
-pub extern "user32" stdcallcc fn AdjustWindowRectExForDpi(lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL, dwExStyle: DWORD, dpi: UINT) BOOL;
-pub extern "user32" stdcallcc fn LoadCursorA(hInstance: HINSTANCE, lpCursorName: LPCSTR) HCURSOR;
-
-//Manually added from winuser.h
-pub inline fn MAKEINTRESOURCEA(i: WORD) LPSTR {
-    //return LPSTR(ULONG_PTR(WORD(i)));
-    //LPSTR is a nullable type and crashes
-    //compiler with intToPtr
-    return @intToPtr(LPSTR.Child, i);
-}
-pub inline fn MAKEINTRESOURCEW(i: WORD) LPWSTR {
-    //LPWSTR(ULONG_PTR(WORD(i)));
-    return @intToPtr(LPWSTR.Child, i);
-}
-
-// Standard Cursor IDs
-
-pub const IDC_ARROW = MAKEINTRESOURCE(32512);
-pub const IDC_IBEAM = MAKEINTRESOURCE(32513);
-pub const IDC_WAIT = MAKEINTRESOURCE(32514);
-pub const IDC_CROSS = MAKEINTRESOURCE(32515);
-pub const IDC_UPARROW = MAKEINTRESOURCE(32516);
-pub const IDC_SIZE = MAKEINTRESOURCE(32640);  // OBSOLETE: use IDC_SIZEALL */
-pub const IDC_ICON = MAKEINTRESOURCE(32641);  // OBSOLETE: use IDC_ARROW */
-pub const IDC_SIZENWSE = MAKEINTRESOURCE(32642);
-pub const IDC_SIZENESW = MAKEINTRESOURCE(32643);
-pub const IDC_SIZEWE = MAKEINTRESOURCE(32644);
-pub const IDC_SIZENS = MAKEINTRESOURCE(32645);
-pub const IDC_SIZEALL = MAKEINTRESOURCE(32646);
-pub const IDC_NO = MAKEINTRESOURCE(32648); //not in win3.1 */
-//#if(WINVER >= 0x0500)
-pub const IDC_HAND = MAKEINTRESOURCE(32649);
-//#endif // WINVER >= 0x0500 */
-pub const IDC_APPSTARTING = MAKEINTRESOURCE(32650); //not in win3.1 */
-//#if(WINVER >= 0x0400)
-pub const IDC_HELP = MAKEINTRESOURCE(32651);
-//#endif // WINVER >= 0x0400 */
-
-//#if(WINVER >= 0x0606)
-pub const IDC_PIN = MAKEINTRESOURCE(32671);
-pub const IDC_PERSON = MAKEINTRESOURCE(32672);
-//#endif // WINVER >= 0x0606 */

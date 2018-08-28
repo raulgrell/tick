@@ -28,9 +28,8 @@ pub fn open(title: []const u8, width: u32, height: u32) !void {
         }
     }}
   
-    _ = X.Free(@ptrCast(*c_void, formats));
+    _ = X.Free(formats);
 
-    // We only support 32-bit right now
     if (conv_depth != 32) {
         _ = X.CloseDisplay(s_display);
         return error.InvalidBitDepth;

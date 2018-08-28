@@ -1,10 +1,9 @@
 const std = @import("std");
 const allocator = std.heap.c_allocator;
 
-const c = @import("libs/win32-lean.h.zig");
+const c = @import("libs/win32_lean.zig");
 
 const SRCCOPY = (c.DWORD)(0x00CC0020); // dest = source
-const IDC_ARROW = c.MAKEINTRESOURCEA(32512);
 
 var s_close: bool = false;
 var s_wc: c.WNDCLASS = undefined;
@@ -23,7 +22,7 @@ extern fn WndProc(hWnd: c.HWND, message: c.UINT, wParam: c.WPARAM, lParam: c.LPA
                 const scanlines_copied = c.StretchDIBits(s_hdc,
                         0, 0, s_width, s_height, 
                         0, 0, s_width, s_height, 
-                        @ptrCast(*c_void, s_buffer.ptr), s_bitmapInfo, c.DIB_RGB_COLORS, SRCCOPY);
+                        s_buffer.ptr, s_bitmapInfo, c.DIB_RGB_COLORS, SRCCOPY);
                 const succeded = c.ValidateRect(hWnd, null) != 0;
             }
         },
@@ -42,12 +41,10 @@ extern fn WndProc(hWnd: c.HWND, message: c.UINT, wParam: c.WPARAM, lParam: c.LPA
 }
 
 pub fn open(title: []const u8, width: u32, height: u32) !void {
-    // TODO: Zero this memory
-    var rect: c.RECT = undefined;
-
+    var rect = c.RECT { .left = 0, .top = 0, .right = 0, .bottom = 0, };
     s_wc.style = c.CS_OWNDC | c.CS_VREDRAW | c.CS_HREDRAW;
     s_wc.lpfnWndProc = WndProc;
-    s_wc.hCursor = c.LoadCursor(null, IDC_ARROW);
+    s_wc.hCursor = c.LoadCursor(null, c.IDC_ARROW);
     s_wc.lpszClassName = title.ptr;
     if (c.RegisterClass(&s_wc) == 0) return error.RegisterClassFailed;
 
@@ -102,7 +99,6 @@ pub fn update(buffer: []u32) !void {
 }
 
 pub fn close() void {
-    // s_buffer = 0;
     allocator.destroy(s_bitmapInfo);
     _ = c.ReleaseDC(s_wnd, s_hdc);
     _ = c.DestroyWindow(s_wnd);

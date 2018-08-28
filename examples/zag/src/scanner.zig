@@ -119,12 +119,12 @@ pub const Scanner = struct {
         }
     }
 
-    pub fn makeToken(self: Scanner, token_type: TokenType) Token {
-        return Token.create(token_type, self.start[0..self.current], self.line);
-    }
-
     pub fn makeError(self: Scanner, message: []const u8) Token {
         return Token.create(TokenType.Error, message, self.line);
+    }
+
+    pub fn makeToken(self: Scanner, token_type: TokenType) Token {
+        return Token.create(token_type, self.start[0..self.current], self.line);
     }
 
     pub fn makeLiteral(self: Scanner, token_type: TokenType, literal: []const u8) Token {
@@ -207,13 +207,10 @@ pub const Scanner = struct {
             if (self.peek() == '\n') self.line += 1;
             _ = self.advance();
         }
-
-        // Unterminated string
         if (self.isAtEnd()) {
             return self.makeError("Unterminated string.");
             // return error.UnterminatedString;
         }
-
         // The closing ".
         _ = self.advance();
 
