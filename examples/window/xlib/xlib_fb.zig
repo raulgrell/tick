@@ -28,7 +28,7 @@ pub fn open(title: []const u8, width: u32, height: u32) !void {
         }
     }}
   
-    _ = X.Free(formats);
+    _ = X.Free(@ptrCast(*c_void, formats));
 
     if (conv_depth != 32) {
         _ = X.CloseDisplay(s_display);

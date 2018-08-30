@@ -1,6 +1,6 @@
 const std = @import("std");
 const math = std.math;
-const X = @import("../x11/xlib.zig");
+const X = @import("xlib.zig");
 const cstr = std.cstr;
 const assert = std.debug.assert;
 
@@ -64,7 +64,7 @@ pub fn main() !void {
         X.ExposureMask | X.KeyPressMask | X.ButtonPressMask | X.StructureNotifyMask,
     );
 
-    const font_info = X.LoadQueryFont(display, c"*") orelse return error.NoFont;
+    const font_info = X.LoadQueryFont(display, c"9x15") orelse return error.NoFont;
     defer _ = X.UnloadFont(display, font_info.fid);
 
     var values: X.GCValues = undefined;
