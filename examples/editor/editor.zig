@@ -12,7 +12,7 @@ use @cImport({
     @cInclude("stdio.h");
     @cInclude("stdlib.h");
     if (is_windows) {
-
+        @cInclude("conio.h");
     } else {
         @cInclude("unistd.h");
         @cInclude("sys/ioctl.h");
@@ -194,7 +194,7 @@ fn getCursorPosition(rows: *c_int, cols: *c_int) !void {
         return error.CursorPositionInvalid;
 
     while (i < buf.len - 1) : (i += 1) {
-        if (read(STDIN_FILENO, @ptrCast(*c_void, &c), 1) != 1) break;
+        if (read(STDIN_FILENO, &c, 1) != 1) break;
         if (buf[i] == 'R') break;
     }
 

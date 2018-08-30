@@ -1,4 +1,4 @@
-const tick = @import("../tick.zig");
+const t = @import("../tick.zig");
 
 use tick.core;
 use tick.math;
@@ -30,7 +30,7 @@ const Polygon = struct {
     normals: [MAX_VERTICES]Vec2,
     transform: Mat2,
 
-    fn CreatePolygon(radius: f32, sides: usize) Polygon {
+    fn createPolygon(radius: f32, sides: usize) Polygon {
         var data = Polygon {
             .vertex_count = sides,
             .vertices = undefined,
@@ -55,7 +55,7 @@ const Polygon = struct {
     }
 
     // Creates a rectangle polygon shape based on a min and max positions
-    fn CreateRectanglePolygon(pos: Vec2, size: Vec2) Polygon {
+    fn createRectanglePolygon(pos: Vec2, size: Vec2) Polygon {
         var data = Polygon {
             .vertex_count = 4,
             .vertices = undefined,
@@ -97,7 +97,7 @@ const PhysicsShape = struct {
     type: *PhysicsShapeType,            // Physics shape type (circle or polygon)
 
     // Returns the extreme point along a direction within a polygon
-    fn GetSupport(shape: PhysicsShape, dir: Vec2)Vec2 {
+    fn getSupport(shape: PhysicsShape, dir: Vec2)Vec2 {
         const bestProjection = -FLT_MAX;
         var bestVertex: Vec2 = undefined;
         const data = shape.vertexData;
@@ -116,7 +116,7 @@ const PhysicsShape = struct {
     }
 
     // Finds polygon shapes axis least penetration
-    fn FindAxisLeastPenetration(face_index: *usize, shapeA: PhysicsShape, shapeB: PhysicsShape)float {
+    fn findAxisLeastPenetration(face_index: *usize, shapeA: PhysicsShape, shapeB: PhysicsShape)float {
         const bestDistance = -FLT_MAX;
         var bestIndex: usize = 0;
 
@@ -157,7 +157,7 @@ const PhysicsShape = struct {
     }
 
     // Finds two polygon shapes incident face
-    fn FindIncidentFace(v0: *Vec2, v1: *Vec2, ref: PhysicsShape, inc: PhysicsShape, index: usize) void {
+    fn findIncidentFace(v0: *Vec2, v1: *Vec2, ref: PhysicsShape, inc: PhysicsShape, index: usize) void {
         const refData = ref.vertexData;
         const incData = inc.vertexData;
 
@@ -189,7 +189,7 @@ const PhysicsShape = struct {
     }
 
     // Calculates clipping based on a normal and two faces
-    fn Clip(normal: Vec2, clip: f32, faceA: *Vec2, faceB: *Vec2)usize {
+    fn clip(normal: Vec2, clip: f32, faceA: *Vec2, faceB: *Vec2)usize {
         var sp = 0;
         var out = [2]Vec2 { *faceA, *faceB };
 
@@ -248,11 +248,11 @@ const PhysicsBody = struct {
     freezeOrient: bool,                // Physics rotation constraint
     shape: PhysicsShape,               // Physics body shape information (type, radius, vertices, normals)
 
-    pub fn Circle(pos: *const Vec2, radius: f32, density: f32)PhysicsBody {
+    pub fn circle(pos: *const Vec2, radius: f32, density: f32)PhysicsBody {
         return Polygon(pos, radius, CIRCLE_VERTICES, density);
     }
 
-    pub fn Rectangle(pos: *const Vec2, width: f32, height: f32, density: f32)PhysicsBody {
+    pub fn rectangle(pos: *const Vec2, width: f32, height: f32, density: f32)PhysicsBody {
         var new_body: PhysicsBody = undefined;
         
         new_body.id = newId;
@@ -323,7 +323,7 @@ const PhysicsBody = struct {
     }
 
     // Creates a new polygon physics body with generic parameters
-    pub fn Polygon(pos: *const Vec2, width: f32, height: f32, density: f32)PhysicsBody  {
+    pub fn polygon(pos: *const Vec2, width: f32, height: f32, density: f32)PhysicsBody  {
         var new_body: PhysicsBody = undefined;
 
         // Initialize new body with generic values
@@ -395,17 +395,17 @@ const PhysicsBody = struct {
     }
 
     // Adds a force to a physics body
-    pub fn PhysicsAddForce(body: PhysicsBody, force: Vec2) void {
+    pub fn physicsAddForce(body: PhysicsBody, force: Vec2) void {
         body.force = Vec2.add(body.force, force);
     }
 
     // Adds an angular force to a physics body
-    pub fn PhysicsAddTorque(body: PhysicsBody, amount: float) void {
+    pub fn physicsAddTorque(body: PhysicsBody, amount: float) void {
         body.torque += amount;
     }
 
     // Returns transformed position of a body shape (body position + vertex transformed position)
-    pub fn GetPhysicsShapeVertex(body: PhysicsBody, vertex_index: usize)Vec2 {
+    pub fn getPhysicsShapeVertex(body: PhysicsBody, vertex_index: usize)Vec2 {
         var position: Vec2 = undefined;
         switch (body.shape.type) {
             PhysicsShapeType.Circle => {
@@ -421,14 +421,14 @@ const PhysicsBody = struct {
     }
 
     // Sets physics body shape transform based on radians parameter
-    pub fn SetPhysicsBodyRotation(body: PhysicsBody, radians: float) void {
+    pub fn setPhysicsBodyRotation(body: PhysicsBody, radians: float) void {
         body.orientation = radians;
         if (body.shape.type == PhysicsShapeType.Polygon)
             body.shape.vertexData.transform = Mat2Radians(radians);
     }
 
     // Uninitializes and destroys a physics body
-    pub fn DestroyPhysicsBody(body: PhysicsBody) void {
+    pub fn destroyPhysicsBody(body: PhysicsBody) void {
         const id = body.id;
         var index = -1;
 
@@ -454,12 +454,12 @@ const PhysicsBody = struct {
     }
 
     // Returns the current amount of created physics bodies
-    pub fn GetPhysicsBodiesCount(void)usize {
+    pub fn getPhysicsBodiesCount(void)usize {
         return physicsBodiesCount;
     }
 
     // Returns a physics body of the bodies pool at a specific index
-    pub fn GetPhysicsBody(index: usize) !PhysicsBody {
+    pub fn getPhysicsBody(index: usize) !PhysicsBody {
         if (index < physicsBodiesCount) {
             return bodies[index];
         } else {
@@ -468,7 +468,7 @@ const PhysicsBody = struct {
     }
 
     // Returns the physics body shape type (PhysicsShapeType.Circle or PhysicsShapeType.Polygon)
-    pub fn GetPhysicsShape(index: usize) !PhysicsShapeType {
+    pub fn getPhysicsShape(index: usize) !PhysicsShapeType {
         if (index < physicsBodiesCount) {
             return bodies[index].shape.type;
         } else {
@@ -477,7 +477,7 @@ const PhysicsBody = struct {
     }
 
     // Returns the amount of vertices of a physics body shape
-    pub fn GetPhysicsShapeVerticesCount(index: usize)usize {
+    pub fn getPhysicsShapeVerticesCount(index: usize)usize {
         if (index < physicsBodiesCount) {
             const body: PhysicsBody = bodies[index];
             switch (body.shape.type) {
@@ -490,7 +490,7 @@ const PhysicsBody = struct {
     }
 
     // Integrates physics velocity into position and forces
-    fn IntegratePhysicsVelocity(body: PhysicsBody) void {
+    fn integratePhysicsVelocity(body: PhysicsBody) void {
         if (!body.enabled) return;
 
         body.position.x += body.velocity.x*deltaTime;
@@ -503,7 +503,7 @@ const PhysicsBody = struct {
     }
 
     // Integrates physics forces into velocity
-    fn IntegratePhysicsForces(body: PhysicsBody) void {
+    fn integratePhysicsForces(body: PhysicsBody) void {
         if (body.inverseMass == 0 or !body.enabled) return;
 
         body.velocity.x += (body.force.x*body.inverseMass)*(deltaTime/2);
@@ -533,7 +533,7 @@ const PhysicsManifold = struct {
     staticFriction: float,             // Mixed static during collisionfriction
 
     // Creates a new physics manifold to solve collision
-    fn CreatePhysicsManifold(a: PhysicsBody, b: PhysicsBody)PhysicsManifold {
+    fn createPhysicsManifold(a: PhysicsBody, b: PhysicsBody)PhysicsManifold {
         var new_manifold: PhysicsManifold = undefined;
         
         // Initialize new manifold with generic values
@@ -558,7 +558,7 @@ const PhysicsManifold = struct {
     }
 
     // Uninitializes and destroys a physics manifold
-    fn DestroyPhysicsManifold(manifold: PhysicsManifold) void {
+    fn destroyPhysicsManifold(manifold: PhysicsManifold) void {
         const id = manifold.id;
         var index: usize = -1;
 
@@ -584,7 +584,7 @@ const PhysicsManifold = struct {
     }
 
     // Solves a created physics manifold between two physics bodies
-    fn SolvePhysicsManifold(manifold: PhysicsManifold) void {
+    fn solvePhysicsManifold(manifold: PhysicsManifold) void {
         switch (manifold.bodyA.shape.type) {
             PhysicsShapeType.Circle => {
                 switch (manifold.bodyB.shape.type) {
@@ -605,7 +605,7 @@ const PhysicsManifold = struct {
     }
 
     // Solves collision between two circle shape physics bodies
-    fn SolveCircleToCircle(manifold: PhysicsManifold) void {
+    fn solveCircleToCircle(manifold: PhysicsManifold) void {
         const bodyA: PhysicsBody = manifold.bodyA;
         const bodyB: PhysicsBody = manifold.bodyB;
 
@@ -639,7 +639,7 @@ const PhysicsManifold = struct {
     }
 
     // Solves collision between a circle to a polygon shape physics bodies
-    fn SolveCircleToPolygon(manifold: PhysicsManifold) void {
+    fn solveCircleToPolygon(manifold: PhysicsManifold) void {
         const bodyA: PhysicsBody = manifold.bodyA;
         const bodyB: PhysicsBody = manifold.bodyB;
 
@@ -724,7 +724,7 @@ const PhysicsManifold = struct {
     }
 
     // Solves collision between a polygon to a circle shape physics bodies
-    fn SolvePolygonToCircle(manifold: PhysicsManifold) void {
+    fn solvePolygonToCircle(manifold: PhysicsManifold) void {
         const bodyA: PhysicsBody = manifold.bodyA;
         const bodyB: PhysicsBody = manifold.bodyB;
 
@@ -737,7 +737,7 @@ const PhysicsManifold = struct {
     }
 
     // Solves collision between two polygons shape physics bodies
-    fn SolvePolygonToPolygon(manifold: PhysicsManifold) void {
+    fn solvePolygonToPolygon(manifold: PhysicsManifold) void {
         const bodyA = manifold.bodyA.shape;
         const bodyB = manifold.bodyB.shape;
         manifold.contactsCount = 0;
@@ -829,7 +829,7 @@ const PhysicsManifold = struct {
     }
 
     // Initializes physics manifolds to solve collisions
-    fn InitializePhysicsManifolds(manifold: PhysicsManifold) void {
+    fn initializePhysicsManifolds(manifold: PhysicsManifold) void {
         const bodyA: PhysicsBody = manifold.bodyA;
         const bodyB: PhysicsBody = manifold.bodyB;
 
@@ -857,7 +857,7 @@ const PhysicsManifold = struct {
     }
 
     // Integrates physics collisions impulses to solve collisions
-    fn IntegratePhysicsImpulses(manifold: PhysicsManifold) void {
+    fn integratePhysicsImpulses(manifold: PhysicsManifold) void {
         const bodyA: PhysicsBody = manifold.bodyA;
         const bodyB: PhysicsBody = manifold.bodyB;
 
@@ -955,7 +955,7 @@ const PhysicsManifold = struct {
     }
 
     // Corrects physics bodies positions based on manifolds collision information
-    fn CorrectPhysicsPositions(manifold: PhysicsManifold) void {
+    fn correctPhysicsPositions(manifold: PhysicsManifold) void {
         const bodyA: PhysicsBody = manifold.bodyA;
         const bodyB: PhysicsBody = manifold.bodyB;
 
@@ -1034,7 +1034,7 @@ pub const World = struct {
     }
 
     // Physics loop thread function
-    fn PhysicsLoop() void {
+    fn physicsLoop() void {
         // Initialize physics loop thread values
         physicsThreadEnabled = true;
         frameTime = 0;
@@ -1069,7 +1069,7 @@ pub const World = struct {
     }
 
     // Physics steps calculations (dynamics, collisions and position corrections)
-    fn PhysicsStep(void) void {
+    fn physicsStep(void) void {
         stepsCount += 1;
 
         // Clear previous generated collisions information
@@ -1151,19 +1151,19 @@ pub const World = struct {
     }
 
     // Check if values are between bias range
-    fn BiasGreaterThan(valueA: f32, valueB: f32)bool {
+    fn biasGreaterThan(valueA: f32, valueB: f32)bool {
         return (valueA >= (valueB*0.95 + valueA*0.01));
     }
 
     // Returns the barycenter of a triangle given by 3 points
-    fn TriangleBarycenter(v1: *const Vec2, v2: *const Vec2, v3: *const Vec2)Vec2 {
+    fn triangleBarycenter(v1: *const Vec2, v2: *const Vec2, v3: *const Vec2)Vec2 {
         return Vec2 {
             .x = (v1.x + v2.x + v3.x)/3,
             .y = (v1.y + v2.y + v3.y)/3
         };
     }
 
-    fn InitTimer(void) void {
+    fn initTimer(void) void {
         srand(time(null));              // Initialize random seed
         startTime = GetCurrentTime();
     }

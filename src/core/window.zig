@@ -5,7 +5,6 @@ use @import("index.zig");
 use @import("../system/index.zig");
 use @import("../math/index.zig");
 
-
 pub const MAX_KEYS = c.GLFW_KEY_LAST;
 pub const MAX_BUTTONS = c.GLFW_MOUSE_BUTTON_LAST;
 pub const MAX_JOYSTICKS = c.GLFW_JOYSTICK_LAST;
@@ -23,24 +22,14 @@ pub const Window = struct {
     framebuffer_width: usize,
     framebuffer_height: usize,
 
-    pub fn init(win: *Window, window_width: c_int, window_height: c_int) void {
+    pub fn init(self: *Window, window_width: c_int, window_height: c_int) void {
         _ = c.glfwSetErrorCallback(error_callback);
         if (c.glfwInit() == c.GL_FALSE) {
             _ = warn("GLFW init failure\n");
             c.abort();
         }
 
-        // const primary = c.glfwGetPrimaryMonitor();
-        // const mode = c.glfwGetVideoMode(primary) orelse {
-        //     _ = warn("unable to get video mode\n");
-        //     c.abort();
-        // };
-        // const monitor_width = mode.width;
-        // const monitor_ height = mode.height;
-        // c.glfwWindowHint(c.GLFW_RED_BITS, mode.redBits);
-        // c.glfwWindowHint(c.GLFW_GREEN_BITS, mode.greenBits);
-        // c.glfwWindowHint(c.GLFW_BLUE_BITS, mode.blueBits);
-        // c.glfwWindowHint(c.GLFW_REFRESH_RATE, mode.refreshRate);
+        c.glfwWindowHint(c.GLFW_SAMPLES, 4);
         
         c.glfwWindowHint(c.GLFW_CONTEXT_VERSION_MAJOR, 3);
         c.glfwWindowHint(c.GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -54,33 +43,52 @@ pub const Window = struct {
         c.glfwWindowHint(c.GLFW_DOUBLEBUFFER, c.GL_TRUE);
         c.glfwWindowHint(c.GLFW_RESIZABLE, c.GL_FALSE);
         
-        win.window = c.glfwCreateWindow(window_width, window_height, c"App", null, null) orelse {
-            _ = warn("unable to create window\n");
-            c.abort();
-        };
-        
-        c.glfwMakeContextCurrent(win.window);
+        if (fullscreen) {
+            const primary_monitor = c.glfwGetPrimaryMonitor();
+            const mode = c.glfwGetVideoMode(primary_monitor) orelse {
+                _ = warn("unable to get video mode\n");
+                c.abort();
+            };
+            const monitor_width = mode.width;
+            const monitor_ height = mode.height;
+            c.glfwWindowHint(c.GLFW_RED_BITS, mode.redBits);
+            c.glfwWindowHint(c.GLFW_GREEN_BITS, mode.greenBits);
+            c.glfwWindowHint(c.GLFW_BLUE_BITS, mode.blueBits);
+            c.glfwWindowHint(c.GLFW_REFRESH_RATE, mode.refreshRate);
+            
+            self.window = c.glfwCreateWindow(window_width, window_height, c"App", null, null) orelse {
+                _ = warn("unable to create fullscreen window\n");
+                c.abort();
+            };
+        } else {
+            self.window = c.glfwCreateWindow(window_width, window_height, c"App", null, null) orelse {
+                _ = warn("unable to create non-fullscreen window\n");
+                c.abort();
+            };
+        }
+
+        c.glfwMakeContextCurrent(self.window);
         c.glfwSwapInterval(1);
         
         var fb_width = c_int(0);
         var fb_height = c_int(0);
-        c.glfwGetFramebufferSize(win.window, &fb_width, &fb_height);
+        c.glfwGetFramebufferSize(self.window, &fb_width, &fb_height);
 
         c.glViewport(0, 0, fb_width, fb_height);
         
-        win.framebuffer_width = usize(fb_width);
-        win.framebuffer_height = usize(fb_height);        
-        win.cursor = c.glfwCreateStandardCursor(c.GLFW_CROSSHAIR_CURSOR) orelse unreachable;
+        self.framebuffer_width = usize(fb_width);
+        self.framebuffer_height = usize(fb_height);        
+        self.cursor = c.glfwCreateStandardCursor(c.GLFW_CROSSHAIR_CURSOR) orelse unreachable;
         
-        _ = c.glfwSetKeyCallback(win.window, key_callback);    
-        _ = c.glfwSetMouseButtonCallback(win.window, mouse_button_callback);    
-        _ = c.glfwSetCursorPosCallback(win.window, cursor_position_callback);
+        _ = c.glfwSetKeyCallback(self.window, key_callback);    
+        _ = c.glfwSetMouseButtonCallback(self.window, mouse_button_callback);    
+        _ = c.glfwSetCursorPosCallback(self.window, cursor_position_callback);
         _ = c.glfwSetMonitorCallback(monitor_callback);
-        _ = c.glfwSetCursorEnterCallback(win.window, cursor_enter_callback);
+        _ = c.glfwSetCursorEnterCallback(self.window, cursor_enter_callback);
         _ = c.glfwSetJoystickCallback(joystick_callback);
-        _ = c.glfwSetWindowCloseCallback(win.window, window_close_callback);
-        _ = c.glfwSetWindowSizeCallback(win.window, window_size_callback);
-        _ = c.glfwSetDropCallback(win.window, file_drop_callback); 
+        _ = c.glfwSetWindowCloseCallback(self.window, window_close_callback);
+        _ = c.glfwSetWindowSizeCallback(self.window, window_size_callback);
+        _ = c.glfwSetDropCallback(self.window, file_drop_callback); 
     }
 
     pub fn setWindowPointer(win: *Window, app: *const u8) void {
@@ -115,10 +123,10 @@ pub const Window = struct {
     }
 
     pub fn setKeyMods(win: *Window, mods: c_int, out: *c_int) void {
-        if(mods & GLFW_MOD_CONTROL != 0) mKeyMods.mods |= GLFW_MOD_CONTROL;
-        if(mods & GLFW_MOD_SHIFT   != 0) mKeyMods.mods |= GLFW_MOD_SHIFT;
-        if(mods & GLFW_MOD_ALT     != 0) mKeyMods.mods |= GLFW_MOD_ALT;
-        if(mods & GLFW_MOD_SUPER   != 0) mKeyMods.mods |= GLFW_MOD_SUPER;
+        if(mods & c.GLFW_MOD_CONTROL != 0) out.mods |= c.GLFW_MOD_CONTROL;
+        if(mods & c.GLFW_MOD_SHIFT   != 0) out.mods |= c.GLFW_MOD_SHIFT;
+        if(mods & c.GLFW_MOD_ALT     != 0) out.mods |= c.GLFW_MOD_ALT;
+        if(mods & c.GLFW_MOD_SUPER   != 0) out.mods |= c.GLFW_MOD_SUPER;
     }
     
     pub fn running(win: *Window) bool {
@@ -140,7 +148,6 @@ pub const Window = struct {
         c.glfwTerminate();
     }
 };
-
 
 extern fn key_callback(win: ?*c.GLFWwindow, key: c_int, scancode: c_int, action: c_int, mods: c_int) void {
     // Filter actions and make sure key is a valid array index for the input manager

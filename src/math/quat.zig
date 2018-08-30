@@ -1,3 +1,4 @@
+const math = @import("std").math;
 
 pub fn QuatT(comptime T: type) type {
     return struct {

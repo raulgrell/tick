@@ -1,11 +1,4 @@
-const tick = @import("../tick.zig");
-
-use tick.math;
-
-use tick.system;
-use tick.system.io;
-
-use tick.graphics.texture;
+const t = @import("../tick.zig");
 
 pub const Sprite = struct {
     texture: Texture,
@@ -13,7 +6,6 @@ pub const Sprite = struct {
     uv_buffer: c.GLuint,
 
     pub fn init(compressed_bytes: []const u8) !Sprite {
-        
         var s = Sprite {
             .texture = try Texture.init(compressed_bytes),
             .vertex_buffer = 0,
@@ -185,10 +177,6 @@ const Frame = struct {
 };
 
 const SpriteUnit = struct {
-    pos: Vec2,
-    scale: Vec2,
-    origin: Vec2,
-    angle: f32,
     verts: []Vertex2D,
     frames: []Frame,
     texture: *Texture,
@@ -212,11 +200,7 @@ const SpriteUnit = struct {
         };
     }
 
-    fn create(pos: *const Vec2, scale: *const Vec2, angle: f32, origin: *const Vec2, size: *const Vec2, file_path: []const u8, src_rect: *const Rectangle) void {
-        self.pos = pos;
-        self.scale = scale;
-        self.angle = angle;
-        self.origin = origin;
+    fn create(origin: *const Vec2, size: *const Vec2, file_path: []const u8, src_rect: *const Rectangle) void {
         self.current_frame = 0;
         self.animation_speed = 1.0;
         self.time = 0.0;

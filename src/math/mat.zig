@@ -1,5 +1,7 @@
 use @import("vec.zig");
 
+const math = @import("std").math;
+
 pub fn Mat2T(comptime T: type) type {
     return struct {
         data: [2][2]T,

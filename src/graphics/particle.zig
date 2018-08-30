@@ -1,8 +1,3 @@
-use @import("../system/index.zig");
-use @import("../math/index.zig");
-
-use @import("../graphics/sprite.zig");
-use @import("../graphics/texture.zig");
 
 pub const Particle2D = struct {
     position: Vec2,
@@ -117,7 +112,6 @@ pub const ParticleBatch2D = struct {
             }
         }}
 
-        // No particles are free
         pb.lastFreeParticle = 0;
         return 0;
     }

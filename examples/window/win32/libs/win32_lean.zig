@@ -26,6 +26,7 @@ pub inline fn MAKEINTRESOURCEA(comptime i: WORD) LPSTR {
     //compiler with intToPtr
     return @intToPtr(LPSTR.Child, i);
 }
+
 pub inline fn MAKEINTRESOURCEW(comptime i: WORD) LPWSTR {
     //LPWSTR(ULONG_PTR(WORD(i)));
     return @intToPtr(LPWSTR.Child, i);

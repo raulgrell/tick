@@ -1,4 +1,4 @@
-const tick = @import("../tick.zig");
+const t = @import("../tick.zig");
 
 use tick.core;
 use tick.math;

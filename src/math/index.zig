@@ -1,6 +1,4 @@
-const c = @import("system/c.zig");
-const assert = @import("std").debug.assert;
-
+const math = @import("std").math;
 const easing = @import("easing.zig");
 const geometry = @import("geometry.zig");
 const vec = @import("vec.zig");

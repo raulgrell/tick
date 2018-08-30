@@ -1,13 +1,4 @@
-const tick = @import("../tick.zig");
-
-use tick.math;
-
-use tick.system;
-use tick.system.io;
-
-use tick.graphics;
-use tick.graphics.shader;
-use tick.graphics.sprite;
+const t = @import("../tick.zig");
 
 const TextureFilterMode = enum {
     Nearest,
@@ -321,8 +312,7 @@ pub const IMRenderer = struct {
             c.GL_ARRAY_BUFFER,
             4 * 3 * @sizeOf(c.GLfloat),
             @ptrCast(&c_void, &rectangleVertices[0][0]),
-            c.GL_STATIC_DRAW
-        );      
+            c.GL_STATIC_DRAW );      
 
         c.glGenBuffers(1, &r.rectangleUV);
         c.glBindBuffer(c.GL_ARRAY_BUFFER, r.rectangleUV);
@@ -330,8 +320,7 @@ pub const IMRenderer = struct {
             c.GL_ARRAY_BUFFER,
             4 * 2 * @sizeOf(c.GLfloat),
             @ptrCast(&c_void, &rectangleUV[0][0]),
-            c.GL_STATIC_DRAW
-        );
+            c.GL_STATIC_DRAW );
 
         c.glGenBuffers(1, &r.triangleBuffer);
         c.glBindBuffer(c.GL_ARRAY_BUFFER, r.triangleBuffer);
@@ -339,8 +328,7 @@ pub const IMRenderer = struct {
             c.GL_ARRAY_BUFFER,
             3 * 3 * @sizeOf(c.GLfloat),
             @ptrCast(&c_void, &triangleVertices[0][0]),
-            c.GL_STATIC_DRAW
-        );
+            c.GL_STATIC_DRAW );
 
         c.glGenBuffers(1, &r.triangleUV);
         c.glBindBuffer(c.GL_ARRAY_BUFFER, r.triangleUV);
@@ -348,8 +336,7 @@ pub const IMRenderer = struct {
             c.GL_ARRAY_BUFFER,
             3 * 2 * @sizeOf(c.GLfloat),
             @ptrCast(&c_void, &triangleUV[0][0]),
-            c.GL_STATIC_DRAW
-        );
+            c.GL_STATIC_DRAW );
 
         return r;
     }
@@ -361,7 +348,7 @@ pub const IMRenderer = struct {
 
     fn end(r: *IMRenderer) void {
         r.shader.program.unbind();
-        c.glBindVertexArray(0);        
+        c.glBindVertexArray(0);
     }
 
     pub fn draw_rect(r: *IMRenderer, rect_texture: *Texture, x: f32, y: f32, w: f32, h: f32) void {
@@ -419,7 +406,7 @@ pub const Glyph = struct {
     texture: *const Texture,
     depth: f32,
 
-    fn init(destRect: *const Vec4, uvRect: *const Vec4, glyph_texture: *const Texture, depth: f32, colour: *const Vec4)Glyph {
+    fn init(destRect: *const Vec4, uvRect: *const Vec4, glyph_texture: *const Texture, depth: f32, colour: *const Vec4) Glyph {
         const tlv = Vertex {
             .position = vec3(destRect.x, destRect.y, 0),
             .colour = *colour,
@@ -458,14 +445,11 @@ pub const Glyph = struct {
         // To get center position
         const halfDims = vec2( destRect.z / 2.0, destRect.w / 2.0  );
 
-        // Center at origin
+        // Center at origin and rotate
         const bl = vec2(-halfDims.x, -halfDims.y );
         const tl = vec2(-halfDims.x,  halfDims.y );
         const tr = vec2( halfDims.x,  halfDims.y );
         const br = vec2( halfDims.x, -halfDims.y );
-
-        // rotate the points
-
         bl = rotate(bl, angle) + halfDims;
         tl = rotate(tl, angle) + halfDims;
         tr = rotate(tr, angle) + halfDims;
@@ -507,9 +491,8 @@ pub const Glyph = struct {
 };
 
 pub const Texture = struct {
-    img: asset.PngImage,    
+    img: asset.PngImage,
     id: c.GLuint,
-    path: []const u8,
 
     pub fn init(compressed_bytes: []const u8) !Texture {
         var t: Texture = undefined;
@@ -524,8 +507,10 @@ pub const Texture = struct {
         c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MAG_FILTER, c.GL_LINEAR);
         c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MIN_FILTER, c.GL_LINEAR_MIPMAP_LINEAR);
         c.glPixelStorei(c.GL_PACK_ALIGNMENT, 4);
-        c.glTexImage2D(c.GL_TEXTURE_2D, 0, c_int(t.img.color_type), c_int(t.img.width), c_int(t.img.height),
-                0, c_uint(t.img.color_type), c.GL_UNSIGNED_BYTE, @ptrCast(&c_void, &t.img.raw[0]));
+        c.glTexImage2D(
+            c.GL_TEXTURE_2D, 0, c_int(t.img.color_type), 
+            c_int(t.img.width), c_int(t.img.height), 0,
+            c_uint(t.img.color_type), c.GL_UNSIGNED_BYTE, t.img.raw.ptr);
 
         c.glGenerateMipmap(c.GL_TEXTURE_2D);
         c.glBindTexture(c.GL_TEXTURE_2D, 0);
