@@ -1,5 +1,5 @@
 const std = @import("std");
-const glfw = @import("window.zig");
+const glfw = @import("glfw/window.zig");
 const c = glfw.c;
 
 const attrib_index : c_uint =  0;

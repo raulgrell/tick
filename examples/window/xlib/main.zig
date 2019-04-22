@@ -1,14 +1,15 @@
 const std = @import("std");
 const math = std.math;
-const X = @import("xlib.zig");
 const cstr = std.cstr;
 const assert = std.debug.assert;
+
+const X = @import("c.zig");
 
 pub fn main() !void {
     const size_hints = X.AllocSizeHints() orelse return error.OutOfMemory;
     const wm_hints = X.AllocWMHints() orelse return error.OutOfMemory;
     const class_hints = X.AllocClassHint() orelse return error.OutOfMemory;
-    const display = X.OpenDisplay(null) orelse return error.OutOfMemory;
+    const display = X.OpenDisplay(0) orelse return error.OutOfMemory;
     defer assert(X.CloseDisplay(display) == 0);
 
     const screen_num = X.DefaultScreen(display);
@@ -64,14 +65,15 @@ pub fn main() !void {
         X.ExposureMask | X.KeyPressMask | X.ButtonPressMask | X.StructureNotifyMask,
     );
 
-    const font_info = X.LoadQueryFont(display, c"9x15") orelse return error.NoFont;
-    defer _ = X.UnloadFont(display, font_info.fid);
+    const font_info = X.LoadQueryFont(display, c"*");
+    if (font_info == 0) return error.NoFont;
+    defer _ = X.UnloadFont(display, font_info[0].fid);
 
     var values: X.GCValues = undefined;
     const gc = X.CreateGC(display, win, 0, &values);
     defer _ = X.FreeGC(display, gc);
 
-    _ = X.SetFont(display, gc, font_info.fid);
+    _ = X.SetFont(display, gc, font_info[0].fid);
     _ = X.SetForeground(display, gc, X.BlackPixel(display, screen_num));
 
     _ = X.MapWindow(display, win);
@@ -90,7 +92,7 @@ pub fn main() !void {
                 const length = @intCast(u32, X.TextWidth(font_info, message, @intCast(c_int, cstr.len(message))));
                 const msg_x = (width - length) / 2;
 
-                const font_height = @intCast(u32, font_info.ascent) + @intCast(u32, font_info.descent);
+                const font_height = @intCast(u32, font_info[0].ascent) + @intCast(u32, font_info[0].descent);
                 const msg_y = (height + font_height) / 2;
 
                 assert(X.DrawString(

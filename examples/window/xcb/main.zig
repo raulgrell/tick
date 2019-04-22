@@ -1,5 +1,5 @@
 const std = @import("std");
-const X = @import("xcb.zig");
+const X = @import("c.zig");
 
 pub fn ptr(p: var) t: {
     const T = @typeOf(p);
@@ -18,8 +18,8 @@ var pid: X.xcb_drawable_t = undefined;
 var line_start: X.xcb_point_t = undefined;
 
 pub fn main() !void {
-  c = X.xcb_connect(null, null) orelse return error.ConnectionFailed;
-  screens = X.xcb_setup_roots_iterator(X.xcb_get_setup(c)).data orelse return error.SetupFailed;
+  c = X.xcb_connect(0, 0) orelse return error.ConnectionFailed;
+  screens = X.xcb_setup_roots_iterator(X.xcb_get_setup(c)).data; // orelse return error.SetupFailed;
   create_window();
   _ = X.xcb_flush(c);
   event_loop();
@@ -78,11 +78,13 @@ fn create_window() void {
     .y = 0,
     .width = 500,
     .height = 500 }};
-  _ = X.xcb_poly_fill_rectangle(c, pid, fill, 1, &rect);
+  _ = X.xcb_poly_fill_rectangle(c, pid, fill, 1, &rect[0]);
 }
 
 fn event_loop() void {
-  while (X.xcb_wait_for_event (c)) | e | {
+  while (true) {
+    var e = X.xcb_wait_for_event(c);
+    if (e == 0) break;
     switch (e[0].response_type & ~(u8)(0x80)) {
       X.XCB_KEY_PRESS => {
         // fill pixmap with white
@@ -92,7 +94,7 @@ fn event_loop() void {
           .width = 500,
           .height = 500}
         };
-        _ = X.xcb_poly_fill_rectangle_checked(c, pid, fill, 1, &rect);
+        _ = X.xcb_poly_fill_rectangle_checked(c, pid, fill, 1, &rect[0]);
         // clear win to reveal pixmap
         _ = X.xcb_clear_area(c, 1, win, 0, 0, 500,500);
         _ = X.xcb_flush(c);
@@ -107,7 +109,7 @@ fn event_loop() void {
           .x = ev.event_x - line_start.x,
           .y = ev.event_y - line_start.y};
         var points = []X.xcb_point_t { line_start, mouse_pos };
-        _ = X.xcb_poly_line (c, @intCast(u8, @enumToInt(X.XCB_COORD_MODE_PREVIOUS)), win, foreground, 2, &points);
+        _ = X.xcb_poly_line (c, @intCast(u8, @enumToInt(X.XCB_COORD_MODE_PREVIOUS)), win, foreground, 2, &points[0]);
         _ = X.xcb_flush(c);
       },
       X.XCB_BUTTON_PRESS => {
@@ -125,8 +127,8 @@ fn event_loop() void {
           .y = ev.event_y - line_start.y
         };
         var points = []X.xcb_point_t { line_start, line_end };
-        _ = X.xcb_poly_line (c, @intCast(u8, @enumToInt(X.XCB_COORD_MODE_PREVIOUS)), pid, foreground, 2, &points);
-        _ = X.xcb_poly_line (c, @intCast(u8, @enumToInt(X.XCB_COORD_MODE_PREVIOUS)), win, foreground, 2, &points);
+        _ = X.xcb_poly_line (c, @intCast(u8, @enumToInt(X.XCB_COORD_MODE_PREVIOUS)), pid, foreground, 2, &points[0]);
+        _ = X.xcb_poly_line (c, @intCast(u8, @enumToInt(X.XCB_COORD_MODE_PREVIOUS)), win, foreground, 2, &points[0]);
         _ = X.xcb_flush (c);
       },
       X.XCB_EXPOSE => {

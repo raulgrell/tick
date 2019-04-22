@@ -1,4 +1,4 @@
-const X = @import("xlib.zig");
+const X = @import("include.zig");
 
 var s_display: *X.Display  = undefined;
 var s_screen: c_int  = undefined;
@@ -9,13 +9,13 @@ var s_gc: X.GC  = undefined;
 var s_ximage: *X.Image = undefined;
 
 pub fn open(title: []const u8, width: u32, height: u32) !void {
-    s_display = X.OpenDisplay(@intToPtr(*const u8, 0)) orelse return error.NoDisplay;
+    s_display = X.OpenDisplay(0) orelse return error.NoDisplay;
 
     s_screen = X.DefaultScreen(s_display);
-    var visual: *X.Visual = X.DefaultVisual(s_display, s_screen) orelse return error.NoVisual;
+    var visual: *X.Visual = X.DefaultVisual(s_display, s_screen); // orelse return error.NoVisual;
 
     var format_count: c_int = -1;
-    var formats: [*]X.PixmapFormatValues = X.ListPixmapFormats(s_display, &format_count) orelse return error.InvalidFormat;
+    var formats: [*]X.PixmapFormatValues = X.ListPixmapFormats(s_display, &format_count); // orelse return error.InvalidFormat;
     
     var depth: c_int = X.DefaultDepth(s_display, s_screen);
     const default_root_win: X.Window = X.DefaultRootWindow(s_display);
@@ -70,10 +70,8 @@ pub fn open(title: []const u8, width: u32, height: u32) !void {
     _ = X.Flush(s_display);
 
     s_gc = X.DefaultGC(s_display, s_screen);
-    s_ximage = X.CreateImage(s_display, visual, @intCast(c_uint, depth), X.ZPixmap, 0, null,
-            width, height, 32, @intCast(c_int, width * 4)) orelse {
-        return error.NoImage;   
-    };
+    s_ximage = X.CreateImage(s_display, visual, @intCast(c_uint, depth), X.ZPixmap, 0, 0,
+            width, height, 32, @intCast(c_int, width * 4)); // orelse { return error.NoImage; };
     s_width = width;
     s_height = height;
 }
@@ -98,7 +96,7 @@ pub fn update(buffer: []u32) !void {
 }
 
 pub fn close () void {
-    s_ximage.data = null;
+    s_ximage.data = 0;
     X.DestroyImage(s_ximage);
     _ = X.DestroyWindow(s_display, s_window);
     _ = X.CloseDisplay(s_display);

@@ -1,4 +1,3 @@
-
 const builtin = @import("builtin");
 const is_windows = builtin.os == builtin.Os.windows;
 
@@ -11,8 +10,8 @@ pub fn rgb(r: u8, g: u8, b: u8) u32 {
 }
 
 pub const Platform = struct {
-    open: fn(name: []const u8, width: u32, height: u32) error!void,
-    update: fn(buffer: []u32) error!void,
+    open: fn(name: []const u8, width: u32, height: u32) anyerror!void,
+    update: fn(buffer: []u32) anyerror!void,
     close: fn() void,
 };
 

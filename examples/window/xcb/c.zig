@@ -58,7 +58,7 @@ pub const __ssize_t = c_long;
 pub const __syscall_slong_t = c_long;
 pub const __syscall_ulong_t = c_ulong;
 pub const __loff_t = __off64_t;
-pub const __caddr_t = ?[*]u8;
+pub const __caddr_t = [*c]u8;
 pub const __intptr_t = c_long;
 pub const __socklen_t = c_uint;
 pub const __sig_atomic_t = c_int;
@@ -98,10 +98,10 @@ pub fn __bswap_16(__bsx: __uint16_t) __uint16_t {
     return __uint16_t(((c_int(__bsx) >> @import("std").math.Log2Int(c_int)(8)) & 255) | ((c_int(__bsx) & 255) << @import("std").math.Log2Int(c_int)(8)));
 }
 pub fn __bswap_32(__bsx: __uint32_t) __uint32_t {
-    return ((((__bsx & -4278190080) >> @import("std").math.Log2Int(c_uint)(24)) | ((__bsx & 16711680) >> @import("std").math.Log2Int(c_uint)(8))) | ((__bsx & 65280) << @import("std").math.Log2Int(c_uint)(8))) | ((__bsx & 255) << @import("std").math.Log2Int(c_uint)(24));
+    return ((((__bsx & 4278190080) >> @import("std").math.Log2Int(c_uint)(24)) | ((__bsx & 16711680) >> @import("std").math.Log2Int(c_uint)(8))) | ((__bsx & 65280) << @import("std").math.Log2Int(c_uint)(8))) | ((__bsx & 255) << @import("std").math.Log2Int(c_uint)(24));
 }
 pub fn __bswap_64(__bsx: __uint64_t) __uint64_t {
-    return __uint64_t(((((((((c_ulonglong(__bsx) & -18374686479671623680) >> @import("std").math.Log2Int(c_ulonglong)(56)) | ((c_ulonglong(__bsx) & 71776119061217280) >> @import("std").math.Log2Int(c_ulonglong)(40))) | ((c_ulonglong(__bsx) & 280375465082880) >> @import("std").math.Log2Int(c_ulonglong)(24))) | ((c_ulonglong(__bsx) & 1095216660480) >> @import("std").math.Log2Int(c_ulonglong)(8))) | ((c_ulonglong(__bsx) & 4278190080) << @import("std").math.Log2Int(c_ulonglong)(8))) | ((c_ulonglong(__bsx) & 16711680) << @import("std").math.Log2Int(c_ulonglong)(24))) | ((c_ulonglong(__bsx) & 65280) << @import("std").math.Log2Int(c_ulonglong)(40))) | ((c_ulonglong(__bsx) & 255) << @import("std").math.Log2Int(c_ulonglong)(56)));
+    return __uint64_t(((((((((c_ulonglong(__bsx) & 18374686479671623680) >> @import("std").math.Log2Int(c_ulonglong)(56)) | ((c_ulonglong(__bsx) & 71776119061217280) >> @import("std").math.Log2Int(c_ulonglong)(40))) | ((c_ulonglong(__bsx) & 280375465082880) >> @import("std").math.Log2Int(c_ulonglong)(24))) | ((c_ulonglong(__bsx) & 1095216660480) >> @import("std").math.Log2Int(c_ulonglong)(8))) | ((c_ulonglong(__bsx) & 4278190080) << @import("std").math.Log2Int(c_ulonglong)(8))) | ((c_ulonglong(__bsx) & 16711680) << @import("std").math.Log2Int(c_ulonglong)(24))) | ((c_ulonglong(__bsx) & 65280) << @import("std").math.Log2Int(c_ulonglong)(40))) | ((c_ulonglong(__bsx) & 255) << @import("std").math.Log2Int(c_ulonglong)(56)));
 }
 pub fn __uint16_identity(__x: __uint16_t) __uint16_t {
     return __x;
@@ -130,8 +130,8 @@ pub const fd_set = extern struct {
     __fds_bits: [16]__fd_mask,
 };
 pub const fd_mask = __fd_mask;
-pub extern fn select(__nfds: c_int, noalias __readfds: ?[*]fd_set, noalias __writefds: ?[*]fd_set, noalias __exceptfds: ?[*]fd_set, noalias __timeout: ?[*]struct_timeval) c_int;
-pub extern fn pselect(__nfds: c_int, noalias __readfds: ?[*]fd_set, noalias __writefds: ?[*]fd_set, noalias __exceptfds: ?[*]fd_set, noalias __timeout: ?[*]const struct_timespec, noalias __sigmask: ?[*]const __sigset_t) c_int;
+pub extern fn select(__nfds: c_int, noalias __readfds: [*c]fd_set, noalias __writefds: [*c]fd_set, noalias __exceptfds: [*c]fd_set, noalias __timeout: [*c]struct_timeval) c_int;
+pub extern fn pselect(__nfds: c_int, noalias __readfds: [*c]fd_set, noalias __writefds: [*c]fd_set, noalias __exceptfds: [*c]fd_set, noalias __timeout: [*c]const struct_timespec, noalias __sigmask: [*c]const __sigset_t) c_int;
 pub const blksize_t = __blksize_t;
 pub const blkcnt_t = __blkcnt_t;
 pub const fsblkcnt_t = __fsblkcnt_t;
@@ -151,8 +151,8 @@ pub const struct___pthread_rwlock_arch_t = extern struct {
     __flags: c_uint,
 };
 pub const struct___pthread_internal_list = extern struct {
-    __prev: ?[*]struct___pthread_internal_list,
-    __next: ?[*]struct___pthread_internal_list,
+    __prev: [*c]struct___pthread_internal_list,
+    __next: [*c]struct___pthread_internal_list,
 };
 pub const __pthread_list_t = struct___pthread_internal_list;
 pub const struct___pthread_mutex_s = extern struct {
@@ -252,10 +252,10 @@ pub const struct_iovec = extern struct {
     iov_base: ?*c_void,
     iov_len: usize,
 };
-pub extern fn readv(__fd: c_int, __iovec: ?[*]const struct_iovec, __count: c_int) isize;
-pub extern fn writev(__fd: c_int, __iovec: ?[*]const struct_iovec, __count: c_int) isize;
-pub extern fn preadv(__fd: c_int, __iovec: ?[*]const struct_iovec, __count: c_int, __offset: __off_t) isize;
-pub extern fn pwritev(__fd: c_int, __iovec: ?[*]const struct_iovec, __count: c_int, __offset: __off_t) isize;
+pub extern fn readv(__fd: c_int, __iovec: [*c]const struct_iovec, __count: c_int) isize;
+pub extern fn writev(__fd: c_int, __iovec: [*c]const struct_iovec, __count: c_int) isize;
+pub extern fn preadv(__fd: c_int, __iovec: [*c]const struct_iovec, __count: c_int, __offset: __off_t) isize;
+pub extern fn pwritev(__fd: c_int, __iovec: [*c]const struct_iovec, __count: c_int, __offset: __off_t) isize;
 pub const struct_sched_param = extern struct {
     sched_priority: c_int,
 };
@@ -263,17 +263,17 @@ pub const __cpu_mask = c_ulong;
 pub const cpu_set_t = extern struct {
     __bits: [16]__cpu_mask,
 };
-pub extern fn __sched_cpucount(__setsize: usize, __setp: ?[*]const cpu_set_t) c_int;
-pub extern fn __sched_cpualloc(__count: usize) ?[*]cpu_set_t;
-pub extern fn __sched_cpufree(__set: ?[*]cpu_set_t) void;
-pub extern fn sched_setparam(__pid: __pid_t, __param: ?[*]const struct_sched_param) c_int;
-pub extern fn sched_getparam(__pid: __pid_t, __param: ?[*]struct_sched_param) c_int;
-pub extern fn sched_setscheduler(__pid: __pid_t, __policy: c_int, __param: ?[*]const struct_sched_param) c_int;
+pub extern fn __sched_cpucount(__setsize: usize, __setp: [*c]const cpu_set_t) c_int;
+pub extern fn __sched_cpualloc(__count: usize) [*c]cpu_set_t;
+pub extern fn __sched_cpufree(__set: [*c]cpu_set_t) void;
+pub extern fn sched_setparam(__pid: __pid_t, __param: [*c]const struct_sched_param) c_int;
+pub extern fn sched_getparam(__pid: __pid_t, __param: [*c]struct_sched_param) c_int;
+pub extern fn sched_setscheduler(__pid: __pid_t, __policy: c_int, __param: [*c]const struct_sched_param) c_int;
 pub extern fn sched_getscheduler(__pid: __pid_t) c_int;
 pub extern fn sched_yield() c_int;
 pub extern fn sched_get_priority_max(__algorithm: c_int) c_int;
 pub extern fn sched_get_priority_min(__algorithm: c_int) c_int;
-pub extern fn sched_rr_get_interval(__pid: __pid_t, __t: ?[*]struct_timespec) c_int;
+pub extern fn sched_rr_get_interval(__pid: __pid_t, __t: [*c]struct_timespec) c_int;
 pub const struct_tm = extern struct {
     tm_sec: c_int,
     tm_min: c_int,
@@ -285,7 +285,7 @@ pub const struct_tm = extern struct {
     tm_yday: c_int,
     tm_isdst: c_int,
     tm_gmtoff: c_long,
-    tm_zone: ?[*]const u8,
+    tm_zone: [*c]const u8,
 };
 pub const struct_itimerspec = extern struct {
     it_interval: struct_timespec,
@@ -295,50 +295,50 @@ pub const struct_sigevent = @OpaqueType();
 pub const struct___locale_data = @OpaqueType();
 pub const struct___locale_struct = extern struct {
     __locales: [13](?*struct___locale_data),
-    __ctype_b: ?[*]const c_ushort,
-    __ctype_tolower: ?[*]const c_int,
-    __ctype_toupper: ?[*]const c_int,
-    __names: [13](?[*]const u8),
+    __ctype_b: [*c]const c_ushort,
+    __ctype_tolower: [*c]const c_int,
+    __ctype_toupper: [*c]const c_int,
+    __names: [13]([*c]const u8),
 };
-pub const __locale_t = ?[*]struct___locale_struct;
+pub const __locale_t = [*c]struct___locale_struct;
 pub const locale_t = __locale_t;
 pub extern fn clock() clock_t;
-pub extern fn time(__timer: ?[*]time_t) time_t;
+pub extern fn time(__timer: [*c]time_t) time_t;
 pub extern fn difftime(__time1: time_t, __time0: time_t) f64;
-pub extern fn mktime(__tp: ?[*]struct_tm) time_t;
-pub extern fn strftime(noalias __s: ?[*]u8, __maxsize: usize, noalias __format: ?[*]const u8, noalias __tp: ?[*]const struct_tm) usize;
-pub extern fn strftime_l(noalias __s: ?[*]u8, __maxsize: usize, noalias __format: ?[*]const u8, noalias __tp: ?[*]const struct_tm, __loc: locale_t) usize;
-pub extern fn gmtime(__timer: ?[*]const time_t) ?[*]struct_tm;
-pub extern fn localtime(__timer: ?[*]const time_t) ?[*]struct_tm;
-pub extern fn gmtime_r(noalias __timer: ?[*]const time_t, noalias __tp: ?[*]struct_tm) ?[*]struct_tm;
-pub extern fn localtime_r(noalias __timer: ?[*]const time_t, noalias __tp: ?[*]struct_tm) ?[*]struct_tm;
-pub extern fn asctime(__tp: ?[*]const struct_tm) ?[*]u8;
-pub extern fn ctime(__timer: ?[*]const time_t) ?[*]u8;
-pub extern fn asctime_r(noalias __tp: ?[*]const struct_tm, noalias __buf: ?[*]u8) ?[*]u8;
-pub extern fn ctime_r(noalias __timer: ?[*]const time_t, noalias __buf: ?[*]u8) ?[*]u8;
-pub extern var __tzname: [2](?[*]u8);
+pub extern fn mktime(__tp: [*c]struct_tm) time_t;
+pub extern fn strftime(noalias __s: [*c]u8, __maxsize: usize, noalias __format: [*c]const u8, noalias __tp: [*c]const struct_tm) usize;
+pub extern fn strftime_l(noalias __s: [*c]u8, __maxsize: usize, noalias __format: [*c]const u8, noalias __tp: [*c]const struct_tm, __loc: locale_t) usize;
+pub extern fn gmtime(__timer: [*c]const time_t) [*c]struct_tm;
+pub extern fn localtime(__timer: [*c]const time_t) [*c]struct_tm;
+pub extern fn gmtime_r(noalias __timer: [*c]const time_t, noalias __tp: [*c]struct_tm) [*c]struct_tm;
+pub extern fn localtime_r(noalias __timer: [*c]const time_t, noalias __tp: [*c]struct_tm) [*c]struct_tm;
+pub extern fn asctime(__tp: [*c]const struct_tm) [*c]u8;
+pub extern fn ctime(__timer: [*c]const time_t) [*c]u8;
+pub extern fn asctime_r(noalias __tp: [*c]const struct_tm, noalias __buf: [*c]u8) [*c]u8;
+pub extern fn ctime_r(noalias __timer: [*c]const time_t, noalias __buf: [*c]u8) [*c]u8;
+pub extern var __tzname: [2]([*c]u8);
 pub extern var __daylight: c_int;
 pub extern var __timezone: c_long;
-pub extern var tzname: [2](?[*]u8);
+pub extern var tzname: [2]([*c]u8);
 pub extern fn tzset() void;
 pub extern var daylight: c_int;
 pub extern var timezone: c_long;
-pub extern fn stime(__when: ?[*]const time_t) c_int;
-pub extern fn timegm(__tp: ?[*]struct_tm) time_t;
-pub extern fn timelocal(__tp: ?[*]struct_tm) time_t;
+pub extern fn stime(__when: [*c]const time_t) c_int;
+pub extern fn timegm(__tp: [*c]struct_tm) time_t;
+pub extern fn timelocal(__tp: [*c]struct_tm) time_t;
 pub extern fn dysize(__year: c_int) c_int;
-pub extern fn nanosleep(__requested_time: ?[*]const struct_timespec, __remaining: ?[*]struct_timespec) c_int;
-pub extern fn clock_getres(__clock_id: clockid_t, __res: ?[*]struct_timespec) c_int;
-pub extern fn clock_gettime(__clock_id: clockid_t, __tp: ?[*]struct_timespec) c_int;
-pub extern fn clock_settime(__clock_id: clockid_t, __tp: ?[*]const struct_timespec) c_int;
-pub extern fn clock_nanosleep(__clock_id: clockid_t, __flags: c_int, __req: ?[*]const struct_timespec, __rem: ?[*]struct_timespec) c_int;
-pub extern fn clock_getcpuclockid(__pid: pid_t, __clock_id: ?[*]clockid_t) c_int;
-pub extern fn timer_create(__clock_id: clockid_t, noalias __evp: ?*struct_sigevent, noalias __timerid: ?[*]timer_t) c_int;
+pub extern fn nanosleep(__requested_time: [*c]const struct_timespec, __remaining: [*c]struct_timespec) c_int;
+pub extern fn clock_getres(__clock_id: clockid_t, __res: [*c]struct_timespec) c_int;
+pub extern fn clock_gettime(__clock_id: clockid_t, __tp: [*c]struct_timespec) c_int;
+pub extern fn clock_settime(__clock_id: clockid_t, __tp: [*c]const struct_timespec) c_int;
+pub extern fn clock_nanosleep(__clock_id: clockid_t, __flags: c_int, __req: [*c]const struct_timespec, __rem: [*c]struct_timespec) c_int;
+pub extern fn clock_getcpuclockid(__pid: pid_t, __clock_id: [*c]clockid_t) c_int;
+pub extern fn timer_create(__clock_id: clockid_t, noalias __evp: ?*struct_sigevent, noalias __timerid: [*c]timer_t) c_int;
 pub extern fn timer_delete(__timerid: timer_t) c_int;
-pub extern fn timer_settime(__timerid: timer_t, __flags: c_int, noalias __value: ?[*]const struct_itimerspec, noalias __ovalue: ?[*]struct_itimerspec) c_int;
-pub extern fn timer_gettime(__timerid: timer_t, __value: ?[*]struct_itimerspec) c_int;
+pub extern fn timer_settime(__timerid: timer_t, __flags: c_int, noalias __value: [*c]const struct_itimerspec, noalias __ovalue: [*c]struct_itimerspec) c_int;
+pub extern fn timer_gettime(__timerid: timer_t, __value: [*c]struct_itimerspec) c_int;
 pub extern fn timer_getoverrun(__timerid: timer_t) c_int;
-pub extern fn timespec_get(__ts: ?[*]struct_timespec, __base: c_int) c_int;
+pub extern fn timespec_get(__ts: [*c]struct_timespec, __base: c_int) c_int;
 pub const __jmp_buf = [8]c_long;
 pub const PTHREAD_CREATE_JOINABLE = 0;
 pub const PTHREAD_CREATE_DETACHED = 1;
@@ -371,44 +371,44 @@ pub const struct__pthread_cleanup_buffer = extern struct {
     __routine: ?extern fn(?*c_void) void,
     __arg: ?*c_void,
     __canceltype: c_int,
-    __prev: ?[*]struct__pthread_cleanup_buffer,
+    __prev: [*c]struct__pthread_cleanup_buffer,
 };
 pub const PTHREAD_CANCEL_ENABLE = 0;
 pub const PTHREAD_CANCEL_DISABLE = 1;
 pub const PTHREAD_CANCEL_DEFERRED = 0;
 pub const PTHREAD_CANCEL_ASYNCHRONOUS = 1;
-pub extern fn pthread_create(noalias __newthread: ?[*]pthread_t, noalias __attr: ?[*]const pthread_attr_t, __start_routine: ?extern fn(?*c_void) ?*c_void, noalias __arg: ?*c_void) c_int;
+pub extern fn pthread_create(noalias __newthread: [*c]pthread_t, noalias __attr: [*c]const pthread_attr_t, __start_routine: ?extern fn(?*c_void) ?*c_void, noalias __arg: ?*c_void) c_int;
 pub extern fn pthread_exit(__retval: ?*c_void) noreturn;
-pub extern fn pthread_join(__th: pthread_t, __thread_return: ?[*](?*c_void)) c_int;
+pub extern fn pthread_join(__th: pthread_t, __thread_return: [*c](?*c_void)) c_int;
 pub extern fn pthread_detach(__th: pthread_t) c_int;
 pub extern fn pthread_self() pthread_t;
 pub extern fn pthread_equal(__thread1: pthread_t, __thread2: pthread_t) c_int;
-pub extern fn pthread_attr_init(__attr: ?[*]pthread_attr_t) c_int;
-pub extern fn pthread_attr_destroy(__attr: ?[*]pthread_attr_t) c_int;
-pub extern fn pthread_attr_getdetachstate(__attr: ?[*]const pthread_attr_t, __detachstate: ?[*]c_int) c_int;
-pub extern fn pthread_attr_setdetachstate(__attr: ?[*]pthread_attr_t, __detachstate: c_int) c_int;
-pub extern fn pthread_attr_getguardsize(__attr: ?[*]const pthread_attr_t, __guardsize: ?[*]usize) c_int;
-pub extern fn pthread_attr_setguardsize(__attr: ?[*]pthread_attr_t, __guardsize: usize) c_int;
-pub extern fn pthread_attr_getschedparam(noalias __attr: ?[*]const pthread_attr_t, noalias __param: ?[*]struct_sched_param) c_int;
-pub extern fn pthread_attr_setschedparam(noalias __attr: ?[*]pthread_attr_t, noalias __param: ?[*]const struct_sched_param) c_int;
-pub extern fn pthread_attr_getschedpolicy(noalias __attr: ?[*]const pthread_attr_t, noalias __policy: ?[*]c_int) c_int;
-pub extern fn pthread_attr_setschedpolicy(__attr: ?[*]pthread_attr_t, __policy: c_int) c_int;
-pub extern fn pthread_attr_getinheritsched(noalias __attr: ?[*]const pthread_attr_t, noalias __inherit: ?[*]c_int) c_int;
-pub extern fn pthread_attr_setinheritsched(__attr: ?[*]pthread_attr_t, __inherit: c_int) c_int;
-pub extern fn pthread_attr_getscope(noalias __attr: ?[*]const pthread_attr_t, noalias __scope: ?[*]c_int) c_int;
-pub extern fn pthread_attr_setscope(__attr: ?[*]pthread_attr_t, __scope: c_int) c_int;
-pub extern fn pthread_attr_getstackaddr(noalias __attr: ?[*]const pthread_attr_t, noalias __stackaddr: ?[*](?*c_void)) c_int;
-pub extern fn pthread_attr_setstackaddr(__attr: ?[*]pthread_attr_t, __stackaddr: ?*c_void) c_int;
-pub extern fn pthread_attr_getstacksize(noalias __attr: ?[*]const pthread_attr_t, noalias __stacksize: ?[*]usize) c_int;
-pub extern fn pthread_attr_setstacksize(__attr: ?[*]pthread_attr_t, __stacksize: usize) c_int;
-pub extern fn pthread_attr_getstack(noalias __attr: ?[*]const pthread_attr_t, noalias __stackaddr: ?[*](?*c_void), noalias __stacksize: ?[*]usize) c_int;
-pub extern fn pthread_attr_setstack(__attr: ?[*]pthread_attr_t, __stackaddr: ?*c_void, __stacksize: usize) c_int;
-pub extern fn pthread_setschedparam(__target_thread: pthread_t, __policy: c_int, __param: ?[*]const struct_sched_param) c_int;
-pub extern fn pthread_getschedparam(__target_thread: pthread_t, noalias __policy: ?[*]c_int, noalias __param: ?[*]struct_sched_param) c_int;
+pub extern fn pthread_attr_init(__attr: [*c]pthread_attr_t) c_int;
+pub extern fn pthread_attr_destroy(__attr: [*c]pthread_attr_t) c_int;
+pub extern fn pthread_attr_getdetachstate(__attr: [*c]const pthread_attr_t, __detachstate: [*c]c_int) c_int;
+pub extern fn pthread_attr_setdetachstate(__attr: [*c]pthread_attr_t, __detachstate: c_int) c_int;
+pub extern fn pthread_attr_getguardsize(__attr: [*c]const pthread_attr_t, __guardsize: [*c]usize) c_int;
+pub extern fn pthread_attr_setguardsize(__attr: [*c]pthread_attr_t, __guardsize: usize) c_int;
+pub extern fn pthread_attr_getschedparam(noalias __attr: [*c]const pthread_attr_t, noalias __param: [*c]struct_sched_param) c_int;
+pub extern fn pthread_attr_setschedparam(noalias __attr: [*c]pthread_attr_t, noalias __param: [*c]const struct_sched_param) c_int;
+pub extern fn pthread_attr_getschedpolicy(noalias __attr: [*c]const pthread_attr_t, noalias __policy: [*c]c_int) c_int;
+pub extern fn pthread_attr_setschedpolicy(__attr: [*c]pthread_attr_t, __policy: c_int) c_int;
+pub extern fn pthread_attr_getinheritsched(noalias __attr: [*c]const pthread_attr_t, noalias __inherit: [*c]c_int) c_int;
+pub extern fn pthread_attr_setinheritsched(__attr: [*c]pthread_attr_t, __inherit: c_int) c_int;
+pub extern fn pthread_attr_getscope(noalias __attr: [*c]const pthread_attr_t, noalias __scope: [*c]c_int) c_int;
+pub extern fn pthread_attr_setscope(__attr: [*c]pthread_attr_t, __scope: c_int) c_int;
+pub extern fn pthread_attr_getstackaddr(noalias __attr: [*c]const pthread_attr_t, noalias __stackaddr: [*c](?*c_void)) c_int;
+pub extern fn pthread_attr_setstackaddr(__attr: [*c]pthread_attr_t, __stackaddr: ?*c_void) c_int;
+pub extern fn pthread_attr_getstacksize(noalias __attr: [*c]const pthread_attr_t, noalias __stacksize: [*c]usize) c_int;
+pub extern fn pthread_attr_setstacksize(__attr: [*c]pthread_attr_t, __stacksize: usize) c_int;
+pub extern fn pthread_attr_getstack(noalias __attr: [*c]const pthread_attr_t, noalias __stackaddr: [*c](?*c_void), noalias __stacksize: [*c]usize) c_int;
+pub extern fn pthread_attr_setstack(__attr: [*c]pthread_attr_t, __stackaddr: ?*c_void, __stacksize: usize) c_int;
+pub extern fn pthread_setschedparam(__target_thread: pthread_t, __policy: c_int, __param: [*c]const struct_sched_param) c_int;
+pub extern fn pthread_getschedparam(__target_thread: pthread_t, noalias __policy: [*c]c_int, noalias __param: [*c]struct_sched_param) c_int;
 pub extern fn pthread_setschedprio(__target_thread: pthread_t, __prio: c_int) c_int;
-pub extern fn pthread_once(__once_control: ?[*]pthread_once_t, __init_routine: ?extern fn() void) c_int;
-pub extern fn pthread_setcancelstate(__state: c_int, __oldstate: ?[*]c_int) c_int;
-pub extern fn pthread_setcanceltype(__type: c_int, __oldtype: ?[*]c_int) c_int;
+pub extern fn pthread_once(__once_control: [*c]pthread_once_t, __init_routine: ?extern fn() void) c_int;
+pub extern fn pthread_setcancelstate(__state: c_int, __oldstate: [*c]c_int) c_int;
+pub extern fn pthread_setcanceltype(__type: c_int, __oldtype: [*c]c_int) c_int;
 pub extern fn pthread_cancel(__th: pthread_t) c_int;
 pub extern fn pthread_testcancel() void;
 pub const __pthread_unwind_buf_t = extern struct {
@@ -424,76 +424,76 @@ pub const struct___pthread_cleanup_frame = extern struct {
     __do_it: c_int,
     __cancel_type: c_int,
 };
-pub extern fn __pthread_register_cancel(__buf: ?[*]__pthread_unwind_buf_t) void;
-pub extern fn __pthread_unregister_cancel(__buf: ?[*]__pthread_unwind_buf_t) void;
-pub extern fn __pthread_unwind_next(__buf: ?[*]__pthread_unwind_buf_t) noreturn;
+pub extern fn __pthread_register_cancel(__buf: [*c]__pthread_unwind_buf_t) void;
+pub extern fn __pthread_unregister_cancel(__buf: [*c]__pthread_unwind_buf_t) void;
+pub extern fn __pthread_unwind_next(__buf: [*c]__pthread_unwind_buf_t) noreturn;
 pub const struct___jmp_buf_tag = @OpaqueType();
 pub extern fn __sigsetjmp(__env: ?*struct___jmp_buf_tag, __savemask: c_int) c_int;
-pub extern fn pthread_mutex_init(__mutex: ?[*]pthread_mutex_t, __mutexattr: ?[*]const pthread_mutexattr_t) c_int;
-pub extern fn pthread_mutex_destroy(__mutex: ?[*]pthread_mutex_t) c_int;
-pub extern fn pthread_mutex_trylock(__mutex: ?[*]pthread_mutex_t) c_int;
-pub extern fn pthread_mutex_lock(__mutex: ?[*]pthread_mutex_t) c_int;
-pub extern fn pthread_mutex_timedlock(noalias __mutex: ?[*]pthread_mutex_t, noalias __abstime: ?[*]const struct_timespec) c_int;
-pub extern fn pthread_mutex_unlock(__mutex: ?[*]pthread_mutex_t) c_int;
-pub extern fn pthread_mutex_getprioceiling(noalias __mutex: ?[*]const pthread_mutex_t, noalias __prioceiling: ?[*]c_int) c_int;
-pub extern fn pthread_mutex_setprioceiling(noalias __mutex: ?[*]pthread_mutex_t, __prioceiling: c_int, noalias __old_ceiling: ?[*]c_int) c_int;
-pub extern fn pthread_mutex_consistent(__mutex: ?[*]pthread_mutex_t) c_int;
-pub extern fn pthread_mutexattr_init(__attr: ?[*]pthread_mutexattr_t) c_int;
-pub extern fn pthread_mutexattr_destroy(__attr: ?[*]pthread_mutexattr_t) c_int;
-pub extern fn pthread_mutexattr_getpshared(noalias __attr: ?[*]const pthread_mutexattr_t, noalias __pshared: ?[*]c_int) c_int;
-pub extern fn pthread_mutexattr_setpshared(__attr: ?[*]pthread_mutexattr_t, __pshared: c_int) c_int;
-pub extern fn pthread_mutexattr_gettype(noalias __attr: ?[*]const pthread_mutexattr_t, noalias __kind: ?[*]c_int) c_int;
-pub extern fn pthread_mutexattr_settype(__attr: ?[*]pthread_mutexattr_t, __kind: c_int) c_int;
-pub extern fn pthread_mutexattr_getprotocol(noalias __attr: ?[*]const pthread_mutexattr_t, noalias __protocol: ?[*]c_int) c_int;
-pub extern fn pthread_mutexattr_setprotocol(__attr: ?[*]pthread_mutexattr_t, __protocol: c_int) c_int;
-pub extern fn pthread_mutexattr_getprioceiling(noalias __attr: ?[*]const pthread_mutexattr_t, noalias __prioceiling: ?[*]c_int) c_int;
-pub extern fn pthread_mutexattr_setprioceiling(__attr: ?[*]pthread_mutexattr_t, __prioceiling: c_int) c_int;
-pub extern fn pthread_mutexattr_getrobust(__attr: ?[*]const pthread_mutexattr_t, __robustness: ?[*]c_int) c_int;
-pub extern fn pthread_mutexattr_setrobust(__attr: ?[*]pthread_mutexattr_t, __robustness: c_int) c_int;
-pub extern fn pthread_rwlock_init(noalias __rwlock: ?[*]pthread_rwlock_t, noalias __attr: ?[*]const pthread_rwlockattr_t) c_int;
-pub extern fn pthread_rwlock_destroy(__rwlock: ?[*]pthread_rwlock_t) c_int;
-pub extern fn pthread_rwlock_rdlock(__rwlock: ?[*]pthread_rwlock_t) c_int;
-pub extern fn pthread_rwlock_tryrdlock(__rwlock: ?[*]pthread_rwlock_t) c_int;
-pub extern fn pthread_rwlock_timedrdlock(noalias __rwlock: ?[*]pthread_rwlock_t, noalias __abstime: ?[*]const struct_timespec) c_int;
-pub extern fn pthread_rwlock_wrlock(__rwlock: ?[*]pthread_rwlock_t) c_int;
-pub extern fn pthread_rwlock_trywrlock(__rwlock: ?[*]pthread_rwlock_t) c_int;
-pub extern fn pthread_rwlock_timedwrlock(noalias __rwlock: ?[*]pthread_rwlock_t, noalias __abstime: ?[*]const struct_timespec) c_int;
-pub extern fn pthread_rwlock_unlock(__rwlock: ?[*]pthread_rwlock_t) c_int;
-pub extern fn pthread_rwlockattr_init(__attr: ?[*]pthread_rwlockattr_t) c_int;
-pub extern fn pthread_rwlockattr_destroy(__attr: ?[*]pthread_rwlockattr_t) c_int;
-pub extern fn pthread_rwlockattr_getpshared(noalias __attr: ?[*]const pthread_rwlockattr_t, noalias __pshared: ?[*]c_int) c_int;
-pub extern fn pthread_rwlockattr_setpshared(__attr: ?[*]pthread_rwlockattr_t, __pshared: c_int) c_int;
-pub extern fn pthread_rwlockattr_getkind_np(noalias __attr: ?[*]const pthread_rwlockattr_t, noalias __pref: ?[*]c_int) c_int;
-pub extern fn pthread_rwlockattr_setkind_np(__attr: ?[*]pthread_rwlockattr_t, __pref: c_int) c_int;
-pub extern fn pthread_cond_init(noalias __cond: ?[*]pthread_cond_t, noalias __cond_attr: ?[*]const pthread_condattr_t) c_int;
-pub extern fn pthread_cond_destroy(__cond: ?[*]pthread_cond_t) c_int;
-pub extern fn pthread_cond_signal(__cond: ?[*]pthread_cond_t) c_int;
-pub extern fn pthread_cond_broadcast(__cond: ?[*]pthread_cond_t) c_int;
-pub extern fn pthread_cond_wait(noalias __cond: ?[*]pthread_cond_t, noalias __mutex: ?[*]pthread_mutex_t) c_int;
-pub extern fn pthread_cond_timedwait(noalias __cond: ?[*]pthread_cond_t, noalias __mutex: ?[*]pthread_mutex_t, noalias __abstime: ?[*]const struct_timespec) c_int;
-pub extern fn pthread_condattr_init(__attr: ?[*]pthread_condattr_t) c_int;
-pub extern fn pthread_condattr_destroy(__attr: ?[*]pthread_condattr_t) c_int;
-pub extern fn pthread_condattr_getpshared(noalias __attr: ?[*]const pthread_condattr_t, noalias __pshared: ?[*]c_int) c_int;
-pub extern fn pthread_condattr_setpshared(__attr: ?[*]pthread_condattr_t, __pshared: c_int) c_int;
-pub extern fn pthread_condattr_getclock(noalias __attr: ?[*]const pthread_condattr_t, noalias __clock_id: ?[*]__clockid_t) c_int;
-pub extern fn pthread_condattr_setclock(__attr: ?[*]pthread_condattr_t, __clock_id: __clockid_t) c_int;
-pub extern fn pthread_spin_init(__lock: ?[*]volatile pthread_spinlock_t, __pshared: c_int) c_int;
-pub extern fn pthread_spin_destroy(__lock: ?[*]volatile pthread_spinlock_t) c_int;
-pub extern fn pthread_spin_lock(__lock: ?[*]volatile pthread_spinlock_t) c_int;
-pub extern fn pthread_spin_trylock(__lock: ?[*]volatile pthread_spinlock_t) c_int;
-pub extern fn pthread_spin_unlock(__lock: ?[*]volatile pthread_spinlock_t) c_int;
-pub extern fn pthread_barrier_init(noalias __barrier: ?[*]pthread_barrier_t, noalias __attr: ?[*]const pthread_barrierattr_t, __count: c_uint) c_int;
-pub extern fn pthread_barrier_destroy(__barrier: ?[*]pthread_barrier_t) c_int;
-pub extern fn pthread_barrier_wait(__barrier: ?[*]pthread_barrier_t) c_int;
-pub extern fn pthread_barrierattr_init(__attr: ?[*]pthread_barrierattr_t) c_int;
-pub extern fn pthread_barrierattr_destroy(__attr: ?[*]pthread_barrierattr_t) c_int;
-pub extern fn pthread_barrierattr_getpshared(noalias __attr: ?[*]const pthread_barrierattr_t, noalias __pshared: ?[*]c_int) c_int;
-pub extern fn pthread_barrierattr_setpshared(__attr: ?[*]pthread_barrierattr_t, __pshared: c_int) c_int;
-pub extern fn pthread_key_create(__key: ?[*]pthread_key_t, __destr_function: ?extern fn(?*c_void) void) c_int;
+pub extern fn pthread_mutex_init(__mutex: [*c]pthread_mutex_t, __mutexattr: [*c]const pthread_mutexattr_t) c_int;
+pub extern fn pthread_mutex_destroy(__mutex: [*c]pthread_mutex_t) c_int;
+pub extern fn pthread_mutex_trylock(__mutex: [*c]pthread_mutex_t) c_int;
+pub extern fn pthread_mutex_lock(__mutex: [*c]pthread_mutex_t) c_int;
+pub extern fn pthread_mutex_timedlock(noalias __mutex: [*c]pthread_mutex_t, noalias __abstime: [*c]const struct_timespec) c_int;
+pub extern fn pthread_mutex_unlock(__mutex: [*c]pthread_mutex_t) c_int;
+pub extern fn pthread_mutex_getprioceiling(noalias __mutex: [*c]const pthread_mutex_t, noalias __prioceiling: [*c]c_int) c_int;
+pub extern fn pthread_mutex_setprioceiling(noalias __mutex: [*c]pthread_mutex_t, __prioceiling: c_int, noalias __old_ceiling: [*c]c_int) c_int;
+pub extern fn pthread_mutex_consistent(__mutex: [*c]pthread_mutex_t) c_int;
+pub extern fn pthread_mutexattr_init(__attr: [*c]pthread_mutexattr_t) c_int;
+pub extern fn pthread_mutexattr_destroy(__attr: [*c]pthread_mutexattr_t) c_int;
+pub extern fn pthread_mutexattr_getpshared(noalias __attr: [*c]const pthread_mutexattr_t, noalias __pshared: [*c]c_int) c_int;
+pub extern fn pthread_mutexattr_setpshared(__attr: [*c]pthread_mutexattr_t, __pshared: c_int) c_int;
+pub extern fn pthread_mutexattr_gettype(noalias __attr: [*c]const pthread_mutexattr_t, noalias __kind: [*c]c_int) c_int;
+pub extern fn pthread_mutexattr_settype(__attr: [*c]pthread_mutexattr_t, __kind: c_int) c_int;
+pub extern fn pthread_mutexattr_getprotocol(noalias __attr: [*c]const pthread_mutexattr_t, noalias __protocol: [*c]c_int) c_int;
+pub extern fn pthread_mutexattr_setprotocol(__attr: [*c]pthread_mutexattr_t, __protocol: c_int) c_int;
+pub extern fn pthread_mutexattr_getprioceiling(noalias __attr: [*c]const pthread_mutexattr_t, noalias __prioceiling: [*c]c_int) c_int;
+pub extern fn pthread_mutexattr_setprioceiling(__attr: [*c]pthread_mutexattr_t, __prioceiling: c_int) c_int;
+pub extern fn pthread_mutexattr_getrobust(__attr: [*c]const pthread_mutexattr_t, __robustness: [*c]c_int) c_int;
+pub extern fn pthread_mutexattr_setrobust(__attr: [*c]pthread_mutexattr_t, __robustness: c_int) c_int;
+pub extern fn pthread_rwlock_init(noalias __rwlock: [*c]pthread_rwlock_t, noalias __attr: [*c]const pthread_rwlockattr_t) c_int;
+pub extern fn pthread_rwlock_destroy(__rwlock: [*c]pthread_rwlock_t) c_int;
+pub extern fn pthread_rwlock_rdlock(__rwlock: [*c]pthread_rwlock_t) c_int;
+pub extern fn pthread_rwlock_tryrdlock(__rwlock: [*c]pthread_rwlock_t) c_int;
+pub extern fn pthread_rwlock_timedrdlock(noalias __rwlock: [*c]pthread_rwlock_t, noalias __abstime: [*c]const struct_timespec) c_int;
+pub extern fn pthread_rwlock_wrlock(__rwlock: [*c]pthread_rwlock_t) c_int;
+pub extern fn pthread_rwlock_trywrlock(__rwlock: [*c]pthread_rwlock_t) c_int;
+pub extern fn pthread_rwlock_timedwrlock(noalias __rwlock: [*c]pthread_rwlock_t, noalias __abstime: [*c]const struct_timespec) c_int;
+pub extern fn pthread_rwlock_unlock(__rwlock: [*c]pthread_rwlock_t) c_int;
+pub extern fn pthread_rwlockattr_init(__attr: [*c]pthread_rwlockattr_t) c_int;
+pub extern fn pthread_rwlockattr_destroy(__attr: [*c]pthread_rwlockattr_t) c_int;
+pub extern fn pthread_rwlockattr_getpshared(noalias __attr: [*c]const pthread_rwlockattr_t, noalias __pshared: [*c]c_int) c_int;
+pub extern fn pthread_rwlockattr_setpshared(__attr: [*c]pthread_rwlockattr_t, __pshared: c_int) c_int;
+pub extern fn pthread_rwlockattr_getkind_np(noalias __attr: [*c]const pthread_rwlockattr_t, noalias __pref: [*c]c_int) c_int;
+pub extern fn pthread_rwlockattr_setkind_np(__attr: [*c]pthread_rwlockattr_t, __pref: c_int) c_int;
+pub extern fn pthread_cond_init(noalias __cond: [*c]pthread_cond_t, noalias __cond_attr: [*c]const pthread_condattr_t) c_int;
+pub extern fn pthread_cond_destroy(__cond: [*c]pthread_cond_t) c_int;
+pub extern fn pthread_cond_signal(__cond: [*c]pthread_cond_t) c_int;
+pub extern fn pthread_cond_broadcast(__cond: [*c]pthread_cond_t) c_int;
+pub extern fn pthread_cond_wait(noalias __cond: [*c]pthread_cond_t, noalias __mutex: [*c]pthread_mutex_t) c_int;
+pub extern fn pthread_cond_timedwait(noalias __cond: [*c]pthread_cond_t, noalias __mutex: [*c]pthread_mutex_t, noalias __abstime: [*c]const struct_timespec) c_int;
+pub extern fn pthread_condattr_init(__attr: [*c]pthread_condattr_t) c_int;
+pub extern fn pthread_condattr_destroy(__attr: [*c]pthread_condattr_t) c_int;
+pub extern fn pthread_condattr_getpshared(noalias __attr: [*c]const pthread_condattr_t, noalias __pshared: [*c]c_int) c_int;
+pub extern fn pthread_condattr_setpshared(__attr: [*c]pthread_condattr_t, __pshared: c_int) c_int;
+pub extern fn pthread_condattr_getclock(noalias __attr: [*c]const pthread_condattr_t, noalias __clock_id: [*c]__clockid_t) c_int;
+pub extern fn pthread_condattr_setclock(__attr: [*c]pthread_condattr_t, __clock_id: __clockid_t) c_int;
+pub extern fn pthread_spin_init(__lock: [*c]volatile pthread_spinlock_t, __pshared: c_int) c_int;
+pub extern fn pthread_spin_destroy(__lock: [*c]volatile pthread_spinlock_t) c_int;
+pub extern fn pthread_spin_lock(__lock: [*c]volatile pthread_spinlock_t) c_int;
+pub extern fn pthread_spin_trylock(__lock: [*c]volatile pthread_spinlock_t) c_int;
+pub extern fn pthread_spin_unlock(__lock: [*c]volatile pthread_spinlock_t) c_int;
+pub extern fn pthread_barrier_init(noalias __barrier: [*c]pthread_barrier_t, noalias __attr: [*c]const pthread_barrierattr_t, __count: c_uint) c_int;
+pub extern fn pthread_barrier_destroy(__barrier: [*c]pthread_barrier_t) c_int;
+pub extern fn pthread_barrier_wait(__barrier: [*c]pthread_barrier_t) c_int;
+pub extern fn pthread_barrierattr_init(__attr: [*c]pthread_barrierattr_t) c_int;
+pub extern fn pthread_barrierattr_destroy(__attr: [*c]pthread_barrierattr_t) c_int;
+pub extern fn pthread_barrierattr_getpshared(noalias __attr: [*c]const pthread_barrierattr_t, noalias __pshared: [*c]c_int) c_int;
+pub extern fn pthread_barrierattr_setpshared(__attr: [*c]pthread_barrierattr_t, __pshared: c_int) c_int;
+pub extern fn pthread_key_create(__key: [*c]pthread_key_t, __destr_function: ?extern fn(?*c_void) void) c_int;
 pub extern fn pthread_key_delete(__key: pthread_key_t) c_int;
 pub extern fn pthread_getspecific(__key: pthread_key_t) ?*c_void;
 pub extern fn pthread_setspecific(__key: pthread_key_t, __pointer: ?*const c_void) c_int;
-pub extern fn pthread_getcpuclockid(__thread_id: pthread_t, __clock_id: ?[*]__clockid_t) c_int;
+pub extern fn pthread_getcpuclockid(__thread_id: pthread_t, __clock_id: [*c]__clockid_t) c_int;
 pub extern fn pthread_atfork(__prepare: ?extern fn() void, __parent: ?extern fn() void, __child: ?extern fn() void) c_int;
 pub const struct_xcb_connection_t = @OpaqueType();
 pub const xcb_connection_t = struct_xcb_connection_t;
@@ -551,119 +551,119 @@ pub const struct_xcb_char2b_t = extern struct {
 };
 pub const xcb_char2b_t = struct_xcb_char2b_t;
 pub const struct_xcb_char2b_iterator_t = extern struct {
-    data: ?[*]xcb_char2b_t,
+    data: [*c]xcb_char2b_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_char2b_iterator_t = struct_xcb_char2b_iterator_t;
 pub const xcb_window_t = u32;
 pub const struct_xcb_window_iterator_t = extern struct {
-    data: ?[*]xcb_window_t,
+    data: [*c]xcb_window_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_window_iterator_t = struct_xcb_window_iterator_t;
 pub const xcb_pixmap_t = u32;
 pub const struct_xcb_pixmap_iterator_t = extern struct {
-    data: ?[*]xcb_pixmap_t,
+    data: [*c]xcb_pixmap_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_pixmap_iterator_t = struct_xcb_pixmap_iterator_t;
 pub const xcb_cursor_t = u32;
 pub const struct_xcb_cursor_iterator_t = extern struct {
-    data: ?[*]xcb_cursor_t,
+    data: [*c]xcb_cursor_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_cursor_iterator_t = struct_xcb_cursor_iterator_t;
 pub const xcb_font_t = u32;
 pub const struct_xcb_font_iterator_t = extern struct {
-    data: ?[*]xcb_font_t,
+    data: [*c]xcb_font_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_font_iterator_t = struct_xcb_font_iterator_t;
 pub const xcb_gcontext_t = u32;
 pub const struct_xcb_gcontext_iterator_t = extern struct {
-    data: ?[*]xcb_gcontext_t,
+    data: [*c]xcb_gcontext_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_gcontext_iterator_t = struct_xcb_gcontext_iterator_t;
 pub const xcb_colormap_t = u32;
 pub const struct_xcb_colormap_iterator_t = extern struct {
-    data: ?[*]xcb_colormap_t,
+    data: [*c]xcb_colormap_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_colormap_iterator_t = struct_xcb_colormap_iterator_t;
 pub const xcb_atom_t = u32;
 pub const struct_xcb_atom_iterator_t = extern struct {
-    data: ?[*]xcb_atom_t,
+    data: [*c]xcb_atom_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_atom_iterator_t = struct_xcb_atom_iterator_t;
 pub const xcb_drawable_t = u32;
 pub const struct_xcb_drawable_iterator_t = extern struct {
-    data: ?[*]xcb_drawable_t,
+    data: [*c]xcb_drawable_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_drawable_iterator_t = struct_xcb_drawable_iterator_t;
 pub const xcb_fontable_t = u32;
 pub const struct_xcb_fontable_iterator_t = extern struct {
-    data: ?[*]xcb_fontable_t,
+    data: [*c]xcb_fontable_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_fontable_iterator_t = struct_xcb_fontable_iterator_t;
 pub const xcb_bool32_t = u32;
 pub const struct_xcb_bool32_iterator_t = extern struct {
-    data: ?[*]xcb_bool32_t,
+    data: [*c]xcb_bool32_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_bool32_iterator_t = struct_xcb_bool32_iterator_t;
 pub const xcb_visualid_t = u32;
 pub const struct_xcb_visualid_iterator_t = extern struct {
-    data: ?[*]xcb_visualid_t,
+    data: [*c]xcb_visualid_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_visualid_iterator_t = struct_xcb_visualid_iterator_t;
 pub const xcb_timestamp_t = u32;
 pub const struct_xcb_timestamp_iterator_t = extern struct {
-    data: ?[*]xcb_timestamp_t,
+    data: [*c]xcb_timestamp_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_timestamp_iterator_t = struct_xcb_timestamp_iterator_t;
 pub const xcb_keysym_t = u32;
 pub const struct_xcb_keysym_iterator_t = extern struct {
-    data: ?[*]xcb_keysym_t,
+    data: [*c]xcb_keysym_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_keysym_iterator_t = struct_xcb_keysym_iterator_t;
 pub const xcb_keycode_t = u8;
 pub const struct_xcb_keycode_iterator_t = extern struct {
-    data: ?[*]xcb_keycode_t,
+    data: [*c]xcb_keycode_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_keycode_iterator_t = struct_xcb_keycode_iterator_t;
 pub const xcb_keycode32_t = u32;
 pub const struct_xcb_keycode32_iterator_t = extern struct {
-    data: ?[*]xcb_keycode32_t,
+    data: [*c]xcb_keycode32_t,
     rem: c_int,
     index: c_int,
 };
 pub const xcb_keycode32_iterator_t = struct_xcb_keycode32_iterator_t;
 pub const xcb_button_t = u8;
 pub const struct_xcb_button_iterator_t = extern struct {
-    data: ?[*]xcb_button_t,
+    data: [*c]xcb_button_t,
     rem: c_int,
     index: c_int,
 };
@@ -674,7 +674,7 @@ pub const struct_xcb_point_t = extern struct {
 };
 pub const xcb_point_t = struct_xcb_point_t;
 pub const struct_xcb_point_iterator_t = extern struct {
-    data: ?[*]xcb_point_t,
+    data: [*c]xcb_point_t,
     rem: c_int,
     index: c_int,
 };
@@ -687,7 +687,7 @@ pub const struct_xcb_rectangle_t = extern struct {
 };
 pub const xcb_rectangle_t = struct_xcb_rectangle_t;
 pub const struct_xcb_rectangle_iterator_t = extern struct {
-    data: ?[*]xcb_rectangle_t,
+    data: [*c]xcb_rectangle_t,
     rem: c_int,
     index: c_int,
 };
@@ -702,7 +702,7 @@ pub const struct_xcb_arc_t = extern struct {
 };
 pub const xcb_arc_t = struct_xcb_arc_t;
 pub const struct_xcb_arc_iterator_t = extern struct {
-    data: ?[*]xcb_arc_t,
+    data: [*c]xcb_arc_t,
     rem: c_int,
     index: c_int,
 };
@@ -715,7 +715,7 @@ pub const struct_xcb_format_t = extern struct {
 };
 pub const xcb_format_t = struct_xcb_format_t;
 pub const struct_xcb_format_iterator_t = extern struct {
-    data: ?[*]xcb_format_t,
+    data: [*c]xcb_format_t,
     rem: c_int,
     index: c_int,
 };
@@ -747,7 +747,7 @@ pub const struct_xcb_visualtype_t = extern struct {
 };
 pub const xcb_visualtype_t = struct_xcb_visualtype_t;
 pub const struct_xcb_visualtype_iterator_t = extern struct {
-    data: ?[*]xcb_visualtype_t,
+    data: [*c]xcb_visualtype_t,
     rem: c_int,
     index: c_int,
 };
@@ -760,7 +760,7 @@ pub const struct_xcb_depth_t = extern struct {
 };
 pub const xcb_depth_t = struct_xcb_depth_t;
 pub const struct_xcb_depth_iterator_t = extern struct {
-    data: ?[*]xcb_depth_t,
+    data: [*c]xcb_depth_t,
     rem: c_int,
     index: c_int,
 };
@@ -849,7 +849,7 @@ pub const struct_xcb_screen_t = extern struct {
 };
 pub const xcb_screen_t = struct_xcb_screen_t;
 pub const struct_xcb_screen_iterator_t = extern struct {
-    data: ?[*]xcb_screen_t,
+    data: [*c]xcb_screen_t,
     rem: c_int,
     index: c_int,
 };
@@ -865,7 +865,7 @@ pub const struct_xcb_setup_request_t = extern struct {
 };
 pub const xcb_setup_request_t = struct_xcb_setup_request_t;
 pub const struct_xcb_setup_request_iterator_t = extern struct {
-    data: ?[*]xcb_setup_request_t,
+    data: [*c]xcb_setup_request_t,
     rem: c_int,
     index: c_int,
 };
@@ -879,7 +879,7 @@ pub const struct_xcb_setup_failed_t = extern struct {
 };
 pub const xcb_setup_failed_t = struct_xcb_setup_failed_t;
 pub const struct_xcb_setup_failed_iterator_t = extern struct {
-    data: ?[*]xcb_setup_failed_t,
+    data: [*c]xcb_setup_failed_t,
     rem: c_int,
     index: c_int,
 };
@@ -891,7 +891,7 @@ pub const struct_xcb_setup_authenticate_t = extern struct {
 };
 pub const xcb_setup_authenticate_t = struct_xcb_setup_authenticate_t;
 pub const struct_xcb_setup_authenticate_iterator_t = extern struct {
-    data: ?[*]xcb_setup_authenticate_t,
+    data: [*c]xcb_setup_authenticate_t,
     rem: c_int,
     index: c_int,
 };
@@ -927,7 +927,7 @@ pub const struct_xcb_setup_t = extern struct {
 };
 pub const xcb_setup_t = struct_xcb_setup_t;
 pub const struct_xcb_setup_iterator_t = extern struct {
-    data: ?[*]xcb_setup_t,
+    data: [*c]xcb_setup_t,
     rem: c_int,
     index: c_int,
 };
@@ -1542,7 +1542,7 @@ pub const union_xcb_client_message_data_t = extern union {
 };
 pub const xcb_client_message_data_t = union_xcb_client_message_data_t;
 pub const struct_xcb_client_message_data_iterator_t = extern struct {
-    data: ?[*]xcb_client_message_data_t,
+    data: [*c]xcb_client_message_data_t,
     rem: c_int,
     index: c_int,
 };
@@ -2380,7 +2380,7 @@ pub const struct_xcb_timecoord_t = extern struct {
 };
 pub const xcb_timecoord_t = struct_xcb_timecoord_t;
 pub const struct_xcb_timecoord_iterator_t = extern struct {
-    data: ?[*]xcb_timecoord_t,
+    data: [*c]xcb_timecoord_t,
     rem: c_int,
     index: c_int,
 };
@@ -2529,7 +2529,7 @@ pub const struct_xcb_fontprop_t = extern struct {
 };
 pub const xcb_fontprop_t = struct_xcb_fontprop_t;
 pub const struct_xcb_fontprop_iterator_t = extern struct {
-    data: ?[*]xcb_fontprop_t,
+    data: [*c]xcb_fontprop_t,
     rem: c_int,
     index: c_int,
 };
@@ -2544,7 +2544,7 @@ pub const struct_xcb_charinfo_t = extern struct {
 };
 pub const xcb_charinfo_t = struct_xcb_charinfo_t;
 pub const struct_xcb_charinfo_iterator_t = extern struct {
-    data: ?[*]xcb_charinfo_t,
+    data: [*c]xcb_charinfo_t,
     rem: c_int,
     index: c_int,
 };
@@ -2612,7 +2612,7 @@ pub const struct_xcb_str_t = extern struct {
 };
 pub const xcb_str_t = struct_xcb_str_t;
 pub const struct_xcb_str_iterator_t = extern struct {
-    data: ?[*]xcb_str_t,
+    data: [*c]xcb_str_t,
     rem: c_int,
     index: c_int,
 };
@@ -3048,7 +3048,7 @@ pub const struct_xcb_segment_t = extern struct {
 };
 pub const xcb_segment_t = struct_xcb_segment_t;
 pub const struct_xcb_segment_iterator_t = extern struct {
-    data: ?[*]xcb_segment_t,
+    data: [*c]xcb_segment_t,
     rem: c_int,
     index: c_int,
 };
@@ -3399,7 +3399,7 @@ pub const struct_xcb_coloritem_t = extern struct {
 };
 pub const xcb_coloritem_t = struct_xcb_coloritem_t;
 pub const struct_xcb_coloritem_iterator_t = extern struct {
-    data: ?[*]xcb_coloritem_t,
+    data: [*c]xcb_coloritem_t,
     rem: c_int,
     index: c_int,
 };
@@ -3429,7 +3429,7 @@ pub const struct_xcb_rgb_t = extern struct {
 };
 pub const xcb_rgb_t = struct_xcb_rgb_t;
 pub const struct_xcb_rgb_iterator_t = extern struct {
-    data: ?[*]xcb_rgb_t,
+    data: [*c]xcb_rgb_t,
     rem: c_int,
     index: c_int,
 };
@@ -3846,7 +3846,7 @@ pub const struct_xcb_host_t = extern struct {
 };
 pub const xcb_host_t = struct_xcb_host_t;
 pub const struct_xcb_host_iterator_t = extern struct {
-    data: ?[*]xcb_host_t,
+    data: [*c]xcb_host_t,
     rem: c_int,
     index: c_int,
 };
@@ -4036,116 +4036,116 @@ pub const struct_xcb_no_operation_request_t = extern struct {
     length: u16,
 };
 pub const xcb_no_operation_request_t = struct_xcb_no_operation_request_t;
-pub extern fn xcb_char2b_next(i: ?[*]xcb_char2b_iterator_t) void;
+pub extern fn xcb_char2b_next(i: [*c]xcb_char2b_iterator_t) void;
 pub extern fn xcb_char2b_end(i: xcb_char2b_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_window_next(i: ?[*]xcb_window_iterator_t) void;
+pub extern fn xcb_window_next(i: [*c]xcb_window_iterator_t) void;
 pub extern fn xcb_window_end(i: xcb_window_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_pixmap_next(i: ?[*]xcb_pixmap_iterator_t) void;
+pub extern fn xcb_pixmap_next(i: [*c]xcb_pixmap_iterator_t) void;
 pub extern fn xcb_pixmap_end(i: xcb_pixmap_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_cursor_next(i: ?[*]xcb_cursor_iterator_t) void;
+pub extern fn xcb_cursor_next(i: [*c]xcb_cursor_iterator_t) void;
 pub extern fn xcb_cursor_end(i: xcb_cursor_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_font_next(i: ?[*]xcb_font_iterator_t) void;
+pub extern fn xcb_font_next(i: [*c]xcb_font_iterator_t) void;
 pub extern fn xcb_font_end(i: xcb_font_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_gcontext_next(i: ?[*]xcb_gcontext_iterator_t) void;
+pub extern fn xcb_gcontext_next(i: [*c]xcb_gcontext_iterator_t) void;
 pub extern fn xcb_gcontext_end(i: xcb_gcontext_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_colormap_next(i: ?[*]xcb_colormap_iterator_t) void;
+pub extern fn xcb_colormap_next(i: [*c]xcb_colormap_iterator_t) void;
 pub extern fn xcb_colormap_end(i: xcb_colormap_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_atom_next(i: ?[*]xcb_atom_iterator_t) void;
+pub extern fn xcb_atom_next(i: [*c]xcb_atom_iterator_t) void;
 pub extern fn xcb_atom_end(i: xcb_atom_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_drawable_next(i: ?[*]xcb_drawable_iterator_t) void;
+pub extern fn xcb_drawable_next(i: [*c]xcb_drawable_iterator_t) void;
 pub extern fn xcb_drawable_end(i: xcb_drawable_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_fontable_next(i: ?[*]xcb_fontable_iterator_t) void;
+pub extern fn xcb_fontable_next(i: [*c]xcb_fontable_iterator_t) void;
 pub extern fn xcb_fontable_end(i: xcb_fontable_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_bool32_next(i: ?[*]xcb_bool32_iterator_t) void;
+pub extern fn xcb_bool32_next(i: [*c]xcb_bool32_iterator_t) void;
 pub extern fn xcb_bool32_end(i: xcb_bool32_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_visualid_next(i: ?[*]xcb_visualid_iterator_t) void;
+pub extern fn xcb_visualid_next(i: [*c]xcb_visualid_iterator_t) void;
 pub extern fn xcb_visualid_end(i: xcb_visualid_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_timestamp_next(i: ?[*]xcb_timestamp_iterator_t) void;
+pub extern fn xcb_timestamp_next(i: [*c]xcb_timestamp_iterator_t) void;
 pub extern fn xcb_timestamp_end(i: xcb_timestamp_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_keysym_next(i: ?[*]xcb_keysym_iterator_t) void;
+pub extern fn xcb_keysym_next(i: [*c]xcb_keysym_iterator_t) void;
 pub extern fn xcb_keysym_end(i: xcb_keysym_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_keycode_next(i: ?[*]xcb_keycode_iterator_t) void;
+pub extern fn xcb_keycode_next(i: [*c]xcb_keycode_iterator_t) void;
 pub extern fn xcb_keycode_end(i: xcb_keycode_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_keycode32_next(i: ?[*]xcb_keycode32_iterator_t) void;
+pub extern fn xcb_keycode32_next(i: [*c]xcb_keycode32_iterator_t) void;
 pub extern fn xcb_keycode32_end(i: xcb_keycode32_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_button_next(i: ?[*]xcb_button_iterator_t) void;
+pub extern fn xcb_button_next(i: [*c]xcb_button_iterator_t) void;
 pub extern fn xcb_button_end(i: xcb_button_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_point_next(i: ?[*]xcb_point_iterator_t) void;
+pub extern fn xcb_point_next(i: [*c]xcb_point_iterator_t) void;
 pub extern fn xcb_point_end(i: xcb_point_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_rectangle_next(i: ?[*]xcb_rectangle_iterator_t) void;
+pub extern fn xcb_rectangle_next(i: [*c]xcb_rectangle_iterator_t) void;
 pub extern fn xcb_rectangle_end(i: xcb_rectangle_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_arc_next(i: ?[*]xcb_arc_iterator_t) void;
+pub extern fn xcb_arc_next(i: [*c]xcb_arc_iterator_t) void;
 pub extern fn xcb_arc_end(i: xcb_arc_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_format_next(i: ?[*]xcb_format_iterator_t) void;
+pub extern fn xcb_format_next(i: [*c]xcb_format_iterator_t) void;
 pub extern fn xcb_format_end(i: xcb_format_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_visualtype_next(i: ?[*]xcb_visualtype_iterator_t) void;
+pub extern fn xcb_visualtype_next(i: [*c]xcb_visualtype_iterator_t) void;
 pub extern fn xcb_visualtype_end(i: xcb_visualtype_iterator_t) xcb_generic_iterator_t;
 pub extern fn xcb_depth_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_depth_visuals(R: ?[*]const xcb_depth_t) ?[*]xcb_visualtype_t;
-pub extern fn xcb_depth_visuals_length(R: ?[*]const xcb_depth_t) c_int;
-pub extern fn xcb_depth_visuals_iterator(R: ?[*]const xcb_depth_t) xcb_visualtype_iterator_t;
-pub extern fn xcb_depth_next(i: ?[*]xcb_depth_iterator_t) void;
+pub extern fn xcb_depth_visuals(R: [*c]const xcb_depth_t) [*c]xcb_visualtype_t;
+pub extern fn xcb_depth_visuals_length(R: [*c]const xcb_depth_t) c_int;
+pub extern fn xcb_depth_visuals_iterator(R: [*c]const xcb_depth_t) xcb_visualtype_iterator_t;
+pub extern fn xcb_depth_next(i: [*c]xcb_depth_iterator_t) void;
 pub extern fn xcb_depth_end(i: xcb_depth_iterator_t) xcb_generic_iterator_t;
 pub extern fn xcb_screen_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_screen_allowed_depths_length(R: ?[*]const xcb_screen_t) c_int;
-pub extern fn xcb_screen_allowed_depths_iterator(R: ?[*]const xcb_screen_t) xcb_depth_iterator_t;
-pub extern fn xcb_screen_next(i: ?[*]xcb_screen_iterator_t) void;
+pub extern fn xcb_screen_allowed_depths_length(R: [*c]const xcb_screen_t) c_int;
+pub extern fn xcb_screen_allowed_depths_iterator(R: [*c]const xcb_screen_t) xcb_depth_iterator_t;
+pub extern fn xcb_screen_next(i: [*c]xcb_screen_iterator_t) void;
 pub extern fn xcb_screen_end(i: xcb_screen_iterator_t) xcb_generic_iterator_t;
 pub extern fn xcb_setup_request_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_setup_request_authorization_protocol_name(R: ?[*]const xcb_setup_request_t) ?[*]u8;
-pub extern fn xcb_setup_request_authorization_protocol_name_length(R: ?[*]const xcb_setup_request_t) c_int;
-pub extern fn xcb_setup_request_authorization_protocol_name_end(R: ?[*]const xcb_setup_request_t) xcb_generic_iterator_t;
-pub extern fn xcb_setup_request_authorization_protocol_data(R: ?[*]const xcb_setup_request_t) ?[*]u8;
-pub extern fn xcb_setup_request_authorization_protocol_data_length(R: ?[*]const xcb_setup_request_t) c_int;
-pub extern fn xcb_setup_request_authorization_protocol_data_end(R: ?[*]const xcb_setup_request_t) xcb_generic_iterator_t;
-pub extern fn xcb_setup_request_next(i: ?[*]xcb_setup_request_iterator_t) void;
+pub extern fn xcb_setup_request_authorization_protocol_name(R: [*c]const xcb_setup_request_t) [*c]u8;
+pub extern fn xcb_setup_request_authorization_protocol_name_length(R: [*c]const xcb_setup_request_t) c_int;
+pub extern fn xcb_setup_request_authorization_protocol_name_end(R: [*c]const xcb_setup_request_t) xcb_generic_iterator_t;
+pub extern fn xcb_setup_request_authorization_protocol_data(R: [*c]const xcb_setup_request_t) [*c]u8;
+pub extern fn xcb_setup_request_authorization_protocol_data_length(R: [*c]const xcb_setup_request_t) c_int;
+pub extern fn xcb_setup_request_authorization_protocol_data_end(R: [*c]const xcb_setup_request_t) xcb_generic_iterator_t;
+pub extern fn xcb_setup_request_next(i: [*c]xcb_setup_request_iterator_t) void;
 pub extern fn xcb_setup_request_end(i: xcb_setup_request_iterator_t) xcb_generic_iterator_t;
 pub extern fn xcb_setup_failed_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_setup_failed_reason(R: ?[*]const xcb_setup_failed_t) ?[*]u8;
-pub extern fn xcb_setup_failed_reason_length(R: ?[*]const xcb_setup_failed_t) c_int;
-pub extern fn xcb_setup_failed_reason_end(R: ?[*]const xcb_setup_failed_t) xcb_generic_iterator_t;
-pub extern fn xcb_setup_failed_next(i: ?[*]xcb_setup_failed_iterator_t) void;
+pub extern fn xcb_setup_failed_reason(R: [*c]const xcb_setup_failed_t) [*c]u8;
+pub extern fn xcb_setup_failed_reason_length(R: [*c]const xcb_setup_failed_t) c_int;
+pub extern fn xcb_setup_failed_reason_end(R: [*c]const xcb_setup_failed_t) xcb_generic_iterator_t;
+pub extern fn xcb_setup_failed_next(i: [*c]xcb_setup_failed_iterator_t) void;
 pub extern fn xcb_setup_failed_end(i: xcb_setup_failed_iterator_t) xcb_generic_iterator_t;
 pub extern fn xcb_setup_authenticate_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_setup_authenticate_reason(R: ?[*]const xcb_setup_authenticate_t) ?[*]u8;
-pub extern fn xcb_setup_authenticate_reason_length(R: ?[*]const xcb_setup_authenticate_t) c_int;
-pub extern fn xcb_setup_authenticate_reason_end(R: ?[*]const xcb_setup_authenticate_t) xcb_generic_iterator_t;
-pub extern fn xcb_setup_authenticate_next(i: ?[*]xcb_setup_authenticate_iterator_t) void;
+pub extern fn xcb_setup_authenticate_reason(R: [*c]const xcb_setup_authenticate_t) [*c]u8;
+pub extern fn xcb_setup_authenticate_reason_length(R: [*c]const xcb_setup_authenticate_t) c_int;
+pub extern fn xcb_setup_authenticate_reason_end(R: [*c]const xcb_setup_authenticate_t) xcb_generic_iterator_t;
+pub extern fn xcb_setup_authenticate_next(i: [*c]xcb_setup_authenticate_iterator_t) void;
 pub extern fn xcb_setup_authenticate_end(i: xcb_setup_authenticate_iterator_t) xcb_generic_iterator_t;
 pub extern fn xcb_setup_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_setup_vendor(R: ?[*]const xcb_setup_t) ?[*]u8;
-pub extern fn xcb_setup_vendor_length(R: ?[*]const xcb_setup_t) c_int;
-pub extern fn xcb_setup_vendor_end(R: ?[*]const xcb_setup_t) xcb_generic_iterator_t;
-pub extern fn xcb_setup_pixmap_formats(R: ?[*]const xcb_setup_t) ?[*]xcb_format_t;
-pub extern fn xcb_setup_pixmap_formats_length(R: ?[*]const xcb_setup_t) c_int;
-pub extern fn xcb_setup_pixmap_formats_iterator(R: ?[*]const xcb_setup_t) xcb_format_iterator_t;
-pub extern fn xcb_setup_roots_length(R: ?[*]const xcb_setup_t) c_int;
-pub extern fn xcb_setup_roots_iterator(R: ?[*]const xcb_setup_t) xcb_screen_iterator_t;
-pub extern fn xcb_setup_next(i: ?[*]xcb_setup_iterator_t) void;
+pub extern fn xcb_setup_vendor(R: [*c]const xcb_setup_t) [*c]u8;
+pub extern fn xcb_setup_vendor_length(R: [*c]const xcb_setup_t) c_int;
+pub extern fn xcb_setup_vendor_end(R: [*c]const xcb_setup_t) xcb_generic_iterator_t;
+pub extern fn xcb_setup_pixmap_formats(R: [*c]const xcb_setup_t) [*c]xcb_format_t;
+pub extern fn xcb_setup_pixmap_formats_length(R: [*c]const xcb_setup_t) c_int;
+pub extern fn xcb_setup_pixmap_formats_iterator(R: [*c]const xcb_setup_t) xcb_format_iterator_t;
+pub extern fn xcb_setup_roots_length(R: [*c]const xcb_setup_t) c_int;
+pub extern fn xcb_setup_roots_iterator(R: [*c]const xcb_setup_t) xcb_screen_iterator_t;
+pub extern fn xcb_setup_next(i: [*c]xcb_setup_iterator_t) void;
 pub extern fn xcb_setup_end(i: xcb_setup_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_client_message_data_next(i: ?[*]xcb_client_message_data_iterator_t) void;
+pub extern fn xcb_client_message_data_next(i: [*c]xcb_client_message_data_iterator_t) void;
 pub extern fn xcb_client_message_data_end(i: xcb_client_message_data_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_create_window_value_list_serialize(_buffer: ?[*](?*c_void), value_mask: u32, _aux: ?[*]const xcb_create_window_value_list_t) c_int;
-pub extern fn xcb_create_window_value_list_unpack(_buffer: ?*const c_void, value_mask: u32, _aux: ?[*]xcb_create_window_value_list_t) c_int;
+pub extern fn xcb_create_window_value_list_serialize(_buffer: [*c](?*c_void), value_mask: u32, _aux: [*c]const xcb_create_window_value_list_t) c_int;
+pub extern fn xcb_create_window_value_list_unpack(_buffer: ?*const c_void, value_mask: u32, _aux: [*c]xcb_create_window_value_list_t) c_int;
 pub extern fn xcb_create_window_value_list_sizeof(_buffer: ?*const c_void, value_mask: u32) c_int;
 pub extern fn xcb_create_window_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_create_window_checked(c: ?*xcb_connection_t, depth: u8, wid: xcb_window_t, parent: xcb_window_t, x: i16, y: i16, width: u16, height: u16, border_width: u16, _class: u16, visual: xcb_visualid_t, value_mask: u32, value_list: ?*const c_void) xcb_void_cookie_t;
 pub extern fn xcb_create_window(c: ?*xcb_connection_t, depth: u8, wid: xcb_window_t, parent: xcb_window_t, x: i16, y: i16, width: u16, height: u16, border_width: u16, _class: u16, visual: xcb_visualid_t, value_mask: u32, value_list: ?*const c_void) xcb_void_cookie_t;
-pub extern fn xcb_create_window_aux_checked(c: ?*xcb_connection_t, depth: u8, wid: xcb_window_t, parent: xcb_window_t, x: i16, y: i16, width: u16, height: u16, border_width: u16, _class: u16, visual: xcb_visualid_t, value_mask: u32, value_list: ?[*]const xcb_create_window_value_list_t) xcb_void_cookie_t;
-pub extern fn xcb_create_window_aux(c: ?*xcb_connection_t, depth: u8, wid: xcb_window_t, parent: xcb_window_t, x: i16, y: i16, width: u16, height: u16, border_width: u16, _class: u16, visual: xcb_visualid_t, value_mask: u32, value_list: ?[*]const xcb_create_window_value_list_t) xcb_void_cookie_t;
-pub extern fn xcb_create_window_value_list(R: ?[*]const xcb_create_window_request_t) ?*c_void;
-pub extern fn xcb_change_window_attributes_value_list_serialize(_buffer: ?[*](?*c_void), value_mask: u32, _aux: ?[*]const xcb_change_window_attributes_value_list_t) c_int;
-pub extern fn xcb_change_window_attributes_value_list_unpack(_buffer: ?*const c_void, value_mask: u32, _aux: ?[*]xcb_change_window_attributes_value_list_t) c_int;
+pub extern fn xcb_create_window_aux_checked(c: ?*xcb_connection_t, depth: u8, wid: xcb_window_t, parent: xcb_window_t, x: i16, y: i16, width: u16, height: u16, border_width: u16, _class: u16, visual: xcb_visualid_t, value_mask: u32, value_list: [*c]const xcb_create_window_value_list_t) xcb_void_cookie_t;
+pub extern fn xcb_create_window_aux(c: ?*xcb_connection_t, depth: u8, wid: xcb_window_t, parent: xcb_window_t, x: i16, y: i16, width: u16, height: u16, border_width: u16, _class: u16, visual: xcb_visualid_t, value_mask: u32, value_list: [*c]const xcb_create_window_value_list_t) xcb_void_cookie_t;
+pub extern fn xcb_create_window_value_list(R: [*c]const xcb_create_window_request_t) ?*c_void;
+pub extern fn xcb_change_window_attributes_value_list_serialize(_buffer: [*c](?*c_void), value_mask: u32, _aux: [*c]const xcb_change_window_attributes_value_list_t) c_int;
+pub extern fn xcb_change_window_attributes_value_list_unpack(_buffer: ?*const c_void, value_mask: u32, _aux: [*c]xcb_change_window_attributes_value_list_t) c_int;
 pub extern fn xcb_change_window_attributes_value_list_sizeof(_buffer: ?*const c_void, value_mask: u32) c_int;
 pub extern fn xcb_change_window_attributes_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_change_window_attributes_checked(c: ?*xcb_connection_t, window: xcb_window_t, value_mask: u32, value_list: ?*const c_void) xcb_void_cookie_t;
 pub extern fn xcb_change_window_attributes(c: ?*xcb_connection_t, window: xcb_window_t, value_mask: u32, value_list: ?*const c_void) xcb_void_cookie_t;
-pub extern fn xcb_change_window_attributes_aux_checked(c: ?*xcb_connection_t, window: xcb_window_t, value_mask: u32, value_list: ?[*]const xcb_change_window_attributes_value_list_t) xcb_void_cookie_t;
-pub extern fn xcb_change_window_attributes_aux(c: ?*xcb_connection_t, window: xcb_window_t, value_mask: u32, value_list: ?[*]const xcb_change_window_attributes_value_list_t) xcb_void_cookie_t;
-pub extern fn xcb_change_window_attributes_value_list(R: ?[*]const xcb_change_window_attributes_request_t) ?*c_void;
+pub extern fn xcb_change_window_attributes_aux_checked(c: ?*xcb_connection_t, window: xcb_window_t, value_mask: u32, value_list: [*c]const xcb_change_window_attributes_value_list_t) xcb_void_cookie_t;
+pub extern fn xcb_change_window_attributes_aux(c: ?*xcb_connection_t, window: xcb_window_t, value_mask: u32, value_list: [*c]const xcb_change_window_attributes_value_list_t) xcb_void_cookie_t;
+pub extern fn xcb_change_window_attributes_value_list(R: [*c]const xcb_change_window_attributes_request_t) ?*c_void;
 pub extern fn xcb_get_window_attributes(c: ?*xcb_connection_t, window: xcb_window_t) xcb_get_window_attributes_cookie_t;
 pub extern fn xcb_get_window_attributes_unchecked(c: ?*xcb_connection_t, window: xcb_window_t) xcb_get_window_attributes_cookie_t;
-pub extern fn xcb_get_window_attributes_reply(c: ?*xcb_connection_t, cookie: xcb_get_window_attributes_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_window_attributes_reply_t;
+pub extern fn xcb_get_window_attributes_reply(c: ?*xcb_connection_t, cookie: xcb_get_window_attributes_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_window_attributes_reply_t;
 pub extern fn xcb_destroy_window_checked(c: ?*xcb_connection_t, window: xcb_window_t) xcb_void_cookie_t;
 pub extern fn xcb_destroy_window(c: ?*xcb_connection_t, window: xcb_window_t) xcb_void_cookie_t;
 pub extern fn xcb_destroy_subwindows_checked(c: ?*xcb_connection_t, window: xcb_window_t) xcb_void_cookie_t;
@@ -4162,72 +4162,72 @@ pub extern fn xcb_unmap_window_checked(c: ?*xcb_connection_t, window: xcb_window
 pub extern fn xcb_unmap_window(c: ?*xcb_connection_t, window: xcb_window_t) xcb_void_cookie_t;
 pub extern fn xcb_unmap_subwindows_checked(c: ?*xcb_connection_t, window: xcb_window_t) xcb_void_cookie_t;
 pub extern fn xcb_unmap_subwindows(c: ?*xcb_connection_t, window: xcb_window_t) xcb_void_cookie_t;
-pub extern fn xcb_configure_window_value_list_serialize(_buffer: ?[*](?*c_void), value_mask: u16, _aux: ?[*]const xcb_configure_window_value_list_t) c_int;
-pub extern fn xcb_configure_window_value_list_unpack(_buffer: ?*const c_void, value_mask: u16, _aux: ?[*]xcb_configure_window_value_list_t) c_int;
+pub extern fn xcb_configure_window_value_list_serialize(_buffer: [*c](?*c_void), value_mask: u16, _aux: [*c]const xcb_configure_window_value_list_t) c_int;
+pub extern fn xcb_configure_window_value_list_unpack(_buffer: ?*const c_void, value_mask: u16, _aux: [*c]xcb_configure_window_value_list_t) c_int;
 pub extern fn xcb_configure_window_value_list_sizeof(_buffer: ?*const c_void, value_mask: u16) c_int;
 pub extern fn xcb_configure_window_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_configure_window_checked(c: ?*xcb_connection_t, window: xcb_window_t, value_mask: u16, value_list: ?*const c_void) xcb_void_cookie_t;
 pub extern fn xcb_configure_window(c: ?*xcb_connection_t, window: xcb_window_t, value_mask: u16, value_list: ?*const c_void) xcb_void_cookie_t;
-pub extern fn xcb_configure_window_aux_checked(c: ?*xcb_connection_t, window: xcb_window_t, value_mask: u16, value_list: ?[*]const xcb_configure_window_value_list_t) xcb_void_cookie_t;
-pub extern fn xcb_configure_window_aux(c: ?*xcb_connection_t, window: xcb_window_t, value_mask: u16, value_list: ?[*]const xcb_configure_window_value_list_t) xcb_void_cookie_t;
-pub extern fn xcb_configure_window_value_list(R: ?[*]const xcb_configure_window_request_t) ?*c_void;
+pub extern fn xcb_configure_window_aux_checked(c: ?*xcb_connection_t, window: xcb_window_t, value_mask: u16, value_list: [*c]const xcb_configure_window_value_list_t) xcb_void_cookie_t;
+pub extern fn xcb_configure_window_aux(c: ?*xcb_connection_t, window: xcb_window_t, value_mask: u16, value_list: [*c]const xcb_configure_window_value_list_t) xcb_void_cookie_t;
+pub extern fn xcb_configure_window_value_list(R: [*c]const xcb_configure_window_request_t) ?*c_void;
 pub extern fn xcb_circulate_window_checked(c: ?*xcb_connection_t, direction: u8, window: xcb_window_t) xcb_void_cookie_t;
 pub extern fn xcb_circulate_window(c: ?*xcb_connection_t, direction: u8, window: xcb_window_t) xcb_void_cookie_t;
 pub extern fn xcb_get_geometry(c: ?*xcb_connection_t, drawable: xcb_drawable_t) xcb_get_geometry_cookie_t;
 pub extern fn xcb_get_geometry_unchecked(c: ?*xcb_connection_t, drawable: xcb_drawable_t) xcb_get_geometry_cookie_t;
-pub extern fn xcb_get_geometry_reply(c: ?*xcb_connection_t, cookie: xcb_get_geometry_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_geometry_reply_t;
+pub extern fn xcb_get_geometry_reply(c: ?*xcb_connection_t, cookie: xcb_get_geometry_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_geometry_reply_t;
 pub extern fn xcb_query_tree_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_query_tree(c: ?*xcb_connection_t, window: xcb_window_t) xcb_query_tree_cookie_t;
 pub extern fn xcb_query_tree_unchecked(c: ?*xcb_connection_t, window: xcb_window_t) xcb_query_tree_cookie_t;
-pub extern fn xcb_query_tree_children(R: ?[*]const xcb_query_tree_reply_t) ?[*]xcb_window_t;
-pub extern fn xcb_query_tree_children_length(R: ?[*]const xcb_query_tree_reply_t) c_int;
-pub extern fn xcb_query_tree_children_end(R: ?[*]const xcb_query_tree_reply_t) xcb_generic_iterator_t;
-pub extern fn xcb_query_tree_reply(c: ?*xcb_connection_t, cookie: xcb_query_tree_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_query_tree_reply_t;
+pub extern fn xcb_query_tree_children(R: [*c]const xcb_query_tree_reply_t) [*c]xcb_window_t;
+pub extern fn xcb_query_tree_children_length(R: [*c]const xcb_query_tree_reply_t) c_int;
+pub extern fn xcb_query_tree_children_end(R: [*c]const xcb_query_tree_reply_t) xcb_generic_iterator_t;
+pub extern fn xcb_query_tree_reply(c: ?*xcb_connection_t, cookie: xcb_query_tree_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_query_tree_reply_t;
 pub extern fn xcb_intern_atom_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_intern_atom(c: ?*xcb_connection_t, only_if_exists: u8, name_len: u16, name: ?[*]const u8) xcb_intern_atom_cookie_t;
-pub extern fn xcb_intern_atom_unchecked(c: ?*xcb_connection_t, only_if_exists: u8, name_len: u16, name: ?[*]const u8) xcb_intern_atom_cookie_t;
-pub extern fn xcb_intern_atom_reply(c: ?*xcb_connection_t, cookie: xcb_intern_atom_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_intern_atom_reply_t;
+pub extern fn xcb_intern_atom(c: ?*xcb_connection_t, only_if_exists: u8, name_len: u16, name: [*c]const u8) xcb_intern_atom_cookie_t;
+pub extern fn xcb_intern_atom_unchecked(c: ?*xcb_connection_t, only_if_exists: u8, name_len: u16, name: [*c]const u8) xcb_intern_atom_cookie_t;
+pub extern fn xcb_intern_atom_reply(c: ?*xcb_connection_t, cookie: xcb_intern_atom_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_intern_atom_reply_t;
 pub extern fn xcb_get_atom_name_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_get_atom_name(c: ?*xcb_connection_t, atom: xcb_atom_t) xcb_get_atom_name_cookie_t;
 pub extern fn xcb_get_atom_name_unchecked(c: ?*xcb_connection_t, atom: xcb_atom_t) xcb_get_atom_name_cookie_t;
-pub extern fn xcb_get_atom_name_name(R: ?[*]const xcb_get_atom_name_reply_t) ?[*]u8;
-pub extern fn xcb_get_atom_name_name_length(R: ?[*]const xcb_get_atom_name_reply_t) c_int;
-pub extern fn xcb_get_atom_name_name_end(R: ?[*]const xcb_get_atom_name_reply_t) xcb_generic_iterator_t;
-pub extern fn xcb_get_atom_name_reply(c: ?*xcb_connection_t, cookie: xcb_get_atom_name_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_atom_name_reply_t;
+pub extern fn xcb_get_atom_name_name(R: [*c]const xcb_get_atom_name_reply_t) [*c]u8;
+pub extern fn xcb_get_atom_name_name_length(R: [*c]const xcb_get_atom_name_reply_t) c_int;
+pub extern fn xcb_get_atom_name_name_end(R: [*c]const xcb_get_atom_name_reply_t) xcb_generic_iterator_t;
+pub extern fn xcb_get_atom_name_reply(c: ?*xcb_connection_t, cookie: xcb_get_atom_name_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_atom_name_reply_t;
 pub extern fn xcb_change_property_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_change_property_checked(c: ?*xcb_connection_t, mode: u8, window: xcb_window_t, property: xcb_atom_t, type_0: xcb_atom_t, format: u8, data_len: u32, data: ?*const c_void) xcb_void_cookie_t;
 pub extern fn xcb_change_property(c: ?*xcb_connection_t, mode: u8, window: xcb_window_t, property: xcb_atom_t, type_0: xcb_atom_t, format: u8, data_len: u32, data: ?*const c_void) xcb_void_cookie_t;
-pub extern fn xcb_change_property_data(R: ?[*]const xcb_change_property_request_t) ?*c_void;
-pub extern fn xcb_change_property_data_length(R: ?[*]const xcb_change_property_request_t) c_int;
-pub extern fn xcb_change_property_data_end(R: ?[*]const xcb_change_property_request_t) xcb_generic_iterator_t;
+pub extern fn xcb_change_property_data(R: [*c]const xcb_change_property_request_t) ?*c_void;
+pub extern fn xcb_change_property_data_length(R: [*c]const xcb_change_property_request_t) c_int;
+pub extern fn xcb_change_property_data_end(R: [*c]const xcb_change_property_request_t) xcb_generic_iterator_t;
 pub extern fn xcb_delete_property_checked(c: ?*xcb_connection_t, window: xcb_window_t, property: xcb_atom_t) xcb_void_cookie_t;
 pub extern fn xcb_delete_property(c: ?*xcb_connection_t, window: xcb_window_t, property: xcb_atom_t) xcb_void_cookie_t;
 pub extern fn xcb_get_property_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_get_property(c: ?*xcb_connection_t, _delete: u8, window: xcb_window_t, property: xcb_atom_t, type_0: xcb_atom_t, long_offset: u32, long_length: u32) xcb_get_property_cookie_t;
 pub extern fn xcb_get_property_unchecked(c: ?*xcb_connection_t, _delete: u8, window: xcb_window_t, property: xcb_atom_t, type_0: xcb_atom_t, long_offset: u32, long_length: u32) xcb_get_property_cookie_t;
-pub extern fn xcb_get_property_value(R: ?[*]const xcb_get_property_reply_t) ?*c_void;
-pub extern fn xcb_get_property_value_length(R: ?[*]const xcb_get_property_reply_t) c_int;
-pub extern fn xcb_get_property_value_end(R: ?[*]const xcb_get_property_reply_t) xcb_generic_iterator_t;
-pub extern fn xcb_get_property_reply(c: ?*xcb_connection_t, cookie: xcb_get_property_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_property_reply_t;
+pub extern fn xcb_get_property_value(R: [*c]const xcb_get_property_reply_t) ?*c_void;
+pub extern fn xcb_get_property_value_length(R: [*c]const xcb_get_property_reply_t) c_int;
+pub extern fn xcb_get_property_value_end(R: [*c]const xcb_get_property_reply_t) xcb_generic_iterator_t;
+pub extern fn xcb_get_property_reply(c: ?*xcb_connection_t, cookie: xcb_get_property_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_property_reply_t;
 pub extern fn xcb_list_properties_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_list_properties(c: ?*xcb_connection_t, window: xcb_window_t) xcb_list_properties_cookie_t;
 pub extern fn xcb_list_properties_unchecked(c: ?*xcb_connection_t, window: xcb_window_t) xcb_list_properties_cookie_t;
-pub extern fn xcb_list_properties_atoms(R: ?[*]const xcb_list_properties_reply_t) ?[*]xcb_atom_t;
-pub extern fn xcb_list_properties_atoms_length(R: ?[*]const xcb_list_properties_reply_t) c_int;
-pub extern fn xcb_list_properties_atoms_end(R: ?[*]const xcb_list_properties_reply_t) xcb_generic_iterator_t;
-pub extern fn xcb_list_properties_reply(c: ?*xcb_connection_t, cookie: xcb_list_properties_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_list_properties_reply_t;
+pub extern fn xcb_list_properties_atoms(R: [*c]const xcb_list_properties_reply_t) [*c]xcb_atom_t;
+pub extern fn xcb_list_properties_atoms_length(R: [*c]const xcb_list_properties_reply_t) c_int;
+pub extern fn xcb_list_properties_atoms_end(R: [*c]const xcb_list_properties_reply_t) xcb_generic_iterator_t;
+pub extern fn xcb_list_properties_reply(c: ?*xcb_connection_t, cookie: xcb_list_properties_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_list_properties_reply_t;
 pub extern fn xcb_set_selection_owner_checked(c: ?*xcb_connection_t, owner: xcb_window_t, selection: xcb_atom_t, time_0: xcb_timestamp_t) xcb_void_cookie_t;
 pub extern fn xcb_set_selection_owner(c: ?*xcb_connection_t, owner: xcb_window_t, selection: xcb_atom_t, time_0: xcb_timestamp_t) xcb_void_cookie_t;
 pub extern fn xcb_get_selection_owner(c: ?*xcb_connection_t, selection: xcb_atom_t) xcb_get_selection_owner_cookie_t;
 pub extern fn xcb_get_selection_owner_unchecked(c: ?*xcb_connection_t, selection: xcb_atom_t) xcb_get_selection_owner_cookie_t;
-pub extern fn xcb_get_selection_owner_reply(c: ?*xcb_connection_t, cookie: xcb_get_selection_owner_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_selection_owner_reply_t;
+pub extern fn xcb_get_selection_owner_reply(c: ?*xcb_connection_t, cookie: xcb_get_selection_owner_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_selection_owner_reply_t;
 pub extern fn xcb_convert_selection_checked(c: ?*xcb_connection_t, requestor: xcb_window_t, selection: xcb_atom_t, target: xcb_atom_t, property: xcb_atom_t, time_0: xcb_timestamp_t) xcb_void_cookie_t;
 pub extern fn xcb_convert_selection(c: ?*xcb_connection_t, requestor: xcb_window_t, selection: xcb_atom_t, target: xcb_atom_t, property: xcb_atom_t, time_0: xcb_timestamp_t) xcb_void_cookie_t;
-pub extern fn xcb_send_event_checked(c: ?*xcb_connection_t, propagate: u8, destination: xcb_window_t, event_mask: u32, event: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_send_event(c: ?*xcb_connection_t, propagate: u8, destination: xcb_window_t, event_mask: u32, event: ?[*]const u8) xcb_void_cookie_t;
+pub extern fn xcb_send_event_checked(c: ?*xcb_connection_t, propagate: u8, destination: xcb_window_t, event_mask: u32, event: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_send_event(c: ?*xcb_connection_t, propagate: u8, destination: xcb_window_t, event_mask: u32, event: [*c]const u8) xcb_void_cookie_t;
 pub extern fn xcb_grab_pointer(c: ?*xcb_connection_t, owner_events: u8, grab_window: xcb_window_t, event_mask: u16, pointer_mode: u8, keyboard_mode: u8, confine_to: xcb_window_t, cursor: xcb_cursor_t, time_0: xcb_timestamp_t) xcb_grab_pointer_cookie_t;
 pub extern fn xcb_grab_pointer_unchecked(c: ?*xcb_connection_t, owner_events: u8, grab_window: xcb_window_t, event_mask: u16, pointer_mode: u8, keyboard_mode: u8, confine_to: xcb_window_t, cursor: xcb_cursor_t, time_0: xcb_timestamp_t) xcb_grab_pointer_cookie_t;
-pub extern fn xcb_grab_pointer_reply(c: ?*xcb_connection_t, cookie: xcb_grab_pointer_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_grab_pointer_reply_t;
+pub extern fn xcb_grab_pointer_reply(c: ?*xcb_connection_t, cookie: xcb_grab_pointer_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_grab_pointer_reply_t;
 pub extern fn xcb_ungrab_pointer_checked(c: ?*xcb_connection_t, time_0: xcb_timestamp_t) xcb_void_cookie_t;
 pub extern fn xcb_ungrab_pointer(c: ?*xcb_connection_t, time_0: xcb_timestamp_t) xcb_void_cookie_t;
 pub extern fn xcb_grab_button_checked(c: ?*xcb_connection_t, owner_events: u8, grab_window: xcb_window_t, event_mask: u16, pointer_mode: u8, keyboard_mode: u8, confine_to: xcb_window_t, cursor: xcb_cursor_t, button: u8, modifiers: u16) xcb_void_cookie_t;
@@ -4238,7 +4238,7 @@ pub extern fn xcb_change_active_pointer_grab_checked(c: ?*xcb_connection_t, curs
 pub extern fn xcb_change_active_pointer_grab(c: ?*xcb_connection_t, cursor: xcb_cursor_t, time_0: xcb_timestamp_t, event_mask: u16) xcb_void_cookie_t;
 pub extern fn xcb_grab_keyboard(c: ?*xcb_connection_t, owner_events: u8, grab_window: xcb_window_t, time_0: xcb_timestamp_t, pointer_mode: u8, keyboard_mode: u8) xcb_grab_keyboard_cookie_t;
 pub extern fn xcb_grab_keyboard_unchecked(c: ?*xcb_connection_t, owner_events: u8, grab_window: xcb_window_t, time_0: xcb_timestamp_t, pointer_mode: u8, keyboard_mode: u8) xcb_grab_keyboard_cookie_t;
-pub extern fn xcb_grab_keyboard_reply(c: ?*xcb_connection_t, cookie: xcb_grab_keyboard_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_grab_keyboard_reply_t;
+pub extern fn xcb_grab_keyboard_reply(c: ?*xcb_connection_t, cookie: xcb_grab_keyboard_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_grab_keyboard_reply_t;
 pub extern fn xcb_ungrab_keyboard_checked(c: ?*xcb_connection_t, time_0: xcb_timestamp_t) xcb_void_cookie_t;
 pub extern fn xcb_ungrab_keyboard(c: ?*xcb_connection_t, time_0: xcb_timestamp_t) xcb_void_cookie_t;
 pub extern fn xcb_grab_key_checked(c: ?*xcb_connection_t, owner_events: u8, grab_window: xcb_window_t, modifiers: u16, key: xcb_keycode_t, pointer_mode: u8, keyboard_mode: u8) xcb_void_cookie_t;
@@ -4253,124 +4253,124 @@ pub extern fn xcb_ungrab_server_checked(c: ?*xcb_connection_t) xcb_void_cookie_t
 pub extern fn xcb_ungrab_server(c: ?*xcb_connection_t) xcb_void_cookie_t;
 pub extern fn xcb_query_pointer(c: ?*xcb_connection_t, window: xcb_window_t) xcb_query_pointer_cookie_t;
 pub extern fn xcb_query_pointer_unchecked(c: ?*xcb_connection_t, window: xcb_window_t) xcb_query_pointer_cookie_t;
-pub extern fn xcb_query_pointer_reply(c: ?*xcb_connection_t, cookie: xcb_query_pointer_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_query_pointer_reply_t;
-pub extern fn xcb_timecoord_next(i: ?[*]xcb_timecoord_iterator_t) void;
+pub extern fn xcb_query_pointer_reply(c: ?*xcb_connection_t, cookie: xcb_query_pointer_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_query_pointer_reply_t;
+pub extern fn xcb_timecoord_next(i: [*c]xcb_timecoord_iterator_t) void;
 pub extern fn xcb_timecoord_end(i: xcb_timecoord_iterator_t) xcb_generic_iterator_t;
 pub extern fn xcb_get_motion_events_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_get_motion_events(c: ?*xcb_connection_t, window: xcb_window_t, start: xcb_timestamp_t, stop: xcb_timestamp_t) xcb_get_motion_events_cookie_t;
 pub extern fn xcb_get_motion_events_unchecked(c: ?*xcb_connection_t, window: xcb_window_t, start: xcb_timestamp_t, stop: xcb_timestamp_t) xcb_get_motion_events_cookie_t;
-pub extern fn xcb_get_motion_events_events(R: ?[*]const xcb_get_motion_events_reply_t) ?[*]xcb_timecoord_t;
-pub extern fn xcb_get_motion_events_events_length(R: ?[*]const xcb_get_motion_events_reply_t) c_int;
-pub extern fn xcb_get_motion_events_events_iterator(R: ?[*]const xcb_get_motion_events_reply_t) xcb_timecoord_iterator_t;
-pub extern fn xcb_get_motion_events_reply(c: ?*xcb_connection_t, cookie: xcb_get_motion_events_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_motion_events_reply_t;
+pub extern fn xcb_get_motion_events_events(R: [*c]const xcb_get_motion_events_reply_t) [*c]xcb_timecoord_t;
+pub extern fn xcb_get_motion_events_events_length(R: [*c]const xcb_get_motion_events_reply_t) c_int;
+pub extern fn xcb_get_motion_events_events_iterator(R: [*c]const xcb_get_motion_events_reply_t) xcb_timecoord_iterator_t;
+pub extern fn xcb_get_motion_events_reply(c: ?*xcb_connection_t, cookie: xcb_get_motion_events_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_motion_events_reply_t;
 pub extern fn xcb_translate_coordinates(c: ?*xcb_connection_t, src_window: xcb_window_t, dst_window: xcb_window_t, src_x: i16, src_y: i16) xcb_translate_coordinates_cookie_t;
 pub extern fn xcb_translate_coordinates_unchecked(c: ?*xcb_connection_t, src_window: xcb_window_t, dst_window: xcb_window_t, src_x: i16, src_y: i16) xcb_translate_coordinates_cookie_t;
-pub extern fn xcb_translate_coordinates_reply(c: ?*xcb_connection_t, cookie: xcb_translate_coordinates_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_translate_coordinates_reply_t;
+pub extern fn xcb_translate_coordinates_reply(c: ?*xcb_connection_t, cookie: xcb_translate_coordinates_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_translate_coordinates_reply_t;
 pub extern fn xcb_warp_pointer_checked(c: ?*xcb_connection_t, src_window: xcb_window_t, dst_window: xcb_window_t, src_x: i16, src_y: i16, src_width: u16, src_height: u16, dst_x: i16, dst_y: i16) xcb_void_cookie_t;
 pub extern fn xcb_warp_pointer(c: ?*xcb_connection_t, src_window: xcb_window_t, dst_window: xcb_window_t, src_x: i16, src_y: i16, src_width: u16, src_height: u16, dst_x: i16, dst_y: i16) xcb_void_cookie_t;
 pub extern fn xcb_set_input_focus_checked(c: ?*xcb_connection_t, revert_to: u8, focus: xcb_window_t, time_0: xcb_timestamp_t) xcb_void_cookie_t;
 pub extern fn xcb_set_input_focus(c: ?*xcb_connection_t, revert_to: u8, focus: xcb_window_t, time_0: xcb_timestamp_t) xcb_void_cookie_t;
 pub extern fn xcb_get_input_focus(c: ?*xcb_connection_t) xcb_get_input_focus_cookie_t;
 pub extern fn xcb_get_input_focus_unchecked(c: ?*xcb_connection_t) xcb_get_input_focus_cookie_t;
-pub extern fn xcb_get_input_focus_reply(c: ?*xcb_connection_t, cookie: xcb_get_input_focus_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_input_focus_reply_t;
+pub extern fn xcb_get_input_focus_reply(c: ?*xcb_connection_t, cookie: xcb_get_input_focus_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_input_focus_reply_t;
 pub extern fn xcb_query_keymap(c: ?*xcb_connection_t) xcb_query_keymap_cookie_t;
 pub extern fn xcb_query_keymap_unchecked(c: ?*xcb_connection_t) xcb_query_keymap_cookie_t;
-pub extern fn xcb_query_keymap_reply(c: ?*xcb_connection_t, cookie: xcb_query_keymap_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_query_keymap_reply_t;
+pub extern fn xcb_query_keymap_reply(c: ?*xcb_connection_t, cookie: xcb_query_keymap_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_query_keymap_reply_t;
 pub extern fn xcb_open_font_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_open_font_checked(c: ?*xcb_connection_t, fid: xcb_font_t, name_len: u16, name: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_open_font(c: ?*xcb_connection_t, fid: xcb_font_t, name_len: u16, name: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_open_font_name(R: ?[*]const xcb_open_font_request_t) ?[*]u8;
-pub extern fn xcb_open_font_name_length(R: ?[*]const xcb_open_font_request_t) c_int;
-pub extern fn xcb_open_font_name_end(R: ?[*]const xcb_open_font_request_t) xcb_generic_iterator_t;
+pub extern fn xcb_open_font_checked(c: ?*xcb_connection_t, fid: xcb_font_t, name_len: u16, name: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_open_font(c: ?*xcb_connection_t, fid: xcb_font_t, name_len: u16, name: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_open_font_name(R: [*c]const xcb_open_font_request_t) [*c]u8;
+pub extern fn xcb_open_font_name_length(R: [*c]const xcb_open_font_request_t) c_int;
+pub extern fn xcb_open_font_name_end(R: [*c]const xcb_open_font_request_t) xcb_generic_iterator_t;
 pub extern fn xcb_close_font_checked(c: ?*xcb_connection_t, font: xcb_font_t) xcb_void_cookie_t;
 pub extern fn xcb_close_font(c: ?*xcb_connection_t, font: xcb_font_t) xcb_void_cookie_t;
-pub extern fn xcb_fontprop_next(i: ?[*]xcb_fontprop_iterator_t) void;
+pub extern fn xcb_fontprop_next(i: [*c]xcb_fontprop_iterator_t) void;
 pub extern fn xcb_fontprop_end(i: xcb_fontprop_iterator_t) xcb_generic_iterator_t;
-pub extern fn xcb_charinfo_next(i: ?[*]xcb_charinfo_iterator_t) void;
+pub extern fn xcb_charinfo_next(i: [*c]xcb_charinfo_iterator_t) void;
 pub extern fn xcb_charinfo_end(i: xcb_charinfo_iterator_t) xcb_generic_iterator_t;
 pub extern fn xcb_query_font_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_query_font(c: ?*xcb_connection_t, font: xcb_fontable_t) xcb_query_font_cookie_t;
 pub extern fn xcb_query_font_unchecked(c: ?*xcb_connection_t, font: xcb_fontable_t) xcb_query_font_cookie_t;
-pub extern fn xcb_query_font_properties(R: ?[*]const xcb_query_font_reply_t) ?[*]xcb_fontprop_t;
-pub extern fn xcb_query_font_properties_length(R: ?[*]const xcb_query_font_reply_t) c_int;
-pub extern fn xcb_query_font_properties_iterator(R: ?[*]const xcb_query_font_reply_t) xcb_fontprop_iterator_t;
-pub extern fn xcb_query_font_char_infos(R: ?[*]const xcb_query_font_reply_t) ?[*]xcb_charinfo_t;
-pub extern fn xcb_query_font_char_infos_length(R: ?[*]const xcb_query_font_reply_t) c_int;
-pub extern fn xcb_query_font_char_infos_iterator(R: ?[*]const xcb_query_font_reply_t) xcb_charinfo_iterator_t;
-pub extern fn xcb_query_font_reply(c: ?*xcb_connection_t, cookie: xcb_query_font_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_query_font_reply_t;
+pub extern fn xcb_query_font_properties(R: [*c]const xcb_query_font_reply_t) [*c]xcb_fontprop_t;
+pub extern fn xcb_query_font_properties_length(R: [*c]const xcb_query_font_reply_t) c_int;
+pub extern fn xcb_query_font_properties_iterator(R: [*c]const xcb_query_font_reply_t) xcb_fontprop_iterator_t;
+pub extern fn xcb_query_font_char_infos(R: [*c]const xcb_query_font_reply_t) [*c]xcb_charinfo_t;
+pub extern fn xcb_query_font_char_infos_length(R: [*c]const xcb_query_font_reply_t) c_int;
+pub extern fn xcb_query_font_char_infos_iterator(R: [*c]const xcb_query_font_reply_t) xcb_charinfo_iterator_t;
+pub extern fn xcb_query_font_reply(c: ?*xcb_connection_t, cookie: xcb_query_font_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_query_font_reply_t;
 pub extern fn xcb_query_text_extents_sizeof(_buffer: ?*const c_void, string_len: u32) c_int;
-pub extern fn xcb_query_text_extents(c: ?*xcb_connection_t, font: xcb_fontable_t, string_len: u32, string: ?[*]const xcb_char2b_t) xcb_query_text_extents_cookie_t;
-pub extern fn xcb_query_text_extents_unchecked(c: ?*xcb_connection_t, font: xcb_fontable_t, string_len: u32, string: ?[*]const xcb_char2b_t) xcb_query_text_extents_cookie_t;
-pub extern fn xcb_query_text_extents_reply(c: ?*xcb_connection_t, cookie: xcb_query_text_extents_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_query_text_extents_reply_t;
+pub extern fn xcb_query_text_extents(c: ?*xcb_connection_t, font: xcb_fontable_t, string_len: u32, string: [*c]const xcb_char2b_t) xcb_query_text_extents_cookie_t;
+pub extern fn xcb_query_text_extents_unchecked(c: ?*xcb_connection_t, font: xcb_fontable_t, string_len: u32, string: [*c]const xcb_char2b_t) xcb_query_text_extents_cookie_t;
+pub extern fn xcb_query_text_extents_reply(c: ?*xcb_connection_t, cookie: xcb_query_text_extents_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_query_text_extents_reply_t;
 pub extern fn xcb_str_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_str_name(R: ?[*]const xcb_str_t) ?[*]u8;
-pub extern fn xcb_str_name_length(R: ?[*]const xcb_str_t) c_int;
-pub extern fn xcb_str_name_end(R: ?[*]const xcb_str_t) xcb_generic_iterator_t;
-pub extern fn xcb_str_next(i: ?[*]xcb_str_iterator_t) void;
+pub extern fn xcb_str_name(R: [*c]const xcb_str_t) [*c]u8;
+pub extern fn xcb_str_name_length(R: [*c]const xcb_str_t) c_int;
+pub extern fn xcb_str_name_end(R: [*c]const xcb_str_t) xcb_generic_iterator_t;
+pub extern fn xcb_str_next(i: [*c]xcb_str_iterator_t) void;
 pub extern fn xcb_str_end(i: xcb_str_iterator_t) xcb_generic_iterator_t;
 pub extern fn xcb_list_fonts_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_list_fonts(c: ?*xcb_connection_t, max_names: u16, pattern_len: u16, pattern: ?[*]const u8) xcb_list_fonts_cookie_t;
-pub extern fn xcb_list_fonts_unchecked(c: ?*xcb_connection_t, max_names: u16, pattern_len: u16, pattern: ?[*]const u8) xcb_list_fonts_cookie_t;
-pub extern fn xcb_list_fonts_names_length(R: ?[*]const xcb_list_fonts_reply_t) c_int;
-pub extern fn xcb_list_fonts_names_iterator(R: ?[*]const xcb_list_fonts_reply_t) xcb_str_iterator_t;
-pub extern fn xcb_list_fonts_reply(c: ?*xcb_connection_t, cookie: xcb_list_fonts_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_list_fonts_reply_t;
+pub extern fn xcb_list_fonts(c: ?*xcb_connection_t, max_names: u16, pattern_len: u16, pattern: [*c]const u8) xcb_list_fonts_cookie_t;
+pub extern fn xcb_list_fonts_unchecked(c: ?*xcb_connection_t, max_names: u16, pattern_len: u16, pattern: [*c]const u8) xcb_list_fonts_cookie_t;
+pub extern fn xcb_list_fonts_names_length(R: [*c]const xcb_list_fonts_reply_t) c_int;
+pub extern fn xcb_list_fonts_names_iterator(R: [*c]const xcb_list_fonts_reply_t) xcb_str_iterator_t;
+pub extern fn xcb_list_fonts_reply(c: ?*xcb_connection_t, cookie: xcb_list_fonts_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_list_fonts_reply_t;
 pub extern fn xcb_list_fonts_with_info_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_list_fonts_with_info(c: ?*xcb_connection_t, max_names: u16, pattern_len: u16, pattern: ?[*]const u8) xcb_list_fonts_with_info_cookie_t;
-pub extern fn xcb_list_fonts_with_info_unchecked(c: ?*xcb_connection_t, max_names: u16, pattern_len: u16, pattern: ?[*]const u8) xcb_list_fonts_with_info_cookie_t;
-pub extern fn xcb_list_fonts_with_info_properties(R: ?[*]const xcb_list_fonts_with_info_reply_t) ?[*]xcb_fontprop_t;
-pub extern fn xcb_list_fonts_with_info_properties_length(R: ?[*]const xcb_list_fonts_with_info_reply_t) c_int;
-pub extern fn xcb_list_fonts_with_info_properties_iterator(R: ?[*]const xcb_list_fonts_with_info_reply_t) xcb_fontprop_iterator_t;
-pub extern fn xcb_list_fonts_with_info_name(R: ?[*]const xcb_list_fonts_with_info_reply_t) ?[*]u8;
-pub extern fn xcb_list_fonts_with_info_name_length(R: ?[*]const xcb_list_fonts_with_info_reply_t) c_int;
-pub extern fn xcb_list_fonts_with_info_name_end(R: ?[*]const xcb_list_fonts_with_info_reply_t) xcb_generic_iterator_t;
-pub extern fn xcb_list_fonts_with_info_reply(c: ?*xcb_connection_t, cookie: xcb_list_fonts_with_info_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_list_fonts_with_info_reply_t;
+pub extern fn xcb_list_fonts_with_info(c: ?*xcb_connection_t, max_names: u16, pattern_len: u16, pattern: [*c]const u8) xcb_list_fonts_with_info_cookie_t;
+pub extern fn xcb_list_fonts_with_info_unchecked(c: ?*xcb_connection_t, max_names: u16, pattern_len: u16, pattern: [*c]const u8) xcb_list_fonts_with_info_cookie_t;
+pub extern fn xcb_list_fonts_with_info_properties(R: [*c]const xcb_list_fonts_with_info_reply_t) [*c]xcb_fontprop_t;
+pub extern fn xcb_list_fonts_with_info_properties_length(R: [*c]const xcb_list_fonts_with_info_reply_t) c_int;
+pub extern fn xcb_list_fonts_with_info_properties_iterator(R: [*c]const xcb_list_fonts_with_info_reply_t) xcb_fontprop_iterator_t;
+pub extern fn xcb_list_fonts_with_info_name(R: [*c]const xcb_list_fonts_with_info_reply_t) [*c]u8;
+pub extern fn xcb_list_fonts_with_info_name_length(R: [*c]const xcb_list_fonts_with_info_reply_t) c_int;
+pub extern fn xcb_list_fonts_with_info_name_end(R: [*c]const xcb_list_fonts_with_info_reply_t) xcb_generic_iterator_t;
+pub extern fn xcb_list_fonts_with_info_reply(c: ?*xcb_connection_t, cookie: xcb_list_fonts_with_info_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_list_fonts_with_info_reply_t;
 pub extern fn xcb_set_font_path_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_set_font_path_checked(c: ?*xcb_connection_t, font_qty: u16, font: ?[*]const xcb_str_t) xcb_void_cookie_t;
-pub extern fn xcb_set_font_path(c: ?*xcb_connection_t, font_qty: u16, font: ?[*]const xcb_str_t) xcb_void_cookie_t;
-pub extern fn xcb_set_font_path_font_length(R: ?[*]const xcb_set_font_path_request_t) c_int;
-pub extern fn xcb_set_font_path_font_iterator(R: ?[*]const xcb_set_font_path_request_t) xcb_str_iterator_t;
+pub extern fn xcb_set_font_path_checked(c: ?*xcb_connection_t, font_qty: u16, font: [*c]const xcb_str_t) xcb_void_cookie_t;
+pub extern fn xcb_set_font_path(c: ?*xcb_connection_t, font_qty: u16, font: [*c]const xcb_str_t) xcb_void_cookie_t;
+pub extern fn xcb_set_font_path_font_length(R: [*c]const xcb_set_font_path_request_t) c_int;
+pub extern fn xcb_set_font_path_font_iterator(R: [*c]const xcb_set_font_path_request_t) xcb_str_iterator_t;
 pub extern fn xcb_get_font_path_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_get_font_path(c: ?*xcb_connection_t) xcb_get_font_path_cookie_t;
 pub extern fn xcb_get_font_path_unchecked(c: ?*xcb_connection_t) xcb_get_font_path_cookie_t;
-pub extern fn xcb_get_font_path_path_length(R: ?[*]const xcb_get_font_path_reply_t) c_int;
-pub extern fn xcb_get_font_path_path_iterator(R: ?[*]const xcb_get_font_path_reply_t) xcb_str_iterator_t;
-pub extern fn xcb_get_font_path_reply(c: ?*xcb_connection_t, cookie: xcb_get_font_path_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_font_path_reply_t;
+pub extern fn xcb_get_font_path_path_length(R: [*c]const xcb_get_font_path_reply_t) c_int;
+pub extern fn xcb_get_font_path_path_iterator(R: [*c]const xcb_get_font_path_reply_t) xcb_str_iterator_t;
+pub extern fn xcb_get_font_path_reply(c: ?*xcb_connection_t, cookie: xcb_get_font_path_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_font_path_reply_t;
 pub extern fn xcb_create_pixmap_checked(c: ?*xcb_connection_t, depth: u8, pid: xcb_pixmap_t, drawable: xcb_drawable_t, width: u16, height: u16) xcb_void_cookie_t;
 pub extern fn xcb_create_pixmap(c: ?*xcb_connection_t, depth: u8, pid: xcb_pixmap_t, drawable: xcb_drawable_t, width: u16, height: u16) xcb_void_cookie_t;
 pub extern fn xcb_free_pixmap_checked(c: ?*xcb_connection_t, pixmap: xcb_pixmap_t) xcb_void_cookie_t;
 pub extern fn xcb_free_pixmap(c: ?*xcb_connection_t, pixmap: xcb_pixmap_t) xcb_void_cookie_t;
-pub extern fn xcb_create_gc_value_list_serialize(_buffer: ?[*](?*c_void), value_mask: u32, _aux: ?[*]const xcb_create_gc_value_list_t) c_int;
-pub extern fn xcb_create_gc_value_list_unpack(_buffer: ?*const c_void, value_mask: u32, _aux: ?[*]xcb_create_gc_value_list_t) c_int;
+pub extern fn xcb_create_gc_value_list_serialize(_buffer: [*c](?*c_void), value_mask: u32, _aux: [*c]const xcb_create_gc_value_list_t) c_int;
+pub extern fn xcb_create_gc_value_list_unpack(_buffer: ?*const c_void, value_mask: u32, _aux: [*c]xcb_create_gc_value_list_t) c_int;
 pub extern fn xcb_create_gc_value_list_sizeof(_buffer: ?*const c_void, value_mask: u32) c_int;
 pub extern fn xcb_create_gc_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_create_gc_checked(c: ?*xcb_connection_t, cid: xcb_gcontext_t, drawable: xcb_drawable_t, value_mask: u32, value_list: ?*const c_void) xcb_void_cookie_t;
 pub extern fn xcb_create_gc(c: ?*xcb_connection_t, cid: xcb_gcontext_t, drawable: xcb_drawable_t, value_mask: u32, value_list: ?*const c_void) xcb_void_cookie_t;
-pub extern fn xcb_create_gc_aux_checked(c: ?*xcb_connection_t, cid: xcb_gcontext_t, drawable: xcb_drawable_t, value_mask: u32, value_list: ?[*]const xcb_create_gc_value_list_t) xcb_void_cookie_t;
-pub extern fn xcb_create_gc_aux(c: ?*xcb_connection_t, cid: xcb_gcontext_t, drawable: xcb_drawable_t, value_mask: u32, value_list: ?[*]const xcb_create_gc_value_list_t) xcb_void_cookie_t;
-pub extern fn xcb_create_gc_value_list(R: ?[*]const xcb_create_gc_request_t) ?*c_void;
-pub extern fn xcb_change_gc_value_list_serialize(_buffer: ?[*](?*c_void), value_mask: u32, _aux: ?[*]const xcb_change_gc_value_list_t) c_int;
-pub extern fn xcb_change_gc_value_list_unpack(_buffer: ?*const c_void, value_mask: u32, _aux: ?[*]xcb_change_gc_value_list_t) c_int;
+pub extern fn xcb_create_gc_aux_checked(c: ?*xcb_connection_t, cid: xcb_gcontext_t, drawable: xcb_drawable_t, value_mask: u32, value_list: [*c]const xcb_create_gc_value_list_t) xcb_void_cookie_t;
+pub extern fn xcb_create_gc_aux(c: ?*xcb_connection_t, cid: xcb_gcontext_t, drawable: xcb_drawable_t, value_mask: u32, value_list: [*c]const xcb_create_gc_value_list_t) xcb_void_cookie_t;
+pub extern fn xcb_create_gc_value_list(R: [*c]const xcb_create_gc_request_t) ?*c_void;
+pub extern fn xcb_change_gc_value_list_serialize(_buffer: [*c](?*c_void), value_mask: u32, _aux: [*c]const xcb_change_gc_value_list_t) c_int;
+pub extern fn xcb_change_gc_value_list_unpack(_buffer: ?*const c_void, value_mask: u32, _aux: [*c]xcb_change_gc_value_list_t) c_int;
 pub extern fn xcb_change_gc_value_list_sizeof(_buffer: ?*const c_void, value_mask: u32) c_int;
 pub extern fn xcb_change_gc_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_change_gc_checked(c: ?*xcb_connection_t, gc: xcb_gcontext_t, value_mask: u32, value_list: ?*const c_void) xcb_void_cookie_t;
 pub extern fn xcb_change_gc(c: ?*xcb_connection_t, gc: xcb_gcontext_t, value_mask: u32, value_list: ?*const c_void) xcb_void_cookie_t;
-pub extern fn xcb_change_gc_aux_checked(c: ?*xcb_connection_t, gc: xcb_gcontext_t, value_mask: u32, value_list: ?[*]const xcb_change_gc_value_list_t) xcb_void_cookie_t;
-pub extern fn xcb_change_gc_aux(c: ?*xcb_connection_t, gc: xcb_gcontext_t, value_mask: u32, value_list: ?[*]const xcb_change_gc_value_list_t) xcb_void_cookie_t;
-pub extern fn xcb_change_gc_value_list(R: ?[*]const xcb_change_gc_request_t) ?*c_void;
+pub extern fn xcb_change_gc_aux_checked(c: ?*xcb_connection_t, gc: xcb_gcontext_t, value_mask: u32, value_list: [*c]const xcb_change_gc_value_list_t) xcb_void_cookie_t;
+pub extern fn xcb_change_gc_aux(c: ?*xcb_connection_t, gc: xcb_gcontext_t, value_mask: u32, value_list: [*c]const xcb_change_gc_value_list_t) xcb_void_cookie_t;
+pub extern fn xcb_change_gc_value_list(R: [*c]const xcb_change_gc_request_t) ?*c_void;
 pub extern fn xcb_copy_gc_checked(c: ?*xcb_connection_t, src_gc: xcb_gcontext_t, dst_gc: xcb_gcontext_t, value_mask: u32) xcb_void_cookie_t;
 pub extern fn xcb_copy_gc(c: ?*xcb_connection_t, src_gc: xcb_gcontext_t, dst_gc: xcb_gcontext_t, value_mask: u32) xcb_void_cookie_t;
 pub extern fn xcb_set_dashes_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_set_dashes_checked(c: ?*xcb_connection_t, gc: xcb_gcontext_t, dash_offset: u16, dashes_len: u16, dashes: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_set_dashes(c: ?*xcb_connection_t, gc: xcb_gcontext_t, dash_offset: u16, dashes_len: u16, dashes: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_set_dashes_dashes(R: ?[*]const xcb_set_dashes_request_t) ?[*]u8;
-pub extern fn xcb_set_dashes_dashes_length(R: ?[*]const xcb_set_dashes_request_t) c_int;
-pub extern fn xcb_set_dashes_dashes_end(R: ?[*]const xcb_set_dashes_request_t) xcb_generic_iterator_t;
+pub extern fn xcb_set_dashes_checked(c: ?*xcb_connection_t, gc: xcb_gcontext_t, dash_offset: u16, dashes_len: u16, dashes: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_set_dashes(c: ?*xcb_connection_t, gc: xcb_gcontext_t, dash_offset: u16, dashes_len: u16, dashes: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_set_dashes_dashes(R: [*c]const xcb_set_dashes_request_t) [*c]u8;
+pub extern fn xcb_set_dashes_dashes_length(R: [*c]const xcb_set_dashes_request_t) c_int;
+pub extern fn xcb_set_dashes_dashes_end(R: [*c]const xcb_set_dashes_request_t) xcb_generic_iterator_t;
 pub extern fn xcb_set_clip_rectangles_sizeof(_buffer: ?*const c_void, rectangles_len: u32) c_int;
-pub extern fn xcb_set_clip_rectangles_checked(c: ?*xcb_connection_t, ordering: u8, gc: xcb_gcontext_t, clip_x_origin: i16, clip_y_origin: i16, rectangles_len: u32, rectangles: ?[*]const xcb_rectangle_t) xcb_void_cookie_t;
-pub extern fn xcb_set_clip_rectangles(c: ?*xcb_connection_t, ordering: u8, gc: xcb_gcontext_t, clip_x_origin: i16, clip_y_origin: i16, rectangles_len: u32, rectangles: ?[*]const xcb_rectangle_t) xcb_void_cookie_t;
-pub extern fn xcb_set_clip_rectangles_rectangles(R: ?[*]const xcb_set_clip_rectangles_request_t) ?[*]xcb_rectangle_t;
-pub extern fn xcb_set_clip_rectangles_rectangles_length(R: ?[*]const xcb_set_clip_rectangles_request_t) c_int;
-pub extern fn xcb_set_clip_rectangles_rectangles_iterator(R: ?[*]const xcb_set_clip_rectangles_request_t) xcb_rectangle_iterator_t;
+pub extern fn xcb_set_clip_rectangles_checked(c: ?*xcb_connection_t, ordering: u8, gc: xcb_gcontext_t, clip_x_origin: i16, clip_y_origin: i16, rectangles_len: u32, rectangles: [*c]const xcb_rectangle_t) xcb_void_cookie_t;
+pub extern fn xcb_set_clip_rectangles(c: ?*xcb_connection_t, ordering: u8, gc: xcb_gcontext_t, clip_x_origin: i16, clip_y_origin: i16, rectangles_len: u32, rectangles: [*c]const xcb_rectangle_t) xcb_void_cookie_t;
+pub extern fn xcb_set_clip_rectangles_rectangles(R: [*c]const xcb_set_clip_rectangles_request_t) [*c]xcb_rectangle_t;
+pub extern fn xcb_set_clip_rectangles_rectangles_length(R: [*c]const xcb_set_clip_rectangles_request_t) c_int;
+pub extern fn xcb_set_clip_rectangles_rectangles_iterator(R: [*c]const xcb_set_clip_rectangles_request_t) xcb_rectangle_iterator_t;
 pub extern fn xcb_free_gc_checked(c: ?*xcb_connection_t, gc: xcb_gcontext_t) xcb_void_cookie_t;
 pub extern fn xcb_free_gc(c: ?*xcb_connection_t, gc: xcb_gcontext_t) xcb_void_cookie_t;
 pub extern fn xcb_clear_area_checked(c: ?*xcb_connection_t, exposures: u8, window: xcb_window_t, x: i16, y: i16, width: u16, height: u16) xcb_void_cookie_t;
@@ -4380,92 +4380,92 @@ pub extern fn xcb_copy_area(c: ?*xcb_connection_t, src_drawable: xcb_drawable_t,
 pub extern fn xcb_copy_plane_checked(c: ?*xcb_connection_t, src_drawable: xcb_drawable_t, dst_drawable: xcb_drawable_t, gc: xcb_gcontext_t, src_x: i16, src_y: i16, dst_x: i16, dst_y: i16, width: u16, height: u16, bit_plane: u32) xcb_void_cookie_t;
 pub extern fn xcb_copy_plane(c: ?*xcb_connection_t, src_drawable: xcb_drawable_t, dst_drawable: xcb_drawable_t, gc: xcb_gcontext_t, src_x: i16, src_y: i16, dst_x: i16, dst_y: i16, width: u16, height: u16, bit_plane: u32) xcb_void_cookie_t;
 pub extern fn xcb_poly_point_sizeof(_buffer: ?*const c_void, points_len: u32) c_int;
-pub extern fn xcb_poly_point_checked(c: ?*xcb_connection_t, coordinate_mode: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, points_len: u32, points: ?[*]const xcb_point_t) xcb_void_cookie_t;
-pub extern fn xcb_poly_point(c: ?*xcb_connection_t, coordinate_mode: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, points_len: u32, points: ?[*]const xcb_point_t) xcb_void_cookie_t;
-pub extern fn xcb_poly_point_points(R: ?[*]const xcb_poly_point_request_t) ?[*]xcb_point_t;
-pub extern fn xcb_poly_point_points_length(R: ?[*]const xcb_poly_point_request_t) c_int;
-pub extern fn xcb_poly_point_points_iterator(R: ?[*]const xcb_poly_point_request_t) xcb_point_iterator_t;
+pub extern fn xcb_poly_point_checked(c: ?*xcb_connection_t, coordinate_mode: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, points_len: u32, points: [*c]const xcb_point_t) xcb_void_cookie_t;
+pub extern fn xcb_poly_point(c: ?*xcb_connection_t, coordinate_mode: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, points_len: u32, points: [*c]const xcb_point_t) xcb_void_cookie_t;
+pub extern fn xcb_poly_point_points(R: [*c]const xcb_poly_point_request_t) [*c]xcb_point_t;
+pub extern fn xcb_poly_point_points_length(R: [*c]const xcb_poly_point_request_t) c_int;
+pub extern fn xcb_poly_point_points_iterator(R: [*c]const xcb_poly_point_request_t) xcb_point_iterator_t;
 pub extern fn xcb_poly_line_sizeof(_buffer: ?*const c_void, points_len: u32) c_int;
-pub extern fn xcb_poly_line_checked(c: ?*xcb_connection_t, coordinate_mode: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, points_len: u32, points: ?[*]const xcb_point_t) xcb_void_cookie_t;
-pub extern fn xcb_poly_line(c: ?*xcb_connection_t, coordinate_mode: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, points_len: u32, points: ?[*]const xcb_point_t) xcb_void_cookie_t;
-pub extern fn xcb_poly_line_points(R: ?[*]const xcb_poly_line_request_t) ?[*]xcb_point_t;
-pub extern fn xcb_poly_line_points_length(R: ?[*]const xcb_poly_line_request_t) c_int;
-pub extern fn xcb_poly_line_points_iterator(R: ?[*]const xcb_poly_line_request_t) xcb_point_iterator_t;
-pub extern fn xcb_segment_next(i: ?[*]xcb_segment_iterator_t) void;
+pub extern fn xcb_poly_line_checked(c: ?*xcb_connection_t, coordinate_mode: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, points_len: u32, points: [*c]const xcb_point_t) xcb_void_cookie_t;
+pub extern fn xcb_poly_line(c: ?*xcb_connection_t, coordinate_mode: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, points_len: u32, points: [*c]const xcb_point_t) xcb_void_cookie_t;
+pub extern fn xcb_poly_line_points(R: [*c]const xcb_poly_line_request_t) [*c]xcb_point_t;
+pub extern fn xcb_poly_line_points_length(R: [*c]const xcb_poly_line_request_t) c_int;
+pub extern fn xcb_poly_line_points_iterator(R: [*c]const xcb_poly_line_request_t) xcb_point_iterator_t;
+pub extern fn xcb_segment_next(i: [*c]xcb_segment_iterator_t) void;
 pub extern fn xcb_segment_end(i: xcb_segment_iterator_t) xcb_generic_iterator_t;
 pub extern fn xcb_poly_segment_sizeof(_buffer: ?*const c_void, segments_len: u32) c_int;
-pub extern fn xcb_poly_segment_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, segments_len: u32, segments: ?[*]const xcb_segment_t) xcb_void_cookie_t;
-pub extern fn xcb_poly_segment(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, segments_len: u32, segments: ?[*]const xcb_segment_t) xcb_void_cookie_t;
-pub extern fn xcb_poly_segment_segments(R: ?[*]const xcb_poly_segment_request_t) ?[*]xcb_segment_t;
-pub extern fn xcb_poly_segment_segments_length(R: ?[*]const xcb_poly_segment_request_t) c_int;
-pub extern fn xcb_poly_segment_segments_iterator(R: ?[*]const xcb_poly_segment_request_t) xcb_segment_iterator_t;
+pub extern fn xcb_poly_segment_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, segments_len: u32, segments: [*c]const xcb_segment_t) xcb_void_cookie_t;
+pub extern fn xcb_poly_segment(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, segments_len: u32, segments: [*c]const xcb_segment_t) xcb_void_cookie_t;
+pub extern fn xcb_poly_segment_segments(R: [*c]const xcb_poly_segment_request_t) [*c]xcb_segment_t;
+pub extern fn xcb_poly_segment_segments_length(R: [*c]const xcb_poly_segment_request_t) c_int;
+pub extern fn xcb_poly_segment_segments_iterator(R: [*c]const xcb_poly_segment_request_t) xcb_segment_iterator_t;
 pub extern fn xcb_poly_rectangle_sizeof(_buffer: ?*const c_void, rectangles_len: u32) c_int;
-pub extern fn xcb_poly_rectangle_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, rectangles_len: u32, rectangles: ?[*]const xcb_rectangle_t) xcb_void_cookie_t;
-pub extern fn xcb_poly_rectangle(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, rectangles_len: u32, rectangles: ?[*]const xcb_rectangle_t) xcb_void_cookie_t;
-pub extern fn xcb_poly_rectangle_rectangles(R: ?[*]const xcb_poly_rectangle_request_t) ?[*]xcb_rectangle_t;
-pub extern fn xcb_poly_rectangle_rectangles_length(R: ?[*]const xcb_poly_rectangle_request_t) c_int;
-pub extern fn xcb_poly_rectangle_rectangles_iterator(R: ?[*]const xcb_poly_rectangle_request_t) xcb_rectangle_iterator_t;
+pub extern fn xcb_poly_rectangle_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, rectangles_len: u32, rectangles: [*c]const xcb_rectangle_t) xcb_void_cookie_t;
+pub extern fn xcb_poly_rectangle(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, rectangles_len: u32, rectangles: [*c]const xcb_rectangle_t) xcb_void_cookie_t;
+pub extern fn xcb_poly_rectangle_rectangles(R: [*c]const xcb_poly_rectangle_request_t) [*c]xcb_rectangle_t;
+pub extern fn xcb_poly_rectangle_rectangles_length(R: [*c]const xcb_poly_rectangle_request_t) c_int;
+pub extern fn xcb_poly_rectangle_rectangles_iterator(R: [*c]const xcb_poly_rectangle_request_t) xcb_rectangle_iterator_t;
 pub extern fn xcb_poly_arc_sizeof(_buffer: ?*const c_void, arcs_len: u32) c_int;
-pub extern fn xcb_poly_arc_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, arcs_len: u32, arcs: ?[*]const xcb_arc_t) xcb_void_cookie_t;
-pub extern fn xcb_poly_arc(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, arcs_len: u32, arcs: ?[*]const xcb_arc_t) xcb_void_cookie_t;
-pub extern fn xcb_poly_arc_arcs(R: ?[*]const xcb_poly_arc_request_t) ?[*]xcb_arc_t;
-pub extern fn xcb_poly_arc_arcs_length(R: ?[*]const xcb_poly_arc_request_t) c_int;
-pub extern fn xcb_poly_arc_arcs_iterator(R: ?[*]const xcb_poly_arc_request_t) xcb_arc_iterator_t;
+pub extern fn xcb_poly_arc_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, arcs_len: u32, arcs: [*c]const xcb_arc_t) xcb_void_cookie_t;
+pub extern fn xcb_poly_arc(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, arcs_len: u32, arcs: [*c]const xcb_arc_t) xcb_void_cookie_t;
+pub extern fn xcb_poly_arc_arcs(R: [*c]const xcb_poly_arc_request_t) [*c]xcb_arc_t;
+pub extern fn xcb_poly_arc_arcs_length(R: [*c]const xcb_poly_arc_request_t) c_int;
+pub extern fn xcb_poly_arc_arcs_iterator(R: [*c]const xcb_poly_arc_request_t) xcb_arc_iterator_t;
 pub extern fn xcb_fill_poly_sizeof(_buffer: ?*const c_void, points_len: u32) c_int;
-pub extern fn xcb_fill_poly_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, shape: u8, coordinate_mode: u8, points_len: u32, points: ?[*]const xcb_point_t) xcb_void_cookie_t;
-pub extern fn xcb_fill_poly(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, shape: u8, coordinate_mode: u8, points_len: u32, points: ?[*]const xcb_point_t) xcb_void_cookie_t;
-pub extern fn xcb_fill_poly_points(R: ?[*]const xcb_fill_poly_request_t) ?[*]xcb_point_t;
-pub extern fn xcb_fill_poly_points_length(R: ?[*]const xcb_fill_poly_request_t) c_int;
-pub extern fn xcb_fill_poly_points_iterator(R: ?[*]const xcb_fill_poly_request_t) xcb_point_iterator_t;
+pub extern fn xcb_fill_poly_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, shape: u8, coordinate_mode: u8, points_len: u32, points: [*c]const xcb_point_t) xcb_void_cookie_t;
+pub extern fn xcb_fill_poly(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, shape: u8, coordinate_mode: u8, points_len: u32, points: [*c]const xcb_point_t) xcb_void_cookie_t;
+pub extern fn xcb_fill_poly_points(R: [*c]const xcb_fill_poly_request_t) [*c]xcb_point_t;
+pub extern fn xcb_fill_poly_points_length(R: [*c]const xcb_fill_poly_request_t) c_int;
+pub extern fn xcb_fill_poly_points_iterator(R: [*c]const xcb_fill_poly_request_t) xcb_point_iterator_t;
 pub extern fn xcb_poly_fill_rectangle_sizeof(_buffer: ?*const c_void, rectangles_len: u32) c_int;
-pub extern fn xcb_poly_fill_rectangle_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, rectangles_len: u32, rectangles: ?[*]const xcb_rectangle_t) xcb_void_cookie_t;
-pub extern fn xcb_poly_fill_rectangle(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, rectangles_len: u32, rectangles: ?[*]const xcb_rectangle_t) xcb_void_cookie_t;
-pub extern fn xcb_poly_fill_rectangle_rectangles(R: ?[*]const xcb_poly_fill_rectangle_request_t) ?[*]xcb_rectangle_t;
-pub extern fn xcb_poly_fill_rectangle_rectangles_length(R: ?[*]const xcb_poly_fill_rectangle_request_t) c_int;
-pub extern fn xcb_poly_fill_rectangle_rectangles_iterator(R: ?[*]const xcb_poly_fill_rectangle_request_t) xcb_rectangle_iterator_t;
+pub extern fn xcb_poly_fill_rectangle_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, rectangles_len: u32, rectangles: [*c]const xcb_rectangle_t) xcb_void_cookie_t;
+pub extern fn xcb_poly_fill_rectangle(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, rectangles_len: u32, rectangles: [*c]const xcb_rectangle_t) xcb_void_cookie_t;
+pub extern fn xcb_poly_fill_rectangle_rectangles(R: [*c]const xcb_poly_fill_rectangle_request_t) [*c]xcb_rectangle_t;
+pub extern fn xcb_poly_fill_rectangle_rectangles_length(R: [*c]const xcb_poly_fill_rectangle_request_t) c_int;
+pub extern fn xcb_poly_fill_rectangle_rectangles_iterator(R: [*c]const xcb_poly_fill_rectangle_request_t) xcb_rectangle_iterator_t;
 pub extern fn xcb_poly_fill_arc_sizeof(_buffer: ?*const c_void, arcs_len: u32) c_int;
-pub extern fn xcb_poly_fill_arc_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, arcs_len: u32, arcs: ?[*]const xcb_arc_t) xcb_void_cookie_t;
-pub extern fn xcb_poly_fill_arc(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, arcs_len: u32, arcs: ?[*]const xcb_arc_t) xcb_void_cookie_t;
-pub extern fn xcb_poly_fill_arc_arcs(R: ?[*]const xcb_poly_fill_arc_request_t) ?[*]xcb_arc_t;
-pub extern fn xcb_poly_fill_arc_arcs_length(R: ?[*]const xcb_poly_fill_arc_request_t) c_int;
-pub extern fn xcb_poly_fill_arc_arcs_iterator(R: ?[*]const xcb_poly_fill_arc_request_t) xcb_arc_iterator_t;
+pub extern fn xcb_poly_fill_arc_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, arcs_len: u32, arcs: [*c]const xcb_arc_t) xcb_void_cookie_t;
+pub extern fn xcb_poly_fill_arc(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, arcs_len: u32, arcs: [*c]const xcb_arc_t) xcb_void_cookie_t;
+pub extern fn xcb_poly_fill_arc_arcs(R: [*c]const xcb_poly_fill_arc_request_t) [*c]xcb_arc_t;
+pub extern fn xcb_poly_fill_arc_arcs_length(R: [*c]const xcb_poly_fill_arc_request_t) c_int;
+pub extern fn xcb_poly_fill_arc_arcs_iterator(R: [*c]const xcb_poly_fill_arc_request_t) xcb_arc_iterator_t;
 pub extern fn xcb_put_image_sizeof(_buffer: ?*const c_void, data_len: u32) c_int;
-pub extern fn xcb_put_image_checked(c: ?*xcb_connection_t, format: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, width: u16, height: u16, dst_x: i16, dst_y: i16, left_pad: u8, depth: u8, data_len: u32, data: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_put_image(c: ?*xcb_connection_t, format: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, width: u16, height: u16, dst_x: i16, dst_y: i16, left_pad: u8, depth: u8, data_len: u32, data: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_put_image_data(R: ?[*]const xcb_put_image_request_t) ?[*]u8;
-pub extern fn xcb_put_image_data_length(R: ?[*]const xcb_put_image_request_t) c_int;
-pub extern fn xcb_put_image_data_end(R: ?[*]const xcb_put_image_request_t) xcb_generic_iterator_t;
+pub extern fn xcb_put_image_checked(c: ?*xcb_connection_t, format: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, width: u16, height: u16, dst_x: i16, dst_y: i16, left_pad: u8, depth: u8, data_len: u32, data: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_put_image(c: ?*xcb_connection_t, format: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, width: u16, height: u16, dst_x: i16, dst_y: i16, left_pad: u8, depth: u8, data_len: u32, data: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_put_image_data(R: [*c]const xcb_put_image_request_t) [*c]u8;
+pub extern fn xcb_put_image_data_length(R: [*c]const xcb_put_image_request_t) c_int;
+pub extern fn xcb_put_image_data_end(R: [*c]const xcb_put_image_request_t) xcb_generic_iterator_t;
 pub extern fn xcb_get_image_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_get_image(c: ?*xcb_connection_t, format: u8, drawable: xcb_drawable_t, x: i16, y: i16, width: u16, height: u16, plane_mask: u32) xcb_get_image_cookie_t;
 pub extern fn xcb_get_image_unchecked(c: ?*xcb_connection_t, format: u8, drawable: xcb_drawable_t, x: i16, y: i16, width: u16, height: u16, plane_mask: u32) xcb_get_image_cookie_t;
-pub extern fn xcb_get_image_data(R: ?[*]const xcb_get_image_reply_t) ?[*]u8;
-pub extern fn xcb_get_image_data_length(R: ?[*]const xcb_get_image_reply_t) c_int;
-pub extern fn xcb_get_image_data_end(R: ?[*]const xcb_get_image_reply_t) xcb_generic_iterator_t;
-pub extern fn xcb_get_image_reply(c: ?*xcb_connection_t, cookie: xcb_get_image_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_image_reply_t;
+pub extern fn xcb_get_image_data(R: [*c]const xcb_get_image_reply_t) [*c]u8;
+pub extern fn xcb_get_image_data_length(R: [*c]const xcb_get_image_reply_t) c_int;
+pub extern fn xcb_get_image_data_end(R: [*c]const xcb_get_image_reply_t) xcb_generic_iterator_t;
+pub extern fn xcb_get_image_reply(c: ?*xcb_connection_t, cookie: xcb_get_image_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_image_reply_t;
 pub extern fn xcb_poly_text_8_sizeof(_buffer: ?*const c_void, items_len: u32) c_int;
-pub extern fn xcb_poly_text_8_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, items_len: u32, items: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_poly_text_8(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, items_len: u32, items: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_poly_text_8_items(R: ?[*]const xcb_poly_text_8_request_t) ?[*]u8;
-pub extern fn xcb_poly_text_8_items_length(R: ?[*]const xcb_poly_text_8_request_t) c_int;
-pub extern fn xcb_poly_text_8_items_end(R: ?[*]const xcb_poly_text_8_request_t) xcb_generic_iterator_t;
+pub extern fn xcb_poly_text_8_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, items_len: u32, items: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_poly_text_8(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, items_len: u32, items: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_poly_text_8_items(R: [*c]const xcb_poly_text_8_request_t) [*c]u8;
+pub extern fn xcb_poly_text_8_items_length(R: [*c]const xcb_poly_text_8_request_t) c_int;
+pub extern fn xcb_poly_text_8_items_end(R: [*c]const xcb_poly_text_8_request_t) xcb_generic_iterator_t;
 pub extern fn xcb_poly_text_16_sizeof(_buffer: ?*const c_void, items_len: u32) c_int;
-pub extern fn xcb_poly_text_16_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, items_len: u32, items: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_poly_text_16(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, items_len: u32, items: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_poly_text_16_items(R: ?[*]const xcb_poly_text_16_request_t) ?[*]u8;
-pub extern fn xcb_poly_text_16_items_length(R: ?[*]const xcb_poly_text_16_request_t) c_int;
-pub extern fn xcb_poly_text_16_items_end(R: ?[*]const xcb_poly_text_16_request_t) xcb_generic_iterator_t;
+pub extern fn xcb_poly_text_16_checked(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, items_len: u32, items: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_poly_text_16(c: ?*xcb_connection_t, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, items_len: u32, items: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_poly_text_16_items(R: [*c]const xcb_poly_text_16_request_t) [*c]u8;
+pub extern fn xcb_poly_text_16_items_length(R: [*c]const xcb_poly_text_16_request_t) c_int;
+pub extern fn xcb_poly_text_16_items_end(R: [*c]const xcb_poly_text_16_request_t) xcb_generic_iterator_t;
 pub extern fn xcb_image_text_8_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_image_text_8_checked(c: ?*xcb_connection_t, string_len: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, string: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_image_text_8(c: ?*xcb_connection_t, string_len: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, string: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_image_text_8_string(R: ?[*]const xcb_image_text_8_request_t) ?[*]u8;
-pub extern fn xcb_image_text_8_string_length(R: ?[*]const xcb_image_text_8_request_t) c_int;
-pub extern fn xcb_image_text_8_string_end(R: ?[*]const xcb_image_text_8_request_t) xcb_generic_iterator_t;
+pub extern fn xcb_image_text_8_checked(c: ?*xcb_connection_t, string_len: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, string: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_image_text_8(c: ?*xcb_connection_t, string_len: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, string: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_image_text_8_string(R: [*c]const xcb_image_text_8_request_t) [*c]u8;
+pub extern fn xcb_image_text_8_string_length(R: [*c]const xcb_image_text_8_request_t) c_int;
+pub extern fn xcb_image_text_8_string_end(R: [*c]const xcb_image_text_8_request_t) xcb_generic_iterator_t;
 pub extern fn xcb_image_text_16_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_image_text_16_checked(c: ?*xcb_connection_t, string_len: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, string: ?[*]const xcb_char2b_t) xcb_void_cookie_t;
-pub extern fn xcb_image_text_16(c: ?*xcb_connection_t, string_len: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, string: ?[*]const xcb_char2b_t) xcb_void_cookie_t;
-pub extern fn xcb_image_text_16_string(R: ?[*]const xcb_image_text_16_request_t) ?[*]xcb_char2b_t;
-pub extern fn xcb_image_text_16_string_length(R: ?[*]const xcb_image_text_16_request_t) c_int;
-pub extern fn xcb_image_text_16_string_iterator(R: ?[*]const xcb_image_text_16_request_t) xcb_char2b_iterator_t;
+pub extern fn xcb_image_text_16_checked(c: ?*xcb_connection_t, string_len: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, string: [*c]const xcb_char2b_t) xcb_void_cookie_t;
+pub extern fn xcb_image_text_16(c: ?*xcb_connection_t, string_len: u8, drawable: xcb_drawable_t, gc: xcb_gcontext_t, x: i16, y: i16, string: [*c]const xcb_char2b_t) xcb_void_cookie_t;
+pub extern fn xcb_image_text_16_string(R: [*c]const xcb_image_text_16_request_t) [*c]xcb_char2b_t;
+pub extern fn xcb_image_text_16_string_length(R: [*c]const xcb_image_text_16_request_t) c_int;
+pub extern fn xcb_image_text_16_string_iterator(R: [*c]const xcb_image_text_16_request_t) xcb_char2b_iterator_t;
 pub extern fn xcb_create_colormap_checked(c: ?*xcb_connection_t, alloc: u8, mid: xcb_colormap_t, window: xcb_window_t, visual: xcb_visualid_t) xcb_void_cookie_t;
 pub extern fn xcb_create_colormap(c: ?*xcb_connection_t, alloc: u8, mid: xcb_colormap_t, window: xcb_window_t, visual: xcb_visualid_t) xcb_void_cookie_t;
 pub extern fn xcb_free_colormap_checked(c: ?*xcb_connection_t, cmap: xcb_colormap_t) xcb_void_cookie_t;
@@ -4479,67 +4479,67 @@ pub extern fn xcb_uninstall_colormap(c: ?*xcb_connection_t, cmap: xcb_colormap_t
 pub extern fn xcb_list_installed_colormaps_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_list_installed_colormaps(c: ?*xcb_connection_t, window: xcb_window_t) xcb_list_installed_colormaps_cookie_t;
 pub extern fn xcb_list_installed_colormaps_unchecked(c: ?*xcb_connection_t, window: xcb_window_t) xcb_list_installed_colormaps_cookie_t;
-pub extern fn xcb_list_installed_colormaps_cmaps(R: ?[*]const xcb_list_installed_colormaps_reply_t) ?[*]xcb_colormap_t;
-pub extern fn xcb_list_installed_colormaps_cmaps_length(R: ?[*]const xcb_list_installed_colormaps_reply_t) c_int;
-pub extern fn xcb_list_installed_colormaps_cmaps_end(R: ?[*]const xcb_list_installed_colormaps_reply_t) xcb_generic_iterator_t;
-pub extern fn xcb_list_installed_colormaps_reply(c: ?*xcb_connection_t, cookie: xcb_list_installed_colormaps_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_list_installed_colormaps_reply_t;
+pub extern fn xcb_list_installed_colormaps_cmaps(R: [*c]const xcb_list_installed_colormaps_reply_t) [*c]xcb_colormap_t;
+pub extern fn xcb_list_installed_colormaps_cmaps_length(R: [*c]const xcb_list_installed_colormaps_reply_t) c_int;
+pub extern fn xcb_list_installed_colormaps_cmaps_end(R: [*c]const xcb_list_installed_colormaps_reply_t) xcb_generic_iterator_t;
+pub extern fn xcb_list_installed_colormaps_reply(c: ?*xcb_connection_t, cookie: xcb_list_installed_colormaps_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_list_installed_colormaps_reply_t;
 pub extern fn xcb_alloc_color(c: ?*xcb_connection_t, cmap: xcb_colormap_t, red: u16, green: u16, blue: u16) xcb_alloc_color_cookie_t;
 pub extern fn xcb_alloc_color_unchecked(c: ?*xcb_connection_t, cmap: xcb_colormap_t, red: u16, green: u16, blue: u16) xcb_alloc_color_cookie_t;
-pub extern fn xcb_alloc_color_reply(c: ?*xcb_connection_t, cookie: xcb_alloc_color_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_alloc_color_reply_t;
+pub extern fn xcb_alloc_color_reply(c: ?*xcb_connection_t, cookie: xcb_alloc_color_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_alloc_color_reply_t;
 pub extern fn xcb_alloc_named_color_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_alloc_named_color(c: ?*xcb_connection_t, cmap: xcb_colormap_t, name_len: u16, name: ?[*]const u8) xcb_alloc_named_color_cookie_t;
-pub extern fn xcb_alloc_named_color_unchecked(c: ?*xcb_connection_t, cmap: xcb_colormap_t, name_len: u16, name: ?[*]const u8) xcb_alloc_named_color_cookie_t;
-pub extern fn xcb_alloc_named_color_reply(c: ?*xcb_connection_t, cookie: xcb_alloc_named_color_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_alloc_named_color_reply_t;
+pub extern fn xcb_alloc_named_color(c: ?*xcb_connection_t, cmap: xcb_colormap_t, name_len: u16, name: [*c]const u8) xcb_alloc_named_color_cookie_t;
+pub extern fn xcb_alloc_named_color_unchecked(c: ?*xcb_connection_t, cmap: xcb_colormap_t, name_len: u16, name: [*c]const u8) xcb_alloc_named_color_cookie_t;
+pub extern fn xcb_alloc_named_color_reply(c: ?*xcb_connection_t, cookie: xcb_alloc_named_color_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_alloc_named_color_reply_t;
 pub extern fn xcb_alloc_color_cells_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_alloc_color_cells(c: ?*xcb_connection_t, contiguous: u8, cmap: xcb_colormap_t, colors: u16, planes: u16) xcb_alloc_color_cells_cookie_t;
 pub extern fn xcb_alloc_color_cells_unchecked(c: ?*xcb_connection_t, contiguous: u8, cmap: xcb_colormap_t, colors: u16, planes: u16) xcb_alloc_color_cells_cookie_t;
-pub extern fn xcb_alloc_color_cells_pixels(R: ?[*]const xcb_alloc_color_cells_reply_t) ?[*]u32;
-pub extern fn xcb_alloc_color_cells_pixels_length(R: ?[*]const xcb_alloc_color_cells_reply_t) c_int;
-pub extern fn xcb_alloc_color_cells_pixels_end(R: ?[*]const xcb_alloc_color_cells_reply_t) xcb_generic_iterator_t;
-pub extern fn xcb_alloc_color_cells_masks(R: ?[*]const xcb_alloc_color_cells_reply_t) ?[*]u32;
-pub extern fn xcb_alloc_color_cells_masks_length(R: ?[*]const xcb_alloc_color_cells_reply_t) c_int;
-pub extern fn xcb_alloc_color_cells_masks_end(R: ?[*]const xcb_alloc_color_cells_reply_t) xcb_generic_iterator_t;
-pub extern fn xcb_alloc_color_cells_reply(c: ?*xcb_connection_t, cookie: xcb_alloc_color_cells_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_alloc_color_cells_reply_t;
+pub extern fn xcb_alloc_color_cells_pixels(R: [*c]const xcb_alloc_color_cells_reply_t) [*c]u32;
+pub extern fn xcb_alloc_color_cells_pixels_length(R: [*c]const xcb_alloc_color_cells_reply_t) c_int;
+pub extern fn xcb_alloc_color_cells_pixels_end(R: [*c]const xcb_alloc_color_cells_reply_t) xcb_generic_iterator_t;
+pub extern fn xcb_alloc_color_cells_masks(R: [*c]const xcb_alloc_color_cells_reply_t) [*c]u32;
+pub extern fn xcb_alloc_color_cells_masks_length(R: [*c]const xcb_alloc_color_cells_reply_t) c_int;
+pub extern fn xcb_alloc_color_cells_masks_end(R: [*c]const xcb_alloc_color_cells_reply_t) xcb_generic_iterator_t;
+pub extern fn xcb_alloc_color_cells_reply(c: ?*xcb_connection_t, cookie: xcb_alloc_color_cells_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_alloc_color_cells_reply_t;
 pub extern fn xcb_alloc_color_planes_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_alloc_color_planes(c: ?*xcb_connection_t, contiguous: u8, cmap: xcb_colormap_t, colors: u16, reds: u16, greens: u16, blues: u16) xcb_alloc_color_planes_cookie_t;
 pub extern fn xcb_alloc_color_planes_unchecked(c: ?*xcb_connection_t, contiguous: u8, cmap: xcb_colormap_t, colors: u16, reds: u16, greens: u16, blues: u16) xcb_alloc_color_planes_cookie_t;
-pub extern fn xcb_alloc_color_planes_pixels(R: ?[*]const xcb_alloc_color_planes_reply_t) ?[*]u32;
-pub extern fn xcb_alloc_color_planes_pixels_length(R: ?[*]const xcb_alloc_color_planes_reply_t) c_int;
-pub extern fn xcb_alloc_color_planes_pixels_end(R: ?[*]const xcb_alloc_color_planes_reply_t) xcb_generic_iterator_t;
-pub extern fn xcb_alloc_color_planes_reply(c: ?*xcb_connection_t, cookie: xcb_alloc_color_planes_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_alloc_color_planes_reply_t;
+pub extern fn xcb_alloc_color_planes_pixels(R: [*c]const xcb_alloc_color_planes_reply_t) [*c]u32;
+pub extern fn xcb_alloc_color_planes_pixels_length(R: [*c]const xcb_alloc_color_planes_reply_t) c_int;
+pub extern fn xcb_alloc_color_planes_pixels_end(R: [*c]const xcb_alloc_color_planes_reply_t) xcb_generic_iterator_t;
+pub extern fn xcb_alloc_color_planes_reply(c: ?*xcb_connection_t, cookie: xcb_alloc_color_planes_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_alloc_color_planes_reply_t;
 pub extern fn xcb_free_colors_sizeof(_buffer: ?*const c_void, pixels_len: u32) c_int;
-pub extern fn xcb_free_colors_checked(c: ?*xcb_connection_t, cmap: xcb_colormap_t, plane_mask: u32, pixels_len: u32, pixels: ?[*]const u32) xcb_void_cookie_t;
-pub extern fn xcb_free_colors(c: ?*xcb_connection_t, cmap: xcb_colormap_t, plane_mask: u32, pixels_len: u32, pixels: ?[*]const u32) xcb_void_cookie_t;
-pub extern fn xcb_free_colors_pixels(R: ?[*]const xcb_free_colors_request_t) ?[*]u32;
-pub extern fn xcb_free_colors_pixels_length(R: ?[*]const xcb_free_colors_request_t) c_int;
-pub extern fn xcb_free_colors_pixels_end(R: ?[*]const xcb_free_colors_request_t) xcb_generic_iterator_t;
-pub extern fn xcb_coloritem_next(i: ?[*]xcb_coloritem_iterator_t) void;
+pub extern fn xcb_free_colors_checked(c: ?*xcb_connection_t, cmap: xcb_colormap_t, plane_mask: u32, pixels_len: u32, pixels: [*c]const u32) xcb_void_cookie_t;
+pub extern fn xcb_free_colors(c: ?*xcb_connection_t, cmap: xcb_colormap_t, plane_mask: u32, pixels_len: u32, pixels: [*c]const u32) xcb_void_cookie_t;
+pub extern fn xcb_free_colors_pixels(R: [*c]const xcb_free_colors_request_t) [*c]u32;
+pub extern fn xcb_free_colors_pixels_length(R: [*c]const xcb_free_colors_request_t) c_int;
+pub extern fn xcb_free_colors_pixels_end(R: [*c]const xcb_free_colors_request_t) xcb_generic_iterator_t;
+pub extern fn xcb_coloritem_next(i: [*c]xcb_coloritem_iterator_t) void;
 pub extern fn xcb_coloritem_end(i: xcb_coloritem_iterator_t) xcb_generic_iterator_t;
 pub extern fn xcb_store_colors_sizeof(_buffer: ?*const c_void, items_len: u32) c_int;
-pub extern fn xcb_store_colors_checked(c: ?*xcb_connection_t, cmap: xcb_colormap_t, items_len: u32, items: ?[*]const xcb_coloritem_t) xcb_void_cookie_t;
-pub extern fn xcb_store_colors(c: ?*xcb_connection_t, cmap: xcb_colormap_t, items_len: u32, items: ?[*]const xcb_coloritem_t) xcb_void_cookie_t;
-pub extern fn xcb_store_colors_items(R: ?[*]const xcb_store_colors_request_t) ?[*]xcb_coloritem_t;
-pub extern fn xcb_store_colors_items_length(R: ?[*]const xcb_store_colors_request_t) c_int;
-pub extern fn xcb_store_colors_items_iterator(R: ?[*]const xcb_store_colors_request_t) xcb_coloritem_iterator_t;
+pub extern fn xcb_store_colors_checked(c: ?*xcb_connection_t, cmap: xcb_colormap_t, items_len: u32, items: [*c]const xcb_coloritem_t) xcb_void_cookie_t;
+pub extern fn xcb_store_colors(c: ?*xcb_connection_t, cmap: xcb_colormap_t, items_len: u32, items: [*c]const xcb_coloritem_t) xcb_void_cookie_t;
+pub extern fn xcb_store_colors_items(R: [*c]const xcb_store_colors_request_t) [*c]xcb_coloritem_t;
+pub extern fn xcb_store_colors_items_length(R: [*c]const xcb_store_colors_request_t) c_int;
+pub extern fn xcb_store_colors_items_iterator(R: [*c]const xcb_store_colors_request_t) xcb_coloritem_iterator_t;
 pub extern fn xcb_store_named_color_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_store_named_color_checked(c: ?*xcb_connection_t, flags: u8, cmap: xcb_colormap_t, pixel: u32, name_len: u16, name: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_store_named_color(c: ?*xcb_connection_t, flags: u8, cmap: xcb_colormap_t, pixel: u32, name_len: u16, name: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_store_named_color_name(R: ?[*]const xcb_store_named_color_request_t) ?[*]u8;
-pub extern fn xcb_store_named_color_name_length(R: ?[*]const xcb_store_named_color_request_t) c_int;
-pub extern fn xcb_store_named_color_name_end(R: ?[*]const xcb_store_named_color_request_t) xcb_generic_iterator_t;
-pub extern fn xcb_rgb_next(i: ?[*]xcb_rgb_iterator_t) void;
+pub extern fn xcb_store_named_color_checked(c: ?*xcb_connection_t, flags: u8, cmap: xcb_colormap_t, pixel: u32, name_len: u16, name: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_store_named_color(c: ?*xcb_connection_t, flags: u8, cmap: xcb_colormap_t, pixel: u32, name_len: u16, name: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_store_named_color_name(R: [*c]const xcb_store_named_color_request_t) [*c]u8;
+pub extern fn xcb_store_named_color_name_length(R: [*c]const xcb_store_named_color_request_t) c_int;
+pub extern fn xcb_store_named_color_name_end(R: [*c]const xcb_store_named_color_request_t) xcb_generic_iterator_t;
+pub extern fn xcb_rgb_next(i: [*c]xcb_rgb_iterator_t) void;
 pub extern fn xcb_rgb_end(i: xcb_rgb_iterator_t) xcb_generic_iterator_t;
 pub extern fn xcb_query_colors_sizeof(_buffer: ?*const c_void, pixels_len: u32) c_int;
-pub extern fn xcb_query_colors(c: ?*xcb_connection_t, cmap: xcb_colormap_t, pixels_len: u32, pixels: ?[*]const u32) xcb_query_colors_cookie_t;
-pub extern fn xcb_query_colors_unchecked(c: ?*xcb_connection_t, cmap: xcb_colormap_t, pixels_len: u32, pixels: ?[*]const u32) xcb_query_colors_cookie_t;
-pub extern fn xcb_query_colors_colors(R: ?[*]const xcb_query_colors_reply_t) ?[*]xcb_rgb_t;
-pub extern fn xcb_query_colors_colors_length(R: ?[*]const xcb_query_colors_reply_t) c_int;
-pub extern fn xcb_query_colors_colors_iterator(R: ?[*]const xcb_query_colors_reply_t) xcb_rgb_iterator_t;
-pub extern fn xcb_query_colors_reply(c: ?*xcb_connection_t, cookie: xcb_query_colors_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_query_colors_reply_t;
+pub extern fn xcb_query_colors(c: ?*xcb_connection_t, cmap: xcb_colormap_t, pixels_len: u32, pixels: [*c]const u32) xcb_query_colors_cookie_t;
+pub extern fn xcb_query_colors_unchecked(c: ?*xcb_connection_t, cmap: xcb_colormap_t, pixels_len: u32, pixels: [*c]const u32) xcb_query_colors_cookie_t;
+pub extern fn xcb_query_colors_colors(R: [*c]const xcb_query_colors_reply_t) [*c]xcb_rgb_t;
+pub extern fn xcb_query_colors_colors_length(R: [*c]const xcb_query_colors_reply_t) c_int;
+pub extern fn xcb_query_colors_colors_iterator(R: [*c]const xcb_query_colors_reply_t) xcb_rgb_iterator_t;
+pub extern fn xcb_query_colors_reply(c: ?*xcb_connection_t, cookie: xcb_query_colors_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_query_colors_reply_t;
 pub extern fn xcb_lookup_color_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_lookup_color(c: ?*xcb_connection_t, cmap: xcb_colormap_t, name_len: u16, name: ?[*]const u8) xcb_lookup_color_cookie_t;
-pub extern fn xcb_lookup_color_unchecked(c: ?*xcb_connection_t, cmap: xcb_colormap_t, name_len: u16, name: ?[*]const u8) xcb_lookup_color_cookie_t;
-pub extern fn xcb_lookup_color_reply(c: ?*xcb_connection_t, cookie: xcb_lookup_color_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_lookup_color_reply_t;
+pub extern fn xcb_lookup_color(c: ?*xcb_connection_t, cmap: xcb_colormap_t, name_len: u16, name: [*c]const u8) xcb_lookup_color_cookie_t;
+pub extern fn xcb_lookup_color_unchecked(c: ?*xcb_connection_t, cmap: xcb_colormap_t, name_len: u16, name: [*c]const u8) xcb_lookup_color_cookie_t;
+pub extern fn xcb_lookup_color_reply(c: ?*xcb_connection_t, cookie: xcb_lookup_color_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_lookup_color_reply_t;
 pub extern fn xcb_create_cursor_checked(c: ?*xcb_connection_t, cid: xcb_cursor_t, source: xcb_pixmap_t, mask: xcb_pixmap_t, fore_red: u16, fore_green: u16, fore_blue: u16, back_red: u16, back_green: u16, back_blue: u16, x: u16, y: u16) xcb_void_cookie_t;
 pub extern fn xcb_create_cursor(c: ?*xcb_connection_t, cid: xcb_cursor_t, source: xcb_pixmap_t, mask: xcb_pixmap_t, fore_red: u16, fore_green: u16, fore_blue: u16, back_red: u16, back_green: u16, back_blue: u16, x: u16, y: u16) xcb_void_cookie_t;
 pub extern fn xcb_create_glyph_cursor_checked(c: ?*xcb_connection_t, cid: xcb_cursor_t, source_font: xcb_font_t, mask_font: xcb_font_t, source_char: u16, mask_char: u16, fore_red: u16, fore_green: u16, fore_blue: u16, back_red: u16, back_green: u16, back_blue: u16) xcb_void_cookie_t;
@@ -4550,72 +4550,72 @@ pub extern fn xcb_recolor_cursor_checked(c: ?*xcb_connection_t, cursor: xcb_curs
 pub extern fn xcb_recolor_cursor(c: ?*xcb_connection_t, cursor: xcb_cursor_t, fore_red: u16, fore_green: u16, fore_blue: u16, back_red: u16, back_green: u16, back_blue: u16) xcb_void_cookie_t;
 pub extern fn xcb_query_best_size(c: ?*xcb_connection_t, _class: u8, drawable: xcb_drawable_t, width: u16, height: u16) xcb_query_best_size_cookie_t;
 pub extern fn xcb_query_best_size_unchecked(c: ?*xcb_connection_t, _class: u8, drawable: xcb_drawable_t, width: u16, height: u16) xcb_query_best_size_cookie_t;
-pub extern fn xcb_query_best_size_reply(c: ?*xcb_connection_t, cookie: xcb_query_best_size_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_query_best_size_reply_t;
+pub extern fn xcb_query_best_size_reply(c: ?*xcb_connection_t, cookie: xcb_query_best_size_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_query_best_size_reply_t;
 pub extern fn xcb_query_extension_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_query_extension(c: ?*xcb_connection_t, name_len: u16, name: ?[*]const u8) xcb_query_extension_cookie_t;
-pub extern fn xcb_query_extension_unchecked(c: ?*xcb_connection_t, name_len: u16, name: ?[*]const u8) xcb_query_extension_cookie_t;
-pub extern fn xcb_query_extension_reply(c: ?*xcb_connection_t, cookie: xcb_query_extension_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_query_extension_reply_t;
+pub extern fn xcb_query_extension(c: ?*xcb_connection_t, name_len: u16, name: [*c]const u8) xcb_query_extension_cookie_t;
+pub extern fn xcb_query_extension_unchecked(c: ?*xcb_connection_t, name_len: u16, name: [*c]const u8) xcb_query_extension_cookie_t;
+pub extern fn xcb_query_extension_reply(c: ?*xcb_connection_t, cookie: xcb_query_extension_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_query_extension_reply_t;
 pub extern fn xcb_list_extensions_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_list_extensions(c: ?*xcb_connection_t) xcb_list_extensions_cookie_t;
 pub extern fn xcb_list_extensions_unchecked(c: ?*xcb_connection_t) xcb_list_extensions_cookie_t;
-pub extern fn xcb_list_extensions_names_length(R: ?[*]const xcb_list_extensions_reply_t) c_int;
-pub extern fn xcb_list_extensions_names_iterator(R: ?[*]const xcb_list_extensions_reply_t) xcb_str_iterator_t;
-pub extern fn xcb_list_extensions_reply(c: ?*xcb_connection_t, cookie: xcb_list_extensions_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_list_extensions_reply_t;
+pub extern fn xcb_list_extensions_names_length(R: [*c]const xcb_list_extensions_reply_t) c_int;
+pub extern fn xcb_list_extensions_names_iterator(R: [*c]const xcb_list_extensions_reply_t) xcb_str_iterator_t;
+pub extern fn xcb_list_extensions_reply(c: ?*xcb_connection_t, cookie: xcb_list_extensions_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_list_extensions_reply_t;
 pub extern fn xcb_change_keyboard_mapping_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_change_keyboard_mapping_checked(c: ?*xcb_connection_t, keycode_count: u8, first_keycode: xcb_keycode_t, keysyms_per_keycode: u8, keysyms: ?[*]const xcb_keysym_t) xcb_void_cookie_t;
-pub extern fn xcb_change_keyboard_mapping(c: ?*xcb_connection_t, keycode_count: u8, first_keycode: xcb_keycode_t, keysyms_per_keycode: u8, keysyms: ?[*]const xcb_keysym_t) xcb_void_cookie_t;
-pub extern fn xcb_change_keyboard_mapping_keysyms(R: ?[*]const xcb_change_keyboard_mapping_request_t) ?[*]xcb_keysym_t;
-pub extern fn xcb_change_keyboard_mapping_keysyms_length(R: ?[*]const xcb_change_keyboard_mapping_request_t) c_int;
-pub extern fn xcb_change_keyboard_mapping_keysyms_end(R: ?[*]const xcb_change_keyboard_mapping_request_t) xcb_generic_iterator_t;
+pub extern fn xcb_change_keyboard_mapping_checked(c: ?*xcb_connection_t, keycode_count: u8, first_keycode: xcb_keycode_t, keysyms_per_keycode: u8, keysyms: [*c]const xcb_keysym_t) xcb_void_cookie_t;
+pub extern fn xcb_change_keyboard_mapping(c: ?*xcb_connection_t, keycode_count: u8, first_keycode: xcb_keycode_t, keysyms_per_keycode: u8, keysyms: [*c]const xcb_keysym_t) xcb_void_cookie_t;
+pub extern fn xcb_change_keyboard_mapping_keysyms(R: [*c]const xcb_change_keyboard_mapping_request_t) [*c]xcb_keysym_t;
+pub extern fn xcb_change_keyboard_mapping_keysyms_length(R: [*c]const xcb_change_keyboard_mapping_request_t) c_int;
+pub extern fn xcb_change_keyboard_mapping_keysyms_end(R: [*c]const xcb_change_keyboard_mapping_request_t) xcb_generic_iterator_t;
 pub extern fn xcb_get_keyboard_mapping_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_get_keyboard_mapping(c: ?*xcb_connection_t, first_keycode: xcb_keycode_t, count: u8) xcb_get_keyboard_mapping_cookie_t;
 pub extern fn xcb_get_keyboard_mapping_unchecked(c: ?*xcb_connection_t, first_keycode: xcb_keycode_t, count: u8) xcb_get_keyboard_mapping_cookie_t;
-pub extern fn xcb_get_keyboard_mapping_keysyms(R: ?[*]const xcb_get_keyboard_mapping_reply_t) ?[*]xcb_keysym_t;
-pub extern fn xcb_get_keyboard_mapping_keysyms_length(R: ?[*]const xcb_get_keyboard_mapping_reply_t) c_int;
-pub extern fn xcb_get_keyboard_mapping_keysyms_end(R: ?[*]const xcb_get_keyboard_mapping_reply_t) xcb_generic_iterator_t;
-pub extern fn xcb_get_keyboard_mapping_reply(c: ?*xcb_connection_t, cookie: xcb_get_keyboard_mapping_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_keyboard_mapping_reply_t;
-pub extern fn xcb_change_keyboard_control_value_list_serialize(_buffer: ?[*](?*c_void), value_mask: u32, _aux: ?[*]const xcb_change_keyboard_control_value_list_t) c_int;
-pub extern fn xcb_change_keyboard_control_value_list_unpack(_buffer: ?*const c_void, value_mask: u32, _aux: ?[*]xcb_change_keyboard_control_value_list_t) c_int;
+pub extern fn xcb_get_keyboard_mapping_keysyms(R: [*c]const xcb_get_keyboard_mapping_reply_t) [*c]xcb_keysym_t;
+pub extern fn xcb_get_keyboard_mapping_keysyms_length(R: [*c]const xcb_get_keyboard_mapping_reply_t) c_int;
+pub extern fn xcb_get_keyboard_mapping_keysyms_end(R: [*c]const xcb_get_keyboard_mapping_reply_t) xcb_generic_iterator_t;
+pub extern fn xcb_get_keyboard_mapping_reply(c: ?*xcb_connection_t, cookie: xcb_get_keyboard_mapping_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_keyboard_mapping_reply_t;
+pub extern fn xcb_change_keyboard_control_value_list_serialize(_buffer: [*c](?*c_void), value_mask: u32, _aux: [*c]const xcb_change_keyboard_control_value_list_t) c_int;
+pub extern fn xcb_change_keyboard_control_value_list_unpack(_buffer: ?*const c_void, value_mask: u32, _aux: [*c]xcb_change_keyboard_control_value_list_t) c_int;
 pub extern fn xcb_change_keyboard_control_value_list_sizeof(_buffer: ?*const c_void, value_mask: u32) c_int;
 pub extern fn xcb_change_keyboard_control_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_change_keyboard_control_checked(c: ?*xcb_connection_t, value_mask: u32, value_list: ?*const c_void) xcb_void_cookie_t;
 pub extern fn xcb_change_keyboard_control(c: ?*xcb_connection_t, value_mask: u32, value_list: ?*const c_void) xcb_void_cookie_t;
-pub extern fn xcb_change_keyboard_control_aux_checked(c: ?*xcb_connection_t, value_mask: u32, value_list: ?[*]const xcb_change_keyboard_control_value_list_t) xcb_void_cookie_t;
-pub extern fn xcb_change_keyboard_control_aux(c: ?*xcb_connection_t, value_mask: u32, value_list: ?[*]const xcb_change_keyboard_control_value_list_t) xcb_void_cookie_t;
-pub extern fn xcb_change_keyboard_control_value_list(R: ?[*]const xcb_change_keyboard_control_request_t) ?*c_void;
+pub extern fn xcb_change_keyboard_control_aux_checked(c: ?*xcb_connection_t, value_mask: u32, value_list: [*c]const xcb_change_keyboard_control_value_list_t) xcb_void_cookie_t;
+pub extern fn xcb_change_keyboard_control_aux(c: ?*xcb_connection_t, value_mask: u32, value_list: [*c]const xcb_change_keyboard_control_value_list_t) xcb_void_cookie_t;
+pub extern fn xcb_change_keyboard_control_value_list(R: [*c]const xcb_change_keyboard_control_request_t) ?*c_void;
 pub extern fn xcb_get_keyboard_control(c: ?*xcb_connection_t) xcb_get_keyboard_control_cookie_t;
 pub extern fn xcb_get_keyboard_control_unchecked(c: ?*xcb_connection_t) xcb_get_keyboard_control_cookie_t;
-pub extern fn xcb_get_keyboard_control_reply(c: ?*xcb_connection_t, cookie: xcb_get_keyboard_control_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_keyboard_control_reply_t;
+pub extern fn xcb_get_keyboard_control_reply(c: ?*xcb_connection_t, cookie: xcb_get_keyboard_control_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_keyboard_control_reply_t;
 pub extern fn xcb_bell_checked(c: ?*xcb_connection_t, percent: i8) xcb_void_cookie_t;
 pub extern fn xcb_bell(c: ?*xcb_connection_t, percent: i8) xcb_void_cookie_t;
 pub extern fn xcb_change_pointer_control_checked(c: ?*xcb_connection_t, acceleration_numerator: i16, acceleration_denominator: i16, threshold: i16, do_acceleration: u8, do_threshold: u8) xcb_void_cookie_t;
 pub extern fn xcb_change_pointer_control(c: ?*xcb_connection_t, acceleration_numerator: i16, acceleration_denominator: i16, threshold: i16, do_acceleration: u8, do_threshold: u8) xcb_void_cookie_t;
 pub extern fn xcb_get_pointer_control(c: ?*xcb_connection_t) xcb_get_pointer_control_cookie_t;
 pub extern fn xcb_get_pointer_control_unchecked(c: ?*xcb_connection_t) xcb_get_pointer_control_cookie_t;
-pub extern fn xcb_get_pointer_control_reply(c: ?*xcb_connection_t, cookie: xcb_get_pointer_control_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_pointer_control_reply_t;
+pub extern fn xcb_get_pointer_control_reply(c: ?*xcb_connection_t, cookie: xcb_get_pointer_control_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_pointer_control_reply_t;
 pub extern fn xcb_set_screen_saver_checked(c: ?*xcb_connection_t, timeout: i16, interval: i16, prefer_blanking: u8, allow_exposures: u8) xcb_void_cookie_t;
 pub extern fn xcb_set_screen_saver(c: ?*xcb_connection_t, timeout: i16, interval: i16, prefer_blanking: u8, allow_exposures: u8) xcb_void_cookie_t;
 pub extern fn xcb_get_screen_saver(c: ?*xcb_connection_t) xcb_get_screen_saver_cookie_t;
 pub extern fn xcb_get_screen_saver_unchecked(c: ?*xcb_connection_t) xcb_get_screen_saver_cookie_t;
-pub extern fn xcb_get_screen_saver_reply(c: ?*xcb_connection_t, cookie: xcb_get_screen_saver_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_screen_saver_reply_t;
+pub extern fn xcb_get_screen_saver_reply(c: ?*xcb_connection_t, cookie: xcb_get_screen_saver_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_screen_saver_reply_t;
 pub extern fn xcb_change_hosts_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_change_hosts_checked(c: ?*xcb_connection_t, mode: u8, family: u8, address_len: u16, address: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_change_hosts(c: ?*xcb_connection_t, mode: u8, family: u8, address_len: u16, address: ?[*]const u8) xcb_void_cookie_t;
-pub extern fn xcb_change_hosts_address(R: ?[*]const xcb_change_hosts_request_t) ?[*]u8;
-pub extern fn xcb_change_hosts_address_length(R: ?[*]const xcb_change_hosts_request_t) c_int;
-pub extern fn xcb_change_hosts_address_end(R: ?[*]const xcb_change_hosts_request_t) xcb_generic_iterator_t;
+pub extern fn xcb_change_hosts_checked(c: ?*xcb_connection_t, mode: u8, family: u8, address_len: u16, address: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_change_hosts(c: ?*xcb_connection_t, mode: u8, family: u8, address_len: u16, address: [*c]const u8) xcb_void_cookie_t;
+pub extern fn xcb_change_hosts_address(R: [*c]const xcb_change_hosts_request_t) [*c]u8;
+pub extern fn xcb_change_hosts_address_length(R: [*c]const xcb_change_hosts_request_t) c_int;
+pub extern fn xcb_change_hosts_address_end(R: [*c]const xcb_change_hosts_request_t) xcb_generic_iterator_t;
 pub extern fn xcb_host_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_host_address(R: ?[*]const xcb_host_t) ?[*]u8;
-pub extern fn xcb_host_address_length(R: ?[*]const xcb_host_t) c_int;
-pub extern fn xcb_host_address_end(R: ?[*]const xcb_host_t) xcb_generic_iterator_t;
-pub extern fn xcb_host_next(i: ?[*]xcb_host_iterator_t) void;
+pub extern fn xcb_host_address(R: [*c]const xcb_host_t) [*c]u8;
+pub extern fn xcb_host_address_length(R: [*c]const xcb_host_t) c_int;
+pub extern fn xcb_host_address_end(R: [*c]const xcb_host_t) xcb_generic_iterator_t;
+pub extern fn xcb_host_next(i: [*c]xcb_host_iterator_t) void;
 pub extern fn xcb_host_end(i: xcb_host_iterator_t) xcb_generic_iterator_t;
 pub extern fn xcb_list_hosts_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_list_hosts(c: ?*xcb_connection_t) xcb_list_hosts_cookie_t;
 pub extern fn xcb_list_hosts_unchecked(c: ?*xcb_connection_t) xcb_list_hosts_cookie_t;
-pub extern fn xcb_list_hosts_hosts_length(R: ?[*]const xcb_list_hosts_reply_t) c_int;
-pub extern fn xcb_list_hosts_hosts_iterator(R: ?[*]const xcb_list_hosts_reply_t) xcb_host_iterator_t;
-pub extern fn xcb_list_hosts_reply(c: ?*xcb_connection_t, cookie: xcb_list_hosts_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_list_hosts_reply_t;
+pub extern fn xcb_list_hosts_hosts_length(R: [*c]const xcb_list_hosts_reply_t) c_int;
+pub extern fn xcb_list_hosts_hosts_iterator(R: [*c]const xcb_list_hosts_reply_t) xcb_host_iterator_t;
+pub extern fn xcb_list_hosts_reply(c: ?*xcb_connection_t, cookie: xcb_list_hosts_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_list_hosts_reply_t;
 pub extern fn xcb_set_access_control_checked(c: ?*xcb_connection_t, mode: u8) xcb_void_cookie_t;
 pub extern fn xcb_set_access_control(c: ?*xcb_connection_t, mode: u8) xcb_void_cookie_t;
 pub extern fn xcb_set_close_down_mode_checked(c: ?*xcb_connection_t, mode: u8) xcb_void_cookie_t;
@@ -4623,71 +4623,71 @@ pub extern fn xcb_set_close_down_mode(c: ?*xcb_connection_t, mode: u8) xcb_void_
 pub extern fn xcb_kill_client_checked(c: ?*xcb_connection_t, resource: u32) xcb_void_cookie_t;
 pub extern fn xcb_kill_client(c: ?*xcb_connection_t, resource: u32) xcb_void_cookie_t;
 pub extern fn xcb_rotate_properties_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_rotate_properties_checked(c: ?*xcb_connection_t, window: xcb_window_t, atoms_len: u16, delta: i16, atoms: ?[*]const xcb_atom_t) xcb_void_cookie_t;
-pub extern fn xcb_rotate_properties(c: ?*xcb_connection_t, window: xcb_window_t, atoms_len: u16, delta: i16, atoms: ?[*]const xcb_atom_t) xcb_void_cookie_t;
-pub extern fn xcb_rotate_properties_atoms(R: ?[*]const xcb_rotate_properties_request_t) ?[*]xcb_atom_t;
-pub extern fn xcb_rotate_properties_atoms_length(R: ?[*]const xcb_rotate_properties_request_t) c_int;
-pub extern fn xcb_rotate_properties_atoms_end(R: ?[*]const xcb_rotate_properties_request_t) xcb_generic_iterator_t;
+pub extern fn xcb_rotate_properties_checked(c: ?*xcb_connection_t, window: xcb_window_t, atoms_len: u16, delta: i16, atoms: [*c]const xcb_atom_t) xcb_void_cookie_t;
+pub extern fn xcb_rotate_properties(c: ?*xcb_connection_t, window: xcb_window_t, atoms_len: u16, delta: i16, atoms: [*c]const xcb_atom_t) xcb_void_cookie_t;
+pub extern fn xcb_rotate_properties_atoms(R: [*c]const xcb_rotate_properties_request_t) [*c]xcb_atom_t;
+pub extern fn xcb_rotate_properties_atoms_length(R: [*c]const xcb_rotate_properties_request_t) c_int;
+pub extern fn xcb_rotate_properties_atoms_end(R: [*c]const xcb_rotate_properties_request_t) xcb_generic_iterator_t;
 pub extern fn xcb_force_screen_saver_checked(c: ?*xcb_connection_t, mode: u8) xcb_void_cookie_t;
 pub extern fn xcb_force_screen_saver(c: ?*xcb_connection_t, mode: u8) xcb_void_cookie_t;
 pub extern fn xcb_set_pointer_mapping_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_set_pointer_mapping(c: ?*xcb_connection_t, map_len: u8, map: ?[*]const u8) xcb_set_pointer_mapping_cookie_t;
-pub extern fn xcb_set_pointer_mapping_unchecked(c: ?*xcb_connection_t, map_len: u8, map: ?[*]const u8) xcb_set_pointer_mapping_cookie_t;
-pub extern fn xcb_set_pointer_mapping_reply(c: ?*xcb_connection_t, cookie: xcb_set_pointer_mapping_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_set_pointer_mapping_reply_t;
+pub extern fn xcb_set_pointer_mapping(c: ?*xcb_connection_t, map_len: u8, map: [*c]const u8) xcb_set_pointer_mapping_cookie_t;
+pub extern fn xcb_set_pointer_mapping_unchecked(c: ?*xcb_connection_t, map_len: u8, map: [*c]const u8) xcb_set_pointer_mapping_cookie_t;
+pub extern fn xcb_set_pointer_mapping_reply(c: ?*xcb_connection_t, cookie: xcb_set_pointer_mapping_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_set_pointer_mapping_reply_t;
 pub extern fn xcb_get_pointer_mapping_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_get_pointer_mapping(c: ?*xcb_connection_t) xcb_get_pointer_mapping_cookie_t;
 pub extern fn xcb_get_pointer_mapping_unchecked(c: ?*xcb_connection_t) xcb_get_pointer_mapping_cookie_t;
-pub extern fn xcb_get_pointer_mapping_map(R: ?[*]const xcb_get_pointer_mapping_reply_t) ?[*]u8;
-pub extern fn xcb_get_pointer_mapping_map_length(R: ?[*]const xcb_get_pointer_mapping_reply_t) c_int;
-pub extern fn xcb_get_pointer_mapping_map_end(R: ?[*]const xcb_get_pointer_mapping_reply_t) xcb_generic_iterator_t;
-pub extern fn xcb_get_pointer_mapping_reply(c: ?*xcb_connection_t, cookie: xcb_get_pointer_mapping_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_pointer_mapping_reply_t;
+pub extern fn xcb_get_pointer_mapping_map(R: [*c]const xcb_get_pointer_mapping_reply_t) [*c]u8;
+pub extern fn xcb_get_pointer_mapping_map_length(R: [*c]const xcb_get_pointer_mapping_reply_t) c_int;
+pub extern fn xcb_get_pointer_mapping_map_end(R: [*c]const xcb_get_pointer_mapping_reply_t) xcb_generic_iterator_t;
+pub extern fn xcb_get_pointer_mapping_reply(c: ?*xcb_connection_t, cookie: xcb_get_pointer_mapping_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_pointer_mapping_reply_t;
 pub extern fn xcb_set_modifier_mapping_sizeof(_buffer: ?*const c_void) c_int;
-pub extern fn xcb_set_modifier_mapping(c: ?*xcb_connection_t, keycodes_per_modifier: u8, keycodes: ?[*]const xcb_keycode_t) xcb_set_modifier_mapping_cookie_t;
-pub extern fn xcb_set_modifier_mapping_unchecked(c: ?*xcb_connection_t, keycodes_per_modifier: u8, keycodes: ?[*]const xcb_keycode_t) xcb_set_modifier_mapping_cookie_t;
-pub extern fn xcb_set_modifier_mapping_reply(c: ?*xcb_connection_t, cookie: xcb_set_modifier_mapping_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_set_modifier_mapping_reply_t;
+pub extern fn xcb_set_modifier_mapping(c: ?*xcb_connection_t, keycodes_per_modifier: u8, keycodes: [*c]const xcb_keycode_t) xcb_set_modifier_mapping_cookie_t;
+pub extern fn xcb_set_modifier_mapping_unchecked(c: ?*xcb_connection_t, keycodes_per_modifier: u8, keycodes: [*c]const xcb_keycode_t) xcb_set_modifier_mapping_cookie_t;
+pub extern fn xcb_set_modifier_mapping_reply(c: ?*xcb_connection_t, cookie: xcb_set_modifier_mapping_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_set_modifier_mapping_reply_t;
 pub extern fn xcb_get_modifier_mapping_sizeof(_buffer: ?*const c_void) c_int;
 pub extern fn xcb_get_modifier_mapping(c: ?*xcb_connection_t) xcb_get_modifier_mapping_cookie_t;
 pub extern fn xcb_get_modifier_mapping_unchecked(c: ?*xcb_connection_t) xcb_get_modifier_mapping_cookie_t;
-pub extern fn xcb_get_modifier_mapping_keycodes(R: ?[*]const xcb_get_modifier_mapping_reply_t) ?[*]xcb_keycode_t;
-pub extern fn xcb_get_modifier_mapping_keycodes_length(R: ?[*]const xcb_get_modifier_mapping_reply_t) c_int;
-pub extern fn xcb_get_modifier_mapping_keycodes_end(R: ?[*]const xcb_get_modifier_mapping_reply_t) xcb_generic_iterator_t;
-pub extern fn xcb_get_modifier_mapping_reply(c: ?*xcb_connection_t, cookie: xcb_get_modifier_mapping_cookie_t, e: ?[*](?[*]xcb_generic_error_t)) ?[*]xcb_get_modifier_mapping_reply_t;
+pub extern fn xcb_get_modifier_mapping_keycodes(R: [*c]const xcb_get_modifier_mapping_reply_t) [*c]xcb_keycode_t;
+pub extern fn xcb_get_modifier_mapping_keycodes_length(R: [*c]const xcb_get_modifier_mapping_reply_t) c_int;
+pub extern fn xcb_get_modifier_mapping_keycodes_end(R: [*c]const xcb_get_modifier_mapping_reply_t) xcb_generic_iterator_t;
+pub extern fn xcb_get_modifier_mapping_reply(c: ?*xcb_connection_t, cookie: xcb_get_modifier_mapping_cookie_t, e: [*c]([*c]xcb_generic_error_t)) [*c]xcb_get_modifier_mapping_reply_t;
 pub extern fn xcb_no_operation_checked(c: ?*xcb_connection_t) xcb_void_cookie_t;
 pub extern fn xcb_no_operation(c: ?*xcb_connection_t) xcb_void_cookie_t;
 pub const struct_xcb_auth_info_t = extern struct {
     namelen: c_int,
-    name: ?[*]u8,
+    name: [*c]u8,
     datalen: c_int,
-    data: ?[*]u8,
+    data: [*c]u8,
 };
 pub const xcb_auth_info_t = struct_xcb_auth_info_t;
 pub extern fn xcb_flush(c: ?*xcb_connection_t) c_int;
 pub extern fn xcb_get_maximum_request_length(c: ?*xcb_connection_t) u32;
 pub extern fn xcb_prefetch_maximum_request_length(c: ?*xcb_connection_t) void;
-pub extern fn xcb_wait_for_event(c: ?*xcb_connection_t) ?[*]xcb_generic_event_t;
-pub extern fn xcb_poll_for_event(c: ?*xcb_connection_t) ?[*]xcb_generic_event_t;
-pub extern fn xcb_poll_for_queued_event(c: ?*xcb_connection_t) ?[*]xcb_generic_event_t;
+pub extern fn xcb_wait_for_event(c: ?*xcb_connection_t) [*c]xcb_generic_event_t;
+pub extern fn xcb_poll_for_event(c: ?*xcb_connection_t) [*c]xcb_generic_event_t;
+pub extern fn xcb_poll_for_queued_event(c: ?*xcb_connection_t) [*c]xcb_generic_event_t;
 pub const struct_xcb_special_event = @OpaqueType();
 pub const xcb_special_event_t = struct_xcb_special_event;
-pub extern fn xcb_poll_for_special_event(c: ?*xcb_connection_t, se: ?*xcb_special_event_t) ?[*]xcb_generic_event_t;
-pub extern fn xcb_wait_for_special_event(c: ?*xcb_connection_t, se: ?*xcb_special_event_t) ?[*]xcb_generic_event_t;
+pub extern fn xcb_poll_for_special_event(c: ?*xcb_connection_t, se: ?*xcb_special_event_t) [*c]xcb_generic_event_t;
+pub extern fn xcb_wait_for_special_event(c: ?*xcb_connection_t, se: ?*xcb_special_event_t) [*c]xcb_generic_event_t;
 pub const struct_xcb_extension_t = @OpaqueType();
 pub const xcb_extension_t = struct_xcb_extension_t;
-pub extern fn xcb_register_for_special_xge(c: ?*xcb_connection_t, ext: ?*xcb_extension_t, eid: u32, stamp: ?[*]u32) ?*xcb_special_event_t;
+pub extern fn xcb_register_for_special_xge(c: ?*xcb_connection_t, ext: ?*xcb_extension_t, eid: u32, stamp: [*c]u32) ?*xcb_special_event_t;
 pub extern fn xcb_unregister_for_special_event(c: ?*xcb_connection_t, se: ?*xcb_special_event_t) void;
-pub extern fn xcb_request_check(c: ?*xcb_connection_t, cookie: xcb_void_cookie_t) ?[*]xcb_generic_error_t;
+pub extern fn xcb_request_check(c: ?*xcb_connection_t, cookie: xcb_void_cookie_t) [*c]xcb_generic_error_t;
 pub extern fn xcb_discard_reply(c: ?*xcb_connection_t, sequence: c_uint) void;
 pub extern fn xcb_discard_reply64(c: ?*xcb_connection_t, sequence: u64) void;
-pub extern fn xcb_get_extension_data(c: ?*xcb_connection_t, ext: ?*xcb_extension_t) ?[*]const struct_xcb_query_extension_reply_t;
+pub extern fn xcb_get_extension_data(c: ?*xcb_connection_t, ext: ?*xcb_extension_t) [*c]const struct_xcb_query_extension_reply_t;
 pub extern fn xcb_prefetch_extension_data(c: ?*xcb_connection_t, ext: ?*xcb_extension_t) void;
-pub extern fn xcb_get_setup(c: ?*xcb_connection_t) ?[*]const struct_xcb_setup_t;
+pub extern fn xcb_get_setup(c: ?*xcb_connection_t) [*c]const struct_xcb_setup_t;
 pub extern fn xcb_get_file_descriptor(c: ?*xcb_connection_t) c_int;
 pub extern fn xcb_connection_has_error(c: ?*xcb_connection_t) c_int;
-pub extern fn xcb_connect_to_fd(fd: c_int, auth_info: ?[*]xcb_auth_info_t) ?*xcb_connection_t;
+pub extern fn xcb_connect_to_fd(fd: c_int, auth_info: [*c]xcb_auth_info_t) ?*xcb_connection_t;
 pub extern fn xcb_disconnect(c: ?*xcb_connection_t) void;
-pub extern fn xcb_parse_display(name: ?[*]const u8, host: ?[*](?[*]u8), display: ?[*]c_int, screen: ?[*]c_int) c_int;
-pub extern fn xcb_connect(displayname: ?[*]const u8, screenp: ?[*]c_int) ?*xcb_connection_t;
-pub extern fn xcb_connect_to_display_with_auth_info(display: ?[*]const u8, auth: ?[*]xcb_auth_info_t, screen: ?[*]c_int) ?*xcb_connection_t;
+pub extern fn xcb_parse_display(name: [*c]const u8, host: [*c]([*c]u8), display: [*c]c_int, screen: [*c]c_int) c_int;
+pub extern fn xcb_connect(displayname: [*c]const u8, screenp: [*c]c_int) ?*xcb_connection_t;
+pub extern fn xcb_connect_to_display_with_auth_info(display: [*c]const u8, auth: [*c]xcb_auth_info_t, screen: [*c]c_int) ?*xcb_connection_t;
 pub extern fn xcb_generate_id(c: ?*xcb_connection_t) u32;
 pub const __BIGGEST_ALIGNMENT__ = 16;
 pub const __INT64_FMTd__ = c"ld";
@@ -4696,10 +4696,12 @@ pub const XCB_CLIENT_MESSAGE = 33;
 pub const XCB_CHANGE_ACTIVE_POINTER_GRAB = 30;
 pub const XCB_GRAVITY_NOTIFY = 24;
 pub const __INT_LEAST8_FMTi__ = c"hhi";
+pub const __LZCNT__ = 1;
 pub const XCB_BUTTON_PRESS = 4;
+pub const __INVPCID__ = 1;
 pub const XCB_GET_INPUT_FOCUS = 43;
 pub const __GCC_ATOMIC_LLONG_LOCK_FREE = 2;
-pub const __clang_version__ = c"6.0.1 (tags/RELEASE_601/final)";
+pub const __clang_version__ = c"8.0.0 (tags/RELEASE_800/final)";
 pub const __UINT_LEAST8_FMTo__ = c"hho";
 pub const __INTMAX_FMTd__ = c"ld";
 pub const XCB_CONN_CLOSED_MEM_INSUFFICIENT = 3;
@@ -4707,18 +4709,21 @@ pub const __CLANG_ATOMIC_CHAR_LOCK_FREE = 2;
 pub const __INT_LEAST16_FMTi__ = c"hi";
 pub const UINTMAX_MAX = if (@typeId(@typeOf(18446744073709551615)) == @import("builtin").TypeId.Pointer) @ptrCast(__UINT64_C, 18446744073709551615) else if (@typeId(@typeOf(18446744073709551615)) == @import("builtin").TypeId.Int) @intToPtr(__UINT64_C, 18446744073709551615) else __UINT64_C(18446744073709551615);
 pub const INT_LEAST64_MAX = if (@typeId(@typeOf(9223372036854775807)) == @import("builtin").TypeId.Pointer) @ptrCast(__INT64_C, 9223372036854775807) else if (@typeId(@typeOf(9223372036854775807)) == @import("builtin").TypeId.Int) @intToPtr(__INT64_C, 9223372036854775807) else __INT64_C(9223372036854775807);
-pub const WINT_MIN = if (@typeId(@typeOf(u)) == @import("builtin").TypeId.Pointer) @ptrCast(0, u) else if (@typeId(@typeOf(u)) == @import("builtin").TypeId.Int) @intToPtr(0, u) else 0(u);
+pub const WINT_MIN = c_uint(0);
 pub const XCB_UNGRAB_SERVER = 37;
 pub const __MMX__ = 1;
+pub const __GCC_HAVE_SYNC_COMPARE_AND_SWAP_16 = 1;
 pub const INTPTR_MAX = c_long(9223372036854775807);
 pub const CLOCK_PROCESS_CPUTIME_ID = 2;
 pub const _THREAD_SHARED_TYPES_H = 1;
+pub const __RDSEED__ = 1;
 pub const __INO_T_TYPE = __SYSCALL_ULONG_TYPE;
 pub const __FSBLKCNT_T_TYPE = __SYSCALL_ULONG_TYPE;
-pub const __ptr_t = [*]void;
+pub const __ptr_t = [*c]void;
 pub const __WCHAR_WIDTH__ = 32;
 pub const XCB_COPY_GC = 57;
 pub const TIMER_ABSTIME = 1;
+pub const __FSGSBASE__ = 1;
 pub const __USE_MISC = 1;
 pub const __SIZEOF_PTHREAD_ATTR_T = 56;
 pub const __PTRDIFF_FMTd__ = c"ld";
@@ -4738,6 +4743,7 @@ pub const __NLINK_T_TYPE = __SYSCALL_ULONG_TYPE;
 pub const __DBL_DECIMAL_DIG__ = 17;
 pub const XCB_UNMAP_WINDOW = 10;
 pub const __PTHREAD_MUTEX_HAVE_PREV = 1;
+pub const __SSSE3__ = 1;
 pub const XCB_SET_DASHES = 58;
 pub const __CONSTANT_CFSTRINGS__ = 1;
 pub const _SYS_CDEFS_H = 1;
@@ -4753,8 +4759,8 @@ pub const __LONG_MAX__ = c_long(9223372036854775807);
 pub const XCB_SELECTION_REQUEST = 30;
 pub const __pic__ = 2;
 pub const __WCHAR_MIN = if (@typeId(@typeOf(-1)) == @import("builtin").TypeId.Pointer) @ptrCast(-__WCHAR_MAX, -1) else if (@typeId(@typeOf(-1)) == @import("builtin").TypeId.Int) @intToPtr(-__WCHAR_MAX, -1) else (-__WCHAR_MAX)(-1);
-pub const __INT_FAST16_FMTi__ = c"hi";
 pub const __PTRDIFF_WIDTH__ = 64;
+pub const __INT_FAST16_FMTi__ = c"hi";
 pub const __LDBL_DENORM_MIN__ = 0.000000;
 pub const _BITS_UIO_LIM_H = 1;
 pub const __FLOAT_WORD_ORDER = __BYTE_ORDER;
@@ -4768,6 +4774,7 @@ pub const __SIG_ATOMIC_MAX__ = 2147483647;
 pub const __USE_ATFILE = 1;
 pub const __UINT64_MAX__ = c_ulong(18446744073709551615);
 pub const __FLT_DECIMAL_DIG__ = 9;
+pub const XCB_NONE = c_long(0);
 pub const __DBL_DIG__ = 15;
 pub const __ATOMIC_ACQUIRE = 2;
 pub const XCB_GET_SELECTION_OWNER = 23;
@@ -4781,7 +4788,7 @@ pub const __UINT8_FMTo__ = c"hho";
 pub const UINT_LEAST64_MAX = if (@typeId(@typeOf(18446744073709551615)) == @import("builtin").TypeId.Pointer) @ptrCast(__UINT64_C, 18446744073709551615) else if (@typeId(@typeOf(18446744073709551615)) == @import("builtin").TypeId.Int) @intToPtr(__UINT64_C, 18446744073709551615) else __UINT64_C(18446744073709551615);
 pub const __UINT_LEAST16_FMTx__ = c"hx";
 pub const __UINT_FAST16_FMTX__ = c"hX";
-pub const __VERSION__ = c"4.2.1 Compatible Clang 6.0.1 (tags/RELEASE_601/final)";
+pub const __VERSION__ = c"4.2.1 Compatible Clang 8.0.0 (tags/RELEASE_800/final)";
 pub const __UINT_FAST32_FMTx__ = c"x";
 pub const XCB_BUTTON_RELEASE = 5;
 pub const XCB_SET_ACCESS_CONTROL = 111;
@@ -4792,6 +4799,8 @@ pub const __clockid_t_defined = 1;
 pub const __UINT_LEAST8_MAX__ = 255;
 pub const XCB_CHANGE_HOSTS = 109;
 pub const UINT8_MAX = 255;
+pub const __RDRND__ = 1;
+pub const __MOVBE__ = 1;
 pub const XCB_GET_FONT_PATH = 52;
 pub const __GLIBC_USE_DEPRECATED_GETS = 0;
 pub const __UINT16_MAX__ = 65535;
@@ -4805,12 +4814,13 @@ pub const XCB_CHANGE_POINTER_CONTROL = 105;
 pub const __UINTMAX_FMTo__ = c"lo";
 pub const __UINT_LEAST8_FMTX__ = c"hhX";
 pub const __WINT_UNSIGNED__ = 1;
-pub const PTHREAD_CANCELED = if (@typeId(@typeOf(-1)) == @import("builtin").TypeId.Pointer) @ptrCast([*]void, -1) else if (@typeId(@typeOf(-1)) == @import("builtin").TypeId.Int) @intToPtr([*]void, -1) else ([*]void)(-1);
+pub const PTHREAD_CANCELED = if (@typeId(@typeOf(-1)) == @import("builtin").TypeId.Pointer) @ptrCast([*c]void, -1) else if (@typeId(@typeOf(-1)) == @import("builtin").TypeId.Int) @intToPtr([*c]void, -1) else ([*c]void)(-1);
 pub const SIG_ATOMIC_MAX = 2147483647;
 pub const __SIZEOF_PTHREAD_RWLOCKATTR_T = 8;
 pub const __POINTER_WIDTH__ = 64;
 pub const PTRDIFF_MIN = if (@typeId(@typeOf(-1)) == @import("builtin").TypeId.Pointer) @ptrCast(-c_long(9223372036854775807), -1) else if (@typeId(@typeOf(-1)) == @import("builtin").TypeId.Int) @intToPtr(-c_long(9223372036854775807), -1) else (-c_long(9223372036854775807))(-1);
 pub const __PTRDIFF_MAX__ = c_long(9223372036854775807);
+pub const __tune_corei7__ = 1;
 pub const __FLT16_DIG__ = 3;
 pub const __SIZEOF_LONG__ = 8;
 pub const __TIME_T_TYPE = __SYSCALL_SLONG_TYPE;
@@ -4822,7 +4832,7 @@ pub const XCB_SELECTION_CLEAR = 29;
 pub const __UINTMAX_FMTu__ = c"lu";
 pub const INT_FAST8_MAX = 127;
 pub const __FLT_RADIX__ = 2;
-pub const __GLIBC_MINOR__ = 28;
+pub const __GLIBC_MINOR__ = 29;
 pub const _STDINT_H = 1;
 pub const XCB_COLORMAP = 12;
 pub const XCB_LEAVE_NOTIFY = 8;
@@ -4869,6 +4879,7 @@ pub const __UINT_FAST64_FMTo__ = c"lo";
 pub const INT_FAST16_MIN = if (@typeId(@typeOf(-1)) == @import("builtin").TypeId.Pointer) @ptrCast(-c_long(9223372036854775807), -1) else if (@typeId(@typeOf(-1)) == @import("builtin").TypeId.Int) @intToPtr(-c_long(9223372036854775807), -1) else (-c_long(9223372036854775807))(-1);
 pub const __DBL_MAX__ = 179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878;
 pub const __UINT64_FMTx__ = c"lx";
+pub const XCB_CURRENT_TIME = c_long(0);
 pub const XCB_KEY_PRESS = 2;
 pub const CLOCK_TAI = 11;
 pub const __SLONG32_TYPE = int;
@@ -4890,11 +4901,12 @@ pub const XCB_WINDOW = 3;
 pub const __time_t_defined = 1;
 pub const XCB_MAPPING_NOTIFY = 34;
 pub const XCB_INTERN_ATOM = 16;
-pub const __k8 = 1;
 pub const __DADDR_T_TYPE = __S32_TYPE;
+pub const __AES__ = 1;
 pub const __UINT8_FMTx__ = c"hhx";
 pub const __INTMAX_C_SUFFIX__ = L;
 pub const __ORDER_LITTLE_ENDIAN__ = 1234;
+pub const __time64_t = __time_t;
 pub const XCB_IMAGE_TEXT_8 = 76;
 pub const __INT16_FMTd__ = c"hd";
 pub const __SUSECONDS_T_TYPE = __SYSCALL_SLONG_TYPE;
@@ -4927,10 +4939,12 @@ pub const __UINT_FAST64_FMTx__ = c"lx";
 pub const __STDC__ = 1;
 pub const __INTPTR_FMTd__ = c"ld";
 pub const __GNUC_PATCHLEVEL__ = 1;
-pub const __SIZE_WIDTH__ = 64;
 pub const __UINT_LEAST8_FMTx__ = c"hhx";
+pub const __SIZE_WIDTH__ = 64;
 pub const __INT_LEAST64_FMTi__ = c"li";
+pub const __SSE4_2__ = 1;
 pub const X_PROTOCOL_REVISION = 0;
+pub const __AVX__ = 1;
 pub const __INT_FAST16_MAX__ = 32767;
 pub const XCB_LIST_INSTALLED_COLORMAPS = 83;
 pub const __CLANG_ATOMIC_CHAR16_T_LOCK_FREE = 2;
@@ -4938,7 +4952,7 @@ pub const __have_pthread_attr_t = 1;
 pub const __INT_MAX__ = 2147483647;
 pub const __BLKSIZE_T_TYPE = __SYSCALL_SLONG_TYPE;
 pub const __DBL_DENORM_MIN__ = 0.000000;
-pub const __clang_major__ = 6;
+pub const __clang_major__ = 8;
 pub const __FLT16_MANT_DIG__ = 11;
 pub const XCB_GET_KEYBOARD_MAPPING = 101;
 pub const XCB_POLY_RECTANGLE = 67;
@@ -4960,6 +4974,7 @@ pub const __UINT8_FMTu__ = c"hhu";
 pub const __OFF_T_MATCHES_OFF64_T = 1;
 pub const __RLIM64_T_TYPE = __UQUAD_TYPE;
 pub const XCB_CONFIGURE_REQUEST = 23;
+pub const __SSE3__ = 1;
 pub const __UINT16_FMTu__ = c"hu";
 pub const __SIZE_FMTu__ = c"lu";
 pub const __LDBL_MIN_EXP__ = -16381;
@@ -4968,9 +4983,10 @@ pub const __pie__ = 2;
 pub const SIZE_MAX = c_ulong(18446744073709551615);
 pub const __SSP_STRONG__ = 2;
 pub const __BYTE_ORDER = __LITTLE_ENDIAN;
-pub const __clang_patchlevel__ = 1;
+pub const __clang_patchlevel__ = 0;
 pub const X_TCP_PORT = 6000;
 pub const XCB_CONVERT_SELECTION = 24;
+pub const __PCLMUL__ = 1;
 pub const __FXSR__ = 1;
 pub const __UINT32_FMTx__ = c"x";
 pub const XCB_REQUEST = 1;
@@ -4985,7 +5001,6 @@ pub const XCB_ATOM = 5;
 pub const XCB_DESTROY_NOTIFY = 17;
 pub const __USE_ISOC11 = 1;
 pub const XCB_ALLOW_EVENTS = 35;
-pub const __tune_k8__ = 1;
 pub const UINT32_MAX = c_uint(4294967295);
 pub const __x86_64__ = 1;
 pub const __WORDSIZE_TIME64_COMPAT32 = 1;
@@ -5002,6 +5017,7 @@ pub const UINT64_MAX = if (@typeId(@typeOf(18446744073709551615)) == @import("bu
 pub const __INT_LEAST16_TYPE__ = short;
 pub const XCB_GET_SCREEN_SAVER = 108;
 pub const XCB_QUERY_BEST_SIZE = 97;
+pub const __attribute_copy__ = arg;
 pub const XCB_FOCUS_OUT = 10;
 pub const __ORDER_BIG_ENDIAN__ = 4321;
 pub const __LDBL_MIN_10_EXP__ = -4931;
@@ -5014,6 +5030,7 @@ pub const XCB_GET_POINTER_MAPPING = 117;
 pub const WCHAR_MAX = __WCHAR_MAX;
 pub const XCB_G_CONTEXT = 13;
 pub const __amd64 = 1;
+pub const _BITS_TIME64_H = 1;
 pub const XCB_CHANGE_KEYBOARD_CONTROL = 102;
 pub const __OBJC_BOOL_IS_BOOL = 0;
 pub const TIME_UTC = 1;
@@ -5027,6 +5044,7 @@ pub const WCHAR_MIN = __WCHAR_MIN;
 pub const __clang__ = 1;
 pub const INT_FAST16_MAX = c_long(9223372036854775807);
 pub const _BITS_TIME_H = 1;
+pub const __SSE4_1__ = 1;
 pub const __LDBL_DIG__ = 18;
 pub const __GCC_ATOMIC_CHAR32_T_LOCK_FREE = 2;
 pub const __UINT64_FMTo__ = c"lo";
@@ -5104,6 +5122,7 @@ pub const __timeval_defined = 1;
 pub const __CLANG_ATOMIC_SHORT_LOCK_FREE = 2;
 pub const __MODE_T_TYPE = __U32_TYPE;
 pub const PTRDIFF_MAX = c_long(9223372036854775807);
+pub const __AVX2__ = 1;
 pub const __WINT_MAX__ = c_uint(4294967295);
 pub const XCB_BELL = 104;
 pub const __STDC_ISO_10646__ = c_long(201706);
@@ -5115,7 +5134,9 @@ pub const __INT_LEAST32_TYPE__ = int;
 pub const __SCHAR_MAX__ = 127;
 pub const __USE_POSIX2 = 1;
 pub const __FLT16_MIN_EXP__ = -14;
+pub const __TIMESIZE = __WORDSIZE;
 pub const __USE_XOPEN2K = 1;
+pub const __PRFCHW__ = 1;
 pub const __USE_FORTIFY_LEVEL = 0;
 pub const __ELF__ = 1;
 pub const __LDBL_MANT_DIG__ = 64;
@@ -5131,6 +5152,7 @@ pub const __UINT64_FMTX__ = c"lX";
 pub const XCB_CREATE_GLYPH_CURSOR = 94;
 pub const __DBL_MANT_DIG__ = 53;
 pub const __INT_LEAST32_MAX__ = 2147483647;
+pub const __GLIBC_USE_DEPRECATED_SCANF = 0;
 pub const __OPENCL_MEMORY_SCOPE_WORK_GROUP = 1;
 pub const __USE_ISOC95 = 1;
 pub const XCB_CONN_CLOSED_PARSE_ERR = 5;
@@ -5157,6 +5179,7 @@ pub const XCB_VISIBILITY_NOTIFY = 15;
 pub const __LDBL_MAX__ = inf;
 pub const _LP64 = 1;
 pub const FD_SETSIZE = __FD_SETSIZE;
+pub const __code_model_small_ = 1;
 pub const linux = 1;
 pub const XCB_ENTER_NOTIFY = 7;
 pub const __FLT_DIG__ = 6;
@@ -5182,13 +5205,16 @@ pub const __S32_TYPE = int;
 pub const __INTPTR_WIDTH__ = 64;
 pub const XCB_MAP_WINDOW = 8;
 pub const __FLT16_MAX_10_EXP__ = 4;
+pub const XCB_COPY_FROM_PARENT = c_long(0);
 pub const __INT_FAST32_TYPE__ = int;
+pub const __TIME64_T_TYPE = __TIME_T_TYPE;
 pub const __UINT_FAST32_FMTX__ = c"X";
 pub const _POSIX_SOURCE = 1;
 pub const __LITTLE_ENDIAN = 1234;
 pub const XCB_DESTROY_WINDOW = 4;
 pub const __gnu_linux__ = 1;
 pub const XCB_FREE_COLORS = 88;
+pub const __corei7__ = 1;
 pub const XCB_GET_MODIFIER_MAPPING = 119;
 pub const XCB_GET_PROPERTY = 20;
 pub const __timer_t_defined = 1;
@@ -5211,6 +5237,7 @@ pub const __FLT_MIN__ = 0.000000;
 pub const __INT8_FMTd__ = c"hhd";
 pub const INT64_MAX = if (@typeId(@typeOf(9223372036854775807)) == @import("builtin").TypeId.Pointer) @ptrCast(__INT64_C, 9223372036854775807) else if (@typeId(@typeOf(9223372036854775807)) == @import("builtin").TypeId.Int) @intToPtr(__INT64_C, 9223372036854775807) else __INT64_C(9223372036854775807);
 pub const __FLT_MAX_EXP__ = 128;
+pub const __XSAVE__ = 1;
 pub const XCB_MOTION_NOTIFY = 6;
 pub const XCB_KILL_CLIENT = 113;
 pub const __INT_FAST64_FMTi__ = c"li";
@@ -5258,7 +5285,7 @@ pub const __FLT_HAS_INFINITY__ = 1;
 pub const __FSWORD_T_TYPE = __SYSCALL_SLONG_TYPE;
 pub const XCB_ROTATE_PROPERTIES = 114;
 pub const __OFF_T_TYPE = __SYSCALL_SLONG_TYPE;
-pub const NULL = if (@typeId(@typeOf(0)) == @import("builtin").TypeId.Pointer) @ptrCast([*]void, 0) else if (@typeId(@typeOf(0)) == @import("builtin").TypeId.Int) @intToPtr([*]void, 0) else ([*]void)(0);
+pub const NULL = if (@typeId(@typeOf(0)) == @import("builtin").TypeId.Pointer) @ptrCast([*c]void, 0) else if (@typeId(@typeOf(0)) == @import("builtin").TypeId.Int) @intToPtr([*c]void, 0) else ([*c]void)(0);
 pub const __GCC_ATOMIC_CHAR16_T_LOCK_FREE = 2;
 pub const __UINT32_FMTX__ = c"X";
 pub const __PTHREAD_MUTEX_NUSERS_AFTER_KIND = 0;
@@ -5268,6 +5295,7 @@ pub const __UINT32_C_SUFFIX__ = U;
 pub const __INT32_MAX__ = 2147483647;
 pub const __GCC_ATOMIC_CHAR_LOCK_FREE = 2;
 pub const XCB_POLY_POINT = 64;
+pub const XCB_NO_SYMBOL = c_long(0);
 pub const XCB_PUT_IMAGE = 72;
 pub const __BIT_TYPES_DEFINED__ = 1;
 pub const __DBL_HAS_QUIET_NAN__ = 1;
@@ -5292,6 +5320,7 @@ pub const __GLIBC_USE_IEC_60559_TYPES_EXT = 0;
 pub const UINT_LEAST32_MAX = c_uint(4294967295);
 pub const __INT_FAST8_MAX__ = 127;
 pub const XCB_CHANGE_GC = 56;
+pub const __MPX__ = 1;
 pub const XCB_CREATE_GC = 55;
 pub const XCB_STORE_NAMED_COLOR = 90;
 pub const __STDC_IEC_559__ = 1;
@@ -5331,22 +5360,23 @@ pub const XCB_LOOKUP_COLOR = 92;
 pub const __UINT8_MAX__ = 255;
 pub const __GCC_HAVE_SYNC_COMPARE_AND_SWAP_2 = 1;
 pub const __UINT16_FMTo__ = c"ho";
+pub const __POPCNT__ = 1;
 pub const __OPENCL_MEMORY_SCOPE_DEVICE = 2;
 pub const __SIZEOF_PTHREAD_CONDATTR_T = 4;
 pub const INT_LEAST8_MAX = 127;
 pub const __SIZEOF_POINTER__ = 8;
-pub const __TIMER_T_TYPE = [*]void;
+pub const __TIMER_T_TYPE = [*c]void;
 pub const __unix = 1;
 pub const __GLIBC_USE_IEC_60559_BFP_EXT = 0;
 pub const __INT_FAST16_FMTd__ = c"hd";
 pub const unix = 1;
 pub const __UINT_LEAST32_FMTu__ = c"u";
 pub const __FLT_MAX__ = 340282346999999984391321947108527833088.000000;
+pub const __corei7 = 1;
 pub const XCB_GRAPHICS_EXPOSURE = 13;
 pub const XCB_OPEN_FONT = 45;
 pub const XCB_CONN_ERROR = 1;
 pub const __GCC_ATOMIC_WCHAR_T_LOCK_FREE = 2;
-pub const __k8__ = 1;
 pub const XCB_RESIZE_REQUEST = 25;
 pub const __ATOMIC_CONSUME = 1;
 pub const __unix__ = 1;
@@ -5374,6 +5404,7 @@ pub const XCB_GET_WINDOW_ATTRIBUTES = 3;
 pub const __UINT16_FMTx__ = c"hx";
 pub const __UINTPTR_FMTu__ = c"lu";
 pub const __UINT_LEAST16_FMTX__ = c"hX";
+pub const __CLFLUSHOPT__ = 1;
 pub const __amd64__ = 1;
 pub const __UINT_FAST32_FMTo__ = c"o";
 pub const _BITS_CPU_SET_H = 1;

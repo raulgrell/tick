@@ -1,12 +1,12 @@
-const fb = @import("../index.zig");
-const platform_fb = fb.platform_fb;
+const fb = @import("window.zig");
+const platform_fb = gl.platform_fb;
 
 const WIDTH: u32 = 800;
 const HEIGHT: u32 = 600;
 
 var s_buffer = []u32 {0} ** (WIDTH * HEIGHT);
 
-pub fn main() error!void {
+pub fn main() !void {
     try platform_fb.open("Framebuffer Test\x00", WIDTH, HEIGHT);
 
     var x: usize = 0;
