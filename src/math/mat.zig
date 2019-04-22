@@ -55,6 +55,7 @@ pub fn Mat3T(comptime T: type) type {
                 }
             };
         }
+        
         pub fn init(value: T) Self {
             return Self {
                 .data = []T {
@@ -64,6 +65,7 @@ pub fn Mat3T(comptime T: type) type {
                 }
             };
         }
+        
         pub fn diagonal(value: T) Self {
             return Self {
                 .data = []T {
@@ -73,9 +75,11 @@ pub fn Mat3T(comptime T: type) type {
                 }
             };
         }
+
         pub fn rows(first: *const Row, second: *const Row, third: *const Row) Self {
             return Self { .data = []T { first.data, second.data, third.data } };
         }
+
         pub fn dup(self: *const Self) Self {
             return Self { .data = self.data };
         }
@@ -144,7 +148,7 @@ pub fn Mat3T(comptime T: type) type {
             return other.transform(self);
         }
 
-        pub fn Transpose(matrix: *const Self) Self {
+        pub fn transpose(matrix: *const Self) Self {
             return Self(
                 vec3(matrix.rows[0].x, matrix.rows[1].x, matrix.rows[2].x),
                 vec3(matrix.rows[0].y, matrix.rows[1].y, matrix.rows[2].y),
@@ -152,7 +156,7 @@ pub fn Mat3T(comptime T: type) type {
             );
         }
 
-        pub fn Invert(self: *const Self) *Self {
+        pub fn invert(self: *const Self) *Self {
             // var temp = Self.new();
 
             // var determinant = data[0] * temp[0] + data[1] * temp[4] + data[2] * temp[8] + data[3] * temp[12];

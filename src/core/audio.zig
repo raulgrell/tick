@@ -1,4 +1,4 @@
-use @import("../system/index.zig");
+const t = @import("../index.zig");
 
 const std_io = std.io;
 const math = std.math;

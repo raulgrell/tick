@@ -1,7 +1,4 @@
-const std = @import("std");
-const builtin = @import("builtin");
-
-const c = @import("c.zig");
+const t = @import("../index.zig");
 
 pub const is_on = if (builtin.mode == builtin.Mode.ReleaseFast) c.GL_FALSE else c.GL_TRUE;
 

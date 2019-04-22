@@ -1,12 +1,4 @@
-// Core
-pub const agent = @import("agent.zig");
-pub const physics = @import("physics.zig");
-pub const scene = @import("scene.zig");
-pub const unit =  @import("unit.zig");
-
-const builtin = @import("builtin");
-const std = @import("std");
-const assert = std.debug.assert;
+const t = @import("../index.zig");
 
 pub const EntityId = struct {
   id: usize,
@@ -16,21 +8,23 @@ pub const EntityId = struct {
 
 pub fn ComponentObject(comptime T: type) type {
   return struct {
-    unused: u64, // workaround for https://github.com/ziglang/zig/issues/1154
     is_active: bool,
     entity_id: EntityId,
     data: T,
   };
 }
 
-pub fn ComponentList(comptime T: type) type {
+pub fn ComponentList(comptime T: type, comptime capacity_: usize) type {
   return struct {
-    objects: []ComponentObject(T),
+    const Self = this;
+    const ComponentType = T;
+    const capacity = capacity_;
+    objects: [capacity]ComponentObject(T),
     count: usize,
   };
 }
 
-pub fn Session(comptime ComponentTypes: []const type, comptime ComponentLists: type) type {
+pub fn Session(comptime ComponentLists: type) type {
   assert(@typeId(ComponentLists) == builtin.TypeId.Struct);
   inline for (@typeInfo(ComponentLists).Struct.fields) |field| {
     assert(@typeId(@typeOf(field)) == builtin.TypeId.Struct);
@@ -40,49 +34,74 @@ pub fn Session(comptime ComponentTypes: []const type, comptime ComponentLists: t
     const Self = this;
 
     prng: std.rand.DefaultPrng,
-
     next_entity_id: usize,
-
-    removals: [GbeConstants.MaxRemovalsPerFrame]EntityId,
+    removals: [MaxRemovalsPerFrame] EntityId,
     num_removals: usize,
-
     components: ComponentLists,
 
-    pub fn init(self: *Self, component_storage: var, rand_seed: u32) void {
+    pub fn init(self: *Self, rand_seed: u32) void {
       self.prng = std.rand.DefaultPrng.init(rand_seed);
       self.next_entity_id = 1;
       self.num_removals = 0;
       inline for (@typeInfo(ComponentLists).Struct.fields) |field| {
-        @field(&self.components, field.name).objects = @field(component_storage, field.name).objects[0..];
         @field(&self.components, field.name).count = 0;
       }
     }
 
-    pub fn iter(self: *Self, comptime T: type) GbeIterators.ComponentObjectIterator(T) {
+    pub fn iter(self: *Self, comptime T: type) blk: {
+      comptime var capacity: usize = 0;
+      inline for (@typeInfo(ComponentLists).Struct.fields) |field| {
+        comptime if (std.mem.eql(u8, field.name, @typeName(T))) {
+          capacity = field.field_type.capacity;
+        };
+      }
+      break :blk ComponentObjectIterator(T, capacity);
+    } {
+      comptime var capacity: usize = 0;
+      inline for (@typeInfo(ComponentLists).Struct.fields) |field| {
+        comptime if (std.mem.eql(u8, field.name, @typeName(T))) {
+          capacity = field.field_type.capacity;
+        };
+      }
       const list = &@field(&self.components, @typeName(T));
-      return GbeIterators.ComponentObjectIterator(T).init(list);
+      return ComponentObjectIterator(T, capacity).init(list);
     }
 
-    pub fn eventIter(self: *Self, comptime T: type, comptime field: []const u8, entity_id: EntityId) GbeIterators.EventIterator(T, field) {
-      const list = &@field(&self.components, @typeName(T));
-      return GbeIterators.EventIterator(T, field).init(list, entity_id);
+    pub fn eventIter(self: *Self, comptime T: type, comptime field: []const u8, entity_id: EntityId) blk: {
+      comptime var capacity: usize = 0;
+      inline for (@typeInfo(ComponentLists).Struct.fields) |sfield| {
+        comptime if (std.mem.eql(u8, sfield.name, @typeName(T))) {
+          capacity = sfield.field_type.capacity;
+        };
+      }
+      break :blk EventIterator(T, capacity, field);
+    } {
+      comptime var capacity: usize = 0;
+      inline for (@typeInfo(ComponentLists).Struct.fields) |sfield| {
+        comptime if (std.mem.eql(u8, sfield.name, @typeName(T))) {
+          capacity = sfield.field_type.capacity;
+        };
+      }
+      return EventIterator(T, capacity, field).init(list, entity_id);
     }
 
     pub fn findObject(self: *Self, entity_id: EntityId, comptime T: type) ?*ComponentObject(T) {
       var it = self.iter(T); while (it.next()) |object| {
-        if (EntityId.eql(object.entity_id, entity_id)) {
-          return object;
-        }
+        if (EntityId.eql(object.entity_id, entity_id)) return object;
       }
       return null;
     }
 
+    pub fn findFirstObject(self: *Self, comptime T: type) ?*ComponentObject(T) {
+      return self.iter(T).next();
+    }
+
     pub fn find(self: *Self, entity_id: EntityId, comptime T: type) ?*T {
-      if (self.findObject(entity_id, T)) |object| {
-        return &object.data;
-      } else {
-        return null;
-      }
+	    return if (self.findObject(entity_id, T)) |object| &object.data else null;
+    }
+
+    pub fn findFirst(self: *Self, comptime T: type) ?*T {
+      return if (self.findFirstObject(T)) |object| &object.data else null;
     }
 
     pub fn getRand(self: *Self) *std.rand.Random {
@@ -91,22 +110,19 @@ pub fn Session(comptime ComponentTypes: []const type, comptime ComponentLists: t
 
     pub fn spawn(self: *Self) EntityId {
       const id = EntityId{ .id = self.next_entity_id };
-      self.next_entity_id += 1; // TODO - reuse these?
+      self.next_entity_id += 1;
       return id;
     }
 
-    // this is only called in spawn functions, to clean up components of a
-    // partially constructed entity, when something goes wrong
+    // called in spawn functions to clean up components of a partially constructed entity after an error
     pub fn undoSpawn(self: *Self, entity_id: EntityId) void {
-      inline for (ComponentTypes) |component_type| {
-        self.destroyComponent(entity_id, component_type);
+      inline for (@typeInfo(ComponentLists).Struct.fields) |field| {
+        self.destroyComponent(entity_id, field.field_type.ComponentType);
       }
     }
 
     pub fn markEntityForRemoval(self: *Self, entity_id: EntityId) void {
-      if (self.num_removals >= GbeConstants.MaxRemovalsPerFrame) {
-        @panic("markEntityForRemoval: no removal slots available");
-      }
+      if (self.num_removals >= MaxRemovalsPerFrame) @panic("markEntityForRemoval: no removal slots available");
       self.removals[self.num_removals] = entity_id;
       self.num_removals += 1;
     }
@@ -148,8 +164,8 @@ pub fn Session(comptime ComponentTypes: []const type, comptime ComponentLists: t
 
     pub fn applyRemovals(self: *Self) void {
       for (self.removals[0..self.num_removals]) |entity_id| {
-        inline for (ComponentTypes) |component_type| {
-          self.destroyComponent(entity_id, component_type);
+        inline for (@typeInfo(ComponentLists).Struct.fields) |field| {
+          self.destroyComponent(entity_id, field.field_type.ComponentType);
         }
       }
       self.num_removals = 0;
@@ -157,11 +173,11 @@ pub fn Session(comptime ComponentTypes: []const type, comptime ComponentLists: t
   };
 }
 
-pub fn ComponentObjectIterator(comptime T: type) type {
+pub fn ComponentObjectIterator(comptime T: type, comptime capacity: usize) type {
   return struct {
     const Self = this;
 
-    list: *Gbe.ComponentList(T),
+    list: *Gbe.ComponentList(T, capacity),
     index: usize,
 
     pub fn next(self: *Self) ?*Gbe.ComponentObject(T) {
@@ -175,7 +191,7 @@ pub fn ComponentObjectIterator(comptime T: type) type {
       return null;
     }
 
-    pub fn init(list: *Gbe.ComponentList(T)) Self {
+    pub fn init(list: *Gbe.ComponentList(T, capacity)) Self {
       return Self{
         .list = list,
         .index = 0,
@@ -184,16 +200,16 @@ pub fn ComponentObjectIterator(comptime T: type) type {
   };
 }
 
-// EventIterator is like ComponentObjectIterator, with the following
-// differences:
+// EventIterator is like ComponentObjectIterator, with the following differences:
 // - takes a field name (compile-time) and entity id (run-time), and only
 //   yields events where event.field == entity_id
 // - returns *T (component data) directly, instead of *ComponentObject(T)
-pub fn EventIterator(comptime T: type, comptime field: []const u8) type {
+
+	pub fn EventIterator(comptime T: type, comptime capacity: usize, comptime field: []const u8) type {
   return struct {
     const Self = this;
 
-    list: *Gbe.ComponentList(T),
+    list: *Gbe.ComponentList(T, capacity),
     entity_id: Gbe.EntityId,
     index: usize,
 
@@ -208,7 +224,7 @@ pub fn EventIterator(comptime T: type, comptime field: []const u8) type {
       return null;
     }
 
-    pub fn init(list: *Gbe.ComponentList(T), entity_id: Gbe.EntityId) Self {
+    pub fn init(list: *Gbe.ComponentList(T, capacity), entity_id: Gbe.EntityId) Self {
       return Self{
         .list = list,
         .entity_id = entity_id,
@@ -218,22 +234,18 @@ pub fn EventIterator(comptime T: type, comptime field: []const u8) type {
   };
 }
 
-// `SessionType` param to these functions must have have a field called `gbe`
-// which is of type `Gbe.Session(...)`
+// `SessionType` param must have have a field called `gbe`of type `Gbe.Session(...)`
+// Implement a system that exposes an iterator instead of running everything internally
 pub fn build(
   comptime SessionType: type,
   comptime SelfType: type,
-  comptime process: fn(*SessionType, SelfType) bool) fn(*SessionType) void
-{
+  comptime process: fn(*SessionType, SelfType) bool,
+) fn(*SessionType)void {
   assert(@typeId(SelfType) == builtin.TypeId.Struct);
 
   const Impl = struct{
-    fn runOne(
-      gs: *SessionType,
-      self_id: Gbe.EntityId,
-      comptime MainComponentType: type,
-      main_component: *MainComponentType ) bool
-    {
+    fn runOne( gs: *SessionType, self_id: Gbe.EntityId, comptime MainComponentType: type, main_component: *MainComponentType, ) bool {
+      // fill in the fields of the `self` structure
       var self: SelfType = undefined;
       inline for (@typeInfo(SelfType).Struct.fields) |field| {
         // if the field is of type EntityId, fill it in....
@@ -252,13 +264,11 @@ pub fn build(
           else
             gs.gbe.find(self_id, ComponentType) orelse return true;
       }
+      // call the process function
       return process(gs, self);
     }
 
-    fn runAll(
-      gs: *SessionType,
-      comptime MainComponentType: type,
-    ) void {
+    fn runAll( gs: *SessionType, comptime MainComponentType: type, ) void {
       var it = gs.gbe.iter(MainComponentType); while (it.next()) |object| {
         if (!runOne(gs, object.entity_id, MainComponentType, &object.data)) {
           gs.gbe.markEntityForRemoval(object.entity_id);
@@ -267,15 +277,59 @@ pub fn build(
     }
 
     fn run(gs: *SessionType) void {
-      comptime var i: usize = 0;
-      inline while (i < @typeInfo(SelfType).Struct.fields.len) : (i += 1) {
-        comptime const field = @typeInfo(SelfType).Struct.fields[i];
+      // only consider optional fields if all fields are optional
+      var all_fields_optional = true;
+
+      inline for (@typeInfo(SelfType).Struct.fields) |field, i| {
+        if (field.field_type != Gbe.EntityId and
+            @typeId(field.field_type) != builtin.TypeId.Optional) {
+          all_fields_optional = false;
+        }
+      }
+
+      // decide which component type to do the outermost iteration over.
+      // choose the component type with the lowest amount of active entities.
+      var best: usize = @maxValue(usize);
+      var which: ?usize = null;
+
+      // go through the fields in the SelfType struct (where each field is
+      // either an EntityId or a pointer to a component)
+      inline for (@typeInfo(SelfType).Struct.fields) |field, i| {
         if (field.field_type == Gbe.EntityId) {
           continue;
         }
+        if (@typeId(field.field_type) == builtin.TypeId.Optional and
+            !all_fields_optional) {
+          continue;
+        }
         comptime const field_type = unpackComponentType(field.field_type);
-        runAll(gs, field_type);
-        return;
+        if (@field(&gs.gbe.components, @typeName(field_type)).count < best) {
+          best = @field(&gs.gbe.components, @typeName(field_type)).count;
+          which = i;
+        }
+      }
+
+      // run the iteration
+      // note: i can't just look up `which_index` in Struct.fields because of a
+      // compiler bug https://github.com/ziglang/zig/issues/1435
+      if (which) |which_index| {
+        inline for (@typeInfo(SelfType).Struct.fields) |field, i| {
+          if (field.field_type == Gbe.EntityId) {
+            continue;
+          }
+          if (@typeId(field.field_type) == builtin.TypeId.Optional and
+              !all_fields_optional) {
+            continue;
+          }
+          comptime const field_type = unpackComponentType(field.field_type);
+          if (i == which_index) {
+            runAll(gs, field_type);
+            return;
+          }
+        }
+        unreachable;
+      } else {
+        std.debug.panic("no matches");
       }
     }
 

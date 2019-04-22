@@ -1,23 +1,17 @@
-const t = @import("../tick.zig");
-
-use tick.core;
-use tick.math;
-use tick.system;
-use tick.graphics;
-use tick.graphics.texture;
-use tick.engine.scene;
-use tick.engine.physics;
-
-const ArrayList = lib.ArrayList;
-const math = std.math;
+const t = @import("../index.zig");
 
 pub const Agent = struct {
+    // Transform
     position: Vec3,
     dimensions: Vec3,
+    rotation: Vec3,
+    // Kinematic
     velocity: Vec3,
-    direction: Vec3,
+    acceleration: Vec3,
+    // Sprite
     color: Vec4,
     texture: *Texture,
+    // Movement
     speed: f32,
     mass: f32,
     radius: f32,
@@ -31,8 +25,9 @@ pub const Agent = struct {
             .dimensions = *dimensions,
             .color = vec4(0.5,0,0,1),
             .texture = agent_texture,
-            .direction = vec3(1, 0, 0),
+            .rotation = vec3(1, 0, 0),
             .velocity = vec3(0, 0, 0),
+            .acceleration = vec3(0, 0, 0),
             .speed = speed,
             .mass = 1,
             .radius = 1,
@@ -46,21 +41,21 @@ pub const Agent = struct {
     }
 
     pub fn submit(self: *const Agent,  r: *BatchRenderer) void {
-        const destRect = Vec4(self.position.x, self.position.y, self.dimensions.x, self.dimensions.y);
-        const uvRect = Vec4(0.0, 0.0, 1.0, 1.0);
-        r.submit(destRect, uvRect, self.textureID, 1.0, self.colour, self.direction);
+        const destRect = vec4(self.position.x, self.position.y, self.dimensions.x, self.dimensions.y);
+        const uvRect = vec4(0.0, 0.0, 1.0, 1.0);
+        r.submit(destRect, uvRect, self.textureID, 1.0, self.colour, self.rotation);
     }
 
     pub fn drawDebug(self: *const Agent, r: *LineRenderer) void {
         const radius = self.dimensions.x / 2.0;
-        const center = self.position + ( radius );
+        const center = self.position + (radius );
         r.drawCircle(center, ColourRGBA(255, 255, 255, 255), radius);
     }
 
     pub fn getAngle(self: *const Agent) f32 {
         const right = vec3(1.0, 0.0);
-        const angle = math.acos(right.dot(self.direction));
-        return if(self.direction.y > 0.0) angle else -angle;
+        const angle = math.acos(right.dot(self.rotation));
+        return if(self.rotation.y > 0.0) angle else -angle;
     }
 
     // Circular Collision
@@ -74,7 +69,7 @@ pub const Agent = struct {
         const distance = dist_vec.length();
         const collision_depth = MIN_DISTANCE - distance;
 
-        if ( collision_depth > 0 ) {
+        if (collision_depth > 0) {
             const collision_vec = dist_vec.normalize().mul(collision_depth);
             self.position.offset(collision_vec.mul_scalar(2.0));
             other.position.offset(collision_vec.mul_scalar(-2.0));
@@ -94,15 +89,15 @@ pub const Agent = struct {
         const x_depth = min_distance_x - math.fabs(dist_vec.x);
         const y_depth = min_distance_y - math.fabs(dist_vec.y);
 
-        if ( x_depth > 0 or y_depth > 0 ) {
-            if ( math.max(x_depth, f32(0)) < math.max(y_depth, f32(0)) ) {
-                if ( dist_vec.x < 0 ) {
+        if (x_depth > 0 or y_depth > 0) {
+            if (math.max(x_depth, f32(0)) < math.max(y_depth, f32(0))) {
+                if (dist_vec.x < 0) {
                     self.position.x -= x_depth;
                 } else {
                     self.position.x += x_depth;
                 }
             } else {
-                if ( dist_vec.y < 0 ) {
+                if (dist_vec.y < 0) {
                     self.position.y -= y_depth;
                 } else {
                     self.position.y += y_depth;
@@ -119,10 +114,10 @@ pub const Agent = struct {
         checkTilePosition(level, &collision_positions, self.position.x + self.dimensions.x , self.position.y);
         checkTilePosition(level, &collision_positions, self.position.x + self.dimensions.x , self.position.y + self.dimensions.y);
 
-        if ( collision_positions.length == 0 )
+        if (collision_positions.length == 0 )
             return false;
 
-        for ( collision_positions.toSlice() ) | pos | 
+        for (collision_positions.toSlice()) | pos | 
             self.collideWithTile(pos, level.tile_dimensions);
 
         return true;
@@ -136,17 +131,17 @@ pub const Agent = struct {
         );
 
         // Don't collide if outside world
-        if ( corner_position.x < 0 or corner_position.x >= level.getWidth()
+        if (corner_position.x < 0 or corner_position.x >= level.getWidth()
             or corner_position.y < 0 or corner_position.y >= level.getHeight()) {
             return;
         }
 
-        if ( level.level_data[corner_position.y][corner_position.x] != ' ' ) {
+        if (level.level_data[corner_position.y][corner_position.x] != ' ') {
             const collision_pos = corner_position
                 .mul_scalar(u32(level.tile_dimensions.x))
                 .cast(f32)
                 .add(level.tile_dimensions.div_scalar(2));
-            collision_positions.append( vec2(collision_pos.x, collision_pos.y) ) catch unreachable;
+            collision_positions.append( vec2(collision_pos.x, collision_pos.y)) catch unreachable;
         }
     }
 };
@@ -173,8 +168,8 @@ pub const ImpulsePlayer = struct {
         // Apply friction
         const friction = f32(0.1);        
         const momentum_vec = self.agent.velocity.mul_scalar(self.agent.mass);
-        if ( momentum_vec.x != 0 or momentum_vec.y != 0 ) {
-            if ( friction < momentum_vec.length() ) {
+        if (momentum_vec.x != 0 or momentum_vec.y != 0) {
+            if (friction < momentum_vec.length()) {
                 self.agent.velocity.offset(
                     momentum_vec.normalize().mul_scalar(-friction / self.agent.mass * delta_time)
                 );
@@ -228,8 +223,8 @@ pub const MousePlayer = struct {
     
     pub fn update(self: *MousePlayer, level: *Level, delta_time: f32) void {
         if(self.input.buttonDown[c.GLFW_MOUSE_BUTTON_LEFT]) {
-            const mouse_direction = self.input.cursor_position.sub(self.agent.position.xy()).normalize();
-            self.agent.position.offset(mouse_direction.mul_scalar(self.agent.speed).xyz());
+            const mouse_rotation = self.input.cursor_position.sub(self.agent.position.xy()).normalize();
+            self.agent.position.offset(mouse_rotation.mul_scalar(self.agent.speed).xyz());
         }
         _ = self.agent.collideWithLevel(level);
     }
@@ -266,7 +261,7 @@ pub const Grid = struct {
         // Allocate all the cells
         g.cells.reserve(g.rows * g.columns) catch unreachable;
 
-        for ( g.cells.toSlice() ) | cell, i | {
+        for (g.cells.toSlice()) | cell, i | {
             cell.agents.reserve(reserve) catch unreachable;
         }
 
@@ -291,8 +286,8 @@ pub const Grid = struct {
     }
 
     pub fn getCell(self: *Grid, x: usize, y: usize) &Cell {
-        const col = if ( x < 0 ) 0 else if ( x >= self.columns ) self.columns - 1 else x;
-        const row = if ( y < 0 ) 0 else if ( y >= self.rows ) self.rows - 1 else y;
+        const col = if (x < 0) 0 else if (x >= self.columns) self.columns - 1 else x;
+        const row = if (y < 0) 0 else if (y >= self.rows) self.rows - 1 else y;
 
         return self.cells.data[row * self.columns + col];
     }
@@ -302,7 +297,7 @@ pub const Grid = struct {
             var agents = cell.agents;
             agents.data[??agent.cell_array_index] = agents.last();
             _ = agents.pop();
-            if ( ??agent.cell_array_index < agents.length ) {
+            if (??agent.cell_array_index < agents.length) {
                 agents.data[??agent.cell_array_index].cell_array_index = agent.cell_array_index;
             }
             agent.cell_array_index = null;
@@ -343,13 +338,13 @@ pub const Controller = struct {
         const friction = f32(0.02);
         const gravity = vec2(0, 0.1);
 
-        for ( self.agents.toSlice() ) | agent | {
+        for (self.agents.toSlice()) | agent | {
             agent.position.offset(agent.velocity.mul_scalar(delta_time));
 
             // Apply friction
             const momentum_vec = agent.velocity.mul_scalar(agent.mass);
-            if ( momentum_vec.x != 0 or momentum_vec.y != 0 ) {
-                if ( friction < momentum_vec.length() ) {
+            if (momentum_vec.x != 0 or momentum_vec.y != 0) {
+                if (friction < momentum_vec.length()) {
                     agent.velocity.offset(momentum_vec.normalize().mul_scalar(-friction / agent.mass * delta_time));
                 } else {
                     agent.velocity = vec3(0, 0, 0);
@@ -367,7 +362,7 @@ pub const Controller = struct {
             // Check to see if the agent moved
             if (agent.owner_cell) | cell | {
                 const newCell = self.grid.getCellAt(agent.position.xy());
-                if ( newCell != cell ) {
+                if (newCell != cell) {
                     self.grid.removeFromCell(agent);
                     self.grid.addToCell(agent, newCell);
                 }
@@ -378,25 +373,25 @@ pub const Controller = struct {
     }
 
     fn updateCollisions(grid: *Grid) void {
-        for ( grid.cells.toSlice() ) | cell, i | {
+        for (grid.cells.toSlice()) | cell, i | {
             const x = i % grid.columns;
             const y = i / grid.columns;
 
-            for ( cell.agents.toSlice() ) | agent, j | {
+            for (cell.agents.toSlice()) | agent, j | {
                 checkCollisions(agent, &cell.agents, j + 1);
                 // Neighbor cells: left, top left, bottom left and up
-                if ( x > 0 ) {
+                if (x > 0) {
                     checkCollisions(agent, &grid.getCell(x - 1, y).agents, 0);
-                    if ( y > 0 ) checkCollisions(agent, &grid.getCell(x - 1, y - 1).agents, 0);
-                    if ( y < grid.rows - 1 ) checkCollisions(agent, &grid.getCell(x - 1, y + 1).agents, 0);
+                    if (y > 0) checkCollisions(agent, &grid.getCell(x - 1, y - 1).agents, 0);
+                    if (y < grid.rows - 1) checkCollisions(agent, &grid.getCell(x - 1, y + 1).agents, 0);
                 }
-                if ( y > 0 ) checkCollisions(agent, &grid.getCell(x, y - 1).agents, 0);
+                if (y > 0) checkCollisions(agent, &grid.getCell(x, y - 1).agents, 0);
             }
         }
     }
 
     fn checkCollisions(agent: *Agent, check: *ArrayList(&Agent), startingIndex: usize) void {
-        for ( check.toSlice() ) | other | {
+        for (check.toSlice()) | other | {
             checkCollision(agent, other);
         }
     }
@@ -404,24 +399,24 @@ pub const Controller = struct {
     fn checkCollision(agent1: *Agent, agent2: *Agent) void {
         // We add radius since position is the top left corner
         const dist_vec = agent2.position.sub(agent1.position);
-        const dist_vec_direction = dist_vec.normalize();
+        const dist_vec_rotation = dist_vec.normalize();
         const dist = dist_vec.length();
         const min_distance = agent1.radius + agent2.radius;
         const collision_depth = min_distance - dist;
-        if ( collision_depth > 0 ) {
+        if (collision_depth > 0) {
             // Push away the less massive one
-            if ( agent1.mass < agent2.mass ) {
-                agent1.position.offset(dist_vec_direction.mul_scalar(-collision_depth));
+            if (agent1.mass < agent2.mass) {
+                agent1.position.offset(dist_vec_rotation.mul_scalar(-collision_depth));
             } else {
-                agent2.position.offset(dist_vec_direction.mul_scalar(collision_depth));
+                agent2.position.offset(dist_vec_rotation.mul_scalar(collision_depth));
             }
-            const aci = agent1.velocity.dot(dist_vec_direction);
-            const bci = agent2.velocity.dot(dist_vec_direction);
-            const acf = ( aci * ( agent1.mass - agent2.mass ) + 2 * agent2.mass * bci ) / ( agent1.mass + agent2.mass );
-            const bcf = ( bci * ( agent2.mass - agent1.mass ) + 2 * agent1.mass * aci ) / ( agent1.mass + agent2.mass );
+            const aci = agent1.velocity.dot(dist_vec_rotation);
+            const bci = agent2.velocity.dot(dist_vec_rotation);
+            const acf = (aci * (agent1.mass - agent2.mass) + 2 * agent2.mass * bci) / (agent1.mass + agent2.mass );
+            const bcf = (bci * (agent2.mass - agent1.mass) + 2 * agent1.mass * aci) / (agent1.mass + agent2.mass );
 
-            agent1.velocity.offset(dist_vec_direction.mul_scalar( acf - aci ));
-            agent2.velocity.offset(dist_vec_direction.mul_scalar( bcf - bci ));
+            agent1.velocity.offset(dist_vec_rotation.mul_scalar( acf - aci ));
+            agent2.velocity.offset(dist_vec_rotation.mul_scalar( bcf - bci ));
         }
     }
 };
@@ -429,7 +424,7 @@ pub const Controller = struct {
 const AgentRenderer = struct {
     program: ?*ShaderProgram,
 
-    pub fn render(self: *AgentRenderer, renderer: *BatchRenderer, agents: *const ArrayList(&Agent), proj_matrix: *const Mat4 ) void {
+    pub fn render(self: *AgentRenderer, renderer: *BatchRenderer, agents: *const ArrayList(&Agent), proj_matrix: *const Mat4) void {
         // Lazily initialize the program
         if (self.program == null) {
             self.program = c.mem.create(ShaderProgram);

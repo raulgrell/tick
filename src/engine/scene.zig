@@ -1,4 +1,4 @@
-const t = @import("../tick.zig");
+const t = @import("../index.zig");
 
 // Camera system modes
 const CameraMode = enum {

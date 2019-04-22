@@ -87,8 +87,6 @@ extern fn WndProc(hWnd: c.HWND, message: c.UINT, wParam: c.WPARAM, lParam: c.LPA
             var context: c.HGLRC = c.wglCreateContext(s_hdc);
             _ = c.wglMakeCurrent(s_hdc, context);
             _ = c.MessageBoxA(null, c.glGetString(c.GL_VERSION), c"OPENGL VERSION", 0);
-            // _ = c.wglDeleteContext(context);
-            // c.PostQuitMessage(0);
         },
         c.WM_KEYDOWN => {
             if ((wParam & 0xFF) == 27) s_close = true;

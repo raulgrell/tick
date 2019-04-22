@@ -3,18 +3,22 @@ const std = @import("std");
 pub const ValueType = enum {
   Bool,
   Number,
+  Obj
   Nil,
 };
 
 pub const Value = union(ValueType) {
     Bool: bool,
     Number: f64,
+    Obj: *Obj
+
     Nil,
 
     fn toString(value: Value) void {
       switch (value) {
         Value.Bool => |b| std.debug.warn("{}", b),
         Value.Number => |d| std.debug.warn("{}", d),
+        Value.Obj => |d| std.debug.warn("{}", d),
         Value.Nil => std.debug.warn("nil")
       }
     }
@@ -58,6 +62,10 @@ pub const Value = union(ValueType) {
     }
 
     fn isNil(value: Value) bool {
+      return ValueType(value) == ValueType.Nil;
+    }
+
+    fn isObject(value: Value) bool {
       return ValueType(value) == ValueType.Nil;
     }
 };

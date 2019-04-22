@@ -1,3 +1,5 @@
+const t = @import("../index.zig");
+
 void DrawText(SpriteFont spriteFont, const char *text, Vector2 position, float fontSize, int spacing, Color tint) {
 }
 
@@ -14,10 +16,7 @@ int GetCharIndex(SpriteFont font, int letter) {
     }
     return index;
 }
-const DoubleStackAllocatorFlat = @import("../zigutils/src/DoubleStackAllocatorFlat.zig").DoubleStackAllocatorFlat;
 
-const Draw = @import("draw.zig");
-const Platform = @import("platform/index.zig");
 const loadPcx = @import("load_pcx.zig").loadPcx;
 
 const FONT_FILENAME = "../assets/font.pcx";

@@ -8,15 +8,15 @@ pub fn QuatT(comptime T: type) type {
             return quat(0, 0, 0, 1);
         }
 
-        pub fn init(x: T, y: T, z: T, w: T)Self {
+        pub fn init(x: T, y: T, z: T, w: T) Self {
             return quat(x, y, z, w);
         }
 
-        pub fn cat(xyz: Vec3T(T), w: T )Self {
+        pub fn cat(xyz: Vec3T(T), w: T ) Self {
             return quat(xyz.x, xyz.y, xyz.z, w);
         }
 
-        pub fn dup(self: *const Self)Self {
+        pub fn dup(self: *const Self) Self {
             return Self { .data = self.data };
         }
 

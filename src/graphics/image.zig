@@ -1,4 +1,4 @@
-use @import("../system/index.zig");
+const t = @import("../index.zig");
 
 const std = @import("std");
 const swapSlices = @import("../util.zig").swapSlices;

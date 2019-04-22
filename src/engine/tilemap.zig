@@ -1,3 +1,4 @@
+const t = @import("../index.zig");
 
 pub const Level = struct {
     tile_dimensions: Vec2,
@@ -62,7 +63,7 @@ pub const Level = struct {
                 const pos_x = f32(col) * dimensions.x;
                 const pos_y = f32(row) * dimensions.y;
                 if (tile_map[sym]) | *tx | {
-                    renderer.draw_rect(tx, pos_x, pos_y, dimensions.x, dimensions.y);                    
+                    renderer.draw_rect(tx, pos_x, pos_y, dimensions.x, dimensions.y);
                 }
             }
         }

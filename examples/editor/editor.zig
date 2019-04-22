@@ -21,7 +21,6 @@ use @cImport({
     }
 });
 
-
 const EditorRow = struct {
     chars: []u8,
     render_chars: []u8

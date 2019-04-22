@@ -1,5 +1,4 @@
-use @import("../system/index.zig");
-use @import("../math/index.zig");
+const t = @import("../index.zig");
 
 pub const ShaderProgram = struct {
     programID: c.GLuint,
@@ -9,7 +8,7 @@ pub const ShaderProgram = struct {
     numAttributes: u32,
     numUniforms: u32,
 
-    pub fn init(vertex_source: []const u8, frag_source: []const u8, geometry_source: ?[]u8 )ShaderProgram {
+    pub fn init(vertex_source: []const u8, frag_source: []const u8, geometry_source: ?[]u8 ) ShaderProgram {
         var self = ShaderProgram {
             .programID = undefined,
             .vertexShaderID = undefined,
@@ -19,28 +18,19 @@ pub const ShaderProgram = struct {
             .numUniforms = 0,
         };
 
-        self.vertexShaderID = compile(vertex_source, c"vertex", c.GL_VERTEX_SHADER);
-        self.fragmentShaderID = compile(frag_source, c"fragment", c.GL_FRAGMENT_SHADER);
-        self.geometryShaderID = if ( geometry_source) | geo_source | 
-            compile(geo_source, c"geometry", c.GL_GEOMETRY_SHADER)
-        else 
-            null;
-        
+        self.vertexShaderID = compile(vertex_source, "vertex", c.GL_VERTEX_SHADER);
+        self.fragmentShaderID = compile(frag_source, "fragment", c.GL_FRAGMENT_SHADER);
+        self.geometryShaderID = if (geometry_source) | g | compile(g, "geometry", c.GL_GEOMETRY_SHADER) else null;
         self.programID = c.glCreateProgram();
-
         self.link();
 
         debug.assertNoErrorGL();
 
-        if ( self.geometryShaderID) | geo_id | {
-            c.glDetachShader(self.programID, geo_id);
-        }
+        if ( self.geometryShaderID) | geo_id | c.glDetachShader(self.programID, geo_id);
         c.glDetachShader(self.programID, self.fragmentShaderID);
         c.glDetachShader(self.programID, self.vertexShaderID);
 
-        if ( self.geometryShaderID) | geo_id | {
-            c.glDeleteShader(geo_id);
-        }
+        if ( self.geometryShaderID) | geo_id | c.glDeleteShader(geo_id);
         c.glDeleteShader(self.fragmentShaderID);
         c.glDeleteShader(self.vertexShaderID);
 
@@ -57,15 +47,14 @@ pub const ShaderProgram = struct {
 
         var ok: c.GLint = undefined;
         c.glGetShaderiv(shader_id, c.GL_COMPILE_STATUS, &ok);
-        if (ok != 0)
-            return shader_id;
+        if (ok != 0) return shader_id;
 
         var error_size: c.GLint = undefined;
         c.glGetShaderiv(shader_id, c.GL_INFO_LOG_LENGTH, &error_size);
 
         const message = c.mem.alloc(u8, usize(error_size)) catch unreachable;
         c.glGetShaderInfoLog(shader_id, error_size, &error_size, &message[0]);
-        _ = warn("Error compiling {} shader:\n{}\n", std.cstr.toSliceConst(name), std.cstr.toSliceConst(message.ptr));
+        std.debug.warn("Error compiling {} shader:\n{}\n", name, message);
         c.abort();  
     }
 
@@ -89,6 +78,10 @@ pub const ShaderProgram = struct {
         c.glUniformMatrix4fv(uniform_id, 1, c.GL_FALSE, &value.data[0][0]);
     }
 
+    pub fn setUniform(sp: *const ShaderProgram, uniform_id: c.GLint, value: var) void {
+        
+    }
+
     pub fn link(sp: *const ShaderProgram) void {
         c.glAttachShader(sp.programID, sp.vertexShaderID);
         c.glAttachShader(sp.programID, sp.fragmentShaderID);
@@ -108,7 +101,7 @@ pub const ShaderProgram = struct {
         c.glGetProgramiv(sp.programID, c.GL_INFO_LOG_LENGTH, &error_size);
         const message = c.mem.alloc(u8, usize(error_size)) catch unreachable;
         c.glGetProgramInfoLog(sp.programID, error_size, &error_size, &message[0]);
-        _ = warn("Error linking shader program: {}\n", std.cstr.toSliceConst(message.ptr));
+        std.debug.warn("Error linking shader program: {}\n", std.cstr.toSliceConst(message.ptr));
         c.abort();
     }
 
@@ -125,7 +118,7 @@ pub const ShaderProgram = struct {
     pub fn getAttributeLocation(sp: *const ShaderProgram, name: *const u8)c.GLint {
         const id = c.glGetAttribLocation(sp.programID, name);
         if (id == -1) {
-            _ = warn("invalid attrib: {}\n", std.cstr.toSliceConst(name));
+            std.debug.warn("invalid attrib: {}\n", std.cstr.toSliceConst(name));
             c.abort();
         }
         return id;
@@ -134,7 +127,7 @@ pub const ShaderProgram = struct {
     pub fn getUniformLocation(sp: *const ShaderProgram, name: *const u8)c.GLint {
         const id = c.glGetUniformLocation(sp.programID, name);
         if (id == -1) {
-            _ = warn("invalid uniform: {}\n", std.cstr.toSliceConst(name));
+            std.debug.warn("invalid uniform: {}\n", std.cstr.toSliceConst(name));
             c.abort();
         }
         return id;

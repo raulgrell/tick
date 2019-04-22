@@ -1,8 +1,6 @@
 const std = @import("std");
 const core  = @import("../src/core/index.zig");
 
-extern GAME: core.API;
-
 pub fn main() !void {
     var args_it = std.os.args();
     var args_list = std.ArrayList([]const u8).init(std.debug.global_allocator);

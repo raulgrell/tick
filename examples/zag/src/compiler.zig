@@ -113,7 +113,7 @@ pub const Compiler = struct {
         makeRule(TokenType.Less,         null,     binary, Precedence.Comparison),
         makeRule(TokenType.LessEqual,    null,     binary, Precedence.Comparison),
         makeRule(TokenType.Identifier,   null,     null,   Precedence.None),
-        makeRule(TokenType.String,       null,     null,   Precedence.None),
+        makeRule(TokenType.String,       string,   null,   Precedence.None),
         makeRule(TokenType.Number,       number,   null,   Precedence.None),
         makeRule(TokenType.And,          null,     null,   Precedence.And),
         makeRule(TokenType.Class,        null,     null,   Precedence.None),
@@ -265,6 +265,12 @@ pub const Compiler = struct {
             TokenType.True => self.emitOpCode(OpCode.True),
             else => unreachable
         }
+    }
+
+    fn string(self: *Compiler) void {
+        emitConstant(copyString(
+            self.parser.previous.start + 1,
+            self.parser.previous.length - 2));
     }
 
     fn end(self: *Compiler) void {

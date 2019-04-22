@@ -1,7 +1,4 @@
-use @import("../system/index.zig");
-use @import("../math/index.zig");
-
-const shader = @import("../graphics/shader.zig");
+const t = @import("../index.zig");
 
 const Lighting = struct {
     lights: ArrayList(Light),

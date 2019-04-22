@@ -7,11 +7,7 @@ pub fn build(b: *Builder) void {
     const windows = b.option(bool, "windows", "create windows build") orelse false;
 
     // Environment
-    b.addCIncludePath("deps");
     b.addCIncludePath("include");
-
-    // C Dependencies
-    var glad = b.addCObject("glad", "deps/glad/glad.c");
 
     // Game lib
     const version = b.version(0, 0, 1);
@@ -34,7 +30,6 @@ pub fn build(b: *Builder) void {
     b.installArtifact(dev_exe);
 
     const dev_command = b.addCommand(".", b.env_map, [][]const u8{dev_exe.getOutputPath()});
-    dev_command.step.dependOn(&glad.step);
     dev_command.step.dependOn(&dev_exe.step);
     dev_command.step.dependOn(&game_lib.step);
 

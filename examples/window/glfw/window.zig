@@ -162,7 +162,6 @@ extern fn key_callback(win: ?*c.GLFWwindow, key: c_int, scancode: c_int, action:
 }
 
 extern fn cursor_position_callback(win: ?*c.GLFWwindow, xpos: f64, ypos: f64) void {
-
 }
 
 extern fn cursor_enter_callback(win: ?*c.GLFWwindow, entered: c_int) void {
@@ -172,7 +171,6 @@ extern fn mouse_button_callback(win: ?*c.GLFWwindow, button: c_int, action: c_in
 }
 
 extern fn scroll_callback(win: ?*c.GLFWwindow, xpos: f64, ypos: f64) void {
-
 }
 
 extern fn monitor_callback(monitor: ?*c.GLFWmonitor, event: c_int) void {

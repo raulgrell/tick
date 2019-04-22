@@ -1,5 +1,4 @@
-const builtin = @import("builtin");
-const is_windows = builtin.os == builtin.Os.windows;
+const t = @import("../index.zig");
 
 pub use @cImport({
     if (is_windows) {
@@ -10,13 +9,6 @@ pub use @cImport({
         @cInclude("sys/stat.h");
         @cInclude("dlfcn.h");
     }
-
-    // GL
-    @cInclude("glad/glad.h");
-    
-    // Libs
-    @cInclude("png.h");
-    @cInclude("GLFW/glfw3.h");
     @cInclude("soundio/soundio.h");
 });
 

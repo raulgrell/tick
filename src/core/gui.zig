@@ -1,12 +1,4 @@
-use @import("../system/index.zig");
-use @import("../math/index.zig");
-
-use @import("index.zig");
-use @import("window.zig");
-
-use @import("../graphics/primitive.zig");
-use @import("../graphics/texture.zig");
-use @import("../graphics/sprite.zig");
+const t = @import("../index.zig");
 
 const Control = enum {
     Label,

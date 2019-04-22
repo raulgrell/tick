@@ -1,14 +1,4 @@
-const t = @import("../tick.zig");
-
-use tick.core;
-use tick.math;
-use tick.system;
-use tick.graphics;
-use tick.graphics.texture;
-use tick.engine.scene;
-
-const ArrayList = lib.ArrayList;
-const math = std.math;
+const t = @import("../index.zig");
 
 const MAX_BODIES = 64;
 const MAX_MANIFOLDS = 4096;
