@@ -69,7 +69,7 @@ pub fn open(title: []const u8, width: u32, height: u32) !void {
 
     const was_hidden = c.ShowWindow(s_wnd, c.SW_NORMAL) == 0;
 
-    s_bitmapInfo = try allocator.createOne(c.struct_tagBITMAPINFO);
+    s_bitmapInfo = try allocator.create(c.struct_tagBITMAPINFO);
     s_bitmapInfo.bmiHeader.biSize = @sizeOf(c.struct_tagBITMAPINFOHEADER);
     s_bitmapInfo.bmiHeader.biPlanes = 1;
     s_bitmapInfo.bmiHeader.biBitCount = 32;

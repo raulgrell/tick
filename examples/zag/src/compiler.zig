@@ -1,4 +1,5 @@
 const std = @import("std");
+const allocator = std.debug.global_allocator;
 
 const Chunk = @import("./chunk.zig").Chunk;
 const OpCode = @import("./vm.zig").OpCode;
@@ -55,7 +56,7 @@ pub const ParseRule = struct {
     precedence: Precedence
 };
 
-pub const ParseFn = fn(self: *Compiler) void;
+pub const ParseFn = fn(self: *Instance, canAssign: bool) void;
 
 pub const Precedence = packed enum(u8) {
     None,
@@ -87,7 +88,7 @@ fn makeRule(_: TokenType, prefix: ?ParseFn, infix: ?ParseFn, precedence: Precede
     };
 }
 
-pub const Compiler = struct {
+pub const Instance = struct {
     parser: Parser,
     scanner: Scanner,
     current_chunk: *Chunk,
@@ -135,29 +136,33 @@ pub const Compiler = struct {
         makeRule(TokenType.EOF,          null,     null,   Precedence.None),
     };
 
-    pub fn create() Compiler {
-        return Compiler {
+    pub fn create() Instance {
+        return Instance {
             .parser = Parser.create(),
             .scanner = Scanner.create(),
             .current_chunk = undefined
         };
     }
 
-    pub fn compile(self: *Compiler, source: []const u8, chunk: *Chunk) bool {
+    pub fn compile(self: *Instance, source: []const u8, chunk: *Chunk) bool {
         self.scanner.init(source);
         self.current_chunk = chunk;
         self.parser.hadError = false;
         self.parser.hadPanic = false;
 
         self.advance();
-        self.parseExpression();
-        self.consume(TokenType.EOF, "Expect end of expression.");
+
+        while (!self.match(.EOF)) {
+            self.declaration();
+        }
+
+        self.declaration();
         self.end();
 
         return !self.parser.hadError;
     }
 
-    fn advance(self: *Compiler) void {
+    fn advance(self: *Instance) void {
         self.parser.previous = self.parser.current;
 
         while (true) {
@@ -168,7 +173,7 @@ pub const Compiler = struct {
         }
     }
 
-    fn consume(self: *Compiler, token_type: TokenType, message: []const u8) void {
+    fn consume(self: *Instance, token_type: TokenType, message: []const u8) void {
         if (self.parser.current.token_type == token_type) {
             _ = self.advance();
             return;
@@ -177,31 +182,118 @@ pub const Compiler = struct {
         self.parser.errorAtCurrent(message);
     }
 
-    fn currentChunk(self: *const Compiler) *Chunk {
+    fn currentChunk(self: *const Instance) *Chunk {
         return self.current_chunk;
     }
 
-    fn parseExpression(self: *Compiler) void {
+    fn parseStatement(self: *Instance) void {
+        if (self.match(.print)) {
+            self.printStatement();
+        } else {
+            self.expressionStatement();
+        }
+    }
+
+    fn match(self: *Instance, TokenType type) bool {
+        if (!self.check(type)) return false;
+        self.advance();
+        return true;
+    }
+
+    fn check(self: *Instance, TokenType type) bool {
+        return parser.current.type == type;
+    }
+
+    fn expressionStatement(self: *Instance) void {
+        self.parseExpression();
+        self.emitByte(OP_POP);
+        self.consume(TOKEN_SEMICOLON, "Expect ';' after expression.");
+    }
+
+    fn printStatement(self: *Instance) void {
+        self.expression();
+        self.consume(TOKEN_SEMICOLON, "Expect ';' after value.");
+        self.emitByte(OP_PRINT);
+    }
+
+    const declaration(self: *Instance) void {
+        if (self.match(TOKEN_VAR)) {
+            self.varDeclaration();
+        } else {
+            self.statement();
+        }
+        if (parser.panicMode) synchronize();
+    }
+
+    fn synchronize(self: *Instance) void {
+        self.parser.panicMode = false;
+
+        while (self.parser.current.type != TOKEN_EOF) {
+            if (self.parser.previous.type == TOKEN_SEMICOLON) return;
+
+            switch (self.parser.current.type) {
+                .Class, .Fun, .Var, .For, .If, .While, .Print, .Return => return;
+                else => {}
+            }
+            self.advance();
+        }
+    }
+
+    fn parseExpression(self: *Instance) void {
        self.parsePrecedence(Precedence.Assignment);
     }
 
-    fn parsePrecedence(self: *Compiler, precedence: Precedence) void {
+    fn  varDeclaration() void {
+        uint8_t global = parseVariable("Expect variable name.");
+
+        if (match(TOKEN_EQUAL)) {
+            expression();
+        } else {
+            emitByte(OP_NIL);
+        }
+        consume(TOKEN_SEMICOLON, "Expect ';' after variable declaration.");
+
+        defineVariable(global);
+    }
+
+    fn  parseVariable(const char* errorMessage) uint8_t {
+        consume(TOKEN_IDENTIFIER, errorMessage);
+        return identifierConstant(&parser.previous);
+    }
+
+    fn  identifierConstant(Token* name) uint8_t {
+        return makeConstant(OBJ_VAL(copyString(name->start, name->length)));
+    }
+
+    fn  defineVariable(uint8_t global) void {
+        emitBytes(OP_DEFINE_GLOBAL, global);
+    }
+
+    fn parsePrecedence(self: *Instance, precedence: Precedence) void {
         _ = self.advance();
 
         const parsePrefix = getRule(self.parser.previous.token_type).prefix;
         std.debug.warn("Parsing Prefix {}, Precedence {}\n", @tagName(self.parser.previous.token_type), @tagName(precedence));
-        
+
         if (parsePrefix == null) {
             self.parser.errorAtCurrent("Expect expression");
             return;
         }
+
+          bool canAssign = precedence <= PREC_ASSIGNMENT;
+        prefixRule(canAssign);
 
         parsePrefix.?(self);
 
         while (precedence.isLowerThan(getRule(self.parser.current.token_type).precedence)) {
             _ = self.advance();
             const parseInfix = getRule(self.parser.previous.token_type).infix.?;
-            parseInfix(self);
+            parseInfix(self, canAssign);
+        }
+
+        if (canAssign and match(TOKEN_EQUAL)) {
+            error("Invalid assignment target.");
+            expression();
         }
     }
 
@@ -210,17 +302,17 @@ pub const Compiler = struct {
         return rule;
     }
 
-    fn grouping(self: *Compiler) void {
+    fn grouping(self: *Instance, canAssign: bool) void {
         self.parseExpression();
         self.consume(TokenType.RightParen, "Expect ')' after expression.");
     }
 
-    fn number(self: *Compiler) void {
+    fn number(self: *Instance, canAssign: bool) void {
         const value = std.fmt.parseUnsigned(u8, self.parser.previous.lexeme, 10) catch unreachable;
         self.emitConstant(Value { .Number = @intToFloat(f64, value) });
     }
 
-    fn unary(self: *Compiler) void {
+    fn unary(self: *Instance, canAssign: bool) void {
         const operator_type = self.parser.previous.token_type;
 
         // Compile the operand.
@@ -234,7 +326,7 @@ pub const Compiler = struct {
         }
     }
 
-    fn binary(self: *Compiler) void {
+    fn binary(self: *Instance, canAssign: bool) void {
         // Remember the operator.
         const operator_type = self.parser.previous.token_type;
 
@@ -258,7 +350,7 @@ pub const Compiler = struct {
         }
     }
 
-    fn literal(self: *Compiler) void {
+    fn literal(self: *Instance, canAssign: bool) void {
         switch (self.parser.previous.token_type) {
             TokenType.False => self.emitOpCode(OpCode.False),
             TokenType.Nil => self.emitOpCode(OpCode.Nil),
@@ -267,46 +359,59 @@ pub const Compiler = struct {
         }
     }
 
-    fn string(self: *Compiler) void {
-        emitConstant(copyString(
-            self.parser.previous.start + 1,
-            self.parser.previous.length - 2));
+    fn variable(bool canAssign) void {
+        self.namedVariable(parser.previous, canAssign);
     }
 
-    fn end(self: *Compiler) void {
+    fn namedVariable(Token name, bool canAssign) void {
+        const arg = self.identifierConstant(&name);
+
+        if (canAssign and self.match(TOKEN_EQUAL)) {
+            self.expression();
+            self.emitBytes(.SetGlobal, arg);
+        } else {
+            self.emitBytes(.GetGlobal, arg);
+        }
+    }
+
+    fn string(self: *Instance) void {
+        emitConstant(copyString(self.parser.previous.start + 1, self.parser.previous.length - 2));
+    }
+
+    fn end(self: *Instance) void {
         self.emitReturn();
         if(!self.parser.hadError) {
             self.currentChunk().disassemble("Chunk");
         }
     }
 
-    fn emitReturn(self: *Compiler) void {
+    fn emitReturn(self: *Instance) void {
         self.emitOpCode(OpCode.Return);
     }
 
-    fn emitOpCode(self: *Compiler, op: OpCode) void {
+    fn emitOpCode(self: *Instance, op: OpCode) void {
         self.emitByte(@enumToInt(op));
     }
 
-    fn emitOpCodes(self: *Compiler, op1: OpCode, op2: OpCode) void {
+    fn emitOpCodes(self: *Instance, op1: OpCode, op2: OpCode) void {
         self.emitByte(@enumToInt(op1));
         self.emitByte(@enumToInt(op2));
     }
 
-    fn emitByte(self: *Compiler, byte: u8) void {
+    fn emitByte(self: *Instance, byte: u8) void {
         self.currentChunk().write(byte, self.parser.previous.line) catch unreachable;
     }
 
-    fn emitBytes(self: *Compiler, byte1: u8, byte2: u8) void {
+    fn emitBytes(self: *Instance, byte1: u8, byte2: u8) void {
         self.emitByte(byte1);
         self.emitByte(byte2);
     }
 
-    fn emitConstant(self: *Compiler, value: Value) void {
+    fn emitConstant(self: *Instance, value: Value) void {
         self.emitBytes(@enumToInt(OpCode.Constant), self.makeConstant(value));
     }
 
-    fn makeConstant(self: *Compiler, value: Value) u8 {
+    fn makeConstant(self: *Instance, value: Value) u8 {
         return self.currentChunk().addConstant(value);
     }
 };

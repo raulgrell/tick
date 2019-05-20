@@ -1,5 +1,5 @@
 const std = @import("std");
-const allocator = std.heap.c_allocator;
+const allocator = std.debug.global_allocator;
 
 const VM = @import("./vm.zig").VM;
 const REPL = @import("./repl.zig").REPL;
@@ -13,7 +13,7 @@ pub fn pass(args: []const []const u8) i32 {
     return 0;
 }
 
-pub fn main() error!void {
+pub fn main() !void {
     var args_it = std.os.args();
     var args_list = std.ArrayList([]const u8).init(allocator);
     defer args_list.deinit();
@@ -56,7 +56,7 @@ fn readFile(path: []const u8) void {
     defer file.close();
 }
 
-fn unwrapArg(arg: error![]u8) ![]u8 {
+fn unwrapArg(arg: anyerror![]u8) ![]u8 {
     return arg catch |err| {
         std.debug.warn("Unable to parse command line: {}\n", err);
         return err;

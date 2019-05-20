@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+
+<body>
+  <div id="content" style="display:inline-block;width:600">
+    <div style="font: bold 18px sans-serif">
+      <span id="score0" style="float:left">0</span>
+      <span id="score1" style="float:right">0</span>
+    </div>
+    <canvas id="canvas" width="600" height="600"></canvas>
+  </div>
+
+  <script src="env.js"></script>
+  <script>
+    fetchAndInstantiate('main.wasm', { env }).then( instance => {
+      memory = instance.exports.memory;
+      instance.exports.onInit();
+
+      const onAnimationFrame = instance.exports.onAnimationFrame;
+
+      document.addEventListener('keydown', e => instance.exports.onKey(e.keyCode, 1));
+      document.addEventListener('keyup', e => instance.exports.onKey(e.keyCode, 0));
+
+      function step(timestamp) {
+        onAnimationFrame(timestamp);
+        window.requestAnimationFrame(step);
+      }
+      
+      window.requestAnimationFrame(step);
+    });
+
+    function fetchAndInstantiate(url, importObject) {
+      return fetch(url)
+        .then(response => response.arrayBuffer())
+        .then(bytes => WebAssembly.instantiate(bytes, importObject))
+        .then(results => results.instance);
+    }
+  </script>
+</body>
+
+</html>

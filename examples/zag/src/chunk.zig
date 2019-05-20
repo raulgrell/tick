@@ -55,6 +55,13 @@ pub const Chunk = struct {
             @enumToInt(OpCode.Nil) => return simpleInstruction("Nil", offset),
             @enumToInt(OpCode.True) => return simpleInstruction("True", offset),
             @enumToInt(OpCode.False) => return simpleInstruction("False", offset),
+            @enumToInt(OpCode.Pop) => return simpleInstruction("Pop", offset), 
+                case OP_DEFINE_GLOBAL:                                          
+      return constantInstruction("OP_DEFINE_GLOBAL", chunk, offset);
+                case OP_GET_GLOBAL:                                          
+      return constantInstruction("OP_GET_GLOBAL", chunk, offset);
+    case OP_SET_GLOBAL:                                             
+      return constantInstruction("OP_SET_GLOBAL", chunk, offset); 
             @enumToInt(OpCode.Equal) => return simpleInstruction("Equal", offset),
             @enumToInt(OpCode.Greater) => return simpleInstruction("Greater", offset),
             @enumToInt(OpCode.Less) => return simpleInstruction("Less", offset),
@@ -64,7 +71,8 @@ pub const Chunk = struct {
             @enumToInt(OpCode.Divide) => return simpleInstruction("Divide", offset),
             @enumToInt(OpCode.Not) => return simpleInstruction("Not", offset),
             @enumToInt(OpCode.Negate) => return simpleInstruction("Negate", offset),
-            @enumToInt(OpCode.Return) => return simpleInstruction("Return", offset),
+            @enumToInt(OpCode.Print) => return simpleInstruction("Print", offset),
+            @enumToInt(OpCode.Return) => return simpleInstruction("Return", offset), 
             else => {
                 std.debug.warn("Unknown opcode: {}\n", instruction);
                 return offset + 1;

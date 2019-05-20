@@ -1,0 +1,23 @@
+---
+branches:
+    except:
+        - gh-pages
+
+clone_depth: 3 
+
+build_script:
+    - cmd: c:/Python36/python.exe fips build win64-vstudio-debug
+    - cmd: c:/Python36/python.exe fips build win64-vstudio-release
+    - cmd: c:/Python36/python.exe fips build d3d11-win64-vstudio-debug
+    - cmd: c:/Python36/python.exe fips build d3d11-win64-vstudio-release
+    - cmd: c:/Python36/python.exe fips build sapp-win64-vstudio-debug
+    - cmd: c:/Python36/python.exe fips build sapp-win64-vstudio-release
+    - cmd: c:/Python36/python.exe fips build sapp-d3d11-win64-vstudio-debug
+    - cmd: c:/Python36/python.exe fips build sapp-d3d11-win64-vstudio-release
+      # run tests
+    - cmd: c:/Python36/python.exe fips set config win64-vstudio-debug
+    - cmd: c:/Python36/python.exe fips run sokol-audio-test
+    - cmd: c:/Python36/python.exe fips run sokol-args-test
+    - cmd: c:/Python36/python.exe fips run sokol-gfx-test
+    - cmd: c:/Python36/python.exe fips run sokol-gl-test
+

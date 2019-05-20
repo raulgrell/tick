@@ -1,9 +1,12 @@
 const std = @import("std");
+const allocator = std.debug.global_allocator;
 
 const Chunk = @import("./chunk.zig").Chunk;
 const Value = @import("./value.zig").Value;
 const ValueType = @import("./value.zig").ValueType;
 const Compiler = @import("./compiler.zig").Compiler;
+const Obj = @import("./object.zig").Obj;
+const ObjString = @import("./object.zig").ObjString;
 
 pub const OpCode = packed enum(u8) {
     // Literals
@@ -13,7 +16,9 @@ pub const OpCode = packed enum(u8) {
     // Arithmetic
     Add, Subtract, Multiply, Divide, Negate,
     // Logic
-    Not,
+    Not, And, Or,
+    // Builtin
+    Print, Pop, DefineGlobal, GetGlobal, SetGlobal,
     // Control Flow
     Return
 };
@@ -26,13 +31,19 @@ pub const VM = struct {
     stack: std.ArrayList(Value),
     sp: [*]Value,
 
+    strings: std.HashMap([]const u8, *ObjString),
+    globals: std.HashMap([]const u8, *Obj),
+    objects: ?*Obj,
+
     pub fn create() VM {
         return VM {
             .compiler = Compiler.create(),
             .chunk = undefined,
             .ip = undefined,
-            .stack = std.ArrayList(Value).init(std.debug.global_allocator),
+            .stack = std.ArrayList(Value).init(allocator),
             .sp = undefined,
+            .strings = std.HashMap([]const u8, ObjString).init(allocator),
+            .objects = null,
         };
     }
 
@@ -46,7 +57,7 @@ pub const VM = struct {
 
         self.chunk = &chunk;
         self.ip = self.chunk.code.toSlice().ptr;
-        
+
         try self.run();
     }
 
@@ -64,7 +75,15 @@ pub const VM = struct {
         return byte;
     }
 
+    fn readInstruction(self: *VM) OpCode {
+        return @intToEnum(OpCode, self.readByte());
+    }
+
     fn readConstant(self: *VM) Value {
+        return self.chunk.constants.at(self.readByte());
+    }
+
+    fn readString(self: *VM) Value {
         return self.chunk.constants.at(self.readByte());
     }
 
@@ -102,7 +121,7 @@ pub const VM = struct {
         _ = self.chunk.disassembleInstruction(@ptrToInt(self.ip) - @ptrToInt(self.chunk.code.items.ptr));
     }
 
-    fn binary(self: *VM, value_type: ValueType, operator: []const u8) !void {
+    fn binary(self: *VM, value_type: ValueType, operator: OpCode) !void {
         var val: Value = undefined;
         switch (value_type) {
             ValueType.Number => {
@@ -112,11 +131,13 @@ pub const VM = struct {
                 }
                 const rhs = self.pop().Number;
                 const lhs = self.pop().Number;
-                const number = if (std.mem.eql(u8, operator, "+")) (lhs + rhs)
-                else if (std.mem.eql(u8, operator, "-")) (lhs - rhs)
-                else if (std.mem.eql(u8, operator, "/")) (lhs / rhs)
-                else if (std.mem.eql(u8, operator, "*")) (lhs * rhs)
-                else unreachable;
+                const number = switch (operator) {
+                    .Add => lhs + rhs,
+                    .Subtract => lhs - rhs,
+                    .Multiply => lhs * rhs,
+                    .Divide => lhs / rhs,
+                    else => unreachable,
+                };
                 val = Value { .Number = number };
             },
             ValueType.Bool => {
@@ -126,9 +147,10 @@ pub const VM = struct {
                 }
                 const rhs = self.pop().Bool;
                 const lhs = self.pop().Bool;
-                const result = if (std.mem.eql(u8, operator, "and")) (lhs and rhs)
-                else if (std.mem.eql(u8, operator, "or")) (lhs or rhs)
-                else unreachable;
+                const result = switch (operator) {
+                    .And => lhs and rhs,
+                    .Or => lhs or rhs,
+                };
                 val = Value { .Bool = result };
             },
             else => unreachable
@@ -139,34 +161,88 @@ pub const VM = struct {
         self.push(val);
     }
 
+    fn concatenate(self: *VM) !void {
+        const b = self.pop().String;
+        const a = self.pop().String;
+
+        const length = a.bytes.len + b.bytes.len;
+        var bytes = try allocator.allocate(u8, length);
+        std.mem.copy(u8, bytes[0..a.len], a);
+        std.mem.copy(u8, bytes[a.len..], b);
+
+        const result = try ObjString.take(bytes);
+        self.push(result.Value);
+    }
+
     fn run(self: *VM) !void {
         while (true) {
             if (true) self.printDebug();
-            const instruction = self.readByte();
+            // const instruction = self.readByte();
+            const instruction = self.readInstruction();
             switch (instruction) {
-                @enumToInt(OpCode.Constant) => {
+                OpCode.Constant => {
                     const constant = self.readConstant();
                     constant.print();
                     std.debug.warn("\n");
                 },
-                @enumToInt(OpCode.Nil) => self.push(Value.Nil),
-                @enumToInt(OpCode.True) => self.push(Value {.Bool = true}),
-                @enumToInt(OpCode.False) => self.push(Value {.Bool = false}),
-                @enumToInt(OpCode.Equal) => {
+                OpCode.Nil => self.push(Value.Nil),
+                OpCode.True => self.push(Value {.Bool = true}),
+                OpCode.False => self.push(Value {.Bool = false}),
+                OpCode.Pop => self.pop();
+                OpCode.DefineGlobal: {
+                    const name = self.readString();
+                    tableSet(&vm.globals, name, peek(0));
+                    pop();
+                    break;
+                }
+
+                OpCode.GetGlobal: {
+                    const name = self.readString();
+                    Value value;
+                    if (!tableGet(&vm.globals, name, &value)) {
+                    runtimeError("Undefined variable '%s'.", name->chars);
+                    return INTERPRET_RUNTIME_ERROR;
+                    }
+                    push(value);
+                    break;
+                }
+                OpCode.SetGlobal: {
+                    const name = self.readString();
+                    if (tableSet(&vm.globals, name, peek(0))) {
+                    runtimeError("Undefined variable '%s'.", name->chars);
+                    return INTERPRET_RUNTIME_ERROR;
+                    }
+                    break;
+                }
+                OpCode.Equal => {
                     const b = self.pop();
                     const a = self.pop();
                     self.push(Value { .Bool = a.equals(b) });
                 },
-                @enumToInt(OpCode.Greater) => try self.binary(Value.Number, ">"),
-                @enumToInt(OpCode.Less) => try self.binary(Value.Number, "<"),
-                @enumToInt(OpCode.Add) => try self.binary(Value.Number, "+"),
-                @enumToInt(OpCode.Subtract) => try self.binary(Value.Number, "-"),
-                @enumToInt(OpCode.Multiply) => try self.binary(Value.Number, "*"),
-                @enumToInt(OpCode.Divide) => try self.binary(Value.Number, "/"),
-                @enumToInt(OpCode.Not) => self.push(Value { .Bool = !self.pop().isTruthy() }),
-                @enumToInt(OpCode.Negate) => {
+                OpCode.Add => {
+                    const a = self.peek(0);
+                    const b = self.peek(1);
+                    switch(a) {
+                        .Obj => |o| {
+                            switch(o.obj_type) {
+                                .String => try self.concatenate(),
+                                else => unreachable,
+                            }
+                        },
+                        .Number => {
+                            try self.binary(Value.Number, instruction);
+                        },
+                        else => unreachable,
+                    }
+                },
+                OpCode.Subtract,
+                OpCode.Multiply,
+                OpCode.Divide,
+                OpCode.Greater,
+                OpCode.Less => try self.binary(Value.Number, instruction),
+                OpCode.Not => self.push(Value { .Bool = !self.pop().isTruthy() }),
+                OpCode.Negate => {
                     switch(self.peek(0)) {
-                        // TODO: Peek vs pop. push if error?
                         ValueType.Number => |x| {
                             const number = self.pop().Number;
                             self.push(Value { .Number = -number });
@@ -177,12 +253,14 @@ pub const VM = struct {
                         }
                     }
                 },
-                @enumToInt(OpCode.Return) => {
-                    const value = self.pop();
-                    value.print();
+                OpCode.Print => {
+                    printValue(self.pop());
                     std.debug.warn("\n");
+                },
+                OpCode.Return => {
                     return;
                 },
+
                 else => {
                     std.debug.warn("Unknown instruction");
                     return error.CompileError;
@@ -193,5 +271,6 @@ pub const VM = struct {
 
     pub fn destroy(self: *VM) void {
         self.stack.deinit();
+        self.freeObjects();
     }
 };
