@@ -4,11 +4,11 @@ const allocator = std.debug.global_allocator;
 const Chunk = @import("./chunk.zig").Chunk;
 const Value = @import("./value.zig").Value;
 const ValueType = @import("./value.zig").ValueType;
-const Compiler = @import("./compiler.zig").Compiler;
+const Instance = @import("./compiler.zig").Instance;
 const Obj = @import("./object.zig").Obj;
 const ObjString = @import("./object.zig").ObjString;
 
-pub const OpCode = packed enum(u8) {
+pub const OpCode = enum(u8) {
     // Literals
     Constant, Nil, True, False,
     // Comparisons
@@ -24,25 +24,26 @@ pub const OpCode = packed enum(u8) {
 };
 
 pub const VM = struct {
-    compiler: Compiler,
+    instance: Instance,
     chunk: *Chunk,
     ip: [*]u8,
 
     stack: std.ArrayList(Value),
     sp: [*]Value,
 
-    strings: std.HashMap([]const u8, *ObjString),
-    globals: std.HashMap([]const u8, *Obj),
+    strings: std.HashMap([]const u8, *ObjString, ObjString.hashFn, ObjString.eqlFn),
+    globals: std.HashMap([]const u8, *Obj, ObjString.hashFn, ObjString.eqlFn),
     objects: ?*Obj,
 
     pub fn create() VM {
         return VM {
-            .compiler = Compiler.create(),
+            .instance = Instance.create(),
             .chunk = undefined,
             .ip = undefined,
             .stack = std.ArrayList(Value).init(allocator),
             .sp = undefined,
-            .strings = std.HashMap([]const u8, ObjString).init(allocator),
+            .strings = std.HashMap([]const u8, *ObjString, ObjString.hashFn, ObjString.eqlFn).init(allocator),
+            .globals = std.HashMap([]const u8, *Obj, ObjString.hashFn, ObjString.eqlFn).init(allocator),
             .objects = null,
         };
     }
@@ -51,7 +52,7 @@ pub const VM = struct {
         var chunk = Chunk.init();
         defer chunk.deinit();
 
-        if (!self.compiler.compile(source, &chunk)) {
+        if (!self.instance.compile(source, &chunk)) {
             return error.CompileError;
         }
 
@@ -150,6 +151,7 @@ pub const VM = struct {
                 const result = switch (operator) {
                     .And => lhs and rhs,
                     .Or => lhs or rhs,
+                    else => unreachable,
                 };
                 val = Value { .Bool = result };
             },
@@ -162,16 +164,16 @@ pub const VM = struct {
     }
 
     fn concatenate(self: *VM) !void {
-        const b = self.pop().String;
-        const a = self.pop().String;
+        const b = self.pop().Obj.data.String;
+        const a = self.pop().Obj.data.String;
 
         const length = a.bytes.len + b.bytes.len;
-        var bytes = try allocator.allocate(u8, length);
-        std.mem.copy(u8, bytes[0..a.len], a);
-        std.mem.copy(u8, bytes[a.len..], b);
+        var bytes = try allocator.alloc(u8, length);
+        std.mem.copy(u8, bytes[0..a.bytes.len], a.bytes);
+        std.mem.copy(u8, bytes[a.bytes.len..], b.bytes);
 
-        const result = try ObjString.take(bytes);
-        self.push(result.Value);
+        const result = ObjString.take(bytes);
+        self.push(result.value());
     }
 
     fn run(self: *VM) !void {
@@ -188,32 +190,27 @@ pub const VM = struct {
                 OpCode.Nil => self.push(Value.Nil),
                 OpCode.True => self.push(Value {.Bool = true}),
                 OpCode.False => self.push(Value {.Bool = false}),
-                OpCode.Pop => self.pop();
-                OpCode.DefineGlobal: {
+                OpCode.Pop => _ = self.pop(),
+                OpCode.DefineGlobal => {
                     const name = self.readString();
-                    tableSet(&vm.globals, name, peek(0));
-                    pop();
-                    break;
-                }
-
-                OpCode.GetGlobal: {
+                    // self.globals.put(name.Obj, self.peek(0));
+                    _ = self.pop();
+                },
+                OpCode.GetGlobal => {
                     const name = self.readString();
-                    Value value;
-                    if (!tableGet(&vm.globals, name, &value)) {
-                    runtimeError("Undefined variable '%s'.", name->chars);
-                    return INTERPRET_RUNTIME_ERROR;
-                    }
-                    push(value);
-                    break;
-                }
-                OpCode.SetGlobal: {
+                    // var value = self.globals.get(name.Obj) orelse {
+                    //     self.runtimeError("Undefined variable '%s'.", name.bytes);
+                    //     return error.RuntimeError;
+                    // };
+                    // self.push(value);
+                },
+                OpCode.SetGlobal => {
                     const name = self.readString();
-                    if (tableSet(&vm.globals, name, peek(0))) {
-                    runtimeError("Undefined variable '%s'.", name->chars);
-                    return INTERPRET_RUNTIME_ERROR;
-                    }
-                    break;
-                }
+                    // self.globals.set(name, self.peek(0)) catch {
+                    //     self.runtimeError("Undefined variable '%s'.", name.bytes);
+                    //     return error.RuntimeError;
+                    // };
+                },
                 OpCode.Equal => {
                     const b = self.pop();
                     const a = self.pop();
@@ -224,7 +221,7 @@ pub const VM = struct {
                     const b = self.peek(1);
                     switch(a) {
                         .Obj => |o| {
-                            switch(o.obj_type) {
+                            switch (o.data) {
                                 .String => try self.concatenate(),
                                 else => unreachable,
                             }
@@ -254,7 +251,8 @@ pub const VM = struct {
                     }
                 },
                 OpCode.Print => {
-                    printValue(self.pop());
+                    const val = self.pop();
+                    val.print();
                     std.debug.warn("\n");
                 },
                 OpCode.Return => {
@@ -266,6 +264,15 @@ pub const VM = struct {
                     return error.CompileError;
                 }
             }
+        }
+    }
+
+    pub fn freeObjects(self: *VM) void {
+        var object =  self.objects;
+        while (object) |o| {
+            const next = o.next;
+            Obj.free(o);
+            object = next;
         }
     }
 

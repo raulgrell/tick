@@ -24,7 +24,7 @@ pub const Value = union(ValueType) {
         .Nil => std.debug.warn("nil")
       }
     }
-    
+
     fn print(value: Value) void {
       switch (value) {
         .Bool => |b| std.debug.warn("{}", b),
@@ -45,8 +45,8 @@ pub const Value = union(ValueType) {
         .Bool => return a.Bool == b.Bool,
         .Number => return a.Number == b.Number,
         .Nil => return true,
-        .Obj => |o| switch (o.obj_type) {
-          .String => return std.mem.eql(u8, a.String.bytes, b.String.bytes),
+        .Obj => |o| switch (o.data) {
+          .String => return std.mem.eql(u8, a.Obj.data.String.bytes, b.Obj.data.String.bytes),
           else => unreachable,
         },
       }
@@ -56,7 +56,8 @@ pub const Value = union(ValueType) {
       switch (value) {
         .Nil => return false,
         .Bool => |b| return b,
-        .Number => |n| return false
+        .Number => |n| return true,
+        .Obj => |o| return true, 
       }
     }
 

@@ -46,33 +46,34 @@ pub const Chunk = struct {
         }
     }
 
+    fn instructionAt(chunk: *Chunk, offset: usize) OpCode {
+        return @intToEnum(OpCode, chunk.code.at(offset));
+    }
+
    fn disassembleInstruction(chunk: *Chunk, offset: usize) usize {
         std.debug.warn("{} | ", offset);
 
-        const instruction = chunk.code.at(offset);
+        const instruction = chunk.instructionAt(offset);
         switch (instruction) {
-            @enumToInt(OpCode.Constant) => return constantInstruction("Constant", chunk, offset),
-            @enumToInt(OpCode.Nil) => return simpleInstruction("Nil", offset),
-            @enumToInt(OpCode.True) => return simpleInstruction("True", offset),
-            @enumToInt(OpCode.False) => return simpleInstruction("False", offset),
-            @enumToInt(OpCode.Pop) => return simpleInstruction("Pop", offset), 
-                case OP_DEFINE_GLOBAL:                                          
-      return constantInstruction("OP_DEFINE_GLOBAL", chunk, offset);
-                case OP_GET_GLOBAL:                                          
-      return constantInstruction("OP_GET_GLOBAL", chunk, offset);
-    case OP_SET_GLOBAL:                                             
-      return constantInstruction("OP_SET_GLOBAL", chunk, offset); 
-            @enumToInt(OpCode.Equal) => return simpleInstruction("Equal", offset),
-            @enumToInt(OpCode.Greater) => return simpleInstruction("Greater", offset),
-            @enumToInt(OpCode.Less) => return simpleInstruction("Less", offset),
-            @enumToInt(OpCode.Add) => return simpleInstruction("Add", offset),
-            @enumToInt(OpCode.Subtract) => return simpleInstruction("Subtract", offset),
-            @enumToInt(OpCode.Multiply) => return simpleInstruction("Multiply", offset),
-            @enumToInt(OpCode.Divide) => return simpleInstruction("Divide", offset),
-            @enumToInt(OpCode.Not) => return simpleInstruction("Not", offset),
-            @enumToInt(OpCode.Negate) => return simpleInstruction("Negate", offset),
-            @enumToInt(OpCode.Print) => return simpleInstruction("Print", offset),
-            @enumToInt(OpCode.Return) => return simpleInstruction("Return", offset), 
+            OpCode.Constant => return constantInstruction("Constant", chunk, offset),
+            OpCode.Nil => return simpleInstruction("Nil", offset),
+            OpCode.True => return simpleInstruction("True", offset),
+            OpCode.False => return simpleInstruction("False", offset),
+            OpCode.Pop => return simpleInstruction("Pop", offset), 
+            OpCode.DefineGlobal => return constantInstruction("DefineGlobal", chunk, offset),
+            OpCode.GetGlobal => return constantInstruction("GetGlobal", chunk, offset),
+            OpCode.SetGlobal => return constantInstruction("SetGlobal", chunk, offset), 
+            OpCode.Equal => return simpleInstruction("Equal", offset),
+            OpCode.Greater => return simpleInstruction("Greater", offset),
+            OpCode.Less => return simpleInstruction("Less", offset),
+            OpCode.Add => return simpleInstruction("Add", offset),
+            OpCode.Subtract => return simpleInstruction("Subtract", offset),
+            OpCode.Multiply => return simpleInstruction("Multiply", offset),
+            OpCode.Divide => return simpleInstruction("Divide", offset),
+            OpCode.Not => return simpleInstruction("Not", offset),
+            OpCode.Negate => return simpleInstruction("Negate", offset),
+            OpCode.Print => return simpleInstruction("Print", offset),
+            OpCode.Return => return simpleInstruction("Return", offset), 
             else => {
                 std.debug.warn("Unknown opcode: {}\n", instruction);
                 return offset + 1;

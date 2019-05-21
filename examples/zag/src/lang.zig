@@ -9,6 +9,8 @@ const example_file = @embedFile("../example/script.zag") ++ []u8 {0};
 const builtin_str = []const []const u8 { "pass", };
 const builtin_fn = []const fn(args: []const []const u8) i32 { pass };
 
+export var vm: *VM = undefined;
+
 pub fn pass(args: []const []const u8) i32 {
     return 0;
 }
@@ -22,12 +24,14 @@ pub fn main() !void {
         try args_list.append(try unwrapArg(arg));
     }
 
-    var vm = VM.create();
-    defer vm.destroy();
+    var vm_instance = VM.create();
+    defer vm_instance.destroy();
+
+    vm = &vm_instance;
 
     std.debug.warn("{}\n", example_file);
 
-    try vm.interpret(example_file);
+    try vm_instance.interpret(example_file);
     
     // switch(args_list.len) {
     //     1 => try runRepl(&vm),
