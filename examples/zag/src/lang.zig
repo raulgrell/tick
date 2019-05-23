@@ -3,6 +3,7 @@ const allocator = std.debug.global_allocator;
 
 const VM = @import("./vm.zig").VM;
 const REPL = @import("./repl.zig").REPL;
+const Compiler = @import("./compiler.zig").Compiler;
 
 const example_file = @embedFile("../example/script.zag") ++ []u8 {0};
 
@@ -24,14 +25,15 @@ pub fn main() !void {
         try args_list.append(try unwrapArg(arg));
     }
 
-    var vm_instance = VM.create();
-    defer vm_instance.destroy();
+    var compiler = Compiler.create();
+    var instance = VM.create(&compiler);
+    defer instance.destroy();
 
-    vm = &vm_instance;
+    vm = &instance;
 
     std.debug.warn("{}\n", example_file);
 
-    try vm_instance.interpret(example_file);
+    try instance.interpret(example_file);
     
     // switch(args_list.len) {
     //     1 => try runRepl(&vm),

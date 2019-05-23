@@ -11,10 +11,6 @@ pub const ObjType = enum {
     String
 };
 
-pub const ObjData = union(ObjType) {
-    String: ObjString,
-};
-
 pub const ObjString = struct {
     bytes: []const u8,
     hash: u32,
@@ -34,7 +30,7 @@ pub const ObjString = struct {
 
     pub fn allocate(bytes: []const u8, hash: u32) *Obj {
         const string = Obj.allocate();
-        string.*.data = ObjData { 
+        string.data = Obj.Data { 
             .String = ObjString {
                 .bytes = bytes, 
                 .hash = hash
@@ -59,15 +55,21 @@ pub const ObjString = struct {
 };
 
 pub const Obj = struct {
-    data: ObjData,
+    data: Data,
     next: ?*Obj,
 
-    fn isObjType(value: Value, obj_type: ObjType) bool {
-        return value.isObj() and ObjType(obj) == obj_type;
-    }
+    pub const Data = union(ObjType) {
+        String: ObjString,
+    };
 
     pub fn value(self: *Obj) Value {
         return Value { .Obj = self };
+    }
+
+    pub fn toString(self: *Obj) []const u8 {
+        switch(self.data) {
+            .String => |s| return s.bytes,
+        }
     }
 
     fn print(self: Obj) void {

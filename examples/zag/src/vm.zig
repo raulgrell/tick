@@ -5,8 +5,11 @@ const Chunk = @import("./chunk.zig").Chunk;
 const Value = @import("./value.zig").Value;
 const ValueType = @import("./value.zig").ValueType;
 const Instance = @import("./compiler.zig").Instance;
+const Compiler = @import("./compiler.zig").Compiler;
 const Obj = @import("./object.zig").Obj;
 const ObjString = @import("./object.zig").ObjString;
+
+const verbose = false;
 
 pub const OpCode = enum(u8) {
     // Literals
@@ -18,9 +21,9 @@ pub const OpCode = enum(u8) {
     // Logic
     Not, And, Or,
     // Builtin
-    Print, Pop, DefineGlobal, GetGlobal, SetGlobal,
+    Print, Pop, GetLocal, SetLocal, DefineGlobal, GetGlobal, SetGlobal,
     // Control Flow
-    Return
+    JumpIfFalse, Jump, Loop, Return
 };
 
 pub const VM = struct {
@@ -31,19 +34,19 @@ pub const VM = struct {
     stack: std.ArrayList(Value),
     sp: [*]Value,
 
-    strings: std.HashMap([]const u8, *ObjString, ObjString.hashFn, ObjString.eqlFn),
-    globals: std.HashMap([]const u8, *Obj, ObjString.hashFn, ObjString.eqlFn),
+    strings: std.HashMap([]const u8, *Obj, ObjString.hashFn, ObjString.eqlFn),
+    globals: std.HashMap([]const u8, *Value, ObjString.hashFn, ObjString.eqlFn),
     objects: ?*Obj,
 
-    pub fn create() VM {
+    pub fn create(compiler: *Compiler) VM {
         return VM {
-            .instance = Instance.create(),
+            .instance = Instance.create(compiler),
             .chunk = undefined,
             .ip = undefined,
             .stack = std.ArrayList(Value).init(allocator),
             .sp = undefined,
-            .strings = std.HashMap([]const u8, *ObjString, ObjString.hashFn, ObjString.eqlFn).init(allocator),
-            .globals = std.HashMap([]const u8, *Obj, ObjString.hashFn, ObjString.eqlFn).init(allocator),
+            .strings = std.HashMap([]const u8, *Obj, ObjString.hashFn, ObjString.eqlFn).init(allocator),
+            .globals = std.HashMap([]const u8, *Value, ObjString.hashFn, ObjString.eqlFn).init(allocator),
             .objects = null,
         };
     }
@@ -65,9 +68,12 @@ pub const VM = struct {
     fn interpretChunk(self: *VM, chunk: *Chunk) !void {
         self.chunk = chunk;
         self.ip = self.chunk.code.items.ptr;
-
         const result = self.run();
         return result;
+    }
+
+    fn readInstruction(self: *VM) OpCode {
+        return @intToEnum(OpCode, self.readByte());
     }
 
     fn readByte(self: *VM) u8 {
@@ -76,8 +82,10 @@ pub const VM = struct {
         return byte;
     }
 
-    fn readInstruction(self: *VM) OpCode {
-        return @intToEnum(OpCode, self.readByte());
+    fn readShort(self: *VM) u16 {
+        const short = @intCast(u16, self.ip[0]) << 8 | self.ip[1];
+        self.ip += 2;
+        return short;
     }
 
     fn readConstant(self: *VM) Value {
@@ -94,7 +102,7 @@ pub const VM = struct {
     }
 
     fn pop(self: *VM) Value {
-        self.sp += 1;
+        self.sp -= 1;
         return self.sp[0];
     }
 
@@ -158,7 +166,6 @@ pub const VM = struct {
             else => unreachable
         }
 
-        val.print();
         std.debug.warn("\n");
         self.push(val);
     }
@@ -178,38 +185,49 @@ pub const VM = struct {
 
     fn run(self: *VM) !void {
         while (true) {
-            if (true) self.printDebug();
+            if (verbose) self.printDebug();
             // const instruction = self.readByte();
             const instruction = self.readInstruction();
             switch (instruction) {
                 OpCode.Constant => {
                     const constant = self.readConstant();
-                    constant.print();
-                    std.debug.warn("\n");
+                    if (verbose) {
+                        constant.print();
+                        std.debug.warn("\n");
+                    }
                 },
                 OpCode.Nil => self.push(Value.Nil),
                 OpCode.True => self.push(Value {.Bool = true}),
                 OpCode.False => self.push(Value {.Bool = false}),
                 OpCode.Pop => _ = self.pop(),
+                OpCode.GetLocal => {
+                    const slot = self.readByte();
+                    self.push(self.stack.at(slot));
+                },
+                OpCode.SetLocal => {
+                    const slot = self.readByte();
+                    self.stack.at(slot) = self.peek(0);
+                },
                 OpCode.DefineGlobal => {
-                    const name = self.readString();
-                    // self.globals.put(name.Obj, self.peek(0));
+                    const name = self.readString().Obj.data.String;
+                    std.debug.warn("Global {}\n", self.peek(0));
+                    _ = try self.globals.put(name.bytes, &self.peek(0));
                     _ = self.pop();
                 },
                 OpCode.GetGlobal => {
-                    const name = self.readString();
-                    // var value = self.globals.get(name.Obj) orelse {
-                    //     self.runtimeError("Undefined variable '%s'.", name.bytes);
-                    //     return error.RuntimeError;
-                    // };
-                    // self.push(value);
+                    const name = self.readString().Obj.data.String;
+                    var value = self.globals.get(name.bytes) orelse {
+                        self.runtimeError("Undefined variable '%s'.", name.bytes);
+                        return error.RuntimeError;
+                    };
+                    self.push(value.value.*);
                 },
                 OpCode.SetGlobal => {
-                    const name = self.readString();
-                    // self.globals.set(name, self.peek(0)) catch {
-                    //     self.runtimeError("Undefined variable '%s'.", name.bytes);
-                    //     return error.RuntimeError;
-                    // };
+                    const name = self.readString().Obj.data.String;
+                    _ = self.globals.put(name.bytes, &self.peek(0)) catch {
+                        self.runtimeError("Undefined variable '%s'.", name.bytes);
+                        return error.RuntimeError;
+                    };
                 },
                 OpCode.Equal => {
                     const b = self.pop();
@@ -240,7 +258,7 @@ pub const VM = struct {
                 OpCode.Not => self.push(Value { .Bool = !self.pop().isTruthy() }),
                 OpCode.Negate => {
                     switch(self.peek(0)) {
-                        ValueType.Number => |x| {
+                        .Number => |x| {
                             const number = self.pop().Number;
                             self.push(Value { .Number = -number });
                         },
@@ -255,10 +273,21 @@ pub const VM = struct {
                     val.print();
                     std.debug.warn("\n");
                 },
+                OpCode.JumpIfFalse => {
+                    const offset = self.readShort();
+                    if (!self.peek(0).isTruthy()) self.ip += offset;
+                },
+                OpCode.Jump => {
+                    const offset = self.readShort();
+                    self.ip += offset;
+                },
+                OpCode.Loop => {
+                    const offset = self.readShort();
+                    self.ip -= offset;
+                },
                 OpCode.Return => {
                     return;
                 },
-
                 else => {
                     std.debug.warn("Unknown instruction");
                     return error.CompileError;

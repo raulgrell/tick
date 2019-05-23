@@ -112,9 +112,10 @@ pub const Scanner = struct {
                     return self.readNumber();
                 } else if (isAlpha(c)) {
                     return self.readIdentifier();
+                } else if (c == 0) {
+                    return self.makeToken(TokenType.EOF);
                 }
                 return self.makeError("Unexpected character");
-                //return error.UnexpectedCharacter;
             }
         }
     }
@@ -209,7 +210,6 @@ pub const Scanner = struct {
         }
         if (self.isAtEnd()) {
             return self.makeError("Unterminated string.");
-            // return error.UnterminatedString;
         }
         // The closing ".
         _ = self.advance();

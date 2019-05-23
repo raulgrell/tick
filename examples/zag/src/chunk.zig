@@ -3,6 +3,8 @@ const std = @import("std");
 const Value = @import("./value.zig").Value;
 const OpCode = @import("./vm.zig").OpCode;
 
+const allocator = std.debug.global_allocator;
+
 pub const Chunk = struct {
     code: std.ArrayList(u8),
     lines: std.ArrayList(usize),
@@ -10,9 +12,9 @@ pub const Chunk = struct {
 
     pub fn init() Chunk {
         return Chunk {
-            .code = std.ArrayList(u8).init(std.debug.global_allocator),
-            .lines = std.ArrayList(usize).init(std.debug.global_allocator),
-            .constants = std.ArrayList(Value).init(std.debug.global_allocator),
+            .code = std.ArrayList(u8).init(allocator),
+            .lines = std.ArrayList(usize).init(allocator),
+            .constants = std.ArrayList(Value).init(allocator),
         };
     }
 
@@ -59,10 +61,12 @@ pub const Chunk = struct {
             OpCode.Nil => return simpleInstruction("Nil", offset),
             OpCode.True => return simpleInstruction("True", offset),
             OpCode.False => return simpleInstruction("False", offset),
-            OpCode.Pop => return simpleInstruction("Pop", offset), 
+            OpCode.Pop => return simpleInstruction("Pop", offset),
+            OpCode.GetLocal => return byteInstruction("GetLocal", chunk, offset),
+            OpCode.SetLocal => return byteInstruction("SetLocal", chunk, offset),
             OpCode.DefineGlobal => return constantInstruction("DefineGlobal", chunk, offset),
             OpCode.GetGlobal => return constantInstruction("GetGlobal", chunk, offset),
-            OpCode.SetGlobal => return constantInstruction("SetGlobal", chunk, offset), 
+            OpCode.SetGlobal => return constantInstruction("SetGlobal", chunk, offset),
             OpCode.Equal => return simpleInstruction("Equal", offset),
             OpCode.Greater => return simpleInstruction("Greater", offset),
             OpCode.Less => return simpleInstruction("Less", offset),
@@ -73,12 +77,27 @@ pub const Chunk = struct {
             OpCode.Not => return simpleInstruction("Not", offset),
             OpCode.Negate => return simpleInstruction("Negate", offset),
             OpCode.Print => return simpleInstruction("Print", offset),
-            OpCode.Return => return simpleInstruction("Return", offset), 
+            OpCode.JumpIfFalse => return jumpInstruction("JumpIfFalse", 1, chunk, offset),
+            OpCode.Jump => return jumpInstruction("Jump", 1, chunk, offset),
+            OpCode.Return => return simpleInstruction("Return", offset),
             else => {
                 std.debug.warn("Unknown opcode: {}\n", instruction);
                 return offset + 1;
             }
         }
+    }
+
+    fn jumpInstruction(name: []const u8, sign: i32, chunk: *Chunk, offset: usize) usize {
+        var jump = @intCast(i32, chunk.code.at(offset + 1)) << 8;
+        jump |= @intCast(i32, chunk.code.at(offset + 2));
+        std.debug.warn("{}: {} -> {}\n", name, offset, @intCast(i32, offset + 3) + sign * jump);
+        return offset + 3;
+    }
+
+    fn byteInstruction(name: []const u8, chunk: *Chunk, offset: usize) usize {
+        const slot = chunk.code.at(offset + 1);
+        std.debug.warn("{}: {}\n", slot, name);
+        return offset + 2;
     }
 
     fn constantInstruction(name: []const u8, chunk: *Chunk, offset: usize) usize {

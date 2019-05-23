@@ -10,18 +10,20 @@ pub const ValueType = enum {
   Nil,
 };
 
+var toString_buffer = []u8 {0} ** 1024;
+
 pub const Value = union(ValueType) {
     Bool: bool,
     Number: f64,
     Obj: *Obj,
     Nil,
 
-    fn toString(value: Value) void {
+    fn toString(value: Value) []const u8 {
       switch (value) {
-        .Bool => |b| std.debug.warn("{}", b),
-        .Number => |d| std.debug.warn("{}", d),
-        .Obj => |d| std.debug.warn("{}", d),
-        .Nil => std.debug.warn("nil")
+        .Bool => |b| return std.fmt.bufPrint(&toString_buffer, "{}", b) catch unreachable,
+        .Number => |n|  return std.fmt.bufPrint(&toString_buffer, "{}", n) catch unreachable,
+        .Obj => |o| return o.toString(),
+        .Nil => return "nil",
       }
     }
 
@@ -74,6 +76,6 @@ pub const Value = union(ValueType) {
     }
 
     fn isObject(value: Value) bool {
-      return ValueType(value) == ValueType.Nil;
+      return ValueType(value) == ValueType.Obj;
     }
 };
