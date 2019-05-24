@@ -9,7 +9,7 @@ const Scanner = @import("./scanner.zig").Scanner;
 const Value = @import("./value.zig").Value;
 const ObjString = @import("./object.zig").ObjString;
 
-const verbose = false;
+const verbose = true;
 
 pub const Parser = struct {
     current: Token,
@@ -477,8 +477,7 @@ pub const Instance = struct {
             TokenType.Minus        => self.emitOpCode(OpCode.Subtract),
             TokenType.Star         => self.emitOpCode(OpCode.Multiply),
             TokenType.Slash        => self.emitOpCode(OpCode.Divide),
-            // else => unreachable,
-            else => return,
+            else => unreachable,
         }
     }
 
@@ -492,8 +491,7 @@ pub const Instance = struct {
             TokenType.False => self.emitOpCode(OpCode.False),
             TokenType.Nil => self.emitOpCode(OpCode.Nil),
             TokenType.True => self.emitOpCode(OpCode.True),
-            // else => unreachable,
-            else => return,
+            else => unreachable,
         }
     }
 

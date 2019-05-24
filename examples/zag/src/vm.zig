@@ -9,7 +9,7 @@ const Compiler = @import("./compiler.zig").Compiler;
 const Obj = @import("./object.zig").Obj;
 const ObjString = @import("./object.zig").ObjString;
 
-const verbose = false;
+const verbose = true;
 
 pub const OpCode = enum(u8) {
     // Literals
@@ -35,7 +35,7 @@ pub const VM = struct {
     sp: [*]Value,
 
     strings: std.HashMap([]const u8, *Obj, ObjString.hashFn, ObjString.eqlFn),
-    globals: std.HashMap([]const u8, *Value, ObjString.hashFn, ObjString.eqlFn),
+    globals: std.HashMap([]const u8, Value, ObjString.hashFn, ObjString.eqlFn),
     objects: ?*Obj,
 
     pub fn create(compiler: *Compiler) VM {
@@ -46,7 +46,7 @@ pub const VM = struct {
             .stack = std.ArrayList(Value).init(allocator),
             .sp = undefined,
             .strings = std.HashMap([]const u8, *Obj, ObjString.hashFn, ObjString.eqlFn).init(allocator),
-            .globals = std.HashMap([]const u8, *Value, ObjString.hashFn, ObjString.eqlFn).init(allocator),
+            .globals = std.HashMap([]const u8, Value, ObjString.hashFn, ObjString.eqlFn).init(allocator),
             .objects = null,
         };
     }
@@ -61,6 +61,9 @@ pub const VM = struct {
 
         self.chunk = &chunk;
         self.ip = self.chunk.code.toSlice().ptr;
+
+        try self.stack.ensureCapacity(256);
+        self.resetStack();
 
         try self.run();
     }
@@ -92,8 +95,8 @@ pub const VM = struct {
         return self.chunk.constants.at(self.readByte());
     }
 
-    fn readString(self: *VM) Value {
-        return self.chunk.constants.at(self.readByte());
+    fn readString(self: *VM) ObjString {
+        return self.chunk.constants.at(self.readByte()).Obj.data.String;
     }
 
     fn push(self: *VM, value: Value) void {
@@ -107,7 +110,7 @@ pub const VM = struct {
     }
 
     fn peek(self: *VM, distance: u32) Value {
-        return (self.sp - (distance + 1))[0];
+        return (self.sp - 1 - distance)[0];
     }
 
     fn resetStack(self: *VM) void {
@@ -209,23 +212,22 @@ pub const VM = struct {
                     self.stack.at(slot) = self.peek(0);
                 },
                 OpCode.DefineGlobal => {
-                    const name = self.readString().Obj.data.String;
-                    std.debug.warn("Global {}\n", self.peek(0));
-                    _ = try self.globals.put(name.bytes, &self.peek(0));
+                    const name = self.readString();
+                    _ = try self.globals.put(name.bytes, self.peek(0));
                     _ = self.pop();
                 },
                 OpCode.GetGlobal => {
-                    const name = self.readString().Obj.data.String;
+                    const name = self.readString();
                     var value = self.globals.get(name.bytes) orelse {
-                        self.runtimeError("Undefined variable '%s'.", name.bytes);
+                        self.runtimeError("Undefined variable '{}'.", name.bytes);
                         return error.RuntimeError;
                     };
-                    self.push(value.value.*);
+                    self.push(value.value);
                 },
                 OpCode.SetGlobal => {
-                    const name = self.readString().Obj.data.String;
-                    _ = self.globals.put(name.bytes, &self.peek(0)) catch {
-                        self.runtimeError("Undefined variable '%s'.", name.bytes);
+                    const name = self.readString();
+                    _ = self.globals.put(name.bytes, self.peek(0)) catch {
+                        self.runtimeError("Undefined variable '{}'.", name.bytes);
                         return error.RuntimeError;
                     };
                 },
