@@ -1,4 +1,3 @@
-
 const std = @import("std");
 const allocator = std.debug.global_allocator;
 
@@ -66,7 +65,7 @@ pub const Obj = struct {
         return Value { .Obj = self };
     }
 
-    pub fn toString(self: *Obj) []const u8 {
+    pub fn toString(self: Obj) []const u8 {
         switch(self.data) {
             .String => |s| return s.bytes,
         }
@@ -74,13 +73,22 @@ pub const Obj = struct {
 
     fn print(self: Obj) void {
         switch(self.data) {
-            .String => |s| std.debug.warn("{}", s.bytes)
+            .String => |s| std.debug.warn("{}", s.bytes),
         }
     }
 
+    fn equal(self: *Obj, other: *Obj) bool {
+        switch(self.data) {
+            .String => |s| return std.mem.eql(u8, self.data.String.bytes, other.data.String.bytes),
+        }
+    }
+    
     fn allocate() *Obj {
-        const object = allocator.create(Obj) catch unreachable;
-        object.next = vm.objects;
+        var object = allocator.create(Obj) catch unreachable;
+        object.* = Obj {
+            .data = undefined,
+            .next = vm.objects,
+        };
         vm.objects = object;
         return object;
     }

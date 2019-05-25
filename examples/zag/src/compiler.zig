@@ -150,7 +150,7 @@ pub const Instance = struct {
         };
     }
 
-    pub fn compile(self: *Instance, source: []const u8, chunk: *Chunk) bool {
+    pub fn compile(self: *Instance, source: []const u8, chunk: *Chunk) !void {
         self.scanner.init(source);
         self.current_chunk = chunk;
         self.parser.had_error = false;
@@ -158,9 +158,7 @@ pub const Instance = struct {
 
         self.advance();
         while (!self.match(.EOF)) self.declaration();
-        self.end();
-
-        return !self.parser.had_error;
+        try self.end();
     }
 
     fn advance(self: *Instance) void {
@@ -172,6 +170,15 @@ pub const Instance = struct {
             if (self.parser.current.token_type != TokenType.Error) break;
             self.parser.errorAtCurrent(self.parser.current.lexeme);
         }
+    }
+
+    fn end(self: *Instance) !void {
+        self.emitReturn();
+
+        if(self.parser.had_error)
+            return error.ParseError;
+        
+        self.currentChunk().disassemble("Chunk");
     }
 
     fn consume(self: *Instance, token_type: TokenType, message: []const u8) void {
@@ -265,7 +272,7 @@ pub const Instance = struct {
         while (self.current.local_count > 0 and self.current.locals[next_index].depth > self.current.scope_depth) {
             self.emitOpCode(.Pop);
             self.current.local_count -= 1;
-            next_index = @intCast(u8, self.current.local_count - 1);
+            next_index = @intCast(u8, self.current.local_count);
         }
     }
 
@@ -545,13 +552,6 @@ pub const Instance = struct {
         self.parsePrecedence(.And);
 
         self.patchJump(endJump);
-    }
-
-    fn end(self: *Instance) void {
-        self.emitReturn();
-        if(!self.parser.had_error) {
-            self.currentChunk().disassemble("Chunk");
-        }
     }
 
     fn emitJump(self: *Instance, op: OpCode) usize {

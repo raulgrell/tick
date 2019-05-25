@@ -30,10 +30,7 @@ pub const VM = struct {
     instance: Instance,
     chunk: *Chunk,
     ip: [*]u8,
-
     stack: std.ArrayList(Value),
-    sp: [*]Value,
-
     strings: std.HashMap([]const u8, *Obj, ObjString.hashFn, ObjString.eqlFn),
     globals: std.HashMap([]const u8, Value, ObjString.hashFn, ObjString.eqlFn),
     objects: ?*Obj,
@@ -44,7 +41,6 @@ pub const VM = struct {
             .chunk = undefined,
             .ip = undefined,
             .stack = std.ArrayList(Value).init(allocator),
-            .sp = undefined,
             .strings = std.HashMap([]const u8, *Obj, ObjString.hashFn, ObjString.eqlFn).init(allocator),
             .globals = std.HashMap([]const u8, Value, ObjString.hashFn, ObjString.eqlFn).init(allocator),
             .objects = null,
@@ -55,14 +51,10 @@ pub const VM = struct {
         var chunk = Chunk.init();
         defer chunk.deinit();
 
-        if (!self.instance.compile(source, &chunk)) {
-            return error.CompileError;
-        }
+        try self.instance.compile(source, &chunk);
 
         self.chunk = &chunk;
-        self.ip = self.chunk.code.toSlice().ptr;
-
-        try self.stack.ensureCapacity(256);
+        self.ip = self.chunk.code.items.ptr;
         self.resetStack();
 
         try self.run();
@@ -73,10 +65,6 @@ pub const VM = struct {
         self.ip = self.chunk.code.items.ptr;
         const result = self.run();
         return result;
-    }
-
-    fn readInstruction(self: *VM) OpCode {
-        return @intToEnum(OpCode, self.readByte());
     }
 
     fn readByte(self: *VM) u8 {
@@ -96,25 +84,23 @@ pub const VM = struct {
     }
 
     fn readString(self: *VM) ObjString {
-        return self.chunk.constants.at(self.readByte()).Obj.data.String;
+        return self.readConstant().Obj.data.String;
     }
 
     fn push(self: *VM, value: Value) void {
-        self.sp[0] = value;
-        self.sp += 1;
+        self.stack.append(value) catch unreachable;
     }
 
     fn pop(self: *VM) Value {
-        self.sp -= 1;
-        return self.sp[0];
+        return self.stack.pop();
     }
 
     fn peek(self: *VM, distance: u32) Value {
-        return (self.sp - 1 - distance)[0];
+        return self.stack.at(self.stack.len - 1 - distance);
     }
 
     fn resetStack(self: *VM) void {
-        self.sp = self.stack.items.ptr;
+        self.stack.resize(0) catch unreachable;
     }
 
     fn runtimeError(self: *VM, format: []const u8, args: ...) void {
@@ -124,11 +110,9 @@ pub const VM = struct {
     }
 
     fn printDebug(self: *VM) void {
-        std.debug.warn("\t");
+        std.debug.warn("\n");
         for (self.stack.toSlice()) | s, i | {
-            std.debug.warn("[ ");
-            s.print();
-            std.debug.warn(" ]");
+            std.debug.warn("[{}]\n", s.toString());
         }
         _ = self.chunk.disassembleInstruction(@ptrToInt(self.ip) - @ptrToInt(self.chunk.code.items.ptr));
     }
@@ -169,7 +153,6 @@ pub const VM = struct {
             else => unreachable
         }
 
-        std.debug.warn("\n");
         self.push(val);
     }
 
@@ -189,15 +172,11 @@ pub const VM = struct {
     fn run(self: *VM) !void {
         while (true) {
             if (verbose) self.printDebug();
-            // const instruction = self.readByte();
-            const instruction = self.readInstruction();
+                const instruction = @intToEnum(OpCode, self.readByte());
             switch (instruction) {
                 OpCode.Constant => {
                     const constant = self.readConstant();
-                    if (verbose) {
-                        constant.print();
-                        std.debug.warn("\n");
-                    }
+                    self.push(constant);
                 },
                 OpCode.Nil => self.push(Value.Nil),
                 OpCode.True => self.push(Value {.Bool = true}),
@@ -213,8 +192,9 @@ pub const VM = struct {
                 },
                 OpCode.DefineGlobal => {
                     const name = self.readString();
-                    _ = try self.globals.put(name.bytes, self.peek(0));
-                    _ = self.pop();
+                    const value = self.peek(0);
+                    _ = try self.globals.put(name.bytes, value);
+                    const popped = self.pop();
                 },
                 OpCode.GetGlobal => {
                     const name = self.readString();
@@ -226,7 +206,8 @@ pub const VM = struct {
                 },
                 OpCode.SetGlobal => {
                     const name = self.readString();
-                    _ = self.globals.put(name.bytes, self.peek(0)) catch {
+                    const value = self.peek(0);
+                    _ = self.globals.put(name.bytes, value) catch {
                         self.runtimeError("Undefined variable '{}'.", name.bytes);
                         return error.RuntimeError;
                     };

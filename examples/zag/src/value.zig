@@ -47,10 +47,7 @@ pub const Value = union(ValueType) {
         .Bool => return a.Bool == b.Bool,
         .Number => return a.Number == b.Number,
         .Nil => return true,
-        .Obj => |o| switch (o.data) {
-          .String => return std.mem.eql(u8, a.Obj.data.String.bytes, b.Obj.data.String.bytes),
-          else => unreachable,
-        },
+        .Obj => |o| return o.equal(b.Obj),
       }
     }
 
@@ -61,21 +58,5 @@ pub const Value = union(ValueType) {
         .Number => |n| return true,
         .Obj => |o| return true, 
       }
-    }
-
-    fn isNumber(value: Value) bool {
-      return ValueType(value) == ValueType.Number;
-    }
-
-    fn isBool(value: Value) bool {
-      return ValueType(value) == ValueType.Bool;
-    }
-
-    fn isNil(value: Value) bool {
-      return ValueType(value) == ValueType.Nil;
-    }
-
-    fn isObject(value: Value) bool {
-      return ValueType(value) == ValueType.Obj;
     }
 };
