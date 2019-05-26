@@ -9,7 +9,7 @@ const Scanner = @import("./scanner.zig").Scanner;
 const Value = @import("./value.zig").Value;
 const ObjString = @import("./object.zig").ObjString;
 
-const verbose = true;
+const verbose = false;
 
 pub const Parser = struct {
     current: Token,
@@ -178,7 +178,7 @@ pub const Instance = struct {
         if(self.parser.had_error)
             return error.ParseError;
         
-        self.currentChunk().disassemble("Chunk");
+        if (verbose) self.currentChunk().disassemble("Chunk");
     }
 
     fn consume(self: *Instance, token_type: TokenType, message: []const u8) void {
@@ -233,8 +233,8 @@ pub const Instance = struct {
         if (jump > std.math.maxInt(u16)) {
             self.parser.errorAtPrevious("Too much code to jump over");
         }
-        self.currentChunk().code.at(offset + 0) = @truncate(u8, (jump >> 8) | 0xff);
-        self.currentChunk().code.at(offset + 1) = @truncate(u8, jump | 0xff);
+        self.currentChunk().code.items[offset + 0] = @truncate(u8, (jump >> 8) & 0xff);
+        self.currentChunk().code.items[offset + 1] = @truncate(u8, jump & 0xff);
     }
 
     fn whileStatement(self: *Instance) void {

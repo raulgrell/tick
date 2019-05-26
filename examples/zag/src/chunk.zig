@@ -79,6 +79,7 @@ pub const Chunk = struct {
             OpCode.Print => return simpleInstruction("Print", offset),
             OpCode.JumpIfFalse => return jumpInstruction("JumpIfFalse", 1, chunk, offset),
             OpCode.Jump => return jumpInstruction("Jump", 1, chunk, offset),
+            OpCode.Loop => return jumpInstruction("Loop", -1, chunk, offset),
             OpCode.Return => return simpleInstruction("Return", offset),
             else => {
                 std.debug.warn("Unknown opcode: {}\n", instruction);
@@ -88,9 +89,9 @@ pub const Chunk = struct {
     }
 
     fn jumpInstruction(name: []const u8, sign: i32, chunk: *Chunk, offset: usize) usize {
-        var jump = @intCast(i32, chunk.code.at(offset + 1)) << 8;
-        jump |= @intCast(i32, chunk.code.at(offset + 2));
-        std.debug.warn("{}: {} -> {}\n", name, offset, @intCast(i32, offset + 3) + sign * jump);
+        var jump = @intCast(i16, chunk.code.at(offset + 1)) << 8;
+        jump |= @intCast(i16, chunk.code.at(offset + 2));
+        std.debug.warn("{}: {} -> {}\n", name, offset, @intCast(i16, offset + 3) + sign * jump);
         return offset + 3;
     }
 

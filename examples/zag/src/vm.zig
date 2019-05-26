@@ -9,7 +9,7 @@ const Compiler = @import("./compiler.zig").Compiler;
 const Obj = @import("./object.zig").Obj;
 const ObjString = @import("./object.zig").ObjString;
 
-const verbose = true;
+const verbose = false;
 
 pub const OpCode = enum(u8) {
     // Literals
@@ -127,14 +127,30 @@ pub const VM = struct {
                 }
                 const rhs = self.pop().Number;
                 const lhs = self.pop().Number;
-                const number = switch (operator) {
-                    .Add => lhs + rhs,
-                    .Subtract => lhs - rhs,
-                    .Multiply => lhs * rhs,
-                    .Divide => lhs / rhs,
+                
+                switch (operator) {
+                    .Add, .Subtract, .Multiply, .Divide => {
+                        const number = switch (operator) {
+                            .Add => lhs + rhs,
+                            .Subtract => lhs - rhs,
+                            .Multiply => lhs * rhs,
+                            .Divide => lhs / rhs,
+                            else => unreachable,
+                        };
+                        val = Value { .Number = number };
+                    },
+                    .Less, .LessEqual, .Greater, .GreaterEqual => {
+                        const result = switch ( operator) {
+                            .Less => lhs < rhs,
+                            .LessEqual => lhs <= rhs,
+                            .Greater => lhs > rhs,
+                            .GreaterEqual => lhs >= rhs,
+                            else => unreachable,
+                        };
+                        val = Value { .Bool = result };
+                    },
                     else => unreachable,
-                };
-                val = Value { .Number = number };
+                }
             },
             ValueType.Bool => {
                 if (self.peek(0) != Value.Bool or self.peek(1) != Value.Bool) {
@@ -188,7 +204,7 @@ pub const VM = struct {
                 },
                 OpCode.SetLocal => {
                     const slot = self.readByte();
-                    self.stack.at(slot) = self.peek(0);
+                    self.stack.items[slot] = self.peek(0);
                 },
                 OpCode.DefineGlobal => {
                     const name = self.readString();
